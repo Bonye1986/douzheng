@@ -7,15 +7,20 @@ import { TabBar, type TabKey } from '@/components/mini/tab-bar'
 import { TabPlaceholderScreen } from '@/components/mini/tab-placeholder-screen'
 import { ServicesScreen } from '@/components/mini/services-screen'
 import { TestsScreen } from '@/components/mini/tests-screen'
+import type { CartItem } from '@/components/mini/cart-screen'
 import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { cn } from '@/lib/utils'
 
 export function HomeFlow({
   initialTab = 'home',
   initialDetailId,
+  initialCart,
+  initialCartOpen,
 }: {
   initialTab?: TabKey
   initialDetailId?: string
+  initialCart?: CartItem[]
+  initialCartOpen?: boolean
 }) {
   const [tab, setTab] = useState<TabKey>(initialTab)
   const [chatOpen, setChatOpen] = useState(false)
@@ -36,7 +41,7 @@ export function HomeFlow({
         ) : tab === 'service' ? (
           <ServicesScreen onOpenChat={openChat} />
         ) : tab === 'test' ? (
-          <TestsScreen initialDetailId={initialDetailId} />
+          <TestsScreen initialDetailId={initialDetailId} initialCart={initialCart} initialCartOpen={initialCartOpen} />
         ) : (
           <TabPlaceholderScreen tab={tab} />
         )}

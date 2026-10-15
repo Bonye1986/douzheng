@@ -49,6 +49,22 @@ const screens = [
     node: <HomeFlow initialTab="test" initialDetailId="cardio" />,
   },
   {
+    id: '12',
+    title: '检测 · 购物车',
+    desc: '勾选 / 全选、份数加减（单项最多 10 份）、合计与优惠金额、去结算；「管理」切换批量删除；空购物车引导去逛逛，底部为你推荐可快速加购（可在画板内交互）',
+    node: (
+      <HomeFlow
+        initialTab="test"
+        initialCartOpen
+        initialCart={[
+          { id: 'cardio', qty: 1, checked: true },
+          { id: 'child', qty: 2, checked: true },
+          { id: 'diabetes', qty: 1, checked: false },
+        ]}
+      />
+    ),
+  },
+  {
     id: '05',
     title: 'AI咨询 · 默认态',
     desc: '通俗版 / 专业版切换，未选检测人时按通用知识回答；技能入口与工具栏可直接触发对话',

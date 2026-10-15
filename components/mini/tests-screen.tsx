@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Plus, Search, ShoppingCart, X } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { TestDetailScreen } from '@/components/mini/test-detail-screen'
+import { CartScreen, MAX_QTY, type CartItem } from '@/components/mini/cart-screen'
 import {
   samplingLabel,
   testCategories,
@@ -14,15 +15,25 @@ import {
 } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
-export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
+export function TestsScreen({
+  initialDetailId,
+  initialCart = [],
+  initialCartOpen = false,
+}: {
+  initialDetailId?: string
+  initialCart?: CartItem[]
+  initialCartOpen?: boolean
+}) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<CategoryKey>('all')
   const [detail, setDetail] = useState<TestService | null>(
     () => testServices.find((s) => s.id === initialDetailId) ?? null,
   )
-  const [cartCount, setCartCount] = useState(0)
+  const [cart, setCart] = useState<CartItem[]>(initialCart)
+  const [cartOpen, setCartOpen] = useState(initialCartOpen)
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const cartCount = cart.reduce((n, i) => n + i.qty, 0)
 
   const showToast = (text: string) => {
     clearTimeout(toastTimer.current)
@@ -30,10 +41,21 @@ export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
     toastTimer.current = setTimeout(() => setToast(null), 1600)
   }
 
-  const addToCart = () => {
-    setCartCount((c) => c + 1)
+  const addToCart = (service: TestService) => {
+    const existing = cart.find((i) => i.id === service.id)
+    if (existing && existing.qty >= MAX_QTY) {
+      showToast(`单个项目最多购买 ${MAX_QTY} 份`)
+      return
+    }
+    setCart(
+      existing
+        ? cart.map((i) => (i.id === service.id ? { ...i, qty: i.qty + 1, checked: true } : i))
+        : [...cart, { id: service.id, qty: 1, checked: true }],
+    )
     showToast('已加入购物车')
   }
+
+  const openCart = () => setCartOpen(true)
 
   const keyword = query.trim().toLowerCase()
   const list = testServices.filter(
@@ -47,7 +69,7 @@ export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
 
   return (
     <>
-      <div className="flex h-full flex-col bg-[#f4f8fe]" inert={!!detail}>
+      <div className="flex h-full flex-col bg-[#f4f8fe]" inert={!!detail || cartOpen}>
         <div className="shrink-0 bg-white">
           <StatusBar />
           <header className="relative flex h-11 items-center justify-center">
@@ -77,7 +99,7 @@ export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
                 </button>
               )}
             </label>
-            <CartButton count={cartCount} onClick={() => showToast('购物车页面待设计')} />
+            <CartButton count={cartCount} onClick={openCart} />
           </div>
 
           <div
@@ -122,7 +144,7 @@ export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
               <ul className="flex flex-col gap-2.5">
                 {list.map((s) => (
                   <li key={s.id}>
-                    <ServiceCard service={s} onOpen={() => setDetail(s)} onAdd={addToCart} />
+                    <ServiceCard service={s} onOpen={() => setDetail(s)} onAdd={() => addToCart(s)} />
                   </li>
                 ))}
               </ul>
@@ -138,14 +160,31 @@ export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
       </div>
 
       {detail && (
-        <TestDetailScreen
-          service={detail}
-          cartCount={cartCount}
-          onBack={() => setDetail(null)}
-          onAddToCart={addToCart}
-          onBuyNow={() => showToast('确认订单页面待设计')}
-          onContact={() => showToast('正在为你接入在线客服')}
-          onOpenCart={() => showToast('购物车页面待设计')}
+        <div className="contents" inert={cartOpen}>
+          <TestDetailScreen
+            key={detail.id}
+            service={detail}
+            cartCount={cartCount}
+            onBack={() => setDetail(null)}
+            onAddToCart={() => addToCart(detail)}
+            onBuyNow={() => showToast('确认订单页面待设计')}
+            onContact={() => showToast('正在为你接入在线客服')}
+            onOpenCart={openCart}
+          />
+        </div>
+      )}
+
+      {cartOpen && (
+        <CartScreen
+          items={cart}
+          onChange={setCart}
+          onBack={() => setCartOpen(false)}
+          onCheckout={() => showToast('确认订单页面待设计')}
+          onOpenService={(s) => {
+            setDetail(s)
+            setCartOpen(false)
+          }}
+          onAddRecommend={addToCart}
         />
       )}
 
