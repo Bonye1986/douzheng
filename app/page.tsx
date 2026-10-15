@@ -31,6 +31,12 @@ const screens = [
     node: <HomeFlow />,
   },
   {
+    id: '09',
+    title: '服务',
+    desc: '轮播图、服务分类、推荐检查、知识科普、互动问答；用药咨询 / 报告解读与问答结果可一键带入 AI 咨询（可在画板内交互）',
+    node: <HomeFlow initialTab="service" />,
+  },
+  {
     id: '05',
     title: 'AI咨询 · 默认态',
     desc: '通俗版 / 专业版切换，未选检测人时按通用知识回答；技能入口与工具栏可直接触发对话',

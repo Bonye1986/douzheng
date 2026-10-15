@@ -5,6 +5,7 @@ import { HomeScreen } from '@/components/mini/home-screen'
 import { AiChatScreen, type ChatRequest } from '@/components/mini/ai-chat-screen'
 import { TabBar, type TabKey } from '@/components/mini/tab-bar'
 import { TabPlaceholderScreen } from '@/components/mini/tab-placeholder-screen'
+import { ServicesScreen } from '@/components/mini/services-screen'
 import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { cn } from '@/lib/utils'
 
@@ -23,7 +24,13 @@ export function HomeFlow({ initialTab = 'home' }: { initialTab?: TabKey }) {
   return (
     <div className="relative flex h-full flex-col overflow-hidden">
       <div className="min-h-0 flex-1" inert={chatOpen}>
-        {tab === 'home' ? <HomeScreen onOpenChat={openChat} /> : <TabPlaceholderScreen tab={tab} />}
+        {tab === 'home' ? (
+          <HomeScreen onOpenChat={openChat} />
+        ) : tab === 'service' ? (
+          <ServicesScreen onOpenChat={openChat} />
+        ) : (
+          <TabPlaceholderScreen tab={tab} />
+        )}
       </div>
       <div inert={chatOpen}>
         <TabBar active={tab} onSelect={setTab} />
