@@ -4,6 +4,7 @@ import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { HomeFlow } from '@/components/mini/home-flow'
 import { AiChatScreen } from '@/components/mini/ai-chat-screen'
+import { ExamineeFormArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
 
 const screens = [
   {
@@ -77,6 +78,18 @@ const screens = [
         ]}
       />
     ),
+  },
+  {
+    id: '14',
+    title: '确认订单 · 添加受检人',
+    desc: '与本人关系（本人仅可添加一次）、姓名、性别、出生日期、手机号、身份证号；必填项实时校验，保存后自动选中为受检人，报告归档至成员档案（可在画板内交互）',
+    node: <ExamineeFormArtboard />,
+  },
+  {
+    id: '15',
+    title: '确认订单 · 定点采样机构',
+    desc: '关键词搜索、类型筛选（医院 / 第三方检验机构 / 今日可采），按距离排序；展示地址、营业时间、支持的样本类型，可导航，选择后返回订单页（可在画板内交互）',
+    node: <SiteListArtboard />,
   },
   {
     id: '05',
