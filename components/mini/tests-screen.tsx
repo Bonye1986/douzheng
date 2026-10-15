@@ -6,6 +6,7 @@ import { Plus, Search, ShoppingCart, X } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { TestDetailScreen } from '@/components/mini/test-detail-screen'
 import { CartScreen, MAX_QTY, type CartItem } from '@/components/mini/cart-screen'
+import { CheckoutScreen, type CheckoutLine } from '@/components/mini/checkout-screen'
 import {
   samplingLabel,
   testCategories,
@@ -19,11 +20,16 @@ export function TestsScreen({
   initialDetailId,
   initialCart = [],
   initialCartOpen = false,
+  initialCheckout,
 }: {
   initialDetailId?: string
   initialCart?: CartItem[]
   initialCartOpen?: boolean
+  initialCheckout?: CheckoutLine[]
 }) {
+  const [checkout, setCheckout] = useState<{ lines: CheckoutLine[]; fromCart: boolean } | null>(
+    initialCheckout ? { lines: initialCheckout, fromCart: false } : null,
+  )
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<CategoryKey>('all')
   const [detail, setDetail] = useState<TestService | null>(
@@ -69,7 +75,7 @@ export function TestsScreen({
 
   return (
     <>
-      <div className="flex h-full flex-col bg-[#f4f8fe]" inert={!!detail || cartOpen}>
+      <div className="flex h-full flex-col bg-[#f4f8fe]" inert={!!detail || cartOpen || !!checkout}>
         <div className="shrink-0 bg-white">
           <StatusBar />
           <header className="relative flex h-11 items-center justify-center">
@@ -160,14 +166,14 @@ export function TestsScreen({
       </div>
 
       {detail && (
-        <div className="contents" inert={cartOpen}>
+        <div className="contents" inert={cartOpen || !!checkout}>
           <TestDetailScreen
             key={detail.id}
             service={detail}
             cartCount={cartCount}
             onBack={() => setDetail(null)}
             onAddToCart={() => addToCart(detail)}
-            onBuyNow={() => showToast('确认订单页面待设计')}
+            onBuyNow={() => setCheckout({ lines: [{ id: detail.id, qty: 1 }], fromCart: false })}
             onContact={() => showToast('正在为你接入在线客服')}
             onOpenCart={openCart}
           />
@@ -175,16 +181,38 @@ export function TestsScreen({
       )}
 
       {cartOpen && (
-        <CartScreen
-          items={cart}
-          onChange={setCart}
-          onBack={() => setCartOpen(false)}
-          onCheckout={() => showToast('确认订单页面待设计')}
-          onOpenService={(s) => {
-            setDetail(s)
-            setCartOpen(false)
+        <div className="contents" inert={!!checkout}>
+          <CartScreen
+            items={cart}
+            onChange={setCart}
+            onBack={() => setCartOpen(false)}
+            onCheckout={() =>
+              setCheckout({
+                lines: cart.filter((i) => i.checked).map(({ id, qty }) => ({ id, qty })),
+                fromCart: true,
+              })
+            }
+            onOpenService={(s) => {
+              setDetail(s)
+              setCartOpen(false)
+            }}
+            onAddRecommend={addToCart}
+          />
+        </div>
+      )}
+
+      {checkout && (
+        <CheckoutScreen
+          lines={checkout.lines}
+          onBack={() => setCheckout(null)}
+          onSubmitted={() => {
+            if (checkout.fromCart) setCart((c) => c.filter((i) => !i.checked))
           }}
-          onAddRecommend={addToCart}
+          onDone={() => {
+            setCheckout(null)
+            setCartOpen(false)
+            setDetail(null)
+          }}
         />
       )}
 
