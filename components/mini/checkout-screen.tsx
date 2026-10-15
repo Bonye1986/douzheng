@@ -111,6 +111,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [couponOpen, setCouponOpen] = useState(false)
   const [remark, setRemark] = useState('')
   const [agreed, setAgreed] = useState(false)
+  const [researchConsent, setResearchConsent] = useState(false)
   const [warn, setWarn] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
@@ -479,7 +480,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             type="button"
             role="checkbox"
             aria-checked={agreed}
-            aria-label="已阅读并同意检测知情同意书与隐私保护协议"
+            aria-label="已阅读并同意基因检测知情同意书"
             onClick={() => {
               setAgreed((a) => !a)
               setWarn(false)
@@ -501,16 +502,42 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             <a href="#" className="text-primary">
               《基因检测知情同意书》
             </a>
-            <a href="#" className="text-primary">
-              《个人信息与样本隐私保护协议》
-            </a>
           </p>
         </div>
         {warn && !agreed && (
           <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
-            请先阅读并勾选��意协议
+            请先阅读并勾选同意知情同意书
           </p>
         )}
+
+        <div className="mt-1 flex items-start gap-2 px-1.5 py-1">
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={researchConsent}
+            aria-label="自愿同意科研知情同意书（可选）"
+            onClick={() => setResearchConsent((v) => !v)}
+            className="-m-1 mt-px p-1"
+          >
+            <span
+              aria-hidden="true"
+              className={cn(
+                'flex size-4 items-center justify-center rounded-full border',
+                researchConsent ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb] bg-white',
+              )}
+            >
+              {researchConsent && <Check className="size-2.5" strokeWidth={3} />}
+            </span>
+          </button>
+          <p className="text-[12px] leading-5 text-muted-foreground">
+            <span className="mr-1 rounded bg-secondary px-1 py-px text-[10px] text-[#8a94a6]">可选</span>
+            自愿将去标识化数据用于医学研究，同意
+            <a href="#" className="text-primary">
+              《科研知情同意书》
+            </a>
+            <span className="block text-[11px] text-[#a9b3c6]">不勾选不影响检测，可随时在「我的」中撤回</span>
+          </p>
+        </div>
 
         <p className="mt-3 flex items-center justify-center gap-1 text-[11px] text-[#a9b3c6]">
           <ShieldCheck className="size-3.5" aria-hidden="true" />
