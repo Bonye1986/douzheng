@@ -58,13 +58,32 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
     .map((l) => ({ line: l, service: testServices.find((s) => s.id === l.id) }))
     .filter((r): r is { line: CheckoutLine; service: TestService } => !!r.service)
 
-  const goodsTotal = rows.reduce((n, r) => n + r.service.price * r.line.qty, 0)
-  const originalTotal = rows.reduce((n, r) => n + (r.service.originalPrice ?? r.service.price) * r.line.qty, 0)
-  const qtyTotal = rows.reduce((n, r) => n + r.line.qty, 0)
+  const [assign, setAssign] = useState<Record<string, string[]>>(() =>
+    Object.fromEntries(
+      rows.map((r) => [r.service.id, examinees.slice(0, Math.min(Math.max(r.line.qty, 1), examinees.length)).map((e) => e.id)]),
+    ),
+  )
+
+  const toggleAssign = (serviceId: string, memberId: string) => {
+    setAssign((a) => {
+      const cur = a[serviceId] ?? []
+      const next = cur.includes(memberId) ? cur.filter((x) => x !== memberId) : [...cur, memberId]
+      return { ...a, [serviceId]: examinees.map((e) => e.id).filter((id) => next.includes(id)) }
+    })
+    setAssignWarn(false)
+  }
+
+  const countOf = (serviceId: string) => assign[serviceId]?.length ?? 0
+  const goodsTotal = rows.reduce((n, r) => n + r.service.price * countOf(r.service.id), 0)
+  const qtyTotal = rows.reduce((n, r) => n + countOf(r.service.id), 0)
   const usable = coupons.filter((c) => goodsTotal >= c.threshold)
   const best = usable.reduce<Coupon | null>((b, c) => (!b || c.amount > b.amount ? c : b), null)
+  const byMember = examinees
+    .map((e) => ({ member: e, items: rows.filter((r) => assign[r.service.id]?.includes(e.id)).map((r) => r.service) }))
+    .filter((g) => g.items.length > 0)
+  const unassigned = rows.filter((r) => countOf(r.service.id) === 0)
 
-  const [examineeId, setExamineeId] = useState(examinees[0].id)
+  const [assignWarn, setAssignWarn] = useState(false)
   const [couponId, setCouponId] = useState<string | null>(best?.id ?? null)
   const [couponOpen, setCouponOpen] = useState(false)
   const [remark, setRemark] = useState('')
@@ -74,13 +93,15 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
 
   const coupon = usable.find((c) => c.id === couponId) ?? null
   const couponOff = coupon?.amount ?? 0
-  const promoOff = originalTotal - goodsTotal
   const payable = Math.max(goodsTotal - couponOff, 0)
   const hasSelf = rows.some((r) => r.service.sampling === 'self')
   const hasSite = rows.some((r) => r.service.sampling === 'site')
-  const examinee = examinees.find((e) => e.id === examineeId)!
 
   const submit = () => {
+    if (unassigned.length > 0) {
+      setAssignWarn(true)
+      return
+    }
     if (!agreed) {
       setWarn(true)
       return
@@ -147,52 +168,108 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   return (
     <Shell title="确认订单" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
-        <section aria-labelledby="examinee-title" className="rounded-2xl bg-white p-3.5">
-          <div className="flex items-center justify-between">
-            <h2 id="examinee-title" className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
-              <UserRound className="size-4 text-primary" aria-hidden="true" />
-              受检人
+        <section aria-labelledby="goods-title" className="rounded-2xl bg-white">
+          <div className="flex items-center justify-between px-3.5 pt-3.5">
+            <h2 id="goods-title" className="text-[14px] font-semibold text-foreground">
+              检测项目与受检人
             </h2>
-            <span className="text-[11px] text-muted-foreground">报告将归档至该成员健康档案</span>
-          </div>
-          <div role="radiogroup" aria-label="选择受检人" className="mt-3 flex gap-2 overflow-x-auto [scrollbar-width:none]">
-            {examinees.map((e) => {
-              const active = e.id === examineeId
-              return (
-                <button
-                  key={e.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => setExamineeId(e.id)}
-                  className={cn(
-                    'relative flex shrink-0 flex-col items-start rounded-xl border px-3 py-2 text-left transition-colors',
-                    active ? 'border-primary bg-[#eef5ff]' : 'border-border bg-white',
-                  )}
-                >
-                  <span className="flex items-center gap-1 text-[13px] font-medium text-foreground">
-                    {e.name}
-                    <span
-                      className={cn(
-                        'rounded px-1 text-[10px] font-normal',
-                        active ? 'bg-primary text-primary-foreground' : 'bg-[#f2f5fa] text-muted-foreground',
-                      )}
-                    >
-                      {e.relation}
-                    </span>
-                  </span>
-                  <span className="mt-0.5 text-[11px] text-muted-foreground">{e.meta}</span>
-                </button>
-              )
-            })}
-            <button
-              type="button"
-              className="flex shrink-0 flex-col items-center justify-center rounded-xl border border-dashed border-[#c3ccdb] px-3.5 text-[12px] text-muted-foreground"
-            >
-              + 添加
+            <button type="button" className="text-[12px] text-primary">
+              + 添加受检人
             </button>
           </div>
+          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
+          <ul>
+            {rows.map(({ service }) => {
+              const selected = assign[service.id] ?? []
+              const missing = assignWarn && selected.length === 0
+              return (
+                <li key={service.id} className="border-b border-border px-3.5 py-3 last:border-0">
+                  <div className="flex gap-2.5">
+                    <Image
+                      src={service.image}
+                      alt=""
+                      width={56}
+                      height={56}
+                      className="size-14 shrink-0 rounded-xl bg-[#eef4fd] object-cover"
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <p className="line-clamp-1 text-[13px] font-medium leading-[18px] text-foreground">{service.name}</p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        {samplingLabel[service.sampling]} · {service.turnaround}出报告
+                      </p>
+                      <div className="mt-auto flex items-baseline justify-between">
+                        <span className="text-[14px] font-semibold text-foreground">
+                          <span className="text-[11px]">¥</span>
+                          {service.price}
+                        </span>
+                        <span className="text-[12px] tabular-nums text-muted-foreground">×{selected.length}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    role="group"
+                    aria-label={`${service.name}的受检人`}
+                    className={cn('mt-2.5 flex flex-wrap gap-1.5 rounded-xl p-0.5', missing && 'bg-[#fff1ec]')}
+                  >
+                    {examinees.map((e) => {
+                      const on = selected.includes(e.id)
+                      return (
+                        <button
+                          key={e.id}
+                          type="button"
+                          role="checkbox"
+                          aria-checked={on}
+                          onClick={() => toggleAssign(service.id, e.id)}
+                          className={cn(
+                            'flex h-7 items-center gap-1 rounded-full border px-2.5 text-[12px] transition-colors',
+                            on ? 'border-primary bg-[#eef5ff] text-primary' : 'border-border bg-white text-muted-foreground',
+                          )}
+                        >
+                          {on ? (
+                            <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+                          ) : (
+                            <UserRound className="size-3" aria-hidden="true" />
+                          )}
+                          {e.name}
+                          <span className="text-[10px] opacity-70">{e.relation}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {missing && (
+                    <p role="alert" className="mt-1 text-[11px] text-[#e5603a]">
+                      请至少选择一位受检人
+                    </p>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
         </section>
+
+        {byMember.length > 0 && (
+          <section aria-labelledby="member-sum-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
+            <h2 id="member-sum-title" className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+              <UserRound className="size-4 text-primary" aria-hidden="true" />
+              按受检人汇总
+            </h2>
+            <ul className="mt-2.5 flex flex-col gap-2">
+              {byMember.map(({ member, items }) => (
+                <li key={member.id} className="rounded-xl bg-[#f4f8fe] px-3 py-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[13px] font-medium text-foreground">{member.name}</span>
+                    <span className="rounded bg-white px-1 text-[10px] text-muted-foreground">{member.relation}</span>
+                    <span className="text-[11px] text-muted-foreground">{member.meta}</span>
+                    <span className="ml-auto text-[11px] tabular-nums text-primary">{items.length} 项</span>
+                  </div>
+                  <p className="mt-1 text-[12px] leading-[18px] text-muted-foreground">
+                    {items.map((s) => s.name).join('、')}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {hasSelf && (
           <section aria-labelledby="address-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
@@ -234,38 +311,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           </section>
         )}
 
-        <section aria-labelledby="goods-title" className="mt-2.5 rounded-2xl bg-white">
-          <h2 id="goods-title" className="px-3.5 pt-3.5 text-[14px] font-semibold text-foreground">
-            检测项目
-          </h2>
-          <ul>
-            {rows.map(({ line, service }) => (
-              <li key={line.id} className="flex gap-2.5 border-b border-border px-3.5 py-3 last:border-0">
-                <Image
-                  src={service.image}
-                  alt=""
-                  width={64}
-                  height={64}
-                  className="size-16 shrink-0 rounded-xl bg-[#eef4fd] object-cover"
-                />
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <p className="line-clamp-2 text-[13px] font-medium leading-[18px] text-foreground">{service.name}</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    {samplingLabel[service.sampling]} · {service.turnaround}出报告
-                  </p>
-                  <div className="mt-auto flex items-baseline justify-between pt-1">
-                    <span className="text-[14px] font-semibold text-foreground">
-                      <span className="text-[11px]">¥</span>
-                      {service.price}
-                    </span>
-                    <span className="text-[12px] tabular-nums text-muted-foreground">×{line.qty}</span>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
         <section aria-label="优惠与备注" className="mt-2.5 rounded-2xl bg-white px-3.5">
           <button
             type="button"
@@ -279,10 +324,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </span>
             <ChevronRight className="size-4 text-[#b8c2d6]" aria-hidden="true" />
           </button>
-          <div className="flex h-12 items-center gap-2 border-b border-border">
-            <span className="text-[13px] text-foreground">发票</span>
-            <span className="ml-auto text-[13px] text-muted-foreground">报告出具后可申请电子发票</span>
-          </div>
           <label className="flex h-12 items-center gap-3">
             <span className="shrink-0 text-[13px] text-foreground">订单备注</span>
             <input
@@ -299,8 +340,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             价格明细
           </h2>
           <dl className="flex flex-col gap-2.5 text-[13px]">
-            <PriceRow label={`商品原价（共 ${qtyTotal} 份）`} value={`¥${originalTotal.toLocaleString('zh-CN')}`} />
-            {promoOff > 0 && <PriceRow label="限时优惠" value={`-¥${promoOff.toLocaleString('zh-CN')}`} accent />}
+            <PriceRow label={`商品金额（共 ${qtyTotal} 份）`} value={`¥${goodsTotal.toLocaleString('zh-CN')}`} />
             {couponOff > 0 && <PriceRow label="优惠券" value={`-¥${couponOff}`} accent />}
             <PriceRow label="运费" value={hasSelf ? '包邮' : '¥0'} />
           </dl>
@@ -366,9 +406,9 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               {payable.toLocaleString('zh-CN')}
             </span>
           </p>
-          {promoOff + couponOff > 0 && (
-            <p className="text-[11px] text-muted-foreground">共优惠 ¥{(promoOff + couponOff).toLocaleString('zh-CN')}</p>
-          )}
+          <p className="text-[11px] text-muted-foreground">
+            {byMember.length} 位受检人 · 共 {qtyTotal} 份{couponOff > 0 ? ` · 已优惠 ¥${couponOff}` : ''}
+          </p>
         </div>
         <button
           type="button"
@@ -380,7 +420,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       </div>
 
       <p className="sr-only" aria-live="polite">
-        当前受检人：{examinee.name}
+        共 {qtyTotal} 份，实付 {payable} 元
       </p>
 
       {couponOpen && (
