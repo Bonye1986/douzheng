@@ -149,13 +149,6 @@ export function AiChatScreen({
     }, 1200)
   }
 
-  function setAnswerView(messageId: number, view: Mode) {
-    if (!currentId) return
-    updateMessages(currentId, (prev) =>
-      prev.map((m) => (m.id === messageId && m.role === 'assistant' ? { ...m, view } : m)),
-    )
-  }
-
   function startNewChat() {
     setCurrentId(null)
     setDrawerOpen(false)
@@ -289,26 +282,7 @@ export function AiChatScreen({
                 <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
                 <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
                   {m.answers ? (
-                    <>
-                      <div role="tablist" aria-label="切换本条回答风格" className="mb-2 inline-flex rounded-lg bg-[#eef3fb] p-0.5">
-                        {modes.map((item) => (
-                          <button
-                            key={item.key}
-                            type="button"
-                            role="tab"
-                            aria-selected={m.view === item.key}
-                            onClick={() => setAnswerView(m.id, item.key)}
-                            className={cn(
-                              'h-6 rounded-md px-2.5 text-[11px] transition-colors',
-                              m.view === item.key ? 'bg-white font-semibold text-primary shadow-sm' : 'text-muted-foreground',
-                            )}
-                          >
-                            {item.label}
-                          </button>
-                        ))}
-                      </div>
-                      <AnswerBody answer={m.answers[m.view]} />
-                    </>
+                    <AnswerBody answer={m.answers[mode]} />
                   ) : (
                     <TypingDots />
                   )}
@@ -529,12 +503,7 @@ function AnswerBody({ answer }: { answer: AiAnswer }) {
           {answer.source}
         </p>
       )}
-      <div className="mt-1 flex items-center justify-between border-t border-border pt-2 text-[11px] text-muted-foreground">
-        <span>AI 生成，仅供参考</span>
-        <a href="#" className="font-medium text-primary">
-          转人工药师
-        </a>
-      </div>
+      <p className="mt-1 border-t border-border pt-2 text-[11px] text-muted-foreground">AI 生成，仅供参考</p>
     </div>
   )
 }
