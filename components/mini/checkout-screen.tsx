@@ -192,7 +192,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               {payable.toLocaleString('zh-CN')}
             </p>
             <p className="mt-2 text-[12px] leading-5 text-muted-foreground">
-              {hasSelf ? '采样盒将在 1–2 个工作日内寄出，请留意物流信息' : '请在预约时间前往采样点完成采样'}
+              {hasSelf ? '采样盒将在 1–2 个工作日内寄出，请留意物流信息' : '请���预约时间前往采样点完成采样'}
             </p>
             <div className="mt-5 flex w-full gap-2.5">
               <button
@@ -348,7 +348,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               + 添加受检人
             </button>
           </div>
-          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">��个项目可选多位受检人，一人一份，报告分别归档</p>
+          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">���个项目可选多位受检人，一人一份，报告分别归档</p>
           <ul>
             {rows.map(({ service }) => {
               const selected = assign[service.id] ?? []
@@ -451,7 +451,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                           })}
                       </ul>
                       <p className="mt-1.5 text-[10px] leading-4 text-[#a9b3c6]">
-                        不勾选不影响检测，可在「我的 → 授权管理」中签署或撤回
+                        不勾选不影响检测，可在「我的 → 授权与同意书」中签署或撤回
                       </p>
                     </div>
                   )}

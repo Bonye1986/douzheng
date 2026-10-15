@@ -42,7 +42,7 @@ export function AuthorizationScreen({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <SubPage title="授权管理" titleId="auth-title" onBack={onBack}>
+    <SubPage title="授权与同意书" titleId="auth-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]">
         <section className="rounded-2xl bg-primary p-4 text-primary-foreground">
           <p className="flex items-center gap-1.5 text-[13px] opacity-90">

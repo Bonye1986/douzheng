@@ -2,47 +2,118 @@
 
 import { useState } from 'react'
 import {
+  AlarmClock,
+  BadgeCheck,
+  Ban,
+  BookOpen,
+  Building2,
   ChevronRight,
-  ClipboardList,
   FileSignature,
   FileText,
   FlaskConical,
+  Gift,
   Headphones,
+  House,
+  Inbox,
+  Info,
   MapPin,
-  Package,
-  Plus,
+  PackageCheck,
+  QrCode,
+  RotateCcw,
+  Send,
   Settings,
-  ShieldCheck,
+  Sparkles,
+  TestTube,
   TicketPercent,
+  Truck,
   UserRound,
-  Wallet,
+  Users,
+  type LucideIcon,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
-import { examineeMeta, initialExaminees, initialResearchAuths } from '@/components/mini/checkout-data'
+import { initialExaminees } from '@/components/mini/checkout-data'
+import { cn } from '@/lib/utils'
 
-const orderStatus = [
-  { key: 'unpaid', label: '待支付', icon: Wallet, count: 1 },
-  { key: 'shipping', label: '待寄回样本', icon: Package, count: 1 },
-  { key: 'testing', label: '检测中', icon: FlaskConical, count: 2 },
-  { key: 'done', label: '已出报告', icon: FileText, count: 0 },
+type StatusKey =
+  | 'toShip'
+  | 'shipped'
+  | 'toVerify'
+  | 'toSample'
+  | 'sent'
+  | 'received'
+  | 'testing'
+  | 'done'
+  | 'closed'
+
+const statusMeta: Record<StatusKey, { label: string; icon: LucideIcon; count?: number }> = {
+  toShip: { label: '待发货', icon: PackageCheck },
+  shipped: { label: '已发货', icon: Truck, count: 1 },
+  toVerify: { label: '待核销', icon: QrCode, count: 1 },
+  toSample: { label: '待采样', icon: TestTube },
+  sent: { label: '已寄样', icon: Send },
+  received: { label: '已收样', icon: Inbox },
+  testing: { label: '检测中', icon: FlaskConical, count: 2 },
+  done: { label: '已完成', icon: BadgeCheck },
+  closed: { label: '已关闭', icon: Ban },
+}
+
+const orderTabs = [
+  {
+    key: 'all',
+    label: '全部订单',
+    statuses: ['toShip', 'shipped', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done', 'closed'],
+  },
+  {
+    key: 'self',
+    label: '自采样订单',
+    statuses: ['toShip', 'shipped', 'toSample', 'sent', 'received', 'testing', 'done', 'closed'],
+  },
+  {
+    key: 'site',
+    label: '定点采样订单',
+    statuses: ['toVerify', 'toSample', 'sent', 'received', 'testing', 'done', 'closed'],
+  },
+] as const satisfies readonly { key: string; label: string; statuses: readonly StatusKey[] }[]
+
+type OrderTabKey = (typeof orderTabs)[number]['key']
+
+const afterSales = [
+  { key: 'self', label: '自采重采样订单', desc: '重新寄送采样盒', icon: House, count: 1 },
+  { key: 'site', label: '定点重采样订单', desc: '预约机构重新采样', icon: Building2, count: 0 },
 ] as const
 
-const signedCount = initialResearchAuths.filter((a) => a.status === 'signed').length
-
-const services = [
-  { key: 'auth', label: '授权管理', icon: FileSignature, extra: `${signedCount} 项已授权` },
+const tools = [
+  { key: 'examinee', label: '检测人管理', icon: Users },
   { key: 'address', label: '地址管理', icon: MapPin },
-  { key: 'coupon', label: '我的优惠券', icon: TicketPercent, extra: '2 张可用' },
-  { key: 'service', label: '联系客服', icon: Headphones, extra: '9:00–21:00' },
-  { key: 'settings', label: '设置', icon: Settings },
+  { key: 'auth', label: '授权与同意书', icon: FileSignature },
+  { key: 'reminder', label: '用药提醒', icon: AlarmClock },
+  { key: 'guide', label: '使用指南', icon: BookOpen },
+  { key: 'about', label: '关于我们', icon: Info },
+  { key: 'service', label: '联系客服', icon: Headphones },
+  { key: 'account', label: '账号设置', icon: Settings },
 ] as const
 
-const avatarTone = ['bg-[#e8f1fe] text-primary', 'bg-[#fdeef3] text-[#e05a86]', 'bg-[#fff4e8] text-[#f07a2c]']
+function SectionHeader({ id, title, action }: { id: string; title: string; action: string }) {
+  return (
+    <div className="flex items-center justify-between">
+      <h2 id={id} className="text-[15px] font-semibold text-foreground">
+        {title}
+      </h2>
+      <button type="button" className="flex items-center text-[12px] text-muted-foreground">
+        {action}
+        <ChevronRight className="size-3.5" aria-hidden="true" />
+      </button>
+    </div>
+  )
+}
 
 export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: boolean }) {
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
+  const [orderTab, setOrderTab] = useState<OrderTabKey>('all')
   const self = initialExaminees[0]
+  const activeTab = orderTabs.find((t) => t.key === orderTab) ?? orderTabs[0]
+  const maskedPhone = (self.phone ?? '').replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
 
   return (
     <div className="relative flex h-full flex-col bg-[#f4f8fe]">
@@ -56,140 +127,159 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
       </div>
 
       <div className="relative flex-1 overflow-y-auto px-3 pb-24 pt-2 [scrollbar-width:none]">
-        <section aria-label="个人信息" className="flex items-center gap-3 px-1">
-          <span className="flex size-14 items-center justify-center rounded-full border-2 border-white bg-primary text-primary-foreground shadow-sm">
-            <UserRound className="size-7" aria-hidden="true" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-[18px] font-semibold text-foreground">{self.name}</p>
-            <p className="mt-0.5 text-[12px] tabular-nums text-muted-foreground">{self.phone}</p>
-          </div>
-          <button type="button" className="flex items-center text-[12px] text-muted-foreground">
-            个人资料
-            <ChevronRight className="size-3.5" aria-hidden="true" />
+        {/* 用户信息：头像 / 昵称 / 手机号 */}
+        <section aria-label="用户信息">
+          <button type="button" className="flex w-full items-center gap-3 px-1 text-left">
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-full border-2 border-white bg-primary text-primary-foreground shadow-sm">
+              <UserRound className="size-7" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[18px] font-semibold text-foreground">{self.name}</span>
+              <span className="mt-0.5 block text-[12px] tabular-nums text-muted-foreground">{maskedPhone}</span>
+            </span>
+            <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">进入个人资料</span>
           </button>
         </section>
 
-        <section aria-labelledby="mine-orders" className="mt-4 rounded-2xl bg-white px-3.5 pb-3 pt-3.5">
-          <div className="flex items-center justify-between">
-            <h2 id="mine-orders" className="text-[15px] font-semibold text-foreground">我的订单</h2>
-            <button type="button" className="flex items-center text-[12px] text-muted-foreground">
-              全部订单
-              <ChevronRight className="size-3.5" aria-hidden="true" />
-            </button>
-          </div>
-          <ul className="mt-3 flex">
-            {orderStatus.map((s) => (
-              <li key={s.key} className="flex-1">
-                <button type="button" className="flex w-full flex-col items-center gap-1.5">
-                  <span className="relative">
-                    <s.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
-                    {s.count > 0 && (
-                      <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] font-medium tabular-nums text-white">
-                        {s.count}
-                        <span className="sr-only">笔</span>
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-[12px] text-foreground">{s.label}</span>
+        {/* 我的订单 */}
+        <section aria-labelledby="mine-orders" className="mt-4 rounded-2xl bg-white pb-3 pt-3.5">
+          <div className="px-3.5">
+            <SectionHeader id="mine-orders" title="我的订单" action="查看全部" />
+            <div role="tablist" aria-label="订单类型" className="mt-3 flex rounded-lg bg-[#f1f5fb] p-0.5">
+              {orderTabs.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={orderTab === t.key}
+                  onClick={() => setOrderTab(t.key)}
+                  className={cn(
+                    'h-7 flex-1 rounded-md text-[12px] transition-colors',
+                    orderTab === t.key ? 'bg-white font-medium text-primary shadow-sm' : 'text-muted-foreground',
+                  )}
+                >
+                  {t.label}
                 </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section aria-labelledby="mine-progress" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <div className="flex items-center gap-1.5">
-            <ClipboardList className="size-4 text-primary" aria-hidden="true" />
-            <h2 id="mine-progress" className="text-[13px] font-semibold text-foreground">检测进度</h2>
-            <span className="ml-auto text-[11px] tabular-nums text-muted-foreground">GX20261012008</span>
+              ))}
+            </div>
           </div>
-          <p className="mt-2 text-[13px] text-foreground">心脑血管用药基因检测 · 王建国</p>
-          <ol className="mt-3 flex items-center" aria-label="当前进度：实验室检测中">
-            {['已下单', '样本已签收', '检测中', '出报告'].map((step, i) => {
-              const done = i < 2
-              const current = i === 2
+          <ul
+            role="tabpanel"
+            aria-label={activeTab.label}
+            className="mt-3 flex overflow-x-auto px-1.5 [scrollbar-width:none]"
+          >
+            {activeTab.statuses.map((key) => {
+              const s = statusMeta[key]
               return (
-                <li key={step} className="flex flex-1 flex-col items-center gap-1">
-                  <div className="flex w-full items-center">
-                    <span className={`h-0.5 flex-1 ${i === 0 ? 'invisible' : done || current ? 'bg-primary' : 'bg-border'}`} />
-                    <span
-                      className={`size-2.5 rounded-full ${current ? 'bg-primary ring-4 ring-[#d6e7ff]' : done ? 'bg-primary' : 'bg-border'}`}
-                    />
-                    <span className={`h-0.5 flex-1 ${i === 3 ? 'invisible' : done ? 'bg-primary' : 'bg-border'}`} />
-                  </div>
-                  <span className={`text-[11px] ${current ? 'font-medium text-primary' : done ? 'text-foreground' : 'text-muted-foreground'}`}>
-                    {step}
-                  </span>
+                <li key={key} className="w-[62px] shrink-0">
+                  <button type="button" className="flex w-full flex-col items-center gap-1.5 py-1">
+                    <span className="relative">
+                      <s.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                      {s.count ? (
+                        <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] font-medium tabular-nums text-white">
+                          {s.count}
+                          <span className="sr-only">笔</span>
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="text-[12px] text-foreground">{s.label}</span>
+                  </button>
                 </li>
               )
             })}
-          </ol>
-          <p className="mt-2.5 rounded-lg bg-[#f4f8fe] px-2.5 py-2 text-[11px] text-muted-foreground">
-            预计 10 月 19 日前出具报告，出报告后将通过微信服务通知提醒您
-          </p>
+          </ul>
         </section>
 
-        <section aria-labelledby="mine-members" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <div className="flex items-center justify-between">
-            <h2 id="mine-members" className="text-[15px] font-semibold text-foreground">
-              受检人档案
-              <span className="ml-1.5 text-[12px] font-normal text-muted-foreground">{initialExaminees.length} 人</span>
-            </h2>
-            <button type="button" className="flex items-center text-[12px] text-muted-foreground">
-              管理
-              <ChevronRight className="size-3.5" aria-hidden="true" />
-            </button>
-          </div>
-          <ul className="mt-3 flex gap-2 overflow-x-auto [scrollbar-width:none]">
-            {initialExaminees.map((m, i) => (
-              <li key={m.id} className="shrink-0">
-                <button type="button" className="flex w-[92px] flex-col items-center rounded-xl bg-[#f8fafe] px-2 py-2.5">
-                  <span className={`flex size-9 items-center justify-center rounded-full text-[14px] font-semibold ${avatarTone[i % avatarTone.length]}`}>
-                    {m.name.slice(-1)}
+        {/* 售后订单 */}
+        <section aria-labelledby="mine-after" className="mt-2.5 rounded-2xl bg-white p-3.5">
+          <SectionHeader id="mine-after" title="售后订单" action="全部售后" />
+          <ul className="mt-3 grid grid-cols-2 gap-2">
+            {afterSales.map((a) => (
+              <li key={a.key}>
+                <button type="button" className="flex w-full items-center gap-2 rounded-xl bg-[#f8fafe] p-2.5 text-left">
+                  <span className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e8f1fe] text-primary">
+                    <a.icon className="size-[18px]" aria-hidden="true" />
+                    <RotateCcw
+                      className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full bg-white p-0.5 text-[#f07a2c]"
+                      aria-hidden="true"
+                    />
                   </span>
-                  <span className="mt-1.5 text-[13px] font-medium text-foreground">{m.name}</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {m.relation} · {examineeMeta(m).split(' · ')[1]}
+                  <span className="min-w-0">
+                    <span className="block truncate text-[13px] font-medium text-foreground">{a.label}</span>
+                    <span className="block truncate text-[11px] text-muted-foreground">
+                      {a.count > 0 ? `${a.count} 笔处理中` : a.desc}
+                    </span>
                   </span>
                 </button>
               </li>
             ))}
-            <li className="shrink-0">
-              <button
-                type="button"
-                className="flex h-full w-[92px] flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#c9d4e6] text-[12px] text-muted-foreground"
-              >
-                <Plus className="size-5" aria-hidden="true" />
-                添加
-              </button>
-            </li>
           </ul>
         </section>
 
-        <nav aria-label="常用服务" className="mt-2.5 rounded-2xl bg-white px-3.5">
-          <ul>
-            {services.map((item) => (
-              <li key={item.key} className="border-b border-border last:border-0">
+        {/* 我的报告 */}
+        <section aria-labelledby="mine-report" className="mt-2.5 rounded-2xl bg-white p-3.5">
+          <SectionHeader id="mine-report" title="我的报告" action="报告列表" />
+          <div className="mt-3 flex items-center gap-3 rounded-xl bg-gradient-to-r from-[#eef5ff] to-[#f8fbff] p-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary shadow-sm">
+              <FileText className="size-5" aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13px] font-medium text-foreground">儿童安全用药基因检测</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                李秀兰 · <span className="tabular-nums">2026-10-08</span> 出具
+              </p>
+            </div>
+            <button
+              type="button"
+              className="flex h-7 shrink-0 items-center gap-1 rounded-full bg-primary px-2.5 text-[12px] font-medium text-primary-foreground"
+            >
+              <Sparkles className="size-3.5" aria-hidden="true" />
+              AI 解读
+            </button>
+          </div>
+        </section>
+
+        {/* 我的优惠券 / 领券中心 */}
+        <section aria-label="优惠券" className="mt-2.5 grid grid-cols-2 gap-2.5">
+          <button type="button" className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left">
+            <TicketPercent className="size-6 shrink-0 text-[#f07a2c]" strokeWidth={1.6} aria-hidden="true" />
+            <span>
+              <span className="block text-[14px] font-medium text-foreground">我的优惠券</span>
+              <span className="block text-[11px] text-muted-foreground">
+                <span className="tabular-nums text-[#f07a2c]">2</span> 张可用
+              </span>
+            </span>
+          </button>
+          <button type="button" className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left">
+            <Gift className="size-6 shrink-0 text-[#f07a2c]" strokeWidth={1.6} aria-hidden="true" />
+            <span>
+              <span className="block text-[14px] font-medium text-foreground">领券中心</span>
+              <span className="block text-[11px] text-muted-foreground">新人券待领取</span>
+            </span>
+          </button>
+        </section>
+
+        {/* 常用功能 */}
+        <nav aria-labelledby="mine-tools" className="mt-2.5 rounded-2xl bg-white p-3.5">
+          <h2 id="mine-tools" className="text-[15px] font-semibold text-foreground">
+            常用功能
+          </h2>
+          <ul className="mt-3 grid grid-cols-4 gap-y-4">
+            {tools.map((t) => (
+              <li key={t.key}>
                 <button
                   type="button"
-                  onClick={() => item.key === 'auth' && setAuthOpen(true)}
-                  className="flex h-12 w-full items-center gap-2.5 text-left"
+                  onClick={() => t.key === 'auth' && setAuthOpen(true)}
+                  className="flex w-full flex-col items-center gap-1.5"
                 >
-                  <item.icon className="size-[18px] text-primary" aria-hidden="true" />
-                  <span className="text-[14px] text-foreground">{item.label}</span>
-                  <span className="ml-auto text-[12px] text-muted-foreground">{'extra' in item ? item.extra : ''}</span>
-                  <ChevronRight className="size-4 text-[#b8c2d6]" aria-hidden="true" />
+                  <t.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                  <span className="text-[12px] text-foreground">{t.label}</span>
                 </button>
               </li>
             ))}
           </ul>
         </nav>
-
-        <p className="mt-4 flex items-center justify-center gap-1 text-[11px] text-[#a9b3c6]">
-          <ShieldCheck className="size-3" aria-hidden="true" />
-          基因数据加密存储，仅本人及授权成员可查看
-        </p>
       </div>
 
       {authOpen && <AuthorizationScreen onBack={() => setAuthOpen(false)} />}
