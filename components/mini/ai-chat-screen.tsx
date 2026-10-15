@@ -2,22 +2,25 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
-  ArrowUp,
   BookOpenCheck,
   Check,
+  ChevronLeft,
   ChevronRight,
+  Circle,
+  Ellipsis,
   FileText,
-  ImagePlus,
-  Mic,
-  ScanLine,
+  Menu,
   ShieldCheck,
+  SquarePen,
   UserRound,
   UserRoundCheck,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { NavBar, StatusBar } from '@/components/mini/phone-frame'
+import { StatusBar } from '@/components/mini/phone-frame'
 import { BrandMark } from '@/components/mini/auth-parts'
+import { ChatComposer, type Attachment } from '@/components/mini/chat-composer'
+import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
 import {
   getAnswer,
   quickPrompts,
@@ -29,16 +32,58 @@ import {
   type Testee,
 } from '@/components/mini/ai-data'
 
-type Message =
-  | { id: number; role: 'user'; text: string }
-  | { id: number; role: 'assistant'; answer: AiAnswer | null }
+type Answers = Record<Mode, AiAnswer>
 
-const tools = [
-  { label: '上传图片', icon: ImagePlus },
-  { label: '上传PDF', icon: FileText },
-  { label: '语音输入', icon: Mic },
-  { label: '识别药盒', icon: ScanLine, question: '帮我识别药盒上的药物' },
-]
+type Message =
+  | { id: number; role: 'user'; text: string; attachments?: Attachment[] }
+  | { id: number; role: 'assistant'; answers: Answers | null; view: Mode }
+
+type Session = { id: string; title: string; time: string; messages: Message[] }
+
+const modes = [
+  { key: 'plain', label: '通俗版' },
+  { key: 'pro', label: '专业版' },
+] as const
+
+let idSeed = 1000
+const nextMessageId = () => idSeed++
+
+function buildAnswers(question: string, hasTestee: boolean): Answers {
+  return { plain: getAnswer(question, 'plain', hasTestee), pro: getAnswer(question, 'pro', hasTestee) }
+}
+
+function seedSession(id: string, question: string, time: string): Session {
+  return {
+    id,
+    title: question,
+    time,
+    messages: [
+      { id: nextMessageId(), role: 'user', text: question },
+      { id: nextMessageId(), role: 'assistant', answers: buildAnswers(question, false), view: 'plain' },
+    ],
+  }
+}
+
+function initialSessions(question: string | undefined, mode: Mode, hasTestee: boolean): Session[] {
+  const history = [
+    seedSession('s-1', '高血压用药注意事项', '今天 09:12'),
+    seedSession('s-2', '华法林剂量为什么因人而异？', '昨天 21:40'),
+    seedSession('s-3', 'CYP2C19 慢代谢是什么意思', '10月12日'),
+  ]
+  if (!question) return history
+  return [
+    {
+      id: 's-init',
+      title: question,
+      time: '刚刚',
+      messages: [
+        { id: nextMessageId(), role: 'user', text: question },
+        { id: nextMessageId(), role: 'assistant', answers: buildAnswers(question, hasTestee), view: mode },
+      ],
+    },
+    ...history,
+  ]
+}
 
 export function AiChatScreen({
   initialMode = 'plain',
@@ -58,39 +103,63 @@ export function AiChatScreen({
     () => testees.find((t) => t.id === initialTesteeId) ?? null,
   )
   const [sheetOpen, setSheetOpen] = useState(initialSheetOpen)
-  const [messages, setMessages] = useState<Message[]>(() =>
-    initialQuestion
-      ? [
-          { id: 1, role: 'user', text: initialQuestion },
-          { id: 2, role: 'assistant', answer: getAnswer(initialQuestion, initialMode, Boolean(initialTesteeId)) },
-        ]
-      : [],
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [sessions, setSessions] = useState<Session[]>(() =>
+    initialSessions(initialQuestion, initialMode, Boolean(initialTesteeId)),
   )
-  const [draft, setDraft] = useState('')
-  const nextId = useRef(messages.length + 1)
+  const [currentId, setCurrentId] = useState<string | null>(initialQuestion ? 's-init' : null)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const isReplying = messages.some((m) => m.role === 'assistant' && m.answer === null)
+
+  const messages = sessions.find((s) => s.id === currentId)?.messages ?? []
+  const isReplying = messages.some((m) => m.role === 'assistant' && m.answers === null)
 
   useEffect(() => {
     const el = scrollRef.current
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }, [messages])
+  }, [messages.length, currentId])
 
-  function ask(text: string) {
-    const question = text.trim()
-    if (!question || isReplying) return
-    const userId = nextId.current++
-    const replyId = nextId.current++
-    setMessages((prev) => [
-      ...prev,
-      { id: userId, role: 'user', text: question },
-      { id: replyId, role: 'assistant', answer: null },
-    ])
-    setDraft('')
-    const answer = getAnswer(question, mode, Boolean(testee))
+  function updateMessages(sessionId: string, fn: (prev: Message[]) => Message[]) {
+    setSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, messages: fn(s.messages) } : s)))
+  }
+
+  function ask(text: string, attachments: Attachment[] = []) {
+    if (isReplying || (!text && attachments.length === 0)) return
+    const question = text || (attachments.some((a) => a.kind === 'pdf') ? '请帮我解读这份报告' : '请帮我看看这张图片')
+    const userMsg: Message = { id: nextMessageId(), role: 'user', text: question, attachments }
+    const replyId = nextMessageId()
+    const replyMsg: Message = { id: replyId, role: 'assistant', answers: null, view: mode }
+
+    let sessionId = currentId
+    if (!sessionId) {
+      sessionId = `s-${Date.now()}`
+      const created: Session = { id: sessionId, title: question.slice(0, 20), time: '刚刚', messages: [userMsg, replyMsg] }
+      setSessions((prev) => [created, ...prev])
+      setCurrentId(sessionId)
+    } else {
+      updateMessages(sessionId, (prev) => [...prev, userMsg, replyMsg])
+      setSessions((prev) => [
+        ...prev.filter((s) => s.id === sessionId).map((s) => ({ ...s, time: '刚刚' })),
+        ...prev.filter((s) => s.id !== sessionId),
+      ])
+    }
+
+    const answers = buildAnswers(question, Boolean(testee))
+    const targetId = sessionId
     window.setTimeout(() => {
-      setMessages((prev) => prev.map((m) => (m.id === replyId ? { ...m, answer } : m)))
+      updateMessages(targetId, (prev) => prev.map((m) => (m.id === replyId && m.role === 'assistant' ? { ...m, answers } : m)))
     }, 1200)
+  }
+
+  function setAnswerView(messageId: number, view: Mode) {
+    if (!currentId) return
+    updateMessages(currentId, (prev) =>
+      prev.map((m) => (m.id === messageId && m.role === 'assistant' ? { ...m, view } : m)),
+    )
+  }
+
+  function startNewChat() {
+    setCurrentId(null)
+    setDrawerOpen(false)
   }
 
   const greeting = testee
@@ -100,57 +169,93 @@ export function AiChatScreen({
   return (
     <div className="relative flex h-full flex-col bg-[linear-gradient(180deg,#e6f1fe_0%,#f4f8fe_30%)]">
       <StatusBar />
-      <NavBar title="AI咨询" showBack onBack={onBack} />
+      <header className="relative flex h-11 items-center justify-center px-2 text-foreground">
+        <div className="absolute left-1 flex items-center">
+          {onBack && (
+            <button type="button" onClick={onBack} aria-label="返回" className="flex size-9 items-center justify-center rounded-full">
+              <ChevronLeft className="size-5" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="历史对话"
+            className="flex size-9 items-center justify-center rounded-full active:bg-white/70"
+          >
+            <Menu className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={startNewChat}
+            aria-label="新建对话"
+            disabled={!currentId}
+            className="flex size-9 items-center justify-center rounded-full active:bg-white/70 disabled:opacity-35"
+          >
+            <SquarePen className="size-[19px]" />
+          </button>
+        </div>
+        <h2 className="text-[16px] font-medium">AI咨询</h2>
+        <div
+          aria-hidden="true"
+          className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
+        >
+          <Ellipsis className="size-4" />
+          <span className="h-4 w-px bg-border" />
+          <Circle className="size-3.5" strokeWidth={3} />
+        </div>
+      </header>
 
       <div className="shrink-0 px-4 pb-3 pt-2">
-        <div role="group" aria-label="回答风格" className="grid grid-cols-2 rounded-2xl bg-[#dfeafb] p-1">
-          {(
-            [
-              { key: 'plain', label: '通俗版' },
-              { key: 'pro', label: '专业版' },
-            ] as const
-          ).map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              aria-pressed={mode === item.key}
-              onClick={() => setMode(item.key)}
+        <div className="flex items-stretch gap-2">
+          <button
+            type="button"
+            onClick={() => setSheetOpen(true)}
+            className="flex min-w-0 flex-1 items-center gap-2.5 rounded-2xl bg-white px-3 py-2 text-left shadow-[0_4px_14px_#3b8beb0d]"
+          >
+            <span
               className={cn(
-                'h-9 rounded-xl text-[14px] transition-colors',
-                mode === item.key ? 'bg-white font-semibold text-primary shadow-sm' : 'text-muted-foreground',
+                'flex size-8 shrink-0 items-center justify-center rounded-xl',
+                testee ? 'bg-primary text-white' : 'bg-secondary text-secondary-foreground',
               )}
             >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setSheetOpen(true)}
-          className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-white px-3.5 py-3 text-left shadow-[0_4px_14px_#3b8beb0d]"
-        >
-          <span
-            className={cn(
-              'flex size-9 shrink-0 items-center justify-center rounded-xl',
-              testee ? 'bg-primary text-white' : 'bg-secondary text-secondary-foreground',
-            )}
-          >
-            {testee ? <UserRoundCheck className="size-[18px]" /> : <UserRound className="size-[18px]" />}
-          </span>
-          <span className="min-w-0 flex-1">
-            <strong className="block text-[14px] font-semibold text-foreground">
-              {testee ? `当前检测人：${testeeLabel(testee)}` : '未选择检测人'}
-            </strong>
-            <span className="block truncate text-[12px] text-muted-foreground">
-              {testee
-                ? `${testee.meta} · ${testee.reports > 0 ? `${testee.reports}份历史报告` : '暂无历史报告'}`
-                : '本次按通用信息回答，不读取检测人资料'}
+              {testee ? <UserRoundCheck className="size-4" /> : <UserRound className="size-4" />}
             </span>
-          </span>
-          <span className="text-[12px] text-primary">{testee ? '切换' : '选择'}</span>
-          <ChevronRight className="-ml-2 size-4 text-[#b8c2d6]" />
-        </button>
+            <span className="min-w-0 flex-1">
+              <strong className="block truncate text-[13px] font-semibold text-foreground">
+                {testee ? testeeLabel(testee) : '未选择检测人'}
+              </strong>
+              <span className="block truncate text-[11px] text-muted-foreground">
+                {testee ? (testee.reports > 0 ? `${testee.reports}份历史报告` : '暂无历史报告') : '按通用知识回答'}
+              </span>
+            </span>
+            <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" />
+          </button>
+
+          <div
+            role="radiogroup"
+            aria-label="默认回答风格"
+            className="flex shrink-0 flex-col justify-center rounded-2xl bg-white px-1.5 py-1 shadow-[0_4px_14px_#3b8beb0d]"
+          >
+            <span className="px-1 text-[10px] text-muted-foreground">回答风格</span>
+            <span className="mt-0.5 flex rounded-lg bg-[#eef3fb] p-0.5">
+              {modes.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={mode === item.key}
+                  onClick={() => setMode(item.key)}
+                  className={cn(
+                    'h-6 rounded-md px-2 text-[12px] transition-colors',
+                    mode === item.key ? 'bg-primary font-semibold text-white' : 'text-muted-foreground',
+                  )}
+                >
+                  {item.label.slice(0, 2)}
+                </button>
+              ))}
+            </span>
+          </div>
+        </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-3 [scrollbar-width:none]">
@@ -187,7 +292,8 @@ export function AiChatScreen({
           </li>
           {messages.map((m) =>
             m.role === 'user' ? (
-              <li key={m.id} className="flex justify-end">
+              <li key={m.id} className="flex flex-col items-end gap-1.5">
+                {m.attachments && m.attachments.length > 0 && <MessageAttachments items={m.attachments} />}
                 <p className="max-w-[78%] rounded-2xl rounded-tr-md bg-primary px-3.5 py-2.5 text-[14px] leading-6 text-white">
                   {m.text}
                 </p>
@@ -196,23 +302,44 @@ export function AiChatScreen({
               <li key={m.id} className="flex gap-2">
                 <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
                 <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
-                  {m.answer ? <AnswerBody answer={m.answer} /> : <TypingDots />}
+                  {m.answers ? (
+                    <>
+                      <div role="tablist" aria-label="切换本条回答风格" className="mb-2 inline-flex rounded-lg bg-[#eef3fb] p-0.5">
+                        {modes.map((item) => (
+                          <button
+                            key={item.key}
+                            type="button"
+                            role="tab"
+                            aria-selected={m.view === item.key}
+                            onClick={() => setAnswerView(m.id, item.key)}
+                            className={cn(
+                              'h-6 rounded-md px-2.5 text-[11px] transition-colors',
+                              m.view === item.key ? 'bg-white font-semibold text-primary shadow-sm' : 'text-muted-foreground',
+                            )}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+                      <AnswerBody answer={m.answers[m.view]} />
+                    </>
+                  ) : (
+                    <TypingDots />
+                  )}
                 </div>
               </li>
             ),
           )}
         </ul>
-      </div>
 
-      <div className="shrink-0 border-t border-border bg-white px-4 pb-7 pt-2.5">
         {messages.length === 0 && (
-          <ul aria-label="推荐问题" className="-mx-4 mb-2.5 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
+          <ul aria-label="推荐问题" className="mt-4 flex flex-col items-start gap-2 pl-10">
             {quickPrompts.map((q) => (
-              <li key={q} className="shrink-0">
+              <li key={q}>
                 <button
                   type="button"
                   onClick={() => ask(q)}
-                  className="rounded-full border border-border bg-white px-3 py-1.5 text-[12px] text-secondary-foreground active:bg-secondary"
+                  className="rounded-full border border-[#d6e6fb] bg-white px-3 py-1.5 text-[12px] text-secondary-foreground active:bg-secondary"
                 >
                   {q}
                 </button>
@@ -220,51 +347,27 @@ export function AiChatScreen({
             ))}
           </ul>
         )}
-        <ul className="mb-2.5 flex justify-between">
-          {tools.map(({ label, icon: Icon, question }) => (
-            <li key={label}>
-              <button
-                type="button"
-                onClick={question ? () => ask(question) : undefined}
-                disabled={isReplying}
-                className="flex items-center gap-1 rounded-lg px-2 py-1 text-[12px] text-muted-foreground active:bg-secondary disabled:opacity-50"
-              >
-                <Icon className="size-4 text-primary" />
-                {label}
-              </button>
-            </li>
-          ))}
-        </ul>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            ask(draft)
-          }}
-          className="flex h-11 items-center gap-2 rounded-full bg-[#f1f5fb] pl-4 pr-1 focus-within:ring-1 focus-within:ring-primary"
-        >
-          <label htmlFor="ai-ask" className="sr-only">
-            输入想咨询的问题
-          </label>
-          <input
-            id="ai-ask"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && (e.nativeEvent.isComposing || e.keyCode === 229)) e.preventDefault()
-            }}
-            placeholder="输入想咨询的问题"
-            className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-[#a3adc2]"
-          />
-          <button
-            type="submit"
-            aria-label="发送"
-            disabled={!draft.trim() || isReplying}
-            className="flex size-9 items-center justify-center rounded-full bg-primary text-white transition-colors disabled:bg-[#cfe2f8]"
-          >
-            <ArrowUp className="size-[18px]" strokeWidth={2.4} />
-          </button>
-        </form>
       </div>
+
+      <ChatComposer disabled={isReplying} onSend={ask} />
+
+      {drawerOpen && (
+        <ChatHistoryDrawer
+          sessions={sessions}
+          currentId={currentId}
+          onClose={() => setDrawerOpen(false)}
+          onSelect={(id) => {
+            setCurrentId(id)
+            setDrawerOpen(false)
+          }}
+          onNew={startNewChat}
+          onRename={(id, title) => setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, title } : s)))}
+          onDelete={(id) => {
+            setSessions((prev) => prev.filter((s) => s.id !== id))
+            if (id === currentId) setCurrentId(null)
+          }}
+        />
+      )}
 
       {sheetOpen && (
         <TesteeSheet
@@ -277,6 +380,28 @@ export function AiChatScreen({
         />
       )}
     </div>
+  )
+}
+
+function MessageAttachments({ items }: { items: Attachment[] }) {
+  return (
+    <ul className="flex max-w-[78%] flex-wrap justify-end gap-1.5">
+      {items.map((a) =>
+        a.kind === 'image' && a.url ? (
+          <li key={a.id}>
+            <img src={a.url} alt={a.name} className="size-20 rounded-xl border border-border object-cover" />
+          </li>
+        ) : (
+          <li key={a.id} className="flex w-44 items-center gap-2 rounded-xl border border-border bg-white px-2.5 py-2">
+            <FileText className="size-7 shrink-0 text-[#e5534b]" />
+            <span className="min-w-0">
+              <span className="block truncate text-[12px] text-foreground">{a.name}</span>
+              <span className="block text-[10px] text-muted-foreground">PDF</span>
+            </span>
+          </li>
+        ),
+      )}
+    </ul>
   )
 }
 

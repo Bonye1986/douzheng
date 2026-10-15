@@ -23,7 +23,6 @@ export function testeeLabel(t: Testee) {
 
 export const skills = [
   { key: 'report', label: '报告解读', question: '帮我解读一下检测报告' },
-  { key: 'pill', label: '药盒识别', question: '帮我识别药盒上的药物' },
   { key: 'recommend', label: '检测推荐', question: '我适合做哪种基因检测？' },
 ] as const
 
