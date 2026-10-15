@@ -125,15 +125,15 @@ function CategoryGrid({ onOpenChat }: Props) {
   return (
     <section aria-label="服务分类" className="rounded-2xl bg-white px-2 py-4">
       <ul className="grid grid-cols-4 gap-y-4">
-        {serviceCategories.map(({ id, label, icon: Icon, color, chatQuestion }) => (
+        {serviceCategories.map(({ id, label, image, color, chatQuestion }) => (
           <li key={id}>
             <button
               type="button"
               onClick={() => chatQuestion && onOpenChat?.(chatQuestion)}
               className="flex w-full flex-col items-center gap-1.5"
             >
-              <span className={cn('flex size-11 items-center justify-center rounded-2xl', color)}>
-                <Icon className="size-5" aria-hidden="true" />
+              <span className={cn('flex size-12 items-center justify-center rounded-2xl', color)}>
+                <Image src={image} alt="" width={36} height={36} className="size-9 object-contain" />
               </span>
               <span className="text-[12px] text-foreground">{label}</span>
             </button>

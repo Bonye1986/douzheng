@@ -1,15 +1,3 @@
-import {
-  CalendarClock,
-  Dna,
-  FileSearch,
-  HeartPulse,
-  type LucideIcon,
-  MessagesSquare,
-  Pill,
-  ShieldPlus,
-  Users,
-} from 'lucide-react'
-
 export type Banner = {
   id: string
   title: string
@@ -41,20 +29,20 @@ export const banners: Banner[] = [
 export type ServiceCategory = {
   id: string
   label: string
-  icon: LucideIcon
+  image: string
   color: string
   chatQuestion?: string
 }
 
 export const serviceCategories: ServiceCategory[] = [
-  { id: 'gene', label: '基因检测', icon: Dna, color: 'bg-[#e8f1fe] text-primary' },
-  { id: 'consult', label: '用药咨询', icon: MessagesSquare, color: 'bg-[#fff1e8] text-[#f07a2c]', chatQuestion: '我想咨询用药问题' },
-  { id: 'report', label: '报告解读', icon: FileSearch, color: 'bg-[#e9f8f1] text-[#1f9d6b]', chatQuestion: '帮我解读一下检测报告' },
-  { id: 'remind', label: '用药提醒', icon: CalendarClock, color: 'bg-[#f1edfe] text-[#7357e6]' },
-  { id: 'cardio', label: '心脑血管', icon: HeartPulse, color: 'bg-[#feecee] text-[#e04a5a]' },
-  { id: 'chronic', label: '慢病用药', icon: Pill, color: 'bg-[#e8f1fe] text-primary' },
-  { id: 'family', label: '家庭检测', icon: Users, color: 'bg-[#fff1e8] text-[#f07a2c]' },
-  { id: 'safety', label: '用药安全', icon: ShieldPlus, color: 'bg-[#e9f8f1] text-[#1f9d6b]' },
+  { id: 'gene', label: '基因检测', image: '/images/icons/cat-gene.png', color: 'bg-[#e8f1fe]' },
+  { id: 'consult', label: '用药咨询', image: '/images/icons/cat-consult.png', color: 'bg-[#fff1e8]', chatQuestion: '我想咨询用药问题' },
+  { id: 'report', label: '报告解读', image: '/images/icons/cat-report.png', color: 'bg-[#e9f8f1]', chatQuestion: '帮我解读一下检测报告' },
+  { id: 'remind', label: '用药提醒', image: '/images/icons/cat-remind.png', color: 'bg-[#f1edfe]' },
+  { id: 'cardio', label: '心脑血管', image: '/images/icons/cat-cardio.png', color: 'bg-[#feecee]' },
+  { id: 'chronic', label: '慢病用药', image: '/images/icons/cat-chronic.png', color: 'bg-[#e8f1fe]' },
+  { id: 'family', label: '家庭检测', image: '/images/icons/cat-family.png', color: 'bg-[#fff1e8]' },
+  { id: 'safety', label: '用药安全', image: '/images/icons/cat-safety.png', color: 'bg-[#e9f8f1]' },
 ]
 
 export type RecommendedTest = {
