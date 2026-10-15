@@ -22,8 +22,8 @@ export type SampleTypeOption = { id: string; label: string; hint: string; modes:
 /** 样本类型字典 —— 由后台维护，前端通过接口获取 */
 export const sampleTypeCatalog: SampleTypeOption[] = [
   { id: 'saliva', label: '唾液', hint: '采集 2 mL，无需空腹', modes: ['self', 'site'] },
-  { id: 'swab', label: '口腔拭子', hint: '刮取口腔内壁，30 秒完成', modes: ['self', 'site'] },
-  { id: 'dbs', label: '干血斑', hint: '指尖采血滴于采血卡', modes: ['self', 'site'] },
+  { id: 'swab', label: '口腔拭子', hint: '刮取口腔内壁，30 秒完成', modes: ['site'] },
+  { id: 'dbs', label: '干血斑', hint: '指尖采血滴于采血卡', modes: ['site'] },
   { id: 'blood', label: '静脉血', hint: '由医护人员抽取 2 mL', modes: ['site'] },
 ]
 

@@ -52,8 +52,8 @@ const sites: Site[] = [
 ]
 
 const samplingModes: { key: SamplingMode; icon: typeof House; desc: string }[] = [
-  { key: 'self', icon: House, desc: '采样盒寄到家，采后免费寄回' },
-  { key: 'site', icon: Building2, desc: '前往合作机构，专业人员采样' },
+  { key: 'self', icon: House, desc: '采样盒寄到家，仅支持唾液样本' },
+  { key: 'site', icon: Building2, desc: '前往合作机构，支持全部样本类型' },
 ]
 
 type Coupon = { id: string; title: string; threshold: number; amount: number; expire: string }
@@ -217,7 +217,106 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   return (
     <Shell title="确认订单" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
-        <section aria-labelledby="goods-title" className="rounded-2xl bg-white">
+        <section aria-labelledby="sampling-title" className="rounded-2xl bg-white p-3.5">
+          <h2 id="sampling-title" className="text-[14px] font-semibold text-foreground">
+            采样方式
+          </h2>
+          <div role="radiogroup" aria-labelledby="sampling-title" className="mt-2.5 grid grid-cols-2 gap-2">
+            {samplingModes.map(({ key, icon: Icon, desc }) => {
+              const on = mode === key
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => changeMode(key)}
+                  className={cn(
+                    'relative flex flex-col items-start rounded-xl border px-3 py-2.5 text-left transition-colors',
+                    on ? 'border-primary bg-[#eef5ff]' : 'border-border bg-white',
+                  )}
+                >
+                  <span className={cn('flex items-center gap-1.5 text-[13px] font-medium', on ? 'text-primary' : 'text-foreground')}>
+                    <Icon className="size-4" aria-hidden="true" />
+                    {samplingLabel[key]}
+                  </span>
+                  <span className="mt-1 text-[11px] leading-4 text-muted-foreground">{desc}</span>
+                  {on && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-bl-lg rounded-tr-xl bg-primary text-primary-foreground"
+                    >
+                      <Check className="size-2.5" strokeWidth={3} />
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="mt-3 border-t border-border pt-3">
+            {hasSelf ? (
+              <>
+                <p className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                  <Package className="size-3.5 text-primary" aria-hidden="true" />
+                  采样套件邮寄地址
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSheet('address')}
+                  aria-label={`采样套件邮寄地址：${address.detail}，点击更换`}
+                  className="mt-2 flex w-full items-center gap-2 text-left"
+                >
+                  <MapPin className="size-4 shrink-0 self-start text-muted-foreground" aria-hidden="true" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[13px] font-medium text-foreground">
+                      {address.name}
+                      <span className="ml-2 font-normal tabular-nums text-muted-foreground">{address.phone}</span>
+                    </span>
+                    <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">{address.detail}</span>
+                  </span>
+                  <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" aria-hidden="true" />
+                </button>
+                <p className="mt-2.5 rounded-lg bg-[#f4f8fe] px-2.5 py-1.5 text-[11px] text-muted-foreground">
+                  顺丰包邮寄送 · 采样后可预约免费上门取件
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                  <Building2 className="size-3.5 text-primary" aria-hidden="true" />
+                  定点采样机构
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSheet('site')}
+                  className={cn(
+                    'mt-2 flex w-full items-center gap-2 rounded-lg text-left',
+                    sampleWarn && !site && 'bg-[#fff1ec] p-2',
+                  )}
+                >
+                  {site ? (
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[13px] font-medium text-foreground">{site.name}</span>
+                      <span className="mt-0.5 block text-[12px] text-muted-foreground">{site.detail}</span>
+                      <span className="mt-0.5 block text-[12px] text-muted-foreground">{site.time}</span>
+                    </span>
+                  ) : (
+                    <span className="flex-1 text-[13px] text-muted-foreground">请选择就近的采样机构</span>
+                  )}
+                  <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" aria-hidden="true" />
+                </button>
+                {sampleWarn && !site && (
+                  <p role="alert" className="mt-1 text-[11px] text-[#e5603a]">
+                    请选择定点采样机构
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        </section>
+
+        <section aria-labelledby="goods-title" className="mt-2.5 rounded-2xl bg-white">
           <div className="flex items-center justify-between px-3.5 pt-3.5">
             <h2 id="goods-title" className="text-[14px] font-semibold text-foreground">
               检测项目与受检人
@@ -325,105 +424,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </ul>
           </section>
         )}
-
-        <section aria-labelledby="sampling-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <h2 id="sampling-title" className="text-[14px] font-semibold text-foreground">
-            采样方式
-          </h2>
-          <div role="radiogroup" aria-labelledby="sampling-title" className="mt-2.5 grid grid-cols-2 gap-2">
-            {samplingModes.map(({ key, icon: Icon, desc }) => {
-              const on = mode === key
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  onClick={() => changeMode(key)}
-                  className={cn(
-                    'relative flex flex-col items-start rounded-xl border px-3 py-2.5 text-left transition-colors',
-                    on ? 'border-primary bg-[#eef5ff]' : 'border-border bg-white',
-                  )}
-                >
-                  <span className={cn('flex items-center gap-1.5 text-[13px] font-medium', on ? 'text-primary' : 'text-foreground')}>
-                    <Icon className="size-4" aria-hidden="true" />
-                    {samplingLabel[key]}
-                  </span>
-                  <span className="mt-1 text-[11px] leading-4 text-muted-foreground">{desc}</span>
-                  {on && (
-                    <span
-                      aria-hidden="true"
-                      className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-bl-lg rounded-tr-xl bg-primary text-primary-foreground"
-                    >
-                      <Check className="size-2.5" strokeWidth={3} />
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="mt-3 border-t border-border pt-3">
-            {hasSelf ? (
-              <>
-                <p className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
-                  <Package className="size-3.5 text-primary" aria-hidden="true" />
-                  采样套件邮寄地址
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSheet('address')}
-                  aria-label={`采样套件邮寄地址：${address.detail}，点击更换`}
-                  className="mt-2 flex w-full items-center gap-2 text-left"
-                >
-                  <MapPin className="size-4 shrink-0 self-start text-muted-foreground" aria-hidden="true" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[13px] font-medium text-foreground">
-                      {address.name}
-                      <span className="ml-2 font-normal tabular-nums text-muted-foreground">{address.phone}</span>
-                    </span>
-                    <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">{address.detail}</span>
-                  </span>
-                  <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" aria-hidden="true" />
-                </button>
-                <p className="mt-2.5 rounded-lg bg-[#f4f8fe] px-2.5 py-1.5 text-[11px] text-muted-foreground">
-                  顺丰包邮寄送 · 采样后可预约免费上门取件
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
-                  <Building2 className="size-3.5 text-primary" aria-hidden="true" />
-                  定点采样机构
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSheet('site')}
-                  className={cn(
-                    'mt-2 flex w-full items-center gap-2 rounded-lg text-left',
-                    sampleWarn && !site && 'bg-[#fff1ec] p-2',
-                  )}
-                >
-                  {site ? (
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[13px] font-medium text-foreground">{site.name}</span>
-                      <span className="mt-0.5 block text-[12px] text-muted-foreground">{site.detail}</span>
-                      <span className="mt-0.5 block text-[12px] text-muted-foreground">{site.time}</span>
-                    </span>
-                  ) : (
-                    <span className="flex-1 text-[13px] text-muted-foreground">请选择就近的采样机构</span>
-                  )}
-                  <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" aria-hidden="true" />
-                </button>
-                {sampleWarn && !site && (
-                  <p role="alert" className="mt-1 text-[11px] text-[#e5603a]">
-                    请选择定点采样机构
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-        </section>
 
         <section aria-label="优惠与备注" className="mt-2.5 rounded-2xl bg-white px-3.5">
           <button
