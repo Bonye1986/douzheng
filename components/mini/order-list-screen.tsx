@@ -5,24 +5,53 @@ import { AlertTriangle, Building2, Home } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
 
-export type OrderPhase = 'all' | 'toPay' | 'toSample' | 'testing' | 'done' | 'after' | 'closed'
+export type OrderPhase = 'all' | 'toPay' | 'toSample' | 'testing' | 'done' | 'closed'
 type OrderType = 'all' | 'self' | 'site'
 
-const typeFilters: { key: OrderType; label: string }[] = [
-  { key: 'all', label: '全部类型' },
-  { key: 'self', label: '自采样' },
-  { key: 'site', label: '定点采样' },
+const typeTabs: { key: OrderType; label: string }[] = [
+  { key: 'all', label: '全部订单' },
+  { key: 'self', label: '自采样订单' },
+  { key: 'site', label: '定点采样订单' },
 ]
 
-const phaseTabs: { key: OrderPhase; label: string }[] = [
-  { key: 'all', label: '全部' },
-  { key: 'toPay', label: '待付款' },
-  { key: 'toSample', label: '待采样' },
-  { key: 'testing', label: '检测中' },
-  { key: 'done', label: '已完成' },
-  { key: 'after', label: '退款/售后' },
-  { key: 'closed', label: '已关闭' },
-]
+type StatusTab = { key: string; label: string; match: (o: Order) => boolean }
+
+const byPhase = (phase: Exclude<OrderPhase, 'all'>) => (o: Order) => o.phase === phase
+const byStatus = (status: string) => (o: Order) => o.status === status
+const allTab: StatusTab = { key: 'all', label: '全部', match: () => true }
+const closedTab: StatusTab = { key: 'closed', label: '已关闭', match: byPhase('closed') }
+
+const statusTabsByType: Record<OrderType, StatusTab[]> = {
+  all: [
+    allTab,
+    { key: 'toPay', label: '待付款', match: byPhase('toPay') },
+    { key: 'toSample', label: '待采样', match: byPhase('toSample') },
+    { key: 'testing', label: '检测中', match: byPhase('testing') },
+    { key: 'done', label: '已完成', match: byPhase('done') },
+    closedTab,
+  ],
+  self: [
+    allTab,
+    { key: 'toPay', label: '待付款', match: byPhase('toPay') },
+    { key: 'toShip', label: '待发货', match: byStatus('待发货') },
+    { key: 'shipped', label: '已发货', match: byStatus('已发货') },
+    { key: 'sent', label: '已寄样', match: byStatus('已寄样') },
+    { key: 'received', label: '已收样', match: byStatus('已收样') },
+    { key: 'testing', label: '检测中', match: byStatus('检测中') },
+    { key: 'done', label: '已完成', match: byPhase('done') },
+    closedTab,
+  ],
+  site: [
+    allTab,
+    { key: 'toPay', label: '待付款', match: byPhase('toPay') },
+    { key: 'toVerify', label: '待核销', match: byStatus('待核销') },
+    { key: 'toSample', label: '待采样', match: byStatus('待采样') },
+    { key: 'received', label: '已收样', match: byStatus('已收样') },
+    { key: 'testing', label: '检测中', match: byStatus('检测中') },
+    { key: 'done', label: '已完成', match: byPhase('done') },
+    closedTab,
+  ],
+}
 
 type Order = {
   id: string
@@ -55,18 +84,6 @@ const orders: Order[] = [
     action: { label: '去支付', primary: true },
   },
   {
-    id: 'DZ20261012003',
-    type: 'self',
-    phase: 'after',
-    status: '样本不合格',
-    product: '儿童安全用药基因检测',
-    examinees: '李秀兰',
-    amount: '¥699',
-    note: '请选择重新采样或申请退款',
-    unqualified: true,
-    action: { label: '去处理', primary: true },
-  },
-  {
     id: 'DZ20261013008',
     type: 'self',
     phase: 'toSample',
@@ -87,6 +104,27 @@ const orders: Order[] = [
     amount: '¥999',
     note: '请于 10-18 前往 都正检测中心（徐汇） 出示核销码',
     action: { label: '核销码', primary: true },
+  },
+  {
+    id: 'DZ20261014006',
+    type: 'site',
+    phase: 'toSample',
+    status: '待采样',
+    product: '心血管用药基因检测',
+    examinees: '王建国',
+    amount: '¥899',
+    note: '已核销，请在 都正检测中心（徐汇） 完成采样',
+  },
+  {
+    id: 'DZ20261010009',
+    type: 'self',
+    phase: 'testing',
+    status: '已寄样',
+    product: '药物基因检测',
+    examinees: '张伟',
+    amount: '¥999',
+    note: '样本回寄中，顺丰 SF1428 6650 3321',
+    action: { label: '查看物流' },
   },
   {
     id: 'DZ20261008005',
@@ -145,51 +183,67 @@ export function OrderListScreen({
   onBack: () => void
   onHandleUnqualified: () => void
 }) {
-  const [phase, setPhase] = useState<OrderPhase>(initialPhase)
   const [type, setType] = useState<OrderType>('all')
+  const [statusKey, setStatusKey] = useState<string>(initialPhase)
 
-  const visible = orders.filter((o) => (phase === 'all' || o.phase === phase) && (type === 'all' || o.type === type))
+  const statusTabs = statusTabsByType[type]
+  const activeTab = statusTabs.find((t) => t.key === statusKey) ?? allTab
+  const visible = orders.filter((o) => (type === 'all' || o.type === type) && activeTab.match(o))
+
+  const selectType = (next: OrderType) => {
+    setType(next)
+    setStatusKey('all')
+  }
 
   return (
     <SubPage title="我的订单" titleId="order-list-title" onBack={onBack}>
-      <div className="shrink-0 bg-white">
-        <div role="tablist" aria-label="订单状态" className="flex gap-5 overflow-x-auto px-4 [scrollbar-width:none]">
-          {phaseTabs.map((t) => (
+      <div className="shrink-0 bg-white px-3 pb-2 pt-1">
+        <div role="tablist" aria-label="采样类型" className="grid grid-cols-3 rounded-xl bg-[#f1f4f9] p-1">
+          {typeTabs.map((t) => (
             <button
               key={t.key}
               type="button"
               role="tab"
-              aria-selected={phase === t.key}
-              onClick={() => setPhase(t.key)}
+              aria-selected={type === t.key}
+              onClick={() => selectType(t.key)}
               className={cn(
-                'relative h-10 shrink-0 whitespace-nowrap text-[13px] transition-colors',
-                phase === t.key ? 'font-semibold text-foreground' : 'text-muted-foreground',
+                'h-8 rounded-lg text-[13px] transition-colors',
+                type === t.key ? 'bg-white font-semibold text-primary shadow-sm' : 'text-muted-foreground',
               )}
             >
               {t.label}
-              {phase === t.key && (
-                <span className="absolute inset-x-1 bottom-0 h-[3px] rounded-full bg-primary" aria-hidden="true" />
-              )}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="flex shrink-0 gap-2 px-3 py-2.5" role="group" aria-label="订单类型">
-        {typeFilters.map((f) => (
-          <button
-            key={f.key}
-            type="button"
-            aria-pressed={type === f.key}
-            onClick={() => setType(f.key)}
-            className={cn(
-              'h-7 rounded-full px-3 text-[12px] transition-colors',
-              type === f.key ? 'bg-primary/10 font-medium text-primary' : 'bg-white text-muted-foreground',
-            )}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div
+        role="tablist"
+        aria-label="订单状态"
+        className="flex shrink-0 gap-2 overflow-x-auto px-3 py-2.5 [scrollbar-width:none]"
+      >
+        {statusTabs.map((t) => {
+          const count = t.key === 'all' ? 0 : orders.filter((o) => (type === 'all' || o.type === type) && t.match(o)).length
+          const active = activeTab.key === t.key
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setStatusKey(t.key)}
+              className={cn(
+                'flex h-7 shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 text-[12px] transition-colors',
+                active ? 'bg-primary font-medium text-primary-foreground' : 'bg-white text-muted-foreground',
+              )}
+            >
+              {t.label}
+              {count > 0 && (
+                <span className={cn('tabular-nums', active ? 'text-primary-foreground/80' : 'text-primary')}>{count}</span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       <ul className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-6 [scrollbar-width:none]">

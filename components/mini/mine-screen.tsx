@@ -27,14 +27,15 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { OrderListScreen, countOrders, type OrderPhase } from '@/components/mini/order-list-screen'
+import { AfterSalesScreen, pendingAfterSalesCount } from '@/components/mini/after-sales-screen'
 import { initialExaminees } from '@/components/mini/checkout-data'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
  * 待采样 = 待发货 / 已发货 / 待核销 / 待采样；检测中 = 已寄样 / 已收样 / 检测中；
- * 售后 = 样本不合格待处理 + 退款。订单类型（自采样 / 定点采样）与已关闭订单在订单列表中筛选。
+ * 退款/售后为独立页面（样本不合格待处理、退款、重采样）。订单类型（自采样 / 定点采样）与已关闭订单在订单列表中筛选。
  */
-const orderPhases: { key: Exclude<OrderPhase, 'all' | 'closed'>; label: string; icon: LucideIcon }[] = [
+const orderPhases: { key: Exclude<OrderPhase, 'all' | 'closed'> | 'after'; label: string; icon: LucideIcon }[] = [
   { key: 'toPay', label: '待付款', icon: Wallet },
   { key: 'toSample', label: '待采样', icon: TestTube },
   { key: 'testing', label: '检测中', icon: FlaskConical },
@@ -87,6 +88,7 @@ export function MineScreen({
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
   const [resampleOpen, setResampleOpen] = useState(initialResampleOpen)
   const [orderListPhase, setOrderListPhase] = useState<OrderPhase | null>(null)
+  const [afterSalesOpen, setAfterSalesOpen] = useState(false)
   const self = initialExaminees[0]
   const maskedPhone = (self.phone ?? '').replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
 
@@ -129,12 +131,12 @@ export function MineScreen({
           </div>
           <ul className="mt-4 grid grid-cols-5 px-1">
             {orderPhases.map((p) => {
-              const count = countOrders(p.key)
+              const count = p.key === 'after' ? pendingAfterSalesCount : countOrders(p.key)
               return (
                 <li key={p.key}>
                   <button
                     type="button"
-                    onClick={() => setOrderListPhase(p.key)}
+                    onClick={() => (p.key === 'after' ? setAfterSalesOpen(true) : setOrderListPhase(p.key))}
                     className="flex w-full flex-col items-center gap-1.5"
                   >
                     <span className="relative">
@@ -225,6 +227,9 @@ export function MineScreen({
           onBack={() => setOrderListPhase(null)}
           onHandleUnqualified={() => setResampleOpen(true)}
         />
+      )}
+      {afterSalesOpen && (
+        <AfterSalesScreen onBack={() => setAfterSalesOpen(false)} onHandleUnqualified={() => setResampleOpen(true)} />
       )}
       {authOpen && <AuthorizationScreen onBack={() => setAuthOpen(false)} />}
       {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
