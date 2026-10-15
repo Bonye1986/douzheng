@@ -11,7 +11,6 @@ import {
   FileText,
   Menu,
   ShieldCheck,
-  SquarePen,
   UserRound,
   UserRoundCheck,
   X,
@@ -184,15 +183,27 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
-          <button
-            type="button"
-            onClick={startNewChat}
-            aria-label="新建对话"
-            disabled={!currentId}
-            className="flex size-9 items-center justify-center rounded-full active:bg-white/70 disabled:opacity-35"
+          <div
+            role="radiogroup"
+            aria-label="回答风格"
+            className="ml-0.5 flex rounded-full bg-white/85 p-0.5 shadow-[0_2px_8px_#3b8beb14]"
           >
-            <SquarePen className="size-[19px]" />
-          </button>
+            {modes.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                role="radio"
+                aria-checked={mode === item.key}
+                onClick={() => setMode(item.key)}
+                className={cn(
+                  'h-7 rounded-full px-2.5 text-[12px] transition-colors',
+                  mode === item.key ? 'bg-primary font-semibold text-white' : 'text-muted-foreground',
+                )}
+              >
+                {item.label.slice(0, 2)}
+              </button>
+            ))}
+          </div>
         </div>
         <h2 className="text-[16px] font-medium">AI咨询</h2>
         <div
@@ -230,31 +241,6 @@ export function AiChatScreen({
             </span>
             <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" />
           </button>
-
-          <div
-            role="radiogroup"
-            aria-label="默认回答风格"
-            className="flex shrink-0 flex-col justify-center rounded-2xl bg-white px-1.5 py-1 shadow-[0_4px_14px_#3b8beb0d]"
-          >
-            <span className="px-1 text-[10px] text-muted-foreground">回答风格</span>
-            <span className="mt-0.5 flex rounded-lg bg-[#eef3fb] p-0.5">
-              {modes.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  role="radio"
-                  aria-checked={mode === item.key}
-                  onClick={() => setMode(item.key)}
-                  className={cn(
-                    'h-6 rounded-md px-2 text-[12px] transition-colors',
-                    mode === item.key ? 'bg-primary font-semibold text-white' : 'text-muted-foreground',
-                  )}
-                >
-                  {item.label.slice(0, 2)}
-                </button>
-              ))}
-            </span>
-          </div>
         </div>
       </div>
 
