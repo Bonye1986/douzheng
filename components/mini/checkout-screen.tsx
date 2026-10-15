@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
+import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
 import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
@@ -112,6 +113,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [couponOpen, setCouponOpen] = useState(false)
   const [remark, setRemark] = useState('')
   const [agreed, setAgreed] = useState(false)
+  const [consentOpen, setConsentOpen] = useState(false)
   const [research, setResearch] = useState<Record<string, string[]>>({})
   const toggleResearch = (serviceId: string, memberId: string) =>
     setResearch((r) => {
@@ -533,8 +535,9 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             aria-checked={agreed}
             aria-label="已阅读并同意基因检测知情同意书"
             onClick={() => {
-              setAgreed((a) => !a)
               setWarn(false)
+              if (agreed) setAgreed(false)
+              else setConsentOpen(true)
             }}
             className="-m-1 mt-px p-1"
           >
@@ -550,14 +553,14 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           </button>
           <p className="text-[12px] leading-5 text-muted-foreground">
             我已阅读并同意
-            <a href="#" className="text-primary">
+            <button type="button" onClick={() => setConsentOpen(true)} className="text-primary">
               《基因检测知情同意书》
-            </a>
+            </button>
           </p>
         </div>
         {warn && !agreed && (
           <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
-            请先阅读并勾选同意知情同意书
+            请先点击阅读知情同意书（满 8 秒并滑动至底部）后同意
           </p>
         )}
 
@@ -628,6 +631,17 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             setSheet(null)
           }}
           onClose={() => setSheet(null)}
+        />
+      )}
+
+      {consentOpen && (
+        <ConsentReaderScreen
+          onBack={() => setConsentOpen(false)}
+          onAgree={() => {
+            setAgreed(true)
+            setWarn(false)
+            setConsentOpen(false)
+          }}
         />
       )}
 

@@ -4,7 +4,7 @@ import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { HomeFlow } from '@/components/mini/home-flow'
 import { AiChatScreen } from '@/components/mini/ai-chat-screen'
-import { ExamineeFormArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
+import { ConsentReaderArtboard, ExamineeFormArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
 import { MineScreen } from '@/components/mini/mine-screen'
 
 const screens = [
@@ -91,6 +91,12 @@ const screens = [
     title: '确认订单 · 定点采样机构',
     desc: '关键词搜索、类型筛选（医院 / 第三方检验机构 / 今日可采），按距离排序；展示地址、营业时间、支持的样本类型，可导航，选择后返回订单页（可在画板内交互）',
     node: <SiteListArtboard />,
+  },
+  {
+    id: '17',
+    title: '确认订单 · 知情同意书强制阅读',
+    desc: '点击勾选框或书名进入；须阅读满 8 秒且滑动至底部，「我已阅读并同意」按钮才可点击，同意后返回订单页自动勾选；已勾选时再次点击可取消（可在画板内交互）',
+    node: <ConsentReaderArtboard />,
   },
   {
     id: '16',
