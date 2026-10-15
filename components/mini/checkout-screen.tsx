@@ -111,7 +111,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [assignWarn, setAssignWarn] = useState(false)
   const [couponId, setCouponId] = useState<string | null>(best?.id ?? null)
   const [couponOpen, setCouponOpen] = useState(false)
-  const [remark, setRemark] = useState('')
   const [agreed, setAgreed] = useState(false)
   const [consentOpen, setConsentOpen] = useState(false)
   const [research, setResearch] = useState<Record<string, string[]>>({})
@@ -486,11 +485,11 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           </section>
         )}
 
-        <section aria-label="优惠与备注" className="mt-2.5 rounded-2xl bg-white px-3.5">
+        <section aria-label="优惠券" className="mt-2.5 rounded-2xl bg-white px-3.5">
           <button
             type="button"
             onClick={() => setCouponOpen(true)}
-            className="flex h-12 w-full items-center gap-2 border-b border-border text-left"
+            className="flex h-12 w-full items-center gap-2 text-left"
           >
             <Ticket className="size-4 text-[#f07a2c]" aria-hidden="true" />
             <span className="text-[13px] text-foreground">优惠券</span>
@@ -499,15 +498,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </span>
             <ChevronRight className="size-4 text-[#b8c2d6]" aria-hidden="true" />
           </button>
-          <label className="flex h-12 items-center gap-3">
-            <span className="shrink-0 text-[13px] text-foreground">订单备注</span>
-            <input
-              value={remark}
-              onChange={(e) => setRemark(e.target.value.slice(0, 50))}
-              placeholder="选填，如期望的配送时间"
-              className="min-w-0 flex-1 bg-transparent text-right text-[13px] text-foreground outline-none placeholder:text-[#a9b3c6]"
-            />
-          </label>
         </section>
 
         <section aria-labelledby="price-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
