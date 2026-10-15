@@ -55,7 +55,7 @@ export function WechatAuthScreen() {
                 <span
                   className={cn(
                     'flex size-5 items-center justify-center rounded-full',
-                    selected === index ? 'bg-wechat text-white' : 'border border-[#c8cdd6]',
+                    selected === index ? 'bg-primary text-primary-foreground' : 'border border-[#c8cdd6]',
                   )}
                 >
                   {selected === index && <Check className="size-3.5" strokeWidth={3} />}
@@ -72,14 +72,14 @@ export function WechatAuthScreen() {
           <button
             type="button"
             onClick={() => setResult('denied')}
-            className="h-11 flex-1 rounded-lg bg-[#f2f2f2] text-[15px] font-medium text-wechat"
+            className="h-11 flex-1 rounded-lg bg-[#f2f2f2] text-[15px] font-medium text-primary"
           >
             拒绝
           </button>
           <button
             type="button"
             onClick={() => setResult('allowed')}
-            className="h-11 flex-1 rounded-lg bg-wechat text-[15px] font-medium text-white"
+            className="h-11 flex-1 rounded-lg bg-primary text-[15px] font-medium text-primary-foreground"
           >
             允许
           </button>
