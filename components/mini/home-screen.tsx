@@ -36,13 +36,10 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-8 flex h-14 w-full items-center gap-3 rounded-2xl border border-border bg-white pl-4 pr-2 text-left shadow-[0_8px_24px_#3b8beb1a] transition-transform active:scale-[0.99]"
+          className="mt-8 flex h-14 w-full items-center gap-3 rounded-2xl border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3b8beb1a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" />
           <span className="min-w-0 flex-1 truncate text-[15px] text-[#a3adc2]">输入您的用药或基因问题</span>
-          <span className="flex h-10 shrink-0 items-center rounded-xl bg-primary px-4 text-[14px] font-medium text-white">
-            提问
-          </span>
         </button>
 
         <section aria-labelledby="hot-q" className="mt-8">
