@@ -388,14 +388,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                         </button>
                       )
                     })}
-                    <button
-                      type="button"
-                      onClick={() => setExamineeForm({ serviceId: service.id })}
-                      aria-label={`为${service.name}新增受检人`}
-                      className="flex h-7 items-center rounded-full border border-dashed border-[#b8c2d6] px-2.5 text-[12px] text-muted-foreground"
-                    >
-                      + 新增
-                    </button>
                   </div>
                   {missing && (
                     <p role="alert" className="mt-1 text-[11px] text-[#e5603a]">
@@ -516,7 +508,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         </div>
         {warn && !agreed && (
           <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
-            请先阅读并勾选同意协议
+            请先阅读并勾选��意协议
           </p>
         )}
 
