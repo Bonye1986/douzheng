@@ -18,6 +18,9 @@ import {
   X,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
+import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
+import { SiteListScreen } from '@/components/mini/site-list-screen'
+import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
 import {
   getSampleTypes,
   samplingLabel,
@@ -29,26 +32,12 @@ import { cn } from '@/lib/utils'
 
 export type CheckoutLine = { id: string; qty: number }
 
-const examinees = [
-  { id: 'self', name: '王建国', relation: '本人', meta: '男 · 58岁' },
-  { id: 'spouse', name: '李秀兰', relation: '配偶', meta: '女 · 56岁' },
-  { id: 'child', name: '王小米', relation: '子女', meta: '女 · 8岁' },
-]
-
 type Address = { id: string; name: string; phone: string; detail: string; tag?: string }
 
 const addresses: Address[] = [
   { id: 'home', name: '王建国', phone: '138****6721', detail: '浙江省杭州市西湖区文三路 478 号华星时代广场 A 座 1206', tag: '默认' },
   { id: 'work', name: '王建国', phone: '138****6721', detail: '浙江省杭州市滨江区网商路 699 号 3 号楼 5 层', tag: '公司' },
   { id: 'parent', name: '李秀兰', phone: '139****2048', detail: '浙江省绍兴市越城区中兴中路 128 号 2 单元 302' },
-]
-
-type Site = { id: string; name: string; detail: string; time: string; distance: string }
-
-const sites: Site[] = [
-  { id: 'h1', name: '杭州市第一人民医院 · 检验科', detail: '上城区浣纱路 261 号 · 门诊楼 2 层', time: '周一至周六 08:00–16:30', distance: '2.3 km' },
-  { id: 'h2', name: '浙大一院之江院区 · 采样中心', detail: '西湖区之江路 1369 号 · 门诊 1 层', time: '每日 07:30–17:00', distance: '6.8 km' },
-  { id: 'h3', name: '迪安诊断 · 西湖采样点', detail: '西湖区金蓬街 329 号 · 1 层大厅', time: '周一至周日 08:30–18:00', distance: '4.1 km' },
 ]
 
 const samplingModes: { key: SamplingMode; icon: typeof House; desc: string }[] = [
@@ -76,9 +65,15 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
     .map((l) => ({ line: l, service: testServices.find((s) => s.id === l.id) }))
     .filter((r): r is { line: CheckoutLine; service: TestService } => !!r.service)
 
+  const [examinees, setExaminees] = useState<Examinee[]>(initialExaminees)
+  const [examineeForm, setExamineeForm] = useState<{ serviceId: string | null } | null>(null)
+
   const [assign, setAssign] = useState<Record<string, string[]>>(() =>
     Object.fromEntries(
-      rows.map((r) => [r.service.id, examinees.slice(0, Math.min(Math.max(r.line.qty, 1), examinees.length)).map((e) => e.id)]),
+      rows.map((r) => [
+        r.service.id,
+        initialExaminees.slice(0, Math.min(Math.max(r.line.qty, 1), initialExaminees.length)).map((e) => e.id),
+      ]),
     ),
   )
 
@@ -89,6 +84,16 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       return { ...a, [serviceId]: examinees.map((e) => e.id).filter((id) => next.includes(id)) }
     })
     setAssignWarn(false)
+  }
+
+  const addExaminee = (e: Examinee) => {
+    const target = examineeForm?.serviceId
+    setExaminees((list) => [...list, e])
+    if (target) {
+      setAssign((a) => ({ ...a, [target]: [...(a[target] ?? []), e.id] }))
+      setAssignWarn(false)
+    }
+    setExamineeForm(null)
   }
 
   const countOf = (serviceId: string) => assign[serviceId]?.length ?? 0
@@ -197,7 +202,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </h2>
             <ol className="mt-3 flex flex-col gap-3">
               {(hasSelf
-                ? ['收到采样盒后，按说明采集口腔拭子', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
+                ? ['收到采样盒后，按说明采集唾液样本', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
                 : ['按预约时间前往采样点', '出示订单码完成采样', '7 个工作日左右出具报告']
               ).map((step, i) => (
                 <li key={step} className="flex items-start gap-2.5 text-[13px] leading-5 text-foreground">
@@ -298,7 +303,9 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                   {site ? (
                     <span className="min-w-0 flex-1">
                       <span className="block text-[13px] font-medium text-foreground">{site.name}</span>
-                      <span className="mt-0.5 block text-[12px] text-muted-foreground">{site.detail}</span>
+                      <span className="mt-0.5 block text-[12px] text-muted-foreground">
+                        {site.district} {site.detail} · {site.distance} km
+                      </span>
                       <span className="mt-0.5 block text-[12px] text-muted-foreground">{site.time}</span>
                     </span>
                   ) : (
@@ -321,7 +328,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             <h2 id="goods-title" className="text-[14px] font-semibold text-foreground">
               检测项目与受检人
             </h2>
-            <button type="button" className="text-[12px] text-primary">
+            <button type="button" onClick={() => setExamineeForm({ serviceId: null })} className="text-[12px] text-primary">
               + 添加受检人
             </button>
           </div>
@@ -381,6 +388,14 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                         </button>
                       )
                     })}
+                    <button
+                      type="button"
+                      onClick={() => setExamineeForm({ serviceId: service.id })}
+                      aria-label={`为${service.name}新增受检人`}
+                      className="flex h-7 items-center rounded-full border border-dashed border-[#b8c2d6] px-2.5 text-[12px] text-muted-foreground"
+                    >
+                      + 新增
+                    </button>
                   </div>
                   {missing && (
                     <p role="alert" className="mt-1 text-[11px] text-[#e5603a]">
@@ -413,7 +428,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                   <div className="flex items-center gap-1.5">
                     <span className="text-[13px] font-medium text-foreground">{member.name}</span>
                     <span className="rounded bg-white px-1 text-[10px] text-muted-foreground">{member.relation}</span>
-                    <span className="text-[11px] text-muted-foreground">{member.meta}</span>
+                    <span className="text-[11px] text-muted-foreground">{examineeMeta(member)}</span>
                     <span className="ml-auto text-[11px] tabular-nums text-primary">{items.length} 项</span>
                   </div>
                   <p className="mt-1 text-[12px] leading-[18px] text-muted-foreground">
@@ -576,21 +591,23 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       )}
 
       {sheet === 'site' && (
-        <PickerSheet
-          title="选择定点采样机构"
-          items={sites.map((s) => ({
-            id: s.id,
-            title: s.name,
-            aside: s.distance,
-            lines: [s.detail, s.time],
-          }))}
+        <SiteListScreen
           selected={siteId}
           onSelect={(id) => {
             setSiteId(id)
             setSampleWarn(false)
             setSheet(null)
           }}
-          onClose={() => setSheet(null)}
+          onBack={() => setSheet(null)}
+        />
+      )}
+
+      {examineeForm && (
+        <ExamineeFormScreen
+          hasSelf={examinees.some((e) => e.relation === '本人')}
+          targetName={rows.find((r) => r.service.id === examineeForm.serviceId)?.service.name}
+          onBack={() => setExamineeForm(null)}
+          onSave={addExaminee}
         />
       )}
     </Shell>

@@ -8,6 +8,7 @@ import { TestDetailScreen } from '@/components/mini/test-detail-screen'
 import { CartScreen, MAX_QTY, type CartItem } from '@/components/mini/cart-screen'
 import { CheckoutScreen, type CheckoutLine } from '@/components/mini/checkout-screen'
 import {
+  getSamplingModes,
   samplingLabel,
   testCategories,
   testServices,
@@ -281,7 +282,7 @@ function ServiceCard({
         <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{service.summary}</p>
         <p className="mt-1 flex flex-wrap gap-1">
           <span className="rounded bg-[#e9f8f1] px-1.5 py-px text-[10px] text-[#1f9d6b]">
-            {samplingLabel[service.sampling]}
+                {getSamplingModes(service.id).includes('self') ? '支持居家自采' : samplingLabel.site}
           </span>
           {service.tags.slice(0, 2).map((tag) => (
             <span key={tag} className="rounded bg-[#e8f1fe] px-1.5 py-px text-[10px] text-primary">

@@ -4,7 +4,13 @@ import Image from 'next/image'
 import { ChevronLeft, Clock, Dna, FlaskConical, Headset, Pill, ShieldCheck } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { CartButton } from '@/components/mini/tests-screen'
-import { samplingLabel, testFlow, type TestService } from '@/components/mini/tests-data'
+import {
+  getSamplingModes,
+  sampleTypeText,
+  samplingLabel,
+  testFlow,
+  type TestService,
+} from '@/components/mini/tests-data'
 
 type Props = {
   service: TestService
@@ -18,7 +24,13 @@ type Props = {
 
 export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBuyNow, onContact, onOpenCart }: Props) {
   const facts = [
-    { icon: FlaskConical, label: '采样方式', value: `${samplingLabel[service.sampling]} · ${service.sampleType}` },
+    {
+      icon: FlaskConical,
+      label: '采样方式',
+      value: getSamplingModes(service.id)
+        .map((m) => `${samplingLabel[m]}：${sampleTypeText(service.id, m)}`)
+        .join('；'),
+    },
     { icon: Clock, label: '出报告时间', value: `样本签收后 ${service.turnaround}` },
     { icon: Pill, label: '覆盖药物', value: `${service.drugCount} 种常用药物` },
   ]

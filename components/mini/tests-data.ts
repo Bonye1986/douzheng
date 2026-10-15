@@ -45,6 +45,16 @@ export function getSampleTypes(serviceId: string, mode?: SamplingMode) {
     .filter((t): t is SampleTypeOption => !!t && (!mode || t.modes.includes(mode)))
 }
 
+export function getSamplingModes(serviceId: string): SamplingMode[] {
+  return (['self', 'site'] as const).filter((m) => getSampleTypes(serviceId, m).length > 0)
+}
+
+export function sampleTypeText(serviceId: string, mode?: SamplingMode, sep = '、') {
+  return getSampleTypes(serviceId, mode)
+    .map((t) => t.label)
+    .join(sep)
+}
+
 export type TestService = {
   id: string
   name: string

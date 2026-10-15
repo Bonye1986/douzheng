@@ -4,7 +4,13 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Check, ChevronLeft, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
-import { samplingLabel, testServices, type TestService } from '@/components/mini/tests-data'
+import {
+  getSamplingModes,
+  sampleTypeText,
+  samplingLabel,
+  testServices,
+  type TestService,
+} from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
 export const MAX_QTY = 10
@@ -235,7 +241,7 @@ function CartRow({
         <p className="line-clamp-2 text-[13px] font-medium leading-[18px] text-foreground">{service.name}</p>
         <p className="mt-1 flex">
           <span className="rounded bg-[#f2f5fa] px-1.5 py-px text-[10px] text-muted-foreground">
-            {samplingLabel[service.sampling]} · {service.sampleType}
+                {getSamplingModes(service.id).map((m) => samplingLabel[m]).join(' / ')} · {sampleTypeText(service.id, undefined, '/')}
           </span>
         </p>
         <div className="mt-auto flex items-center justify-between pt-1.5">
