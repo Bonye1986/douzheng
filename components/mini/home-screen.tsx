@@ -2,7 +2,7 @@
 
 import { ChevronRight, Circle, Ellipsis, MessageCircleQuestion, Sparkles } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
-import { BrandMark } from '@/components/mini/auth-parts'
+import Image from 'next/image'
 import { presetQuestions } from '@/components/mini/home-data'
 
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
@@ -21,10 +21,16 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
       </div>
 
       <div className="flex flex-1 flex-col overflow-y-auto px-5 pb-4 [scrollbar-width:none]">
-        <section className="flex flex-col items-center pt-8 text-center">
-          <BrandMark size="lg" />
-          <h1 className="mt-4 text-[22px] font-bold text-[#16223d]">药问基因</h1>
-          <p className="mt-1 text-[12px] tracking-[1.2px] text-[#6a768d]">都正生物</p>
+        <section className="flex flex-col items-center pt-10 text-center">
+          <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
+          <Image
+            src="/images/drugene-logo.png"
+            alt="DRUGENE 临床精准用药助手"
+            width={436}
+            height={147}
+            priority
+            className="h-auto w-[220px]"
+          />
         </section>
 
         <button
