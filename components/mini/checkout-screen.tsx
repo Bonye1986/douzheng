@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   Ticket,
   UserRound,
-  Users,
   Wallet,
   X,
 } from 'lucide-react'
@@ -48,11 +47,10 @@ const samplingModes: { key: SamplingMode; icon: typeof House; desc: string }[] =
   { key: 'site', icon: Building2, desc: '前往合作机构，支持全部样本类型' },
 ]
 
-type PayMethod = 'wechat' | 'friend'
+type PayMethod = 'wechat'
 
 const payMethods: { key: PayMethod; label: string; desc: string; tag?: string; icon: typeof House; color: string }[] = [
-  { key: 'wechat', label: '微信支付', desc: '使用微信零钱或绑定银行卡支付', tag: '推荐', icon: Wallet, color: '#07c160' },
-  { key: 'friend', label: '亲友代付', desc: '生成代付链接，发送给微信好友支付', icon: Users, color: '#f5a524' },
+  { key: 'wechat', label: '微信支付', desc: '使用微信零钱或绑定银行卡支付', icon: Wallet, color: '#07c160' },
 ]
 
 type Coupon = { id: string; title: string; threshold: number; amount: number; expire: string }
@@ -636,7 +634,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           onClick={submit}
           className="ml-auto h-10 min-w-[120px] rounded-full bg-primary px-6 text-[14px] font-medium text-primary-foreground active:opacity-90"
         >
-          {payMethod === 'wechat' ? '微信支付' : '发起代付'}
+          微信支付
         </button>
       </div>
 
