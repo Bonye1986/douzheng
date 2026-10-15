@@ -99,13 +99,111 @@ export const articles: Article[] = [
 
 export type QuizOption = { id: string; text: string }
 
-export const dailyQuiz = {
-  question: '药物基因检测结果会随年龄改变吗？',
-  options: [
-    { id: 'a', text: '会，需要每年复查' },
-    { id: 'b', text: '不会，基因型终身不变' },
-  ] satisfies QuizOption[],
-  answerId: 'b',
-  explanation: '人的基因型出生即确定，检测一次即可长期作为用药参考；但用药方案仍需结合年龄、肝肾功能等综合判断。',
-  participants: '1,286',
+export type QuizQuestion = {
+  id: string
+  question: string
+  options: QuizOption[]
+  answerId: string
+  explanation: string
 }
+
+export type QuizTopic = {
+  id: string
+  title: string
+  participants: string
+  questions: QuizQuestion[]
+}
+
+export const quizTopics: QuizTopic[] = [
+  {
+    id: 'gene',
+    title: '基因检测常识',
+    participants: '1,286',
+    questions: [
+      {
+        id: 'g1',
+        question: '药物基因检测结果会随年龄改变吗？',
+        options: [
+          { id: 'a', text: '会，需要每年复查' },
+          { id: 'b', text: '不会，基因型终身不变' },
+        ],
+        answerId: 'b',
+        explanation: '人的基因型出生即确定，检测一次即可长期作为用药参考；但用药方案仍需结合年龄、肝肾功能等综合判断。',
+      },
+      {
+        id: 'g2',
+        question: '药物基因检测通常采集什么样本？',
+        options: [
+          { id: 'a', text: '口腔拭子或少量血液' },
+          { id: 'b', text: '必须做组织穿刺' },
+        ],
+        answerId: 'a',
+        explanation: '常用口腔黏膜拭子或静脉血，居家即可完成采样，无需穿刺。',
+      },
+      {
+        id: 'g3',
+        question: '检测前是否必须空腹？',
+        options: [
+          { id: 'a', text: '必须空腹 8 小时' },
+          { id: 'b', text: '一般无需空腹' },
+        ],
+        answerId: 'b',
+        explanation: '基因检测不受饮食影响；口腔拭子采样前 30 分钟避免进食、饮水、吸烟即可。',
+      },
+    ],
+  },
+  {
+    id: 'cardio',
+    title: '心血管用药',
+    participants: '864',
+    questions: [
+      {
+        id: 'c1',
+        question: '氯吡格雷的疗效主要与哪个基因相关？',
+        options: [
+          { id: 'a', text: 'CYP2C19' },
+          { id: 'b', text: 'BRCA1' },
+        ],
+        answerId: 'a',
+        explanation: 'CYP2C19 慢代谢者活化氯吡格雷能力下降，抗血小板效果可能减弱，可咨询医生调整方案。',
+      },
+      {
+        id: 'c2',
+        question: '华法林剂量个体差异大，主要原因之一是？',
+        options: [
+          { id: 'a', text: '服药时间早晚' },
+          { id: 'b', text: 'CYP2C9 / VKORC1 基因差异' },
+        ],
+        answerId: 'b',
+        explanation: '这两个基因影响华法林代谢与敏感性，检测结果可辅助医生确定起始剂量。',
+      },
+    ],
+  },
+  {
+    id: 'safety',
+    title: '安全用药',
+    participants: '2,031',
+    questions: [
+      {
+        id: 's1',
+        question: '感觉症状好转后，可以自行停药吗？',
+        options: [
+          { id: 'a', text: '可以，没症状就停' },
+          { id: 'b', text: '不建议，应遵医嘱调整' },
+        ],
+        answerId: 'b',
+        explanation: '降压、抗凝等药物擅自停用可能导致病情反弹甚至危险，停药或减量请先咨询医生。',
+      },
+      {
+        id: 's2',
+        question: '服用头孢类抗生素期间饮酒会怎样？',
+        options: [
+          { id: 'a', text: '可能引发双硫仑样反应' },
+          { id: 'b', text: '没有影响' },
+        ],
+        answerId: 'a',
+        explanation: '可出现面部潮红、心悸、血压下降等，用药期间及停药后 7 天内应避免饮酒。',
+      },
+    ],
+  },
+]

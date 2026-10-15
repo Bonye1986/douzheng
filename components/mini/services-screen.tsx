@@ -7,7 +7,7 @@ import { StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
   banners,
-  dailyQuiz,
+  quizTopics,
   recommendedTests,
   serviceCategories,
 } from '@/components/mini/services-data'
@@ -209,9 +209,27 @@ function KnowledgeList() {
 }
 
 function DailyQuiz({ onOpenChat }: Props) {
+  const [topicId, setTopicId] = useState(quizTopics[0].id)
+  const [step, setStep] = useState(0)
   const [picked, setPicked] = useState<string | null>(null)
+
+  const topic = quizTopics.find((t) => t.id === topicId) ?? quizTopics[0]
+  const quiz = topic.questions[step]
   const answered = picked !== null
-  const correct = picked === dailyQuiz.answerId
+  const correct = picked === quiz.answerId
+  const isLast = step === topic.questions.length - 1
+  const answerLabel = quiz.answerId.toUpperCase()
+
+  const selectTopic = (id: string) => {
+    setTopicId(id)
+    setStep(0)
+    setPicked(null)
+  }
+
+  const next = () => {
+    setStep((s) => (isLast ? 0 : s + 1))
+    setPicked(null)
+  }
 
   return (
     <section aria-labelledby="quiz" className="rounded-2xl bg-white p-4">
@@ -220,12 +238,43 @@ function DailyQuiz({ onOpenChat }: Props) {
           <Lightbulb className="size-4 text-[#f07a2c]" aria-hidden="true" />
           互动问答
         </h2>
-        <span className="text-[11px] text-muted-foreground">{dailyQuiz.participants} 人已参与</span>
+        <span className="text-[11px] text-muted-foreground">{topic.participants} 人已参与</span>
       </div>
-      <p className="text-[14px] font-medium text-foreground">{dailyQuiz.question}</p>
-      <div className="mt-3 flex flex-col gap-2" role="radiogroup" aria-label={dailyQuiz.question}>
-        {dailyQuiz.options.map((o) => {
-          const isAnswer = o.id === dailyQuiz.answerId
+
+      <div
+        role="tablist"
+        aria-label="问答主题"
+        className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]"
+      >
+        {quizTopics.map((t) => {
+          const active = t.id === topic.id
+          return (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => selectTopic(t.id)}
+              className={cn(
+                'h-7 shrink-0 rounded-full px-3 text-[12px] transition-colors',
+                active ? 'bg-primary font-medium text-primary-foreground' : 'bg-[#f1f5fb] text-muted-foreground',
+              )}
+            >
+              {t.title}
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[14px] font-medium text-foreground">{quiz.question}</p>
+        <span className="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground">
+          {step + 1}/{topic.questions.length}
+        </span>
+      </div>
+      <div className="mt-3 flex flex-col gap-2" role="radiogroup" aria-label={quiz.question}>
+        {quiz.options.map((o) => {
+          const isAnswer = o.id === quiz.answerId
           const isPicked = o.id === picked
           return (
             <button
@@ -255,17 +304,26 @@ function DailyQuiz({ onOpenChat }: Props) {
       {answered && (
         <div className="mt-3 rounded-xl bg-[#f4f8fe] p-3" aria-live="polite">
           <p className={cn('text-[13px] font-medium', correct ? 'text-[#1f9d6b]' : 'text-[#e04a5a]')}>
-            {correct ? '回答正确！' : '再想想～正确答案是 B'}
+            {correct ? '回答正确！' : `再想想～正确答案是 ${answerLabel}`}
           </p>
-          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">{dailyQuiz.explanation}</p>
-          <button
-            type="button"
-            onClick={() => onOpenChat?.(dailyQuiz.question)}
-            className="mt-2 flex items-center text-[12px] font-medium text-primary"
-          >
-            问问 AI 了解更多
-            <ChevronRight className="size-3.5" aria-hidden="true" />
-          </button>
+          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">{quiz.explanation}</p>
+          <div className="mt-2 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => onOpenChat?.(quiz.question)}
+              className="flex items-center text-[12px] font-medium text-primary"
+            >
+              问问 AI 了解更多
+              <ChevronRight className="size-3.5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              className="h-7 rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground"
+            >
+              {isLast ? '再答一轮' : '下一题'}
+            </button>
+          </div>
         </div>
       )}
     </section>
