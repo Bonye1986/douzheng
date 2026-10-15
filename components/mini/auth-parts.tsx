@@ -8,8 +8,10 @@ export function BrandMark({ size = 'md', className }: { size?: 'md' | 'lg'; clas
     <div
       aria-hidden="true"
       className={cn(
-        'flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#5aa6f5_0%,#3b8beb_55%,#5cc6d6_100%)] font-bold text-white shadow-[0_10px_30px_#3b8beb38]',
-        size === 'lg' ? 'size-16 text-3xl' : 'size-11 text-xl',
+        'flex items-center justify-center bg-[linear-gradient(135deg,#0c2352_0%,#16408f_46%,#2f74e4_100%)] font-extrabold text-white shadow-[0_6px_16px_#1f5fd847]',
+        size === 'lg'
+          ? 'size-16 rounded-[50%_50%_50%_19px] text-[36px]'
+          : 'size-11 rounded-[50%_50%_50%_13px] text-[24px]',
         className,
       )}
     >
