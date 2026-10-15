@@ -37,6 +37,12 @@ const screens = [
     node: <HomeFlow initialTab="service" />,
   },
   {
+    id: '10',
+    title: '检测',
+    desc: '扫码绑定采样盒与检测流程说明；我的检测按状态筛选，展示进度、样本号与报告摘要，已出报告可一键 AI 解读（可在画板内交互）',
+    node: <HomeFlow initialTab="test" />,
+  },
+  {
     id: '05',
     title: 'AI咨询 · 默认态',
     desc: '通俗版 / 专业版切换，未选检测人时按通用知识回答；技能入口与工具栏可直接触发对话',
