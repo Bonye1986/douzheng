@@ -242,16 +242,19 @@ export function AiChatScreen({
       <StatusBar />
       <header className="relative flex h-11 items-center justify-center px-2 text-foreground">
         <div className="absolute left-1 flex items-center">
-          {onBack && (
-            <button type="button" onClick={onBack} aria-label="返回" className="flex size-9 items-center justify-center rounded-full">
-              <ChevronLeft className="size-5" />
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="返回"
+            className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="历史对话"
-            className="flex size-9 items-center justify-center rounded-full active:bg-white/70"
+            className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
           >
             <Menu className="size-5" />
           </button>
@@ -268,7 +271,7 @@ export function AiChatScreen({
                 aria-checked={mode === item.key}
                 onClick={() => setMode(item.key)}
                 className={cn(
-                  'h-7 rounded-full px-2.5 text-[12px] transition-colors',
+                  'h-7 rounded-full px-2 text-[12px] transition-colors',
                   mode === item.key ? 'bg-primary font-semibold text-white' : 'text-muted-foreground',
                 )}
               >
@@ -277,7 +280,7 @@ export function AiChatScreen({
             ))}
           </div>
         </div>
-        <h2 className="text-[16px] font-medium">AI咨询</h2>
+        <h2 className="ml-16 text-[16px] font-medium">AI咨询</h2>
         <div
           aria-hidden="true"
           className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
