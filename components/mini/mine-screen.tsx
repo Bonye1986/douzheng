@@ -62,17 +62,17 @@ const orderTabs = [
   {
     key: 'all',
     label: '全部订单',
-    statuses: ['toShip', 'shipped', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done', 'closed'],
+    statuses: ['toShip', 'shipped', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
   },
   {
     key: 'self',
     label: '自采样订单',
-    statuses: ['toShip', 'shipped', 'toSample', 'sent', 'received', 'testing', 'done', 'closed'],
+    statuses: ['toShip', 'shipped', 'toSample', 'sent', 'received', 'testing', 'done'],
   },
   {
     key: 'site',
     label: '定点采样订单',
-    statuses: ['toVerify', 'toSample', 'sent', 'received', 'testing', 'done', 'closed'],
+    statuses: ['toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
   },
 ] as const satisfies readonly { key: string; label: string; statuses: readonly StatusKey[] }[]
 
@@ -146,7 +146,7 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
         <section aria-labelledby="mine-orders" className="mt-4 rounded-2xl bg-white pb-3 pt-3.5">
           <div className="px-3.5">
             <SectionHeader id="mine-orders" title="我的订单" action="查看全部" />
-            <div role="tablist" aria-label="订单类型" className="mt-3 flex rounded-lg bg-[#f1f5fb] p-0.5">
+            <div role="tablist" aria-label="订单类型" className="mt-2 flex gap-5 border-b border-[#eef2f8]">
               {orderTabs.map((t) => (
                 <button
                   key={t.key}
@@ -155,29 +155,28 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
                   aria-selected={orderTab === t.key}
                   onClick={() => setOrderTab(t.key)}
                   className={cn(
-                    'h-7 flex-1 rounded-md text-[12px] transition-colors',
-                    orderTab === t.key ? 'bg-white font-medium text-primary shadow-sm' : 'text-muted-foreground',
+                    'relative h-9 text-[13px] transition-colors',
+                    orderTab === t.key ? 'font-semibold text-foreground' : 'text-muted-foreground',
                   )}
                 >
                   {t.label}
+                  {orderTab === t.key && (
+                    <span className="absolute inset-x-1 -bottom-px h-[3px] rounded-full bg-primary" aria-hidden="true" />
+                  )}
                 </button>
               ))}
             </div>
           </div>
-          <ul
-            role="tabpanel"
-            aria-label={activeTab.label}
-            className="mt-3 flex overflow-x-auto px-1.5 [scrollbar-width:none]"
-          >
+          <ul role="tabpanel" aria-label={activeTab.label} className="mt-3 grid grid-cols-4 gap-y-3.5 px-1.5">
             {activeTab.statuses.map((key) => {
               const s = statusMeta[key]
               return (
-                <li key={key} className="w-[62px] shrink-0">
-                  <button type="button" className="flex w-full flex-col items-center gap-1.5 py-1">
-                    <span className="relative">
-                      <s.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                <li key={key}>
+                  <button type="button" className="flex w-full flex-col items-center gap-1.5">
+                    <span className="relative flex size-10 items-center justify-center rounded-full bg-[#eef5ff]">
+                      <s.icon className="size-5 text-primary" strokeWidth={1.7} aria-hidden="true" />
                       {s.count ? (
-                        <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] font-medium tabular-nums text-white">
+                        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
                           {s.count}
                           <span className="sr-only">笔</span>
                         </span>
@@ -189,32 +188,35 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
               )
             })}
           </ul>
-        </section>
 
-        {/* 售后订单 */}
-        <section aria-labelledby="mine-after" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <SectionHeader id="mine-after" title="售后订单" action="全部售后" />
-          <ul className="mt-3 grid grid-cols-2 gap-2">
-            {afterSales.map((a) => (
-              <li key={a.key}>
-                <button type="button" className="flex w-full items-center gap-2 rounded-xl bg-[#f8fafe] p-2.5 text-left">
-                  <span className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e8f1fe] text-primary">
-                    <a.icon className="size-[18px]" aria-hidden="true" />
-                    <RotateCcw
-                      className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full bg-white p-0.5 text-[#f07a2c]"
-                      aria-hidden="true"
-                    />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-[13px] font-medium text-foreground">{a.label}</span>
-                    <span className="block truncate text-[11px] text-muted-foreground">
-                      {a.count > 0 ? `${a.count} 笔处理中` : a.desc}
-                    </span>
-                  </span>
+          {/* 售后订单 / 已关闭 */}
+          <div className="mx-3.5 mt-3.5 flex items-center rounded-xl bg-[#f8fafe] py-2.5 pl-3">
+            <span className="flex shrink-0 items-center gap-1 text-[12px] font-medium text-foreground">
+              <RotateCcw className="size-3.5 text-[#f07a2c]" aria-hidden="true" />
+              售后
+            </span>
+            <ul aria-label="售后订单" className="flex min-w-0 flex-1">
+              {afterSales.map((a) => (
+                <li key={a.key} className="flex-1 border-l border-[#e3eaf4] first:ml-3">
+                  <button type="button" className="flex w-full items-center justify-center gap-1 whitespace-nowrap text-[12px] text-foreground">
+                    {a.label.replace('订单', '')}
+                    {a.count > 0 && (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] tabular-nums text-white">
+                        {a.count}
+                        <span className="sr-only">笔处理中</span>
+                      </span>
+                    )}
+                  </button>
+                </li>
+              ))}
+              <li className="flex-1 border-l border-[#e3eaf4]">
+                <button type="button" className="flex w-full items-center justify-center gap-1 whitespace-nowrap text-[12px] text-muted-foreground">
+                  <Ban className="size-3.5" aria-hidden="true" />
+                  已关闭
                 </button>
               </li>
-            ))}
-          </ul>
+            </ul>
+          </div>
         </section>
 
         {/* 我的报告 */}
