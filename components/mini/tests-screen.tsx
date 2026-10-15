@@ -1,271 +1,247 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronRight, FileText, PackageCheck, ScanLine, Sparkles, Truck } from 'lucide-react'
+import { useRef, useState } from 'react'
+import Image from 'next/image'
+import { Plus, Search, ShoppingCart, X } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
+import { TestDetailScreen } from '@/components/mini/test-detail-screen'
 import {
-  filterTabs,
-  statusMeta,
-  testOrders,
-  testSteps,
-  type FilterKey,
-  type TestOrder,
+  samplingLabel,
+  testCategories,
+  testServices,
+  type CategoryKey,
+  type TestService,
 } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
-type Props = { onOpenChat?: (question?: string) => void }
+export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState<CategoryKey>('all')
+  const [detail, setDetail] = useState<TestService | null>(
+    () => testServices.find((s) => s.id === initialDetailId) ?? null,
+  )
+  const [cartCount, setCartCount] = useState(0)
+  const [toast, setToast] = useState<string | null>(null)
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-export function TestsScreen({ onOpenChat }: Props) {
-  const [filter, setFilter] = useState<FilterKey>('all')
+  const showToast = (text: string) => {
+    clearTimeout(toastTimer.current)
+    setToast(text)
+    toastTimer.current = setTimeout(() => setToast(null), 1600)
+  }
 
-  const orders = testOrders.filter((o) =>
-    filter === 'all' ? true : filter === 'done' ? o.status === 'done' : o.status !== 'done',
+  const addToCart = () => {
+    setCartCount((c) => c + 1)
+    showToast('已加入购物车')
+  }
+
+  const keyword = query.trim().toLowerCase()
+  const list = testServices.filter(
+    (s) =>
+      (category === 'all' || s.category === category) &&
+      (!keyword ||
+        s.name.toLowerCase().includes(keyword) ||
+        s.summary.toLowerCase().includes(keyword) ||
+        s.genes.some((g) => g.toLowerCase().includes(keyword))),
   )
 
   return (
-    <div className="flex h-full flex-col bg-[#f4f8fe]">
-      <div className="bg-white">
-        <StatusBar />
-        <header className="flex h-11 shrink-0 items-center justify-center">
-          <h1 className="text-[17px] font-semibold text-foreground">检测</h1>
-        </header>
-      </div>
+    <>
+      <div className="flex h-full flex-col bg-[#f4f8fe]" inert={!!detail}>
+        <div className="shrink-0 bg-white">
+          <StatusBar />
+          <header className="flex h-11 items-center justify-center">
+            <h1 className="text-[17px] font-semibold text-foreground">检测</h1>
+          </header>
 
-      <div className="flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
-        <div className="flex flex-col gap-3 px-4 pt-3">
-          <BindCard />
+          <div className="flex items-center gap-2 px-4 pb-2.5 pt-1">
+            <label className="flex h-9 flex-1 items-center gap-2 rounded-full bg-[#f2f5fa] px-3.5">
+              <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <span className="sr-only">搜索检测服务</span>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="搜索检测项目、药物或基因"
+                className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-[#a9b3c6] [&::-webkit-search-cancel-button]:hidden"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  aria-label="清空搜索"
+                  className="flex size-4 items-center justify-center rounded-full bg-[#c3ccdb] text-white"
+                >
+                  <X className="size-3" aria-hidden="true" />
+                </button>
+              )}
+            </label>
+            <CartButton count={cartCount} onClick={() => showToast('购物车页面待设计')} />
+          </div>
 
-          <section aria-labelledby="my-tests">
-            <div className="mb-2.5 flex items-center justify-between">
-              <h2 id="my-tests" className="text-[15px] font-semibold text-foreground">
-                我的检测
-              </h2>
-              <div role="tablist" aria-label="检测状态筛选" className="flex rounded-full bg-white p-0.5">
-                {filterTabs.map((t) => (
-                  <button
-                    key={t.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={filter === t.key}
-                    onClick={() => setFilter(t.key)}
+          <div
+            role="tablist"
+            aria-label="检测分类"
+            className="flex gap-5 overflow-x-auto px-4 [scrollbar-width:none]"
+          >
+            {testCategories.map((c) => {
+              const active = category === c.key
+              return (
+                <button
+                  key={c.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setCategory(c.key)}
+                  className={cn(
+                    'relative shrink-0 pb-2.5 pt-1 text-[14px] transition-colors',
+                    active ? 'font-semibold text-foreground' : 'text-muted-foreground',
+                  )}
+                >
+                  {c.label}
+                  <span
+                    aria-hidden="true"
                     className={cn(
-                      'h-6 rounded-full px-2.5 text-[11px] transition-colors',
-                      filter === t.key ? 'bg-primary font-medium text-primary-foreground' : 'text-muted-foreground',
+                      'absolute bottom-0 left-1/2 h-[3px] w-4 -translate-x-1/2 rounded-full bg-primary transition-opacity',
+                      active ? 'opacity-100' : 'opacity-0',
                     )}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+                  />
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
-            {orders.length ? (
-              <ul className="flex flex-col gap-3">
-                {orders.map((o) => (
-                  <li key={o.id}>
-                    <OrderCard order={o} onOpenChat={onOpenChat} />
+        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-3 [scrollbar-width:none]">
+          {list.length ? (
+            <>
+              <p className="mb-2 text-[12px] text-muted-foreground" aria-live="polite">
+                共 {list.length} 项检测服务
+              </p>
+              <ul className="flex flex-col gap-2.5">
+                {list.map((s) => (
+                  <li key={s.id}>
+                    <ServiceCard service={s} onOpen={() => setDetail(s)} onAdd={addToCart} />
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="rounded-2xl bg-white py-10 text-center text-[13px] text-muted-foreground">暂无相关检测</p>
-            )}
-          </section>
+            </>
+          ) : (
+            <div className="flex flex-col items-center rounded-2xl bg-white px-6 py-12 text-center" aria-live="polite">
+              <Search className="size-8 text-[#c3ccdb]" aria-hidden="true" />
+              <p className="mt-3 text-[14px] text-foreground">没有找到相关检测服务</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">换个关键词，或切换到「全部」分类试试</p>
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  )
-}
 
-function BindCard() {
-  return (
-    <section
-      aria-label="绑定采样盒"
-      className="rounded-2xl bg-[linear-gradient(135deg,#2f7cf6,#5aa2ff)] p-4 text-primary-foreground"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[16px] font-semibold">收到采样盒了吗？</p>
-          <p className="mt-1 text-[12px] text-white/80">扫描盒内条形码，绑定检测人后再采样</p>
-        </div>
-        <button
-          type="button"
-          className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-white px-3.5 text-[13px] font-medium text-primary"
-        >
-          <ScanLine className="size-4" aria-hidden="true" />
-          扫码绑定
-        </button>
-      </div>
-
-      <ol className="mt-4 flex items-start rounded-xl bg-white/15 px-2 py-2.5" aria-label="检测流程">
-        {testSteps.map((s, i) => (
-          <li key={s} className="relative flex flex-1 flex-col items-center gap-1">
-            <span className="flex size-5 items-center justify-center rounded-full bg-white text-[11px] font-semibold text-primary">
-              {i + 1}
-            </span>
-            <span className="whitespace-nowrap text-[11px]">{s}</span>
-            {i < testSteps.length - 1 && (
-              <ChevronRight
-                className="absolute -right-1.5 top-1 size-3 text-white/60"
-                aria-hidden="true"
-              />
-            )}
-          </li>
-        ))}
-      </ol>
-    </section>
-  )
-}
-
-function OrderCard({ order, onOpenChat }: { order: TestOrder } & Props) {
-  const meta = statusMeta[order.status]
-
-  return (
-    <article className="rounded-2xl bg-white p-4" aria-labelledby={`order-${order.id}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 id={`order-${order.id}`} className="truncate text-[14px] font-medium text-foreground">
-            {order.name}
-          </h3>
-          <p className="mt-1 text-[12px] text-muted-foreground">
-            检测人 {order.testee}
-            {order.sampleNo && <span className="ml-2 tabular-nums">样本号 {order.sampleNo}</span>}
-          </p>
-        </div>
-        <span className={cn('shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium', meta.className)}>
-          {meta.label}
-        </span>
-      </div>
-
-      <StepProgress step={order.step} done={order.status === 'done'} />
-
-      <p className="mt-3 flex items-center justify-between text-[12px]">
-        <span className="text-foreground">{order.note}</span>
-        <span className="shrink-0 tabular-nums text-muted-foreground">{order.updatedAt}</span>
-      </p>
-
-      {order.reportSummary && (
-        <ul className="mt-3 grid grid-cols-3 gap-2" aria-label="报告摘要">
-          {order.reportSummary.map((r) => (
-            <li
-              key={r.label}
-              className={cn(
-                'rounded-lg px-2 py-1.5 text-center',
-                r.tone === 'risk' && 'bg-[#feecee]',
-                r.tone === 'warn' && 'bg-[#fff1e8]',
-                r.tone === 'normal' && 'bg-[#e9f8f1]',
-              )}
-            >
-              <p className="truncate text-[11px] text-muted-foreground">{r.label}</p>
-              <p
-                className={cn(
-                  'text-[12px] font-medium',
-                  r.tone === 'risk' && 'text-[#e04a5a]',
-                  r.tone === 'warn' && 'text-[#f07a2c]',
-                  r.tone === 'normal' && 'text-[#1f9d6b]',
-                )}
-              >
-                {r.value}
-              </p>
-            </li>
-          ))}
-        </ul>
+      {detail && (
+        <TestDetailScreen
+          service={detail}
+          cartCount={cartCount}
+          onBack={() => setDetail(null)}
+          onAddToCart={addToCart}
+          onBuyNow={() => showToast('确认订单页面待设计')}
+          onContact={() => showToast('正在为你接入在线客服')}
+          onOpenCart={() => showToast('购物车页面待设计')}
+        />
       )}
 
-      <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
-        <OrderActions order={order} onOpenChat={onOpenChat} />
+      {toast && (
+        <div
+          role="status"
+          className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex justify-center"
+        >
+          <span className="rounded-lg bg-[#1f2a3d]/85 px-4 py-2.5 text-[13px] text-white">{toast}</span>
+        </div>
+      )}
+    </>
+  )
+}
+
+export function CartButton({
+  count,
+  onClick,
+  className,
+}: {
+  count: number
+  onClick: () => void
+  className?: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={count ? `购物车，已有 ${count} 件` : '购物车'}
+      className={cn('relative flex size-9 shrink-0 items-center justify-center rounded-full text-foreground', className)}
+    >
+      <ShoppingCart className="size-[22px]" strokeWidth={1.8} aria-hidden="true" />
+      {count > 0 && (
+        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f05252] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+          {count > 99 ? '99+' : count}
+        </span>
+      )}
+    </button>
+  )
+}
+
+function ServiceCard({
+  service,
+  onOpen,
+  onAdd,
+}: {
+  service: TestService
+  onOpen: () => void
+  onAdd: () => void
+}) {
+  return (
+    <article className="relative flex gap-3 rounded-2xl bg-white p-3" aria-labelledby={`svc-${service.id}`}>
+      <Image
+        src={service.image}
+        alt=""
+        width={96}
+        height={96}
+        className="size-24 shrink-0 rounded-xl bg-[#eef4fd] object-cover"
+      />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <h2 id={`svc-${service.id}`} className="line-clamp-2 text-[14px] font-medium leading-5 text-foreground">
+          <button type="button" onClick={onOpen} className="text-left after:absolute after:inset-0 after:rounded-2xl">
+            {service.name}
+          </button>
+        </h2>
+        <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{service.summary}</p>
+        <p className="mt-1 flex flex-wrap gap-1">
+          <span className="rounded bg-[#e9f8f1] px-1.5 py-px text-[10px] text-[#1f9d6b]">
+            {samplingLabel[service.sampling]}
+          </span>
+          {service.tags.slice(0, 2).map((tag) => (
+            <span key={tag} className="rounded bg-[#e8f1fe] px-1.5 py-px text-[10px] text-primary">
+              {tag}
+            </span>
+          ))}
+        </p>
+        <div className="mt-auto flex items-end justify-between pt-1.5">
+          <p className="flex items-baseline gap-1.5">
+            <span className="text-[17px] font-bold leading-none text-[#f07a2c]">
+              <span className="text-[11px]">¥</span>
+              {service.price}
+            </span>
+            {service.originalPrice && (
+              <span className="text-[11px] text-[#b8c2d6] line-through">¥{service.originalPrice}</span>
+            )}
+            <span className="text-[11px] text-muted-foreground">{service.sold}</span>
+          </p>
+          <button
+            type="button"
+            onClick={onAdd}
+            aria-label={`将${service.name}加入购物车`}
+            className="relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground active:scale-95"
+          >
+            <Plus className="size-4" strokeWidth={2.4} aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </article>
-  )
-}
-
-function StepProgress({ step, done }: { step: number; done: boolean }) {
-  return (
-    <ol className="mt-3 flex items-start" aria-label={`当前进度：${testSteps[step]}`}>
-      {testSteps.map((s, i) => {
-        const reached = i <= step
-        const current = i === step && !done
-        return (
-          <li key={s} className="flex flex-1 flex-col items-center gap-1.5">
-            <span className="relative flex w-full items-center justify-center">
-              {i > 0 && (
-                <span
-                  className={cn('absolute right-1/2 h-0.5 w-full', reached ? 'bg-primary' : 'bg-[#e3e9f3]')}
-                  aria-hidden="true"
-                />
-              )}
-              <span
-                className={cn(
-                  'relative z-10 size-2.5 rounded-full',
-                  reached ? 'bg-primary' : 'bg-[#e3e9f3]',
-                  current && 'ring-4 ring-primary/20',
-                )}
-              />
-            </span>
-            <span
-              className={cn(
-                'text-[10px]',
-                current ? 'font-medium text-primary' : reached ? 'text-foreground' : 'text-muted-foreground',
-              )}
-              aria-current={current ? 'step' : undefined}
-            >
-              {s}
-            </span>
-          </li>
-        )
-      })}
-    </ol>
-  )
-}
-
-const ghostBtn = 'flex h-8 items-center gap-1 rounded-full border border-border px-3 text-[12px] text-foreground'
-const primaryBtn = 'flex h-8 items-center gap-1 rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground'
-
-function OrderActions({ order, onOpenChat }: { order: TestOrder } & Props) {
-  if (order.status === 'unbound') {
-    return (
-      <>
-        <button type="button" className={ghostBtn}>
-          <Truck className="size-3.5" aria-hidden="true" />
-          查看物流
-        </button>
-        <button type="button" className={primaryBtn}>
-          <ScanLine className="size-3.5" aria-hidden="true" />
-          扫码绑定
-        </button>
-      </>
-    )
-  }
-  if (order.status === 'shipping') {
-    return (
-      <button type="button" className={primaryBtn}>
-        <PackageCheck className="size-3.5" aria-hidden="true" />
-        预约寄回
-      </button>
-    )
-  }
-  if (order.status === 'testing') {
-    return (
-      <button type="button" className={ghostBtn}>
-        <Truck className="size-3.5" aria-hidden="true" />
-        样本物流
-      </button>
-    )
-  }
-  return (
-    <>
-      <button type="button" className={ghostBtn}>
-        <FileText className="size-3.5" aria-hidden="true" />
-        查看报告
-      </button>
-      <button
-        type="button"
-        onClick={() => onOpenChat?.(`帮我解读${order.testee}的${order.name}报告`)}
-        className={primaryBtn}
-      >
-        <Sparkles className="size-3.5" aria-hidden="true" />
-        AI 解读
-      </button>
-    </>
   )
 }

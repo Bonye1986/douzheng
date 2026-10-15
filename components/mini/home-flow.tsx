@@ -10,7 +10,13 @@ import { TestsScreen } from '@/components/mini/tests-screen'
 import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { cn } from '@/lib/utils'
 
-export function HomeFlow({ initialTab = 'home' }: { initialTab?: TabKey }) {
+export function HomeFlow({
+  initialTab = 'home',
+  initialDetailId,
+}: {
+  initialTab?: TabKey
+  initialDetailId?: string
+}) {
   const [tab, setTab] = useState<TabKey>(initialTab)
   const [chatOpen, setChatOpen] = useState(false)
   const [chatMounted, setChatMounted] = useState(false)
@@ -30,7 +36,7 @@ export function HomeFlow({ initialTab = 'home' }: { initialTab?: TabKey }) {
         ) : tab === 'service' ? (
           <ServicesScreen onOpenChat={openChat} />
         ) : tab === 'test' ? (
-          <TestsScreen onOpenChat={openChat} />
+          <TestsScreen initialDetailId={initialDetailId} />
         ) : (
           <TabPlaceholderScreen tab={tab} />
         )}
