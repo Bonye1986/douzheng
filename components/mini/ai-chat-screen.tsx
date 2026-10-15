@@ -4,15 +4,21 @@ import { useEffect, useRef, useState } from 'react'
 import {
   BookOpenCheck,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Circle,
+  Copy,
   Ellipsis,
   FileText,
   Menu,
+  RefreshCw,
+  Share2,
   ShieldCheck,
+  Square,
   UserRound,
   UserRoundCheck,
+  Volume2,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -21,13 +27,17 @@ import { BrandMark } from '@/components/mini/auth-parts'
 import { ChatComposer, type Attachment } from '@/components/mini/chat-composer'
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
 import {
+  answerToText,
+  confidenceMeta,
   getAnswer,
   quickPrompts,
   skills,
   testeeLabel,
   testees,
   type AiAnswer,
+  type Confidence,
   type Mode,
+  type SourceKind,
   type Testee,
 } from '@/components/mini/ai-data'
 
@@ -84,17 +94,23 @@ function initialSessions(question: string | undefined, mode: Mode, hasTestee: bo
   ]
 }
 
+export type ChatRequest = { question: string; id: number }
+
 export function AiChatScreen({
   initialMode = 'plain',
   initialTesteeId,
   initialQuestion,
   initialSheetOpen = false,
+  request,
+  active = true,
   onBack,
 }: {
   initialMode?: Mode
   initialTesteeId?: string
   initialQuestion?: string
   initialSheetOpen?: boolean
+  request?: ChatRequest | null
+  active?: boolean
   onBack?: () => void
 }) {
   const [mode, setMode] = useState<Mode>(initialMode)
@@ -107,6 +123,7 @@ export function AiChatScreen({
     initialSessions(initialQuestion, initialMode, Boolean(initialTesteeId)),
   )
   const [currentId, setCurrentId] = useState<string | null>(initialQuestion ? 's-init' : null)
+  const [speakingId, setSpeakingId] = useState<number | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = sessions.find((s) => s.id === currentId)?.messages ?? []
@@ -121,14 +138,14 @@ export function AiChatScreen({
     setSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, messages: fn(s.messages) } : s)))
   }
 
-  function ask(text: string, attachments: Attachment[] = []) {
-    if (isReplying || (!text && attachments.length === 0)) return
+  function ask(text: string, attachments: Attachment[] = [], startNew = false) {
+    if ((!startNew && isReplying) || (!text && attachments.length === 0)) return
     const question = text || (attachments.some((a) => a.kind === 'pdf') ? '请帮我解读这份报告' : '请帮我看看这张图片')
     const userMsg: Message = { id: nextMessageId(), role: 'user', text: question, attachments }
     const replyId = nextMessageId()
     const replyMsg: Message = { id: replyId, role: 'assistant', answers: null, view: mode }
 
-    let sessionId = currentId
+    let sessionId = startNew ? null : currentId
     if (!sessionId) {
       sessionId = `s-${Date.now()}`
       const created: Session = { id: sessionId, title: question.slice(0, 20), time: '刚刚', messages: [userMsg, replyMsg] }
@@ -149,7 +166,69 @@ export function AiChatScreen({
     }, 1200)
   }
 
+  function stopSpeaking() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel()
+    setSpeakingId(null)
+  }
+
+  function toggleSpeak(messageId: number, answer: AiAnswer) {
+    if (!('speechSynthesis' in window)) return
+    const wasSpeaking = speakingId === messageId
+    window.speechSynthesis.cancel()
+    if (wasSpeaking) {
+      setSpeakingId(null)
+      return
+    }
+    const utterance = new SpeechSynthesisUtterance(
+      [answer.intro, ...answer.points, answer.tip ?? ''].join('。'),
+    )
+    utterance.lang = 'zh-CN'
+    utterance.onend = () => setSpeakingId((id) => (id === messageId ? null : id))
+    utterance.onerror = utterance.onend
+    setSpeakingId(messageId)
+    window.speechSynthesis.speak(utterance)
+  }
+
+  function regenerate(messageId: number) {
+    if (!currentId || isReplying) return
+    const index = messages.findIndex((m) => m.id === messageId)
+    const question = messages
+      .slice(0, index)
+      .reverse()
+      .find((m): m is Extract<Message, { role: 'user' }> => m.role === 'user')?.text
+    if (!question) return
+    if (speakingId === messageId) stopSpeaking()
+    const sessionId = currentId
+    updateMessages(sessionId, (prev) => prev.map((m) => (m.id === messageId && m.role === 'assistant' ? { ...m, answers: null } : m)))
+    const answers = buildAnswers(question, Boolean(testee))
+    window.setTimeout(() => {
+      updateMessages(sessionId, (prev) => prev.map((m) => (m.id === messageId && m.role === 'assistant' ? { ...m, answers } : m)))
+    }, 1200)
+  }
+
+  useEffect(() => () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+  }, [])
+
+  const handledRequestId = useRef<number | null>(null)
+  useEffect(() => {
+    if (!request || handledRequestId.current === request.id) return
+    handledRequestId.current = request.id
+    setDrawerOpen(false)
+    ask(request.question, [], true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request])
+
+  useEffect(() => {
+    if (active) return
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+    setSpeakingId(null)
+    setDrawerOpen(false)
+    setSheetOpen(false)
+  }, [active])
+
   function startNewChat() {
+    stopSpeaking()
     setCurrentId(null)
     setDrawerOpen(false)
   }
@@ -282,7 +361,13 @@ export function AiChatScreen({
                 <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
                 <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
                   {m.answers ? (
-                    <AnswerBody answer={m.answers[mode]} />
+                    <AnswerBody
+                      answer={m.answers[mode]}
+                      speaking={speakingId === m.id}
+                      regenerateDisabled={isReplying}
+                      onToggleSpeak={() => m.answers && toggleSpeak(m.id, m.answers[mode])}
+                      onRegenerate={() => regenerate(m.id)}
+                    />
                   ) : (
                     <TypingDots />
                   )}
@@ -480,9 +565,48 @@ function TesteeSheet({
   )
 }
 
-function AnswerBody({ answer }: { answer: AiAnswer }) {
+const confidenceStyles: Record<Confidence, string> = {
+  high: 'bg-[#e8f7f1] text-[#1f8a5b]',
+  medium: 'bg-[#fff4e0] text-[#b26a00]',
+  low: 'bg-[#f1f3f6] text-[#6b7685]',
+}
+
+const sourceKindLabel: Record<SourceKind, string> = {
+  report: '个人报告',
+  guideline: '临床指南',
+  label: '说明书',
+  database: '数据库',
+}
+
+function AnswerBody({
+  answer,
+  speaking,
+  regenerateDisabled,
+  onToggleSpeak,
+  onRegenerate,
+}: {
+  answer: AiAnswer
+  speaking: boolean
+  regenerateDisabled: boolean
+  onToggleSpeak: () => void
+  onRegenerate: () => void
+}) {
+  const [sourcesOpen, setSourcesOpen] = useState(false)
+  const conf = confidenceMeta[answer.confidence]
   return (
     <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold',
+            confidenceStyles[answer.confidence],
+          )}
+        >
+          <ShieldCheck className="size-3" aria-hidden />
+          {conf.label}
+        </span>
+        <span className="text-[11px] leading-4 text-muted-foreground">{conf.hint}</span>
+      </div>
       <p>{answer.intro}</p>
       <ol className="flex flex-col gap-1.5">
         {answer.points.map((point, i) => (
@@ -497,13 +621,141 @@ function AnswerBody({ answer }: { answer: AiAnswer }) {
       {answer.tip && (
         <p className="rounded-xl bg-[#eefaf8] px-3 py-2 text-[12px] leading-5 text-[#2f8f86]">{answer.tip}</p>
       )}
-      {answer.source && (
-        <p className="flex items-center gap-1 text-[11px] text-secondary-foreground">
-          <BookOpenCheck className="size-3.5" />
-          {answer.source}
-        </p>
+      {answer.sources.length > 0 ? (
+        <div className="rounded-xl bg-[#f5f8fd]">
+          <button
+            type="button"
+            onClick={() => setSourcesOpen((v) => !v)}
+            aria-expanded={sourcesOpen}
+            className="flex w-full items-center gap-1.5 px-3 py-2 text-left text-[12px] font-medium text-secondary-foreground"
+          >
+            <BookOpenCheck className="size-3.5 shrink-0" aria-hidden />
+            <span className="flex-1">引用来源 · {answer.sources.length}</span>
+            <ChevronDown className={cn('size-3.5 transition-transform', sourcesOpen && 'rotate-180')} aria-hidden />
+          </button>
+          {sourcesOpen && (
+            <ol className="flex flex-col gap-2 px-3 pb-2.5">
+              {answer.sources.map((s, i) => (
+                <li key={s.title} className="flex gap-2 text-[12px] leading-[18px]">
+                  <span className="mt-px shrink-0 font-semibold text-primary">[{i + 1}]</span>
+                  <span className="min-w-0">
+                    <span className="block text-foreground">{s.title}</span>
+                    <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <span className="rounded bg-white px-1.5 py-px text-secondary-foreground">{sourceKindLabel[s.kind]}</span>
+                      {s.org}
+                      {s.level && <span>· 证据等级 {s.level}</span>}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      ) : (
+        <p className="rounded-xl bg-[#f5f8fd] px-3 py-2 text-[12px] text-muted-foreground">暂无可引用的权威来源</p>
       )}
-      <p className="mt-1 border-t border-border pt-2 text-[11px] text-muted-foreground">AI 生成，仅供参考</p>
+      <AnswerActions
+        answer={answer}
+        speaking={speaking}
+        regenerateDisabled={regenerateDisabled}
+        onToggleSpeak={onToggleSpeak}
+        onRegenerate={onRegenerate}
+      />
+    </div>
+  )
+}
+
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    // Clipboard API is blocked in some embedded webviews/iframes; fall back to execCommand.
+    const el = document.createElement('textarea')
+    el.value = text
+    el.setAttribute('readonly', '')
+    el.style.position = 'fixed'
+    el.style.opacity = '0'
+    document.body.appendChild(el)
+    el.select()
+    const ok = document.execCommand('copy')
+    el.remove()
+    return ok
+  }
+}
+
+function AnswerActions({
+  answer,
+  speaking,
+  regenerateDisabled,
+  onToggleSpeak,
+  onRegenerate,
+}: {
+  answer: AiAnswer
+  speaking: boolean
+  regenerateDisabled: boolean
+  onToggleSpeak: () => void
+  onRegenerate: () => void
+}) {
+  const [notice, setNotice] = useState<string | null>(null)
+  const timer = useRef<number | undefined>(undefined)
+
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  function flash(text: string) {
+    setNotice(text)
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => setNotice(null), 1600)
+  }
+
+  async function copy() {
+    flash((await copyText(answerToText(answer))) ? '已复制' : '复制失败')
+  }
+
+  async function share() {
+    const text = answerToText(answer)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: '药问基因 · AI 回答', text })
+        return
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return
+      }
+    }
+    flash((await copyText(text)) ? '已复制，可粘贴分享' : '分享失败')
+  }
+
+  const actions = [
+    { key: 'speak', label: speaking ? '停止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
+    { key: 'copy', label: '复制', icon: notice === '已复制' ? Check : Copy, onClick: copy },
+    { key: 'share', label: '分享', icon: Share2, onClick: share },
+    { key: 'retry', label: '重新回答', icon: RefreshCw, onClick: onRegenerate, disabled: regenerateDisabled },
+  ]
+
+  return (
+    <div className="mt-1 flex items-center justify-between gap-2 border-t border-border pt-2">
+      <p className="text-[11px] text-muted-foreground" aria-live="polite">
+        {notice ?? 'AI 生成，仅供参考'}
+      </p>
+      <div className="flex items-center gap-0.5">
+        {actions.map(({ key, label, icon: Icon, onClick, active, disabled }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={onClick}
+            disabled={disabled}
+            aria-label={label}
+            aria-pressed={key === 'speak' ? speaking : undefined}
+            title={label}
+            className={cn(
+              'flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary disabled:opacity-40',
+              active && 'bg-secondary text-primary',
+            )}
+          >
+            <Icon className={cn('size-[15px]', key === 'speak' && speaking && 'size-3 fill-current')} />
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

@@ -2,30 +2,46 @@
 
 import { useState } from 'react'
 import { HomeScreen } from '@/components/mini/home-screen'
-import { AiChatScreen } from '@/components/mini/ai-chat-screen'
+import { AiChatScreen, type ChatRequest } from '@/components/mini/ai-chat-screen'
 import { TabBar, type TabKey } from '@/components/mini/tab-bar'
 import { TabPlaceholderScreen } from '@/components/mini/tab-placeholder-screen'
 import { FloatingAiButton } from '@/components/mini/floating-ai-button'
-
-type Chat = { question?: string; key: number } | null
+import { cn } from '@/lib/utils'
 
 export function HomeFlow({ initialTab = 'home' }: { initialTab?: TabKey }) {
   const [tab, setTab] = useState<TabKey>(initialTab)
-  const [chat, setChat] = useState<Chat>(null)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatMounted, setChatMounted] = useState(false)
+  const [request, setRequest] = useState<ChatRequest | null>(null)
 
-  const openChat = (question?: string) => setChat({ question, key: Date.now() })
-
-  if (chat) {
-    return <AiChatScreen key={chat.key} initialQuestion={chat.question} onBack={() => setChat(null)} />
+  const openChat = (question?: string) => {
+    if (question) setRequest({ question, id: Date.now() })
+    setChatMounted(true)
+    setChatOpen(true)
   }
 
   return (
-    <div className="relative flex h-full flex-col">
-      <div className="min-h-0 flex-1">
+    <div className="relative flex h-full flex-col overflow-hidden">
+      <div className="min-h-0 flex-1" inert={chatOpen}>
         {tab === 'home' ? <HomeScreen onOpenChat={openChat} /> : <TabPlaceholderScreen tab={tab} />}
       </div>
-      <TabBar active={tab} onSelect={setTab} />
-      <FloatingAiButton onClick={() => openChat()} />
+      <div inert={chatOpen}>
+        <TabBar active={tab} onSelect={setTab} />
+      </div>
+      {!chatOpen && <FloatingAiButton onClick={() => openChat()} />}
+
+      {chatMounted && (
+        <div
+          aria-hidden={!chatOpen}
+          inert={!chatOpen}
+          className={cn(
+            'absolute inset-0 z-40 transition-transform duration-300 ease-out motion-reduce:transition-none',
+            chatOpen ? 'translate-x-0' : 'pointer-events-none translate-x-full',
+          )}
+        >
+          <AiChatScreen request={request} active={chatOpen} onBack={() => setChatOpen(false)} />
+        </div>
+      )}
     </div>
   )
 }
