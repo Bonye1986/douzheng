@@ -28,6 +28,7 @@ import {
   Truck,
   UserRound,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
@@ -36,6 +37,7 @@ import { initialExaminees } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
 type StatusKey =
+  | 'toPay'
   | 'toShip'
   | 'shipped'
   | 'toVerify'
@@ -47,6 +49,7 @@ type StatusKey =
   | 'closed'
 
 const statusMeta: Record<StatusKey, { label: string; icon: LucideIcon; count?: number }> = {
+  toPay: { label: '待付款', icon: Wallet, count: 1 },
   toShip: { label: '待发货', icon: PackageCheck },
   shipped: { label: '已发货', icon: Truck, count: 1 },
   toVerify: { label: '待核销', icon: QrCode, count: 1 },
@@ -62,17 +65,17 @@ const orderTabs = [
   {
     key: 'all',
     label: '全部订单',
-    statuses: ['toShip', 'shipped', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
+    statuses: ['toPay', 'toShip', 'shipped', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
   },
   {
     key: 'self',
     label: '自采样订单',
-    statuses: ['toShip', 'shipped', 'toSample', 'sent', 'received', 'testing', 'done'],
+    statuses: ['toPay', 'toShip', 'shipped', 'toSample', 'sent', 'received', 'testing', 'done'],
   },
   {
     key: 'site',
     label: '定点采样订单',
-    statuses: ['toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
+    statuses: ['toPay', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
   },
 ] as const satisfies readonly { key: string; label: string; statuses: readonly StatusKey[] }[]
 
@@ -167,7 +170,7 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
               ))}
             </div>
           </div>
-          <ul role="tabpanel" aria-label={activeTab.label} className="mt-3 grid grid-cols-4 gap-y-3.5 px-1.5">
+          <ul role="tabpanel" aria-label={activeTab.label} className="mt-3 grid grid-cols-5 gap-y-3.5 px-1">
             {activeTab.statuses.map((key) => {
               const s = statusMeta[key]
               return (
@@ -188,6 +191,33 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
               )
             })}
           </ul>
+
+          {/* 待付款订单：后台可改价，用户端按最新价格支付 */}
+          <div className="mx-3.5 mt-3.5 rounded-xl border border-[#ffe3cf] bg-[#fff8f2] p-3">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-[12px] font-medium text-foreground">
+                <Wallet className="size-3.5 text-[#f07a2c]" aria-hidden="true" />
+                待付款 · 药物基因检测（2 人）
+              </span>
+              <span className="rounded bg-[#ffeadb] px-1.5 py-0.5 text-[10px] font-medium text-[#d9621a]">已改价</span>
+            </div>
+            <div className="mt-2 flex items-end justify-between">
+              <div>
+                <p className="flex items-baseline gap-1.5">
+                  <span className="text-[11px] text-muted-foreground">应付</span>
+                  <span className="text-[17px] font-semibold tabular-nums text-[#f07a2c]">¥1,697</span>
+                  <span className="text-[11px] tabular-nums text-muted-foreground line-through">¥1,897</span>
+                </p>
+                <p className="mt-0.5 text-[10px] text-muted-foreground">客服已调整订单金额，请按最新价格支付</p>
+              </div>
+              <button
+                type="button"
+                className="h-7 shrink-0 rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
+              >
+                去支付
+              </button>
+            </div>
+          </div>
 
           {/* 售后订单 / 已关闭 */}
           <div className="mx-3.5 mt-3.5 flex items-center rounded-xl bg-[#f8fafe] py-2.5 pl-3">
