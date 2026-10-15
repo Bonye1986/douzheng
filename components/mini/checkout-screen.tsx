@@ -348,7 +348,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               + 添加受检人
             </button>
           </div>
-          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
+          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">��个项目可选多位受检人，一人一份，报告分别归档</p>
           <ul>
             {rows.map(({ service }) => {
               const selected = assign[service.id] ?? []
@@ -634,7 +634,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           onClick={submit}
           className="ml-auto h-10 min-w-[120px] rounded-full bg-primary px-6 text-[14px] font-medium text-primary-foreground active:opacity-90"
         >
-          微信支付
+          提交订单
         </button>
       </div>
 
