@@ -3,18 +3,9 @@
 import { useState } from 'react'
 import { Check, Clock, Hospital, LocateFixed, MapPin, Microscope, Navigation, Search, X } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
-import { siteTypeLabel, sites, type SiteType } from '@/components/mini/checkout-data'
+import { siteTypeLabel, sites } from '@/components/mini/checkout-data'
 import { sampleTypeCatalog } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
-
-type Filter = 'all' | SiteType | 'today'
-
-const filters: { key: Filter; label: string }[] = [
-  { key: 'all', label: '全部' },
-  { key: 'hospital', label: '医院' },
-  { key: 'lab', label: '第三方检验机构' },
-  { key: 'today', label: '今日可采' },
-]
 
 type Props = {
   selected: string | null
@@ -24,11 +15,9 @@ type Props = {
 
 export function SiteListScreen({ selected, onBack, onSelect }: Props) {
   const [keyword, setKeyword] = useState('')
-  const [filter, setFilter] = useState<Filter>('all')
 
   const q = keyword.trim()
   const list = sites
-    .filter((s) => (filter === 'all' ? true : filter === 'today' ? s.todayAvailable : s.type === filter))
     .filter((s) => !q || `${s.name}${s.district}${s.detail}`.includes(q))
     .sort((a, b) => a.distance - b.distance)
 
@@ -53,23 +42,6 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
             </button>
           )}
         </label>
-        <div role="tablist" aria-label="机构筛选" className="mt-2.5 flex gap-2 overflow-x-auto [scrollbar-width:none]">
-          {filters.map((f) => (
-            <button
-              key={f.key}
-              type="button"
-              role="tab"
-              aria-selected={filter === f.key}
-              onClick={() => setFilter(f.key)}
-              className={cn(
-                'h-7 shrink-0 rounded-full px-3 text-[12px] transition-colors',
-                filter === f.key ? 'bg-primary font-medium text-primary-foreground' : 'bg-[#f2f5fa] text-muted-foreground',
-              )}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5 px-4 py-2 text-[12px] text-muted-foreground">
@@ -83,7 +55,7 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
           <div className="flex flex-col items-center px-6 pt-16 text-center">
             <MapPin className="size-10 text-[#c3ccdb]" strokeWidth={1.5} aria-hidden="true" />
             <p className="mt-3 text-[14px] text-foreground">附近暂无符合条件的机构</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">换个关键词或筛选条件试试</p>
+            <p className="mt-1 text-[12px] text-muted-foreground">换个关键词试试</p>
           </div>
         ) : (
           <ul role="radiogroup" aria-label="定点采样机构" className="flex flex-col gap-2.5">
