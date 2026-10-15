@@ -3,29 +3,22 @@
 import { useState } from 'react'
 import {
   AlarmClock,
+  AlertTriangle,
   BadgeCheck,
-  Ban,
   BookOpen,
-  Building2,
   ChevronRight,
   FileSignature,
   FileText,
   FlaskConical,
   Gift,
   Headphones,
-  House,
-  Inbox,
   Info,
   MapPin,
-  PackageCheck,
-  QrCode,
   RotateCcw,
-  Send,
   Settings,
   Sparkles,
   TestTube,
   TicketPercent,
-  Truck,
   UserRound,
   Users,
   Wallet,
@@ -33,58 +26,36 @@ import {
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
+import { ResampleScreen } from '@/components/mini/resample-screen'
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
-type StatusKey =
-  | 'toPay'
-  | 'toShip'
-  | 'shipped'
-  | 'toVerify'
-  | 'toSample'
-  | 'sent'
-  | 'received'
-  | 'testing'
-  | 'done'
-  | 'closed'
-
-const statusMeta: Record<StatusKey, { label: string; icon: LucideIcon; count?: number }> = {
-  toPay: { label: '待付款', icon: Wallet, count: 1 },
-  toShip: { label: '待发货', icon: PackageCheck },
-  shipped: { label: '已发货', icon: Truck, count: 1 },
-  toVerify: { label: '待核销', icon: QrCode, count: 1 },
-  toSample: { label: '待采样', icon: TestTube },
-  sent: { label: '已寄样', icon: Send },
-  received: { label: '已收样', icon: Inbox },
-  testing: { label: '检测中', icon: FlaskConical, count: 2 },
-  done: { label: '已完成', icon: BadgeCheck },
-  closed: { label: '已关闭', icon: Ban },
-}
-
 const orderTabs = [
-  {
-    key: 'all',
-    label: '全部订单',
-    statuses: ['toPay', 'toShip', 'shipped', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
-  },
-  {
-    key: 'self',
-    label: '自采样订单',
-    statuses: ['toPay', 'toShip', 'shipped', 'toSample', 'sent', 'received', 'testing', 'done'],
-  },
-  {
-    key: 'site',
-    label: '定点采样订单',
-    statuses: ['toPay', 'toVerify', 'toSample', 'sent', 'received', 'testing', 'done'],
-  },
-] as const satisfies readonly { key: string; label: string; statuses: readonly StatusKey[] }[]
+  { key: 'all', label: '全部订单' },
+  { key: 'self', label: '自采样订单' },
+  { key: 'site', label: '定点采样订单' },
+] as const
 
 type OrderTabKey = (typeof orderTabs)[number]['key']
 
-const afterSales = [
-  { key: 'self', label: '自采重采样订单', desc: '重新寄送采样盒', icon: House, count: 1 },
-  { key: 'site', label: '定点重采样订单', desc: '预约机构重新采样', icon: Building2, count: 0 },
-] as const
+/**
+ * 面向用户的 5 个阶段，后台细分状态归并其中：
+ * 待采样 = 待发货 / 已发货 / 待核销 / 待采样；检测中 = 已寄样 / 已收样 / 检测中；
+ * 售后 = 重采样订单 + 退款。已关闭订单在「查看全部」列表中筛选。
+ */
+const orderPhases: { key: string; label: string; icon: LucideIcon; counts: Record<OrderTabKey, number> }[] = [
+  { key: 'toPay', label: '待付款', icon: Wallet, counts: { all: 1, self: 1, site: 0 } },
+  { key: 'toSample', label: '待采样', icon: TestTube, counts: { all: 2, self: 1, site: 1 } },
+  { key: 'testing', label: '检测中', icon: FlaskConical, counts: { all: 2, self: 1, site: 1 } },
+  { key: 'done', label: '已完成', icon: BadgeCheck, counts: { all: 0, self: 0, site: 0 } },
+  { key: 'after', label: '退款/售后', icon: RotateCcw, counts: { all: 1, self: 1, site: 0 } },
+]
+
+const afterLabel: Record<OrderTabKey, string> = {
+  all: '退款/售后',
+  self: '自采重采样',
+  site: '定点重采样',
+}
 
 const tools = [
   { key: 'examinee', label: '检测人管理', icon: Users },
@@ -111,8 +82,15 @@ function SectionHeader({ id, title, action }: { id: string; title: string; actio
   )
 }
 
-export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: boolean }) {
+export function MineScreen({
+  initialAuthOpen = false,
+  initialResampleOpen = false,
+}: {
+  initialAuthOpen?: boolean
+  initialResampleOpen?: boolean
+}) {
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
+  const [resampleOpen, setResampleOpen] = useState(initialResampleOpen)
   const [orderTab, setOrderTab] = useState<OrderTabKey>('all')
   const self = initialExaminees[0]
   const activeTab = orderTabs.find((t) => t.key === orderTab) ?? orderTabs[0]
@@ -170,79 +148,72 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
               ))}
             </div>
           </div>
-          <ul role="tabpanel" aria-label={activeTab.label} className="mt-3 grid grid-cols-5 gap-y-3.5 px-1">
-            {activeTab.statuses.map((key) => {
-              const s = statusMeta[key]
+          <ul role="tabpanel" aria-label={activeTab.label} className="mt-3.5 grid grid-cols-5 px-1">
+            {orderPhases.map((p) => {
+              const count = p.counts[orderTab]
               return (
-                <li key={key}>
+                <li key={p.key}>
                   <button type="button" className="flex w-full flex-col items-center gap-1.5">
-                    <span className="relative flex size-10 items-center justify-center rounded-full bg-[#eef5ff]">
-                      <s.icon className="size-5 text-primary" strokeWidth={1.7} aria-hidden="true" />
-                      {s.count ? (
-                        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
-                          {s.count}
+                    <span className="relative">
+                      <p.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                      {count > 0 && (
+                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+                          {count}
                           <span className="sr-only">笔</span>
                         </span>
-                      ) : null}
+                      )}
                     </span>
-                    <span className="text-[12px] text-foreground">{s.label}</span>
+                    <span className="whitespace-nowrap text-[12px] text-foreground">
+                      {p.key === 'after' ? afterLabel[orderTab] : p.label}
+                    </span>
                   </button>
                 </li>
               )
             })}
           </ul>
 
-          {/* 待付款订单：后台可改价，用户端按最新价格支付 */}
-          <div className="mx-3.5 mt-3.5 rounded-xl border border-[#ffe3cf] bg-[#fff8f2] p-3">
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-[12px] font-medium text-foreground">
-                <Wallet className="size-3.5 text-[#f07a2c]" aria-hidden="true" />
-                待付款 · 药物基因检测（2 人）
-              </span>
-              <span className="rounded bg-[#ffeadb] px-1.5 py-0.5 text-[10px] font-medium text-[#d9621a]">已改价</span>
-            </div>
-            <div className="mt-2 flex items-end justify-between">
-              <div>
-                <p className="flex items-baseline gap-1.5">
-                  <span className="text-[11px] text-muted-foreground">应付</span>
-                  <span className="text-[17px] font-semibold tabular-nums text-[#f07a2c]">¥1,697</span>
-                  <span className="text-[11px] tabular-nums text-muted-foreground line-through">¥1,897</span>
-                </p>
-                <p className="mt-0.5 text-[10px] text-muted-foreground">客服已调整订单金额，请按最新价格支付</p>
-              </div>
-              <button
-                type="button"
-                className="h-7 shrink-0 rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
-              >
-                去支付
-              </button>
-            </div>
-          </div>
-
-          {/* 售后订单 / 已关闭 */}
-          <div className="mx-3.5 mt-3.5 flex items-center rounded-xl bg-[#f8fafe] py-2.5 pl-3">
-            <span className="flex shrink-0 items-center gap-1 text-[12px] font-medium text-foreground">
-              <RotateCcw className="size-3.5 text-[#f07a2c]" aria-hidden="true" />
-              售后
-            </span>
-            <ul aria-label="售后订单" className="flex min-w-0 flex-1">
-              {afterSales.map((a) => (
-                <li key={a.key} className="flex-1 border-l border-[#e3eaf4] first:ml-3">
-                  <button type="button" className="flex w-full items-center justify-center gap-1 whitespace-nowrap text-[12px] text-foreground">
-                    {a.label.replace('订单', '')}
-                    {a.count > 0 && (
-                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] tabular-nums text-white">
-                        {a.count}
-                        <span className="sr-only">笔处理中</span>
-                      </span>
-                    )}
-                  </button>
-                </li>
-              ))}
-              <li className="flex-1 border-l border-[#e3eaf4]">
-                <button type="button" className="flex w-full items-center justify-center gap-1 whitespace-nowrap text-[12px] text-muted-foreground">
-                  <Ban className="size-3.5" aria-hidden="true" />
-                  已关闭
+          {/* 待处理：后台改价待支付 / 样本不合格待选择 */}
+          <div className="mx-3.5 mt-4 border-t border-[#eef2f8] pt-3">
+            <p className="text-[12px] font-medium text-muted-foreground">
+              待处理 <span className="tabular-nums text-[#f07a2c]">2</span>
+            </p>
+            <ul className="mt-2 flex flex-col gap-2">
+              <li className="flex items-center gap-2.5 rounded-xl bg-[#f8fafe] px-3 py-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#fff1e6]">
+                  <Wallet className="size-4 text-[#f07a2c]" aria-hidden="true" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-1.5 text-[12px] font-medium text-foreground">
+                    待付款
+                    <span className="rounded bg-[#ffeadb] px-1 text-[10px] font-medium text-[#d9621a]">已改价</span>
+                  </p>
+                  <p className="mt-0.5 flex items-baseline gap-1 text-[11px] text-muted-foreground">
+                    应付
+                    <span className="font-semibold tabular-nums text-[#f07a2c]">¥1,697</span>
+                    <span className="tabular-nums line-through">¥1,897</span>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="h-7 shrink-0 rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground"
+                >
+                  去支付
+                </button>
+              </li>
+              <li className="flex items-center gap-2.5 rounded-xl bg-[#f8fafe] px-3 py-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#fff1e6]">
+                  <AlertTriangle className="size-4 text-[#e0651c]" aria-hidden="true" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-medium text-foreground">样本不合格 · 李秀兰</p>
+                  <p className="mt-0.5 truncate text-[11px] text-muted-foreground">请选择重新采样或申请退款</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setResampleOpen(true)}
+                  className="h-7 shrink-0 rounded-full border border-primary px-3 text-[12px] font-medium text-primary"
+                >
+                  去处理
                 </button>
               </li>
             </ul>
@@ -315,6 +286,7 @@ export function MineScreen({ initialAuthOpen = false }: { initialAuthOpen?: bool
       </div>
 
       {authOpen && <AuthorizationScreen onBack={() => setAuthOpen(false)} />}
+      {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
     </div>
   )
 }
