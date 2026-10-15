@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -7,16 +8,22 @@ export function BrandMark({ size = 'md', className }: { size?: 'md' | 'lg'; clas
   return (
     <div
       aria-hidden="true"
-      className={cn(
-        'flex items-center justify-center bg-[linear-gradient(135deg,#0c2352_0%,#16408f_46%,#2f74e4_100%)] font-extrabold text-white shadow-[0_6px_16px_#1f5fd847]',
-        size === 'lg'
-          ? 'size-16 rounded-[50%_50%_50%_19px] text-[36px]'
-          : 'size-11 rounded-[50%_50%_50%_13px] text-[24px]',
-        className,
-      )}
+      className={cn('relative shrink-0', size === 'lg' ? 'size-16' : 'size-11', className)}
     >
-      D
+      <Image src="/images/drugene-icon.png" alt="" fill sizes="64px" className="object-contain" />
     </div>
+  )
+}
+
+export function BrandLogo({ className }: { className?: string }) {
+  return (
+    <Image
+      src="/images/drugene-logo.png"
+      alt="DRUGENE 临床精准用药助手"
+      width={436}
+      height={147}
+      className={cn('h-auto w-[180px]', className)}
+    />
   )
 }
 

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { CircleAlert, FileSearch, MessageCircleHeart, ShieldCheck, Smartphone } from 'lucide-react'
-import { Agreement, BrandMark } from './auth-parts'
+import { Agreement, BrandLogo } from './auth-parts'
 import { NavBar, StatusBar } from './phone-frame'
 
 const highlights = [
@@ -52,12 +52,8 @@ export function WelcomeScreen({
         <NavBar />
 
         <div className="flex flex-1 flex-col justify-end px-7 pb-8">
-          <div className="mb-6 flex items-center gap-3">
-            <BrandMark />
-            <div>
-              <p className="text-[18px] font-bold leading-tight">药问基因</p>
-              <p className="text-[12px] text-muted-foreground">都正生物 · DRUGENE</p>
-            </div>
+          <div className="mb-6">
+            <BrandLogo />
           </div>
 
           <h1 className="text-balance text-[30px] font-bold leading-[1.3]">
