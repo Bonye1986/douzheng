@@ -40,6 +40,24 @@ export function StatusBar({ tone = 'dark' }: { tone?: Tone }) {
   )
 }
 
+export function Capsule({ tone = 'dark', className }: { tone?: Tone; className?: string }) {
+  const isLight = tone === 'light'
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        'flex h-8 items-center gap-3 rounded-full border px-3',
+        isLight ? 'border-white/25 bg-white/10 text-white' : 'border-border bg-white/80 text-foreground',
+        className,
+      )}
+    >
+      <Ellipsis className="size-4" />
+      <span className={cn('h-4 w-px', isLight ? 'bg-white/30' : 'bg-border')} />
+      <Circle className="size-3.5" strokeWidth={3} />
+    </div>
+  )
+}
+
 export function NavBar({
   title,
   tone = 'dark',

@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import Image from 'next/image'
 import { Plus, Search, ShoppingCart, X } from 'lucide-react'
-import { StatusBar } from '@/components/mini/phone-frame'
+import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { TestDetailScreen } from '@/components/mini/test-detail-screen'
 import {
   samplingLabel,
@@ -50,8 +50,9 @@ export function TestsScreen({ initialDetailId }: { initialDetailId?: string }) {
       <div className="flex h-full flex-col bg-[#f4f8fe]" inert={!!detail}>
         <div className="shrink-0 bg-white">
           <StatusBar />
-          <header className="flex h-11 items-center justify-center">
+          <header className="relative flex h-11 items-center justify-center">
             <h1 className="text-[17px] font-semibold text-foreground">检测</h1>
+            <Capsule className="absolute right-3" />
           </header>
 
           <div className="flex items-center gap-2 px-4 pb-2.5 pt-1">

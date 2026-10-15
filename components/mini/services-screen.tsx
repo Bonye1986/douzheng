@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { BookOpen, CheckCircle2, ChevronRight, Eye, Lightbulb, XCircle } from 'lucide-react'
-import { StatusBar } from '@/components/mini/phone-frame'
+import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
   banners,
@@ -20,8 +20,9 @@ export function ServicesScreen({ onOpenChat }: Props) {
     <div className="flex h-full flex-col bg-[#f4f8fe]">
       <div className="bg-white">
         <StatusBar />
-        <header className="flex h-11 shrink-0 items-center justify-center">
+        <header className="relative flex h-11 shrink-0 items-center justify-center">
           <h1 className="text-[17px] font-semibold text-foreground">服务</h1>
+          <Capsule className="absolute right-3" />
         </header>
       </div>
 

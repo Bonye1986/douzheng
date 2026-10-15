@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { ChevronLeft, Clock, Dna, FlaskConical, Headset, Pill, ShieldCheck } from 'lucide-react'
-import { StatusBar } from '@/components/mini/phone-frame'
+import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { CartButton } from '@/components/mini/tests-screen'
 import { samplingLabel, testFlow, type TestService } from '@/components/mini/tests-data'
 
@@ -42,6 +42,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
             <ChevronLeft className="size-6" aria-hidden="true" />
           </button>
           <p className="text-[17px] font-semibold text-foreground">服务详情</p>
+          <Capsule className="absolute right-3" />
         </div>
       </div>
 
