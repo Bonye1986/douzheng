@@ -258,29 +258,8 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
-          <div
-            role="radiogroup"
-            aria-label="回答风格"
-            className="ml-0.5 flex rounded-full bg-white/85 p-0.5 shadow-[0_2px_8px_#3b8beb14]"
-          >
-            {modes.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                role="radio"
-                aria-checked={mode === item.key}
-                onClick={() => setMode(item.key)}
-                className={cn(
-                  'h-7 rounded-full px-2 text-[12px] transition-colors',
-                  mode === item.key ? 'bg-primary font-semibold text-white' : 'text-muted-foreground',
-                )}
-              >
-                {item.label.slice(0, 2)}
-              </button>
-            ))}
-          </div>
         </div>
-        <h2 className="ml-16 text-[16px] font-medium">AI咨询</h2>
+        <h2 className="text-[16px] font-medium">AI咨询</h2>
         <div
           aria-hidden="true"
           className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
@@ -397,7 +376,7 @@ export function AiChatScreen({
         )}
       </div>
 
-      <ChatComposer disabled={isReplying} onSend={ask} />
+      <ChatComposer disabled={isReplying} onSend={ask} answerStyle={mode} onAnswerStyleChange={setMode} />
 
       {drawerOpen && (
         <ChatHistoryDrawer

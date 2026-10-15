@@ -1,7 +1,20 @@
 'use client'
 
 import { useRef, useState, type ChangeEvent } from 'react'
-import { ArrowUp, Camera, FileText, Images, Keyboard, Mic, Plus, X } from 'lucide-react'
+import {
+  ArrowUp,
+  Camera,
+  Check,
+  ChevronDown,
+  FileText,
+  GraduationCap,
+  Images,
+  Keyboard,
+  MessageCircle,
+  Mic,
+  Plus,
+  X,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export type Attachment = { id: string; name: string; kind: 'image' | 'pdf'; url?: string }
@@ -10,13 +23,26 @@ const MAX_ATTACHMENTS = 9
 const CANCEL_DISTANCE = 60
 const voiceSamples = ['华法林和阿司匹林能一起吃吗？', '我的基因报告显示慢代谢，要注意什么？', '降压药需要饭前吃还是饭后吃？']
 
+export type AnswerStyle = 'plain' | 'pro'
+
+const answerStyles: { key: AnswerStyle; label: string; desc: string }[] = [
+  { key: 'plain', label: '通俗版', desc: '用日常语言解释，适合患者和家属' },
+  { key: 'pro', label: '专业版', desc: '包含机制、证据与指南，适合医药专业人士' },
+]
+
 export function ChatComposer({
   disabled,
   onSend,
+  answerStyle,
+  onAnswerStyleChange,
 }: {
   disabled: boolean
   onSend: (text: string, attachments: Attachment[]) => void
+  answerStyle: AnswerStyle
+  onAnswerStyleChange: (style: AnswerStyle) => void
 }) {
+  const [styleMenuOpen, setStyleMenuOpen] = useState(false)
+  const currentStyle = answerStyles.find((s) => s.key === answerStyle) ?? answerStyles[0]
   const [inputMode, setInputMode] = useState<'keyboard' | 'voice'>('keyboard')
   const [draft, setDraft] = useState('')
   const [attachments, setAttachments] = useState<Attachment[]>([])
@@ -69,7 +95,68 @@ export function ChatComposer({
 
   return (
     <>
-      <div className="shrink-0 border-t border-border bg-white px-3 pb-7 pt-2.5">
+      <div className="relative shrink-0 border-t border-border bg-white px-3 pb-7 pt-2">
+        <div className="mb-2 flex items-center px-1">
+          <button
+            type="button"
+            onClick={() => setStyleMenuOpen((v) => !v)}
+            aria-haspopup="listbox"
+            aria-expanded={styleMenuOpen}
+            aria-label={`回答风格：${currentStyle.label}，点击切换`}
+            className="flex h-7 items-center gap-1 rounded-full bg-secondary pl-2 pr-1.5 text-[12px] font-medium text-primary active:opacity-80"
+          >
+            {answerStyle === 'plain' ? <MessageCircle className="size-3.5" /> : <GraduationCap className="size-3.5" />}
+            {currentStyle.label}
+            <ChevronDown className={cn('size-3.5 transition-transform', styleMenuOpen && 'rotate-180')} />
+          </button>
+        </div>
+
+        {styleMenuOpen && (
+          <>
+            <button
+              type="button"
+              aria-label="关闭回答风格菜单"
+              onClick={() => setStyleMenuOpen(false)}
+              className="fixed inset-0 z-10 cursor-default"
+            />
+            <ul
+              role="listbox"
+              aria-label="回答风格"
+              className="absolute bottom-full left-3 z-20 mb-1 w-64 rounded-2xl border border-border bg-white p-1.5 shadow-[0_8px_24px_#1e2a3d1f] animate-in fade-in slide-in-from-bottom-2 duration-150"
+            >
+              {answerStyles.map((s) => {
+                const selected = s.key === answerStyle
+                return (
+                  <li key={s.key}>
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      onClick={() => {
+                        onAnswerStyleChange(s.key)
+                        setStyleMenuOpen(false)
+                      }}
+                      className={cn(
+                        'flex w-full items-start gap-2.5 rounded-xl px-3 py-2.5 text-left',
+                        selected ? 'bg-secondary' : 'active:bg-secondary',
+                      )}
+                    >
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-white text-primary">
+                        {s.key === 'plain' ? <MessageCircle className="size-4" /> : <GraduationCap className="size-4" />}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[14px] font-semibold text-foreground">{s.label}</span>
+                        <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">{s.desc}</span>
+                      </span>
+                      {selected && <Check className="mt-1 size-4 shrink-0 text-primary" strokeWidth={2.6} />}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </>
+        )}
+
         {attachments.length > 0 && (
           <ul aria-label="待发送附件" className="mb-2.5 flex gap-2 overflow-x-auto px-1 pt-1.5 [scrollbar-width:none]">
             {attachments.map((a) => (
