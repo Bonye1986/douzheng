@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { BookOpen, CheckCircle2, ChevronRight, Eye, Lightbulb, Search, XCircle } from 'lucide-react'
+import { BookOpen, CheckCircle2, ChevronRight, Eye, Lightbulb, XCircle } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
@@ -26,13 +26,6 @@ export function ServicesScreen({ onOpenChat }: Props) {
       </div>
 
       <div className="flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
-        <div className="bg-white px-4 pb-3">
-          <div className="flex h-9 items-center gap-2 rounded-full bg-[#f2f5fa] px-3.5 text-[13px] text-[#a3adc2]">
-            <Search className="size-4" aria-hidden="true" />
-            搜索检测项目、药物、科普
-          </div>
-        </div>
-
         <div className="flex flex-col gap-3 px-4 pt-3">
           <BannerCarousel />
           <CategoryGrid onOpenChat={onOpenChat} />
