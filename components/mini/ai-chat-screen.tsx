@@ -45,11 +45,13 @@ export function AiChatScreen({
   initialTesteeId,
   initialQuestion,
   initialSheetOpen = false,
+  onBack,
 }: {
   initialMode?: Mode
   initialTesteeId?: string
   initialQuestion?: string
   initialSheetOpen?: boolean
+  onBack?: () => void
 }) {
   const [mode, setMode] = useState<Mode>(initialMode)
   const [testee, setTestee] = useState<Testee | null>(
@@ -98,7 +100,7 @@ export function AiChatScreen({
   return (
     <div className="relative flex h-full flex-col bg-[linear-gradient(180deg,#e6f1fe_0%,#f4f8fe_30%)]">
       <StatusBar />
-      <NavBar title="AI咨询" showBack />
+      <NavBar title="AI咨询" showBack onBack={onBack} />
 
       <div className="shrink-0 px-4 pb-3 pt-2">
         <div role="group" aria-label="回答风格" className="grid grid-cols-2 rounded-2xl bg-[#dfeafb] p-1">

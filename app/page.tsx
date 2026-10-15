@@ -2,7 +2,7 @@ import { PhoneFrame } from '@/components/mini/phone-frame'
 import { WelcomeScreen } from '@/components/mini/welcome-screen'
 import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
-import { HomeScreen } from '@/components/mini/home-screen'
+import { HomeFlow } from '@/components/mini/home-flow'
 import { AiChatScreen } from '@/components/mini/ai-chat-screen'
 
 const screens = [
@@ -26,18 +26,12 @@ const screens = [
   },
   {
     id: '04',
-    title: '首页 · 对话引导',
-    desc: '品牌 Logo + 对话入口，预设高频问题，点击即发起对话（可在画板内直接交互）',
-    node: <HomeScreen />,
+    title: '首页',
+    desc: '仅保留平台 Logo、对话输入框、预设高频问题；点击输入框跳转 AI 咨询页，点击预设问题直接带入提问（可在画板内交互）',
+    node: <HomeFlow />,
   },
   {
     id: '05',
-    title: '首页 · 对话中',
-    desc: '点击预设问题后的对话态，输入框上方保留快捷问题，支持开启新对话',
-    node: <HomeScreen initialQuestion="高血压用药注意事项" />,
-  },
-  {
-    id: '06',
     title: 'AI咨询 · 默认态',
     desc: '通俗版 / 专业版切换，未选检测人时按通用知识回答；技能入口与工具栏可直接触发对话',
     node: <AiChatScreen />,
