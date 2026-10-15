@@ -110,7 +110,6 @@ export type QuizQuestion = {
 export type QuizTopic = {
   id: string
   title: string
-  participants: string
   questions: QuizQuestion[]
 }
 
@@ -118,7 +117,6 @@ export const quizTopics: QuizTopic[] = [
   {
     id: 'gene',
     title: '基因检测常识',
-    participants: '1,286',
     questions: [
       {
         id: 'g1',
@@ -155,7 +153,6 @@ export const quizTopics: QuizTopic[] = [
   {
     id: 'cardio',
     title: '心血管用药',
-    participants: '864',
     questions: [
       {
         id: 'c1',
@@ -182,7 +179,6 @@ export const quizTopics: QuizTopic[] = [
   {
     id: 'safety',
     title: '安全用药',
-    participants: '2,031',
     questions: [
       {
         id: 's1',

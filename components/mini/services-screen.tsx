@@ -233,13 +233,10 @@ function DailyQuiz({ onOpenChat }: Props) {
 
   return (
     <section aria-labelledby="quiz" className="rounded-2xl bg-white p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 id="quiz" className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
-          <Lightbulb className="size-4 text-[#f07a2c]" aria-hidden="true" />
-          互动问答
-        </h2>
-        <span className="text-[11px] text-muted-foreground">{topic.participants} 人已参与</span>
-      </div>
+      <h2 id="quiz" className="mb-3 flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
+        <Lightbulb className="size-4 text-[#f07a2c]" aria-hidden="true" />
+        互动问答
+      </h2>
 
       <div
         role="tablist"
