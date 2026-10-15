@@ -15,6 +15,8 @@ import {
   ShieldCheck,
   Ticket,
   UserRound,
+  Users,
+  Wallet,
   X,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
@@ -44,6 +46,13 @@ const addresses: Address[] = [
 const samplingModes: { key: SamplingMode; icon: typeof House; desc: string }[] = [
   { key: 'self', icon: House, desc: '采样盒寄到家，仅支持唾液样本' },
   { key: 'site', icon: Building2, desc: '前往合作机构，支持全部样本类型' },
+]
+
+type PayMethod = 'wechat' | 'friend'
+
+const payMethods: { key: PayMethod; label: string; desc: string; tag?: string; icon: typeof House; color: string }[] = [
+  { key: 'wechat', label: '微信支付', desc: '使用微信零钱或绑定银行卡支付', tag: '推荐', icon: Wallet, color: '#07c160' },
+  { key: 'friend', label: '亲友代付', desc: '生成代付链接，发送给微信好友支付', icon: Users, color: '#f5a524' },
 ]
 
 type Coupon = { id: string; title: string; threshold: number; amount: number; expire: string }
@@ -120,6 +129,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       return { ...r, [serviceId]: cur.includes(memberId) ? cur.filter((x) => x !== memberId) : [...cur, memberId] }
     })
   const [warn, setWarn] = useState(false)
+  const [payMethod, setPayMethod] = useState<PayMethod>('wechat')
   const [submitted, setSubmitted] = useState(false)
 
   const coupon = usable.find((c) => c.id === couponId) ?? null
@@ -518,6 +528,54 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           </p>
         </section>
 
+        <section aria-labelledby="pay-title" className="mt-2.5 rounded-2xl bg-white px-3.5 pb-1 pt-3">
+          <h2 id="pay-title" className="text-[14px] font-semibold text-foreground">
+            支付方式
+          </h2>
+          <div role="radiogroup" aria-labelledby="pay-title" className="mt-1 flex flex-col">
+            {payMethods.map((p) => {
+              const active = payMethod === p.key
+              const Icon = p.icon
+              return (
+                <button
+                  key={p.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setPayMethod(p.key)}
+                  className="flex h-14 w-full items-center gap-3 border-b border-border text-left last:border-b-0"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-full text-white"
+                    style={{ backgroundColor: p.color }}
+                  >
+                    <Icon className="size-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1.5 text-[13px] text-foreground">
+                      {p.label}
+                      {p.tag && (
+                        <span className="rounded bg-[#e8f7ee] px-1 py-px text-[10px] text-[#07a35a]">{p.tag}</span>
+                      )}
+                    </span>
+                    <span className="block truncate text-[11px] text-muted-foreground">{p.desc}</span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'flex size-[18px] shrink-0 items-center justify-center rounded-full border',
+                      active ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb] bg-white',
+                    )}
+                  >
+                    {active && <Check className="size-3" strokeWidth={3} />}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
         <div className={cn('mt-3 flex items-start gap-2 rounded-xl px-1.5 py-1 transition-colors', warn && !agreed && 'bg-[#fff1ec]')}>
           <button
             type="button"
@@ -578,7 +636,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           onClick={submit}
           className="ml-auto h-10 min-w-[120px] rounded-full bg-primary px-6 text-[14px] font-medium text-primary-foreground active:opacity-90"
         >
-          提交订单
+          {payMethod === 'wechat' ? '微信支付' : '发起代付'}
         </button>
       </div>
 
@@ -726,7 +784,7 @@ function SampleTypePicker({
         样本类型
       </span>
       <div className="min-w-0 flex-1">
-        <div role="radiogroup" aria-label={`${serviceName}的样本类型`} className="flex flex-wrap gap-1.5">
+        <div role="radiogroup" aria-label={`${serviceName}���样本类型`} className="flex flex-wrap gap-1.5">
           {opts.map((o) => {
             const on = o.id === value
             return (
