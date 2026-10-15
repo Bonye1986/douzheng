@@ -9,6 +9,7 @@ import { ServicesScreen } from '@/components/mini/services-screen'
 import { TestsScreen } from '@/components/mini/tests-screen'
 import type { CartItem } from '@/components/mini/cart-screen'
 import type { CheckoutLine } from '@/components/mini/checkout-screen'
+import { MineScreen } from '@/components/mini/mine-screen'
 import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { cn } from '@/lib/utils'
 
@@ -47,6 +48,8 @@ export function HomeFlow({
           <TestsScreen initialDetailId={initialDetailId} initialCart={initialCart} initialCartOpen={initialCartOpen}
             initialCheckout={initialCheckout}
           />
+        ) : tab === 'me' ? (
+          <MineScreen />
         ) : (
           <TabPlaceholderScreen tab={tab} />
         )}

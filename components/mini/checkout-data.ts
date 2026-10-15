@@ -21,6 +21,31 @@ export const initialExaminees: Examinee[] = [
   { id: 'child', name: '王小米', relation: '子女', gender: 'female', age: 8 },
 ]
 
+export type ResearchStatus = 'signed' | 'withdrawn' | 'unsigned'
+
+export type ResearchAuth = {
+  id: string
+  memberId: string
+  serviceId: string
+  orderNo: string
+  status: ResearchStatus
+  updatedAt: string
+}
+
+export const researchStatusLabel: Record<ResearchStatus, string> = {
+  signed: '已授权',
+  withdrawn: '已撤回',
+  unsigned: '未授权',
+}
+
+/** 科研授权记录 —— 以「受检人 × 检测项目」为单位，下单时勾选生成，可在「我的 → 授权管理」签署或撤回 */
+export const initialResearchAuths: ResearchAuth[] = [
+  { id: 'ra1', memberId: 'self', serviceId: 'cardio', orderNo: 'GX20261012008', status: 'signed', updatedAt: '2026-10-12 14:32' },
+  { id: 'ra2', memberId: 'spouse', serviceId: 'cardio', orderNo: 'GX20261012008', status: 'unsigned', updatedAt: '2026-10-12 14:32' },
+  { id: 'ra3', memberId: 'self', serviceId: 'child', orderNo: 'GX20260928016', status: 'withdrawn', updatedAt: '2026-10-03 09:15' },
+  { id: 'ra4', memberId: 'child', serviceId: 'child', orderNo: 'GX20260928016', status: 'signed', updatedAt: '2026-09-28 20:06' },
+]
+
 export type SiteType = 'hospital' | 'lab'
 
 export const siteTypeLabel: Record<SiteType, string> = { hospital: '医院', lab: '第三方检验机构' }

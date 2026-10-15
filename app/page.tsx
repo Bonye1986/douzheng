@@ -5,6 +5,7 @@ import { BrandMark } from '@/components/mini/auth-parts'
 import { HomeFlow } from '@/components/mini/home-flow'
 import { AiChatScreen } from '@/components/mini/ai-chat-screen'
 import { ExamineeFormArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
+import { MineScreen } from '@/components/mini/mine-screen'
 
 const screens = [
   {
@@ -90,6 +91,12 @@ const screens = [
     title: '确认订单 · 定点采样机构',
     desc: '关键词搜索、类型筛选（医院 / 第三方检验机构 / 今日可采），按距离排序；展示地址、营业时间、支持的样本类型，可导航，选择后返回订单页（可在画板内交互）',
     node: <SiteListArtboard />,
+  },
+  {
+    id: '16',
+    title: '我的 · 授权管理',
+    desc: '按受检人 × 检测项目展示科研样本授权状态（已授权 / 未授权 / 已撤回），支持签署、重新签署与撤回，操作前弹出知情同意书或撤回提示（可在画板内交互）',
+    node: <MineScreen initialAuthOpen />,
   },
   {
     id: '05',
