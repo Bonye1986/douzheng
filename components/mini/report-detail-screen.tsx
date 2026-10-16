@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Check, Info, MoveHorizontal, Share2, Sparkles } from 'lucide-react'
+import { Check, Download, Info, MoveHorizontal, Sparkles } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
 
@@ -267,8 +267,8 @@ export function ReportDetailScreen({
           type="button"
           className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-[#dfe5ef] text-[14px] text-foreground"
         >
-          <Share2 className="size-4" aria-hidden="true" />
-          分享
+<Download className="size-4" aria-hidden="true" />
+下载报告
         </button>
         <button
           type="button"
