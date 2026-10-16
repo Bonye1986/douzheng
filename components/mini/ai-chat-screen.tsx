@@ -28,6 +28,7 @@ import { ChatComposer, answerStyles, type Attachment } from '@/components/mini/c
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { useExaminees } from '@/components/mini/examinee-store'
+import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/components/mini/chat-share'
 import {
   answerToText,
   confidenceMeta,
@@ -129,10 +130,46 @@ export function AiChatScreen({
   )
   const [currentId, setCurrentId] = useState<string | null>(initialQuestion ? 's-init' : null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
+  const [shareIds, setShareIds] = useState<Set<number> | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = sessions.find((s) => s.id === currentId)?.messages ?? []
   const isReplying = messages.some((m) => m.role === 'assistant' && m.answers === null)
+  const sharing = shareIds !== null
+  const shareable = messages.filter((m) => m.role === 'user' || m.answers !== null)
+  const allShareSelected = sharing && shareable.length > 0 && shareable.every((m) => shareIds.has(m.id))
+
+  let round = 0
+  const roundOf = new Map<number, number>()
+  for (const m of messages) {
+    if (m.role === 'user') round++
+    roundOf.set(m.id, round)
+  }
+  const selectedRounds = sharing ? new Set([...shareIds].map((id) => roundOf.get(id))).size : 0
+  const shareItems: ShareItem[] = sharing
+    ? shareable
+        .filter((m) => shareIds.has(m.id))
+        .map((m) =>
+          m.role === 'user'
+            ? { id: m.id, role: 'user', text: m.text }
+            : { id: m.id, role: 'assistant', text: m.answers ? answerToText(m.answers[mode]) : '' },
+        )
+    : []
+
+  function startShare() {
+    stopSpeaking()
+    setShareIds(new Set(shareable.map((m) => m.id)))
+  }
+
+  function toggleShare(id: number) {
+    setShareIds((prev) => {
+      if (!prev) return prev
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   useEffect(() => {
     const el = scrollRef.current
@@ -230,6 +267,7 @@ export function AiChatScreen({
     setSpeakingId(null)
     setDrawerOpen(false)
     setSheetOpen(false)
+    setShareIds(null)
   }, [active])
 
   function startNewChat() {
@@ -245,6 +283,13 @@ export function AiChatScreen({
   return (
     <div className="relative flex h-full flex-col bg-brand-page">
       <StatusBar />
+      {sharing ? (
+        <ShareHeader
+          allSelected={allShareSelected}
+          rounds={selectedRounds}
+          onToggleAll={() => setShareIds(allShareSelected ? new Set() : new Set(shareable.map((m) => m.id)))}
+        />
+      ) : (
       <header className="relative flex h-11 items-center justify-center px-2 text-foreground">
         <div className="absolute left-1 flex items-center">
           <button
@@ -274,7 +319,9 @@ export function AiChatScreen({
           <Circle className="size-3.5" strokeWidth={3} />
         </div>
       </header>
+      )}
 
+      {!sharing && (
       <div className="shrink-0 px-4 pb-3 pt-2">
         <div className="flex items-center rounded-2xl bg-white py-1.5 pl-1.5 pr-2 shadow-[0_4px_14px_#3b8beb0d]">
           <button
@@ -324,8 +371,12 @@ export function AiChatScreen({
           </div>
         </div>
       </div>
+      )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-3 [scrollbar-width:none]">
+        {sharing ? (
+          <p className="py-2 text-center text-[12px] text-muted-foreground">内容由 AI 生成</p>
+        ) : (
         <section className="rounded-2xl border border-[#d6e6fb] bg-white/70 p-4">
           <h3 className="flex items-center gap-1.5 text-[15px] font-bold text-foreground">
             <ShieldCheck className="size-4 text-primary" />
@@ -349,44 +400,70 @@ export function AiChatScreen({
             ))}
           </ul>
         </section>
+        )}
 
-        <ul className="mt-4 flex flex-col gap-4" aria-live="polite">
-          <li className="flex gap-2">
-            <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
-            <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
-              {greeting}
-            </p>
-          </li>
-          {messages.map((m) =>
-            m.role === 'user' ? (
-              <li key={m.id} className="flex flex-col items-end gap-1.5">
-                {m.attachments && m.attachments.length > 0 && <MessageAttachments items={m.attachments} />}
-                <p className="max-w-[78%] rounded-2xl rounded-tr-md bg-primary px-3.5 py-2.5 text-[14px] leading-6 text-white">
-                  {m.text}
-                </p>
-              </li>
-            ) : (
-              <li key={m.id} className="flex gap-2">
-                <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
-                <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
-                  {m.answers ? (
-                    <AnswerBody
-                      answer={m.answers[mode]}
-                      speaking={speakingId === m.id}
-                      regenerateDisabled={isReplying}
-                      onToggleSpeak={() => m.answers && toggleSpeak(m.id, m.answers[mode])}
-                      onRegenerate={() => regenerate(m.id)}
-                    />
-                  ) : (
-                    <TypingDots />
-                  )}
-                </div>
-              </li>
-            ),
+        <ul className={cn('flex flex-col gap-4', !sharing && 'mt-4')} aria-live="polite">
+          {!sharing && (
+            <li className="flex gap-2">
+              <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
+              <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
+                {greeting}
+              </p>
+            </li>
           )}
+          {messages.map((m) => {
+            const content =
+              m.role === 'user' ? (
+                <div className="flex flex-col items-end gap-1.5">
+                  {m.attachments && m.attachments.length > 0 && <MessageAttachments items={m.attachments} />}
+                  <p className="max-w-[78%] rounded-2xl rounded-tr-md bg-primary px-3.5 py-2.5 text-left text-[14px] leading-6 text-white">
+                    {m.text}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
+                  <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
+                    {m.answers ? (
+                      <AnswerBody
+                        answer={m.answers[mode]}
+                        speaking={speakingId === m.id}
+                        regenerateDisabled={isReplying}
+                        hideActions={sharing}
+                        onToggleSpeak={() => m.answers && toggleSpeak(m.id, m.answers[mode])}
+                        onRegenerate={() => regenerate(m.id)}
+                        onShare={startShare}
+                      />
+                    ) : (
+                      <TypingDots />
+                    )}
+                  </div>
+                </div>
+              )
+
+            if (!sharing) return <li key={m.id}>{content}</li>
+            const selectable = m.role === 'user' || m.answers !== null
+            const checked = shareIds.has(m.id)
+            return (
+              <li key={m.id}>
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={checked}
+                  aria-label={m.role === 'user' ? `提问：${m.text}` : 'AI 回答'}
+                  disabled={!selectable}
+                  onClick={() => toggleShare(m.id)}
+                  className="flex w-full items-start gap-2.5 text-left"
+                >
+                  <ShareCheckbox checked={checked} className={m.role === 'user' ? 'mt-2.5' : 'mt-1.5'} />
+                  <div className="pointer-events-none min-w-0 flex-1">{content}</div>
+                </button>
+              </li>
+            )
+          })}
         </ul>
 
-        {messages.length === 0 && (
+        {!sharing && messages.length === 0 && (
           <ul aria-label="推荐问题" className="mt-4 flex flex-col items-start gap-2 pl-10">
             {quickPrompts.map((q) => (
               <li key={q}>
@@ -403,7 +480,11 @@ export function AiChatScreen({
         )}
       </div>
 
-      <ChatComposer disabled={isReplying} onSend={ask} />
+      {sharing ? (
+        <ShareSheet items={shareItems} onClose={() => setShareIds(null)} />
+      ) : (
+        <ChatComposer disabled={isReplying} onSend={ask} />
+      )}
 
       {drawerOpen && (
         <ChatHistoryDrawer
@@ -610,14 +691,18 @@ function AnswerBody({
   answer,
   speaking,
   regenerateDisabled,
+  hideActions,
   onToggleSpeak,
   onRegenerate,
+  onShare,
 }: {
   answer: AiAnswer
   speaking: boolean
   regenerateDisabled: boolean
+  hideActions?: boolean
   onToggleSpeak: () => void
   onRegenerate: () => void
+  onShare: () => void
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const conf = confidenceMeta[answer.confidence]
@@ -682,13 +767,16 @@ function AnswerBody({
       ) : (
         <p className="rounded-xl bg-[#f5f8fd] px-3 py-2 text-[12px] text-muted-foreground">暂无可引用的权威来源</p>
       )}
-      <AnswerActions
-        answer={answer}
-        speaking={speaking}
-        regenerateDisabled={regenerateDisabled}
-        onToggleSpeak={onToggleSpeak}
-        onRegenerate={onRegenerate}
-      />
+      {!hideActions && (
+        <AnswerActions
+          answer={answer}
+          speaking={speaking}
+          regenerateDisabled={regenerateDisabled}
+          onToggleSpeak={onToggleSpeak}
+          onRegenerate={onRegenerate}
+          onShare={onShare}
+        />
+      )}
     </div>
   )
 }
@@ -718,12 +806,14 @@ function AnswerActions({
   regenerateDisabled,
   onToggleSpeak,
   onRegenerate,
+  onShare,
 }: {
   answer: AiAnswer
   speaking: boolean
   regenerateDisabled: boolean
   onToggleSpeak: () => void
   onRegenerate: () => void
+  onShare: () => void
 }) {
   const [notice, setNotice] = useState<string | null>(null)
   const timer = useRef<number | undefined>(undefined)
@@ -740,23 +830,10 @@ function AnswerActions({
     flash((await copyText(answerToText(answer))) ? '已复制' : '复制失败')
   }
 
-  async function share() {
-    const text = answerToText(answer)
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: '药问基因 · AI 回答', text })
-        return
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return
-      }
-    }
-    flash((await copyText(text)) ? '已复制，可粘贴分享' : '分享失败')
-  }
-
   const actions = [
     { key: 'speak', label: speaking ? '停止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
     { key: 'copy', label: '复制', icon: notice === '已复制' ? Check : Copy, onClick: copy },
-    { key: 'share', label: '分享', icon: Share2, onClick: share },
+    { key: 'share', label: '分享', icon: Share2, onClick: onShare },
     { key: 'retry', label: '重新回答', icon: RefreshCw, onClick: onRegenerate, disabled: regenerateDisabled },
   ]
 
