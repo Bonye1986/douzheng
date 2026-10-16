@@ -11,6 +11,14 @@ import type { CartItem } from '@/components/mini/cart-screen'
 import type { CheckoutLine } from '@/components/mini/checkout-screen'
 import { MineScreen } from '@/components/mini/mine-screen'
 import { FloatingAiButton } from '@/components/mini/floating-ai-button'
+import { ExamineeManageScreen } from '@/components/mini/examinee-manage-screen'
+import { MedicationReminderScreen } from '@/components/mini/medication-reminder-screen'
+import { LoginRequiredDialog } from '@/components/mini/login-required-dialog'
+import {
+  reportChatQuestion,
+  serviceCategories,
+  type ServiceCategoryId,
+} from '@/components/mini/services-data'
 import { cn } from '@/lib/utils'
 
 export function HomeFlow({
@@ -19,7 +27,11 @@ export function HomeFlow({
   initialCart,
   initialCartOpen,
   initialCheckout,
+  loggedIn = true,
+  onRequireLogin,
 }: {
+  loggedIn?: boolean
+  onRequireLogin?: () => void
   initialTab?: TabKey
   initialDetailId?: string
   initialCart?: CartItem[]
@@ -30,11 +42,25 @@ export function HomeFlow({
   const [chatOpen, setChatOpen] = useState(false)
   const [chatMounted, setChatMounted] = useState(false)
   const [request, setRequest] = useState<ChatRequest | null>(null)
+  const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
+  const [loginPrompt, setLoginPrompt] = useState<string | null>(null)
 
   const openChat = (question?: string) => {
     if (question) setRequest({ question, id: Date.now() })
     setChatMounted(true)
     setChatOpen(true)
+  }
+
+  const handleCategory = (id: ServiceCategoryId) => {
+    const category = serviceCategories.find((c) => c.id === id)
+    if (category?.requiresLogin && !loggedIn) {
+      setLoginPrompt(category.label)
+      return
+    }
+    if (id === 'tests') setTab('test')
+    else if (id === 'report') openChat(reportChatQuestion)
+    else if (id === 'health') setSubPage('examinee')
+    else if (id === 'remind') setSubPage('reminder')
   }
 
   return (
@@ -43,7 +69,7 @@ export function HomeFlow({
         {tab === 'home' ? (
           <HomeScreen onOpenChat={openChat} />
         ) : tab === 'service' ? (
-          <ServicesScreen onOpenChat={openChat} />
+          <ServicesScreen onOpenChat={openChat} onCategory={handleCategory} />
         ) : tab === 'test' ? (
           <TestsScreen initialDetailId={initialDetailId} initialCart={initialCart} initialCartOpen={initialCartOpen}
             initialCheckout={initialCheckout}
@@ -70,6 +96,20 @@ export function HomeFlow({
         >
           <AiChatScreen request={request} active={chatOpen} onBack={() => setChatOpen(false)} />
         </div>
+      )}
+
+      {subPage === 'examinee' && <ExamineeManageScreen onBack={() => setSubPage(null)} />}
+      {subPage === 'reminder' && <MedicationReminderScreen onBack={() => setSubPage(null)} />}
+
+      {loginPrompt && (
+        <LoginRequiredDialog
+          feature={loginPrompt}
+          onCancel={() => setLoginPrompt(null)}
+          onLogin={() => {
+            setLoginPrompt(null)
+            onRequireLogin?.()
+          }}
+        />
       )}
     </div>
   )

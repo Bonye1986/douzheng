@@ -2,7 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { BookOpen, CheckCircle2, ChevronRight, Eye, Lightbulb, XCircle } from 'lucide-react'
+import {
+  AlarmClock,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  Dna,
+  Eye,
+  FileSearch,
+  HeartPulse,
+  Lightbulb,
+  XCircle,
+  type LucideIcon,
+} from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
@@ -10,12 +22,16 @@ import {
   quizTopics,
   recommendedTests,
   serviceCategories,
+  type ServiceCategoryId,
 } from '@/components/mini/services-data'
 import { cn } from '@/lib/utils'
 
-type Props = { onOpenChat?: (question?: string) => void }
+type Props = {
+  onOpenChat?: (question?: string) => void
+  onCategory?: (id: ServiceCategoryId) => void
+}
 
-export function ServicesScreen({ onOpenChat }: Props) {
+export function ServicesScreen({ onOpenChat, onCategory }: Props) {
   return (
     <div className="flex h-full flex-col bg-[#f4f8fe]">
       <div className="bg-white">
@@ -29,7 +45,7 @@ export function ServicesScreen({ onOpenChat }: Props) {
       <div className="flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
         <div className="flex flex-col gap-3 px-4 pt-3">
           <BannerCarousel />
-          <CategoryGrid onOpenChat={onOpenChat} />
+          <CategoryGrid onCategory={onCategory} />
           <RecommendedTests />
           <KnowledgeList />
           <DailyQuiz onOpenChat={onOpenChat} />
@@ -115,24 +131,34 @@ function BannerCarousel() {
   )
 }
 
-function CategoryGrid({ onOpenChat }: Props) {
+const categoryIcons: Record<ServiceCategoryId, LucideIcon> = {
+  tests: Dna,
+  health: HeartPulse,
+  report: FileSearch,
+  remind: AlarmClock,
+}
+
+function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
   return (
     <section aria-label="服务分类" className="rounded-2xl bg-white px-2 py-4">
-      <ul className="grid grid-cols-4 gap-y-4">
-        {serviceCategories.map(({ id, label, image, color, chatQuestion }) => (
-          <li key={id}>
-            <button
-              type="button"
-              onClick={() => chatQuestion && onOpenChat?.(chatQuestion)}
-              className="flex w-full flex-col items-center gap-1.5"
-            >
-              <span className={cn('flex size-12 items-center justify-center rounded-2xl', color)}>
-                <Image src={image} alt="" width={36} height={36} className="size-9 object-contain" />
-              </span>
-              <span className="text-[12px] text-foreground">{label}</span>
-            </button>
-          </li>
-        ))}
+      <ul className="grid grid-cols-4">
+        {serviceCategories.map(({ id, label }) => {
+          const Icon = categoryIcons[id]
+          return (
+            <li key={id}>
+              <button
+                type="button"
+                onClick={() => onCategory?.(id)}
+                className="group flex w-full flex-col items-center gap-2"
+              >
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-[linear-gradient(145deg,#eef5ff,#dce9fd)] text-primary ring-1 ring-inset ring-[#d3e3fb] transition-transform group-active:scale-95">
+                  <Icon className="size-6" strokeWidth={1.75} aria-hidden="true" />
+                </span>
+                <span className="text-[12px] text-foreground">{label}</span>
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </section>
   )

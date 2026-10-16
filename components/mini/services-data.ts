@@ -26,24 +26,22 @@ export const banners: Banner[] = [
   },
 ]
 
+export type ServiceCategoryId = 'tests' | 'health' | 'report' | 'remind'
+
 export type ServiceCategory = {
-  id: string
+  id: ServiceCategoryId
   label: string
-  image: string
-  color: string
-  chatQuestion?: string
+  requiresLogin?: boolean
 }
 
 export const serviceCategories: ServiceCategory[] = [
-  { id: 'gene', label: '基因检测', image: '/images/icons/cat-gene.png', color: 'bg-[#e8f1fe]' },
-  { id: 'consult', label: '用药咨询', image: '/images/icons/cat-consult.png', color: 'bg-[#fff1e8]', chatQuestion: '我想咨询用药问题' },
-  { id: 'report', label: '报告解读', image: '/images/icons/cat-report.png', color: 'bg-[#e9f8f1]', chatQuestion: '帮我解读一下检测报告' },
-  { id: 'remind', label: '用药提醒', image: '/images/icons/cat-remind.png', color: 'bg-[#f1edfe]' },
-  { id: 'cardio', label: '心脑血管', image: '/images/icons/cat-cardio.png', color: 'bg-[#feecee]' },
-  { id: 'chronic', label: '慢病用药', image: '/images/icons/cat-chronic.png', color: 'bg-[#e8f1fe]' },
-  { id: 'family', label: '家庭检测', image: '/images/icons/cat-family.png', color: 'bg-[#fff1e8]' },
-  { id: 'safety', label: '用药安全', image: '/images/icons/cat-safety.png', color: 'bg-[#e9f8f1]' },
+  { id: 'tests', label: '检测服务' },
+  { id: 'health', label: '健康管理', requiresLogin: true },
+  { id: 'report', label: '报告解读' },
+  { id: 'remind', label: '用药提醒', requiresLogin: true },
 ]
+
+export const reportChatQuestion = '帮我解读一下检测报告'
 
 export type RecommendedTest = {
   id: string
