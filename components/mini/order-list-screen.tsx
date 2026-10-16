@@ -5,7 +5,8 @@ import { AlertTriangle, Building2, Home } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
-import { CancelOrderScreen } from '@/components/mini/refund-screen'
+import { CancelOrderScreen, TestingRefundScreen } from '@/components/mini/refund-screen'
+import { LogisticsScreen } from '@/components/mini/logistics-screen'
 import { SendSampleScreen } from '@/components/mini/send-sample-screen'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
@@ -21,6 +22,8 @@ type OrderActionHandlers = {
   onHandleUnqualified: () => void
   onOpenGuide: () => void
   onSendSample: (o: Order) => void
+  onTestingRefund: (o: Order) => void
+  onViewLogistics: (o: Order) => void
 }
 
 const canSendSample = (o: Order) => o.type === 'self' && o.status === '待采样'
@@ -32,6 +35,8 @@ function OrderActions({
   onHandleUnqualified,
   onOpenGuide,
   onSendSample,
+  onTestingRefund,
+  onViewLogistics,
 }: { order: Order } & OrderActionHandlers) {
   const sendable = canSendSample(o)
   return (
@@ -41,6 +46,7 @@ function OrderActions({
           type="button"
           onClick={() => {
             if (o.refund === 'cancel') onCancel(o)
+            else if (o.refund === 'testing') onTestingRefund(o)
             else if (o.refund) onRefund(o.refund)
           }}
           className="h-7 rounded-full border border-[#dfe5ef] px-3.5 text-[12px] font-medium text-muted-foreground"
@@ -54,6 +60,7 @@ function OrderActions({
           onClick={() => {
             if (o.unqualified) onHandleUnqualified()
             else if (o.action?.label === '采样指引') onOpenGuide()
+            else if (o.action?.label === '查看物流') onViewLogistics(o)
           }}
           className={cn(
             'h-7 rounded-full px-3.5 text-[12px] font-medium',
@@ -192,11 +199,12 @@ type Order = {
   action?: { label: string; primary?: boolean }
 }
 
-export type RefundKind = 'cancel' | 'shipped' | 'resample'
+export type RefundKind = 'cancel' | 'shipped' | 'resample' | 'testing'
 
 const refundLabels: Record<RefundKind, string> = {
   cancel: '取消订单',
   shipped: '申请退款',
+  testing: '申请退款',
   resample: '终止并退款',
 }
 
@@ -258,6 +266,7 @@ const allOrders: Order[] = [
     examinees: '张伟',
     amount: '¥1,299',
     note: '采样点已寄出样本，正在运往实验室',
+    refund: 'testing',
   },
   {
     id: 'DZ20261014002',
@@ -289,6 +298,7 @@ const allOrders: Order[] = [
     examinees: '张伟',
     amount: '¥999',
     note: '样本回寄中，顺丰 SF1428 6650 3321',
+    refund: 'testing',
     action: { label: '查看物流' },
   },
   {
@@ -300,6 +310,7 @@ const allOrders: Order[] = [
     examinees: '王建国',
     amount: '¥1,299',
     note: '实验室检测中，预计 10-20 出具报告',
+    refund: 'testing',
   },
   {
     id: 'DZ20261009011',
@@ -361,18 +372,25 @@ export function OrderListScreen({
   const [cancelledIds, setCancelledIds] = useState<ReadonlySet<string>>(() => new Set())
   const [sendTarget, setSendTarget] = useState<Order | null>(null)
   const [sentNotes, setSentNotes] = useState<ReadonlyMap<string, string>>(() => new Map())
+  const [logisticsTarget, setLogisticsTarget] = useState<Order | null>(null)
+  const [refundTarget, setRefundTarget] = useState<Order | null>(null)
+  const [refundAppliedIds, setRefundAppliedIds] = useState<ReadonlySet<string>>(() => new Set())
   const orders = allOrders.map((o): Order => {
     const sentNote = sentNotes.get(o.id)
-    if (sentNote) {
-      return {
-        ...o,
-        phase: 'testing',
-        status: '已寄样',
-        note: sentNote,
-        refund: undefined,
-        action: { label: '查看物流' },
-      }
+    const base: Order = sentNote
+      ? {
+          ...o,
+          phase: 'testing',
+          status: '已寄样',
+          note: sentNote,
+          refund: 'testing',
+          action: { label: '查看物流' },
+        }
+      : o
+    if (refundAppliedIds.has(o.id)) {
+      return { ...base, note: '退款申请已提交，实验室审核中，检测已暂停', refund: undefined }
     }
+    if (sentNote) return base
     return cancelledIds.has(o.id)
       ? {
           ...o,
@@ -398,6 +416,8 @@ export function OrderListScreen({
     onHandleUnqualified,
     onOpenGuide: () => setGuideOpen(true),
     onSendSample: setSendTarget,
+    onTestingRefund: setRefundTarget,
+    onViewLogistics: setLogisticsTarget,
   }
   const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
   const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
@@ -555,6 +575,27 @@ export function OrderListScreen({
           onSubmitted={({ time }) =>
             setSentNotes((prev) => new Map(prev).set(sendTarget.id, `已预约顺丰上门取件（${time}），快递员将上门取样`))
           }
+        />
+      )}
+      {logisticsTarget && (
+        <LogisticsScreen
+          direction={logisticsTarget.status === '已发货' ? 'outbound' : 'return'}
+          orderNo={logisticsTarget.id}
+          onBack={() => setLogisticsTarget(null)}
+        />
+      )}
+      {refundTarget && (
+        <TestingRefundScreen
+          order={{
+            no: refundTarget.id,
+            product: refundTarget.product,
+            examinee: refundTarget.examinees,
+            paid: parseYuan(refundTarget.amount),
+            status: refundTarget.status,
+            type: refundTarget.type,
+          }}
+          onBack={() => setRefundTarget(null)}
+          onSubmitted={() => setRefundAppliedIds((prev) => new Set(prev).add(refundTarget.id))}
         />
       )}
       {cancelTarget && <CancelOrderScreen onBack={() => setCancelTarget(null)} onCancelled={confirmCancel} />}

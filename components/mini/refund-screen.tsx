@@ -310,7 +310,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                 </li>
                 <li className="flex gap-1.5">
                   <Package className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                  运费自理，请勿使用到付
+                  运费自理，请勿使用到���
                 </li>
               </ul>
             </Card>
@@ -509,6 +509,154 @@ export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void
       </div>
       <BottomBar>
         <PrimaryButton onClick={() => setDone(true)}>确认终止并退款 ¥{refund}</PrimaryButton>
+      </BottomBar>
+    </SubPage>
+  )
+}
+
+export type TestingRefundOrder = {
+  no: string
+  product: string
+  examinee: string
+  paid: number
+  status: string
+  type: 'self' | 'site'
+}
+
+const testingRefundReasons = ['不想检测了', '已在其他机构检测', '检测周期太长', '信息填写有误', '其他原因']
+
+function testingFees(o: TestingRefundOrder): IncurredFee[] {
+  const fees: IncurredFee[] =
+    o.type === 'self'
+      ? [
+          { label: '采样盒及耗材', desc: '已寄出并使用的采样盒', amount: KIT_FEE },
+          { label: '物流费用', desc: '采样盒寄送及样本回寄', amount: 30 },
+        ]
+      : [{ label: '采样服务费', desc: '采样机构现场采样及样本寄送', amount: 100 }]
+  if (o.status === '已收样' || o.status === '检测中') {
+    fees.push({ label: '样本处理费用', desc: '实验室签收、登记及 DNA 提取', amount: 100 })
+  }
+  if (o.status === '检测中') {
+    fees.push({ label: '实验检测费用', desc: '已开展的上机检测环节', amount: 300 })
+  }
+  return fees
+}
+
+export function TestingRefundScreen({
+  order,
+  onBack,
+  onContact,
+  onSubmitted,
+}: {
+  order: TestingRefundOrder
+  onBack: () => void
+  onContact?: () => void
+  onSubmitted?: () => void
+}) {
+  const [reason, setReason] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+  const fees = testingFees(order)
+  const refund = Math.max(order.paid - fees.reduce((s, f) => s + f.amount, 0), 0)
+
+  if (done) {
+    return (
+      <SubPage title="退款详情" titleId="testing-refund-title" onBack={onBack}>
+        <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
+          <Card className="p-4 text-center">
+            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
+              <CircleDollarSign className="size-6" aria-hidden="true" />
+            </span>
+            <p className="mt-2.5 text-[16px] font-semibold text-foreground">退款申请已提交</p>
+            <p className="mt-1 text-[12px] text-muted-foreground">
+              审核通过后将退款 <span className="font-medium tabular-nums text-[#e0651c]">¥{refund}</span>
+            </p>
+          </Card>
+          <Card>
+            <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
+            <Timeline
+              items={[
+                { title: '提交退款申请', desc: `退款原因：${reason}`, state: 'done' },
+                { title: '审核中', desc: '实验室核算已产生费用，预计 1-3 个工作日内完成', state: 'current' },
+                { title: '退款到账', desc: `¥${refund} 原路退回至微信支付账户`, state: 'todo' },
+              ]}
+            />
+          </Card>
+          <OrderBrief {...order} status="退款审核中" />
+        </div>
+        <BottomBar>
+          <PrimaryButton onClick={onBack}>返回订单</PrimaryButton>
+        </BottomBar>
+      </SubPage>
+    )
+  }
+
+  return (
+    <SubPage title="申请退款" titleId="testing-refund-title" onBack={onBack}>
+      <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
+        <div className="flex gap-2.5 rounded-2xl bg-warn-soft p-3.5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#e0651c]">
+            <Receipt className="size-[18px]" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[14px] font-semibold text-[#c2541a]">需扣除已产生的费用</p>
+            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+              订单当前为「{order.status}」，退款审核通过后实验室将停止检测并销毁样本，剩余金额原路退回。
+            </p>
+          </div>
+        </div>
+
+        <OrderBrief {...order} />
+
+        <Card>
+          <h2 className="text-[15px] font-semibold text-foreground">退款原因</h2>
+          <div role="radiogroup" aria-label="退款原因" className="mt-2.5 flex flex-wrap gap-2">
+            {testingRefundReasons.map((r) => (
+              <button
+                key={r}
+                type="button"
+                role="radio"
+                aria-checked={reason === r}
+                onClick={() => setReason(r)}
+                className={cn(
+                  'h-8 rounded-full border px-3 text-[12px] transition-colors',
+                  reason === r
+                    ? 'border-primary bg-primary/10 font-medium text-primary'
+                    : 'border-[#dfe5ef] text-foreground',
+                )}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </Card>
+
+        <IncurredFeeCard paid={order.paid} fees={fees} />
+
+        <p className="flex gap-1.5 px-1 text-[11px] leading-relaxed text-muted-foreground">
+          <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+          最终退款金额以实验室审核核算为准，审核期间检测暂停。
+        </p>
+        {onContact && (
+          <button
+            type="button"
+            onClick={onContact}
+            className="flex w-full items-center justify-center gap-1 py-1 text-[12px] text-primary"
+          >
+            <Headphones className="size-3.5" aria-hidden="true" />
+            对费用有疑问？联系客服
+          </button>
+        )}
+      </div>
+      <BottomBar>
+        <PrimaryButton
+          disabled={!reason}
+          onClick={() => {
+            setDone(true)
+            onSubmitted?.()
+          }}
+        >
+          提交退款申请 ¥{refund}
+        </PrimaryButton>
       </BottomBar>
     </SubPage>
   )
