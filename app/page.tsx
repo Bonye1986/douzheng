@@ -243,6 +243,24 @@ const screens = [
     node: <MineScreen initialServiceOpen />,
   },
   {
+    id: '44',
+    title: '我的 · 账号设置',
+    desc: '个人资料（头像 / 昵称 / 绑定手机号），短信通知开关（用药提醒 / 报告出具 / 订单与样本进度 / 优惠活动），隐私与协议、系统权限、清除缓存，注销账号与退出登录（可在画板内交互）',
+    node: <MineScreen initialAccountView="main" />,
+  },
+  {
+    id: '45',
+    title: '账号设置 · 更换手机号',
+    desc: '两步流程：短信验证原手机号 → 输入新手机号并验证，含 60 秒重发倒计时与重复号码校验（可在画板内交互）',
+    node: <MineScreen initialAccountView="phone" />,
+  },
+  {
+    id: '46',
+    title: '账号设置 · 注销账号',
+    desc: '注销风险提示、数据清除说明、进行中订单检测、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
+    node: <MineScreen initialAccountView="deactivate" />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
@@ -316,7 +334,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'guide',
     title: '使用指南',
-    summary: '指南文章列表（搜索 + 分类）与文章详情��步骤、注意事项、反馈、相关推荐）',
+    summary: '指南文章列表（搜索 + 分类）与文章���情��步骤、注意事项、反馈、相关推荐）',
     ids: ['40', '41'],
   },
   {
@@ -330,6 +348,12 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     title: '联系客服',
     summary: '小程序客服会话页：消息收发、订单卡片发送、常见问题快捷提问',
     ids: ['43'],
+  },
+  {
+    key: 'account',
+    title: '账号设置',
+    summary: '个人资料、短信通知开关、隐私协议，更换手机号、注销账号与退出登录',
+    ids: ['44', '45', '46'],
   },
   { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关��检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]

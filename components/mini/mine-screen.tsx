@@ -37,6 +37,7 @@ import { MedicationReminderScreen, type ReminderView } from '@/components/mini/m
 import { GuideScreen, type GuideView } from '@/components/mini/guide-screen'
 import { AboutScreen } from '@/components/mini/about-screen'
 import { CustomerServiceScreen } from '@/components/mini/customer-service-screen'
+import { AccountSettingsScreen, type AccountView } from '@/components/mini/account-settings-screen'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
@@ -99,7 +100,9 @@ export function MineScreen({
   initialGuideView = null,
   initialAboutOpen = false,
   initialServiceOpen = false,
+  initialAccountView = null,
 }: {
+  initialAccountView?: AccountView | null
   initialAboutOpen?: boolean
   initialServiceOpen?: boolean
   initialGuideView?: GuideView | null
@@ -119,6 +122,7 @@ export function MineScreen({
   const [guideView, setGuideView] = useState<GuideView | null>(initialGuideView)
   const [aboutOpen, setAboutOpen] = useState(initialAboutOpen)
   const [serviceOpen, setServiceOpen] = useState(initialServiceOpen)
+  const [accountView, setAccountView] = useState<AccountView | null>(initialAccountView)
   const [myCouponsOpen, setMyCouponsOpen] = useState(initialCoupon === 'mine')
   const [couponCenterOpen, setCouponCenterOpen] = useState(initialCoupon === 'center')
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
@@ -267,6 +271,7 @@ export function MineScreen({
                     if (t.key === 'guide') setGuideView('list')
                     if (t.key === 'about') setAboutOpen(true)
                     if (t.key === 'service') setServiceOpen(true)
+                    if (t.key === 'account') setAccountView('main')
                   }}
                   className="flex w-full flex-col items-center gap-1.5"
                 >
@@ -304,6 +309,7 @@ export function MineScreen({
       {guideView && <GuideScreen initialView={guideView} onBack={() => setGuideView(null)} />}
       {aboutOpen && <AboutScreen onBack={() => setAboutOpen(false)} />}
       {serviceOpen && <CustomerServiceScreen onBack={() => setServiceOpen(false)} />}
+      {accountView && <AccountSettingsScreen initialView={accountView} onBack={() => setAccountView(null)} />}
     </div>
   )
 }
