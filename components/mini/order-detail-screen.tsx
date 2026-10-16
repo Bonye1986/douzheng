@@ -147,7 +147,7 @@ export function OrderDetailScreen({
                 <dd className="min-w-0 flex-1 text-right tabular-nums text-foreground">{v}</dd>
               </div>
             ))}
-            {isSelf && sampleCodes && sampleCodes.length > 0 && (
+            {sampleCodes && sampleCodes.length > 0 && (
               <div className="flex gap-3">
                 <dt className="w-14 shrink-0 text-muted-foreground">样本编码</dt>
                 <dd className="min-w-0 flex-1">

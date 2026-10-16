@@ -8,6 +8,7 @@ import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { cn } from '@/lib/utils'
 
 const shippedOrLaterStatuses = new Set(['已发货', '待采样', '已寄样', '已收样', '检测中', '已完成'])
+const verifiedOrLaterStatuses = new Set(['待采样', '已收样', '检测中', '已完成'])
 
 const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 
@@ -18,8 +19,11 @@ function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => vo
   const per = Math.round(goodsTotal / names.length)
   const d = order.id.slice(2, 10)
   const payTime = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)} 10:24:36`
-  const hasShipped = order.type === 'self' && shippedOrLaterStatuses.has(order.status)
-  const sampleCodes = hasShipped
+  const hasSampleCode =
+    order.type === 'self'
+      ? shippedOrLaterStatuses.has(order.status)
+      : verifiedOrLaterStatuses.has(order.status)
+  const sampleCodes = hasSampleCode
     ? names.map((name, i) => ({ name, code: `YB${order.id.slice(4)}${String(i + 1).padStart(2, '0')}` }))
     : undefined
 
