@@ -111,6 +111,12 @@ const screens = [
     node: <MineScreen initialReportOpen />,
   },
   {
+    id: '21',
+    title: '我的 · 报告详情',
+    desc: '报告信息（项目 / 受检人 / 出具日期 / 编号）、检测结论（需调整 / 谨慎使用 / 正常使用占比）；用药建议按等级筛选，点击药物展开具体建议；基因检测结果展示基因、位点、基因型与表型；底部可下载 PDF 或 AI 解读报告（可在画板内交互）',
+    node: <MineScreen initialReportOpen initialReportDetailId="BG20261008001" />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '按受检人 × 检测项目展示科研样本授权状态（已授权 / 未授权 / 已撤回），支持签署、重新签署与撤回，操作前弹出知情同意书或撤回提示（可在画板内交互）',

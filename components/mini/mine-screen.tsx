@@ -83,10 +83,12 @@ export function MineScreen({
   initialAuthOpen = false,
   initialResampleOpen = false,
   initialReportOpen = false,
+  initialReportDetailId,
 }: {
   initialAuthOpen?: boolean
   initialResampleOpen?: boolean
   initialReportOpen?: boolean
+  initialReportDetailId?: string
 }) {
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
@@ -240,7 +242,7 @@ export function MineScreen({
       {afterSalesOpen && (
         <AfterSalesScreen onBack={() => setAfterSalesOpen(false)} onHandleUnqualified={() => setResampleOpen(true)} />
       )}
-      {reportOpen && <ReportListScreen onBack={() => setReportOpen(false)} />}
+      {reportOpen && <ReportListScreen onBack={() => setReportOpen(false)} initialDetailId={initialReportDetailId} />}
       {authOpen && <AuthorizationScreen onBack={() => setAuthOpen(false)} />}
       {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
     </div>

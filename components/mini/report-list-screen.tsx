@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Download, FileText, Sparkles } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { cn } from '@/lib/utils'
 
 type Report = {
@@ -49,9 +50,11 @@ const reports: Report[] = [
 
 export const unreadReportCount = reports.filter((r) => r.unread).length
 
-export function ReportListScreen({ onBack }: { onBack: () => void }) {
+export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => void; initialDetailId?: string }) {
   const examinees = ['全部', ...Array.from(new Set(reports.map((r) => r.examinee)))]
   const [examinee, setExaminee] = useState('全部')
+  const [detailId, setDetailId] = useState<string | undefined>(initialDetailId)
+  const detail = reports.find((r) => r.id === detailId && r.status === 'ready')
   const visible = reports.filter((r) => examinee === '全部' || r.examinee === examinee)
 
   return (
@@ -129,6 +132,7 @@ export function ReportListScreen({ onBack }: { onBack: () => void }) {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setDetailId(r.id)}
                   className="h-7 rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
                 >
                   查看报告
@@ -141,6 +145,7 @@ export function ReportListScreen({ onBack }: { onBack: () => void }) {
           报告结果仅供临床用药参考，调整用药请遵医嘱
         </li>
       </ul>
+      {detail && <ReportDetailScreen report={detail} onBack={() => setDetailId(undefined)} />}
     </SubPage>
   )
 }
