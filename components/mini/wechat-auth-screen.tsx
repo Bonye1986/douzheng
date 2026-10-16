@@ -6,9 +6,15 @@ import { cn } from '@/lib/utils'
 import { BrandMark } from './auth-parts'
 import { WelcomeScreen } from './welcome-screen'
 
-export function WechatAuthScreen() {
+export function WechatAuthScreen({ onAllow, onDeny }: { onAllow?: () => void; onDeny?: () => void }) {
   const [selected, setSelected] = useState(0)
   const [result, setResult] = useState<'' | 'allowed' | 'denied'>('')
+
+  const respond = (next: 'allowed' | 'denied') => {
+    setResult(next)
+    const callback = next === 'allowed' ? onAllow : onDeny
+    if (callback) window.setTimeout(callback, 700)
+  }
 
   return (
     <div className="relative h-full">
@@ -71,14 +77,14 @@ export function WechatAuthScreen() {
         <div className="mt-6 flex gap-3">
           <button
             type="button"
-            onClick={() => setResult('denied')}
+            onClick={() => respond('denied')}
             className="h-11 flex-1 rounded-lg bg-[#f2f2f2] text-[15px] font-medium text-primary"
           >
             拒绝
           </button>
           <button
             type="button"
-            onClick={() => setResult('allowed')}
+            onClick={() => respond('allowed')}
             className="h-11 flex-1 rounded-lg bg-primary text-[15px] font-medium text-primary-foreground"
           >
             允许

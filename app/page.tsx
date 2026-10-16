@@ -1,4 +1,4 @@
-import { PhoneFrame } from '@/components/mini/phone-frame'
+import { DesignBoard, type BoardSection } from '@/components/design/design-board'
 import { WelcomeScreen } from '@/components/mini/welcome-screen'
 import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
@@ -148,10 +148,36 @@ const screens = [
   },
 ]
 
+const sectionPlan: { key: string; title: string; summary: string; ids: string[] }[] = [
+  { key: 'login', title: '登录注册', summary: '微信手机号授权登录，拒绝授权的拦截与提示', ids: ['01', '02', '03'] },
+  { key: 'home', title: '首页与服务', summary: 'AI 对话入口、预设问题，服务内容与一键带入咨询', ids: ['04', '09'] },
+  {
+    key: 'order',
+    title: '检测下单',
+    summary: '检测列表、服务详情、购物车与确认订单（受检人、采样机构、知情同意书）',
+    ids: ['10', '11', '12', '13', '14', '15', '17'],
+  },
+  {
+    key: 'mine',
+    title: '我的',
+    summary: '订单、报告与报告详情、授权与同意书、样本不合格处理',
+    ids: ['18', '20', '21', '16', '19'],
+  },
+  { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
+]
+
+const sections: BoardSection[] = sectionPlan.map(({ ids, ...section }) => ({
+  ...section,
+  screens: ids.map((id) => screens.find((screen) => screen.id === id)).filter((s): s is (typeof screens)[number] => !!s),
+}))
+
 export default function Page() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#e3f0ff_0%,#f4f8fe_45%)] px-6 py-10 lg:px-12">
-      <header className="mx-auto flex max-w-[1720px] flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <DesignBoard
+        sections={sections}
+        header={
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-10">
         <div className="flex items-center gap-4">
           <BrandMark size="lg" />
           <div>
@@ -173,23 +199,9 @@ export default function Page() {
             <dd className="font-medium text-foreground">{screens.length} 个</dd>
           </div>
         </dl>
-      </header>
-
-      <section
-        aria-label="页面画板"
-        className="mx-auto mt-10 flex max-w-[1720px] flex-wrap justify-center gap-x-8 gap-y-12"
-      >
-        {screens.map((screen) => (
-          <article key={screen.id} className="flex w-[387px] flex-col gap-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-[13px] font-bold text-primary">{screen.id}</span>
-              <h2 className="text-[16px] font-bold text-foreground">{screen.title}</h2>
-            </div>
-            <PhoneFrame label={screen.title}>{screen.node}</PhoneFrame>
-            <p className="text-pretty text-[13px] leading-5 text-muted-foreground">{screen.desc}</p>
-          </article>
-        ))}
-      </section>
+          </div>
+        }
+      />
     </main>
   )
 }
