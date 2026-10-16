@@ -1,11 +1,11 @@
-import { FlaskConical, House, LayoutGrid, UserRound } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 export const tabs = [
-  { key: 'home', label: '首页', icon: House },
-  { key: 'service', label: '服务', icon: LayoutGrid },
-  { key: 'test', label: '检测', icon: FlaskConical },
-  { key: 'me', label: '我的', icon: UserRound },
+  { key: 'home', label: '首页', icon: '/images/icons/tab-home.png' },
+  { key: 'service', label: '服务', icon: '/images/icons/tab-service.png' },
+  { key: 'test', label: '检测', icon: '/images/icons/tab-test.png' },
+  { key: 'me', label: '我的', icon: '/images/icons/tab-me.png' },
 ] as const
 
 export type TabKey = (typeof tabs)[number]['key']
@@ -20,7 +20,7 @@ export function TabBar({
   return (
     <nav aria-label="底部导航" className="shrink-0 border-t border-border bg-white pb-5">
       <ul className="flex h-[54px] items-center">
-        {tabs.map(({ key, label, icon: Icon }) => {
+        {tabs.map(({ key, label, icon }) => {
           const isActive = key === active
           return (
             <li key={key} className="flex-1">
@@ -29,11 +29,20 @@ export function TabBar({
                 onClick={() => onSelect?.(key)}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'flex w-full flex-col items-center gap-1 text-[10px]',
+                  'flex w-full flex-col items-center gap-0.5 text-[10px]',
                   isActive ? 'font-medium text-primary' : 'text-muted-foreground',
                 )}
               >
-                <Icon className="size-[22px]" strokeWidth={isActive ? 2.2 : 1.8} />
+                <Image
+                  src={icon}
+                  alt=""
+                  width={26}
+                  height={26}
+                  className={cn(
+                    'size-[26px] object-contain mix-blend-multiply transition',
+                    isActive ? 'scale-110' : 'opacity-55 grayscale',
+                  )}
+                />
                 {label}
               </button>
             </li>
