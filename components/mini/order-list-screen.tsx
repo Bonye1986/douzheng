@@ -167,6 +167,7 @@ const tab = {
 
 const statusTabsByType: Record<OrderType, StatusTab[]> = {
   all: [
+    tab.toPay,
     tab.toShip,
     tab.shipped,
     tab.toVerify,
@@ -177,8 +178,19 @@ const statusTabsByType: Record<OrderType, StatusTab[]> = {
     tab.done,
     tab.closed,
   ],
-  self: [allTab, tab.toShip, tab.shipped, tab.toSample, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
-  site: [allTab, tab.toVerify, tab.toSample, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
+  self: [
+    allTab,
+    tab.toPay,
+    tab.toShip,
+    tab.shipped,
+    tab.toSample,
+    tab.sent,
+    tab.received,
+    tab.testing,
+    tab.done,
+    tab.closed,
+  ],
+  site: [allTab, tab.toPay, tab.toVerify, tab.toSample, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
 }
 
 const groupPhases: GroupPhase[] = ['toSample', 'testing']
