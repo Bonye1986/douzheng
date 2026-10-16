@@ -39,7 +39,7 @@ function OrderBrief({ status, tone = 'warn' }: { status: string; tone?: 'warn' |
         <span
           className={cn(
             'rounded px-1.5 py-0.5 text-[11px] font-medium',
-            tone === 'warn' ? 'bg-[#fff1e6] text-[#d9621a]' : 'bg-[#eef1f5] text-muted-foreground',
+            tone === 'warn' ? 'bg-[#fff1e6] text-[#e0651c]' : 'bg-[#eef1f5] text-muted-foreground',
           )}
         >
           {status}
@@ -97,7 +97,7 @@ function Timeline({ items }: { items: { title: string; desc: string; state: 'don
               className={cn(
                 'flex size-5 items-center justify-center rounded-full',
                 it.state === 'done' && 'bg-primary text-primary-foreground',
-                it.state === 'current' && 'bg-[#f07a2c] text-white',
+                it.state === 'current' && 'bg-[#e0651c] text-white',
                 it.state === 'todo' && 'border border-[#d4dce8] bg-white',
               )}
             >
@@ -337,7 +337,7 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
         <>
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
             <div className="rounded-2xl bg-white p-4 text-center">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#f07a2c]">
+              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
                 <CircleDollarSign className="size-6" aria-hidden="true" />
               </span>
               <p className="mt-2.5 text-[16px] font-semibold text-foreground">退款申请已提交</p>
@@ -375,7 +375,7 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
             <div className="rounded-2xl border border-primary/30 bg-white p-3.5">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <span className="rounded bg-[#fff1e6] px-1.5 py-0.5 text-[10px] font-medium text-[#d9621a]">重采样</span>
+                  <span className="rounded bg-[#fff1e6] px-1.5 py-0.5 text-[10px] font-medium text-[#e0651c]">重采样</span>
                   <span className="text-[12px] tabular-nums text-muted-foreground">订单号 {newOrderNo}</span>
                 </span>
                 <span className="rounded bg-[#eef5ff] px-1.5 py-0.5 text-[11px] font-medium text-primary">待发货</span>

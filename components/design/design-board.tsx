@@ -115,7 +115,7 @@ function ExplainView({ sections }: { sections: BoardSection[] }) {
 
   return (
     <div className="mx-auto mt-8 max-w-[1720px]">
-      <nav aria-label="板块导航" className="sticky top-0 z-30 -mx-6 bg-[#f4f8fe]/90 px-6 py-3 backdrop-blur lg:-mx-12 lg:px-12">
+      <nav aria-label="板块导航" className="sticky top-0 z-[100] -mx-6 bg-[#f4f8fe]/90 px-6 py-3 backdrop-blur lg:-mx-12 lg:px-12">
         <ul className="flex flex-wrap gap-2">
           {sections.map((section) => (
             <li key={section.key}>
@@ -154,7 +154,6 @@ function ExplainView({ sections }: { sections: BoardSection[] }) {
                   <h3 className="text-[16px] font-bold text-foreground">{screen.title}</h3>
                 </div>
                 <PhoneFrame label={screen.title}>{screen.node}</PhoneFrame>
-                <p className="line-clamp-2 text-pretty text-[13px] leading-5 text-muted-foreground">{screen.desc}</p>
                 <button
                   type="button"
                   onClick={() => setActive(screen)}

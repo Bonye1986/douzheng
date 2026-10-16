@@ -165,7 +165,7 @@ export function ChatComposer({
                   <img src={a.url} alt={a.name} className="size-14 rounded-xl border border-border object-cover" />
                 ) : (
                   <span className="flex h-14 w-32 items-center gap-2 rounded-xl border border-border bg-[#f6f9fd] px-2.5">
-                    <FileText className="size-6 shrink-0 text-[#e5534b]" />
+                    <FileText className="size-6 shrink-0 text-[#e5603a]" />
                     <span className="line-clamp-2 text-[11px] leading-4 text-foreground">{a.name}</span>
                   </span>
                 )}
@@ -334,7 +334,7 @@ function RecordingOverlay({ cancel }: { cancel: boolean }) {
       <div
         className={cn(
           'flex w-44 flex-col items-center gap-3 rounded-3xl px-4 py-5 text-white shadow-lg transition-colors',
-          cancel ? 'bg-[#e5534b]' : 'bg-[#1e2a3d]/85',
+          cancel ? 'bg-[#e5603a]' : 'bg-[#1e2a3d]/85',
         )}
       >
         <span className="flex h-8 items-end gap-1" aria-hidden="true">

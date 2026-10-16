@@ -186,7 +186,7 @@ export function ChatHistoryDrawer({
                         setMenuId(null)
                         setConfirmId(s.id)
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2.5 text-[14px] text-[#e5534b] active:bg-[#fdf0ef]"
+                      className="flex w-full items-center gap-2 px-3 py-2.5 text-[14px] text-[#e5603a] active:bg-[#fdecea]"
                     >
                       <Trash2 className="size-4" />
                       删除会话
@@ -219,7 +219,7 @@ export function ChatHistoryDrawer({
                     onDelete(confirmId)
                     setConfirmId(null)
                   }}
-                  className="h-10 rounded-full bg-[#e5534b] text-[14px] font-semibold text-white"
+                  className="h-10 rounded-full bg-[#e5603a] text-[14px] font-semibold text-white"
                 >
                   删除
                 </button>

@@ -175,7 +175,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
 
         {step === 'success' && (
           <div className="flex flex-col items-center px-4 pb-8 pt-5 text-center">
-            <CircleCheck className="size-14 text-[#2fb57a]" strokeWidth={1.6} aria-hidden="true" />
+            <CircleCheck className="size-14 text-[#1f9d6b]" strokeWidth={1.6} aria-hidden="true" />
             <p className="mt-3 text-[15px] font-semibold text-foreground">{isSign ? '签署成功' : '撤销成功'}</p>
             <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
               {isSign

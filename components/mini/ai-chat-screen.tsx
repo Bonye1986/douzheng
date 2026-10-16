@@ -26,6 +26,8 @@ import { StatusBar } from '@/components/mini/phone-frame'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { ChatComposer, type Attachment } from '@/components/mini/chat-composer'
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
+import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
+import { genderLabel } from '@/components/mini/checkout-data'
 import {
   answerToText,
   confidenceMeta,
@@ -118,6 +120,8 @@ export function AiChatScreen({
     () => testees.find((t) => t.id === initialTesteeId) ?? null,
   )
   const [sheetOpen, setSheetOpen] = useState(initialSheetOpen)
+  const [testeeList, setTesteeList] = useState<Testee[]>(testees)
+  const [addTesteeOpen, setAddTesteeOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sessions, setSessions] = useState<Session[]>(() =>
     initialSessions(initialQuestion, initialMode, Boolean(initialTesteeId)),
@@ -398,10 +402,32 @@ export function AiChatScreen({
 
       {sheetOpen && (
         <TesteeSheet
+          list={testeeList}
           current={testee}
           onClose={() => setSheetOpen(false)}
+          onAdd={() => setAddTesteeOpen(true)}
           onConfirm={(t) => {
             setTestee(t)
+            setSheetOpen(false)
+          }}
+        />
+      )}
+
+      {addTesteeOpen && (
+        <ExamineeFormScreen
+          hasSelf={testeeList.some((t) => t.relation === '本人')}
+          onBack={() => setAddTesteeOpen(false)}
+          onSave={(e) => {
+            const added: Testee = {
+              id: e.id,
+              name: e.name,
+              relation: e.relation === '其他' ? undefined : e.relation,
+              meta: `${genderLabel[e.gender]} · ${e.birth ? `${e.birth.slice(0, 4)}年` : `${e.age}岁`}`,
+              reports: 0,
+            }
+            setTesteeList((list) => [...list, added])
+            setTestee(added)
+            setAddTesteeOpen(false)
             setSheetOpen(false)
           }}
         />
@@ -420,7 +446,7 @@ function MessageAttachments({ items }: { items: Attachment[] }) {
           </li>
         ) : (
           <li key={a.id} className="flex w-44 items-center gap-2 rounded-xl border border-border bg-white px-2.5 py-2">
-            <FileText className="size-7 shrink-0 text-[#e5534b]" />
+            <FileText className="size-7 shrink-0 text-[#e5603a]" />
             <span className="min-w-0">
               <span className="block truncate text-[12px] text-foreground">{a.name}</span>
               <span className="block text-[10px] text-muted-foreground">PDF</span>
@@ -433,12 +459,16 @@ function MessageAttachments({ items }: { items: Attachment[] }) {
 }
 
 function TesteeSheet({
+  list,
   current,
   onClose,
+  onAdd,
   onConfirm,
 }: {
+  list: Testee[]
   current: Testee | null
   onClose: () => void
+  onAdd: () => void
   onConfirm: (t: Testee | null) => void
 }) {
   const [selected, setSelected] = useState<string | null>(current?.id ?? null)
@@ -476,7 +506,7 @@ function TesteeSheet({
         </p>
 
         <ul role="radiogroup" aria-label="检测人" className="mt-4 flex flex-col gap-2.5">
-          {testees.map((t) => {
+          {list.map((t) => {
             const active = selected === t.id
             return (
               <li key={t.id}>
@@ -521,7 +551,7 @@ function TesteeSheet({
           })}
         </ul>
 
-        <button type="button" className="mt-2.5 w-full py-2 text-[13px] font-medium text-primary">
+        <button type="button" onClick={onAdd} className="mt-2.5 w-full py-2 text-[13px] font-medium text-primary">
           + 添加检测人
         </button>
 
@@ -536,7 +566,7 @@ function TesteeSheet({
           <button
             type="button"
             disabled={!selected}
-            onClick={() => onConfirm(testees.find((t) => t.id === selected) ?? null)}
+            onClick={() => onConfirm(list.find((t) => t.id === selected) ?? null)}
             className="h-11 rounded-full bg-primary text-[15px] font-semibold text-white disabled:bg-[#cfe2f8]"
           >
             确认选择

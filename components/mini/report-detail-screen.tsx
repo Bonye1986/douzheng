@@ -22,7 +22,7 @@ type DetailRow = { drug: string; advice: Advice; gene: string; level: string; so
 const stats = [
   { value: 28, label: '检测药物', color: 'text-primary' },
   { value: 9, label: '警惕不良反应', color: 'text-primary' },
-  { value: 15, label: '警惕疗效不足', color: 'text-[#e07b35]' },
+  { value: 15, label: '警惕疗效不足', color: 'text-[#e0651c]' },
 ]
 
 const summaryRows: SummaryRow[] = [
@@ -49,7 +49,7 @@ const detailRows: DetailRow[] = [
 
 const adviceColor: Record<Advice, string> = {
   降低剂量: 'text-primary',
-  增加剂量: 'text-[#e07b35]',
+  增加剂量: 'text-[#e0651c]',
   更换药物: 'text-[#d9542c]',
 }
 

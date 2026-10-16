@@ -138,7 +138,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
                       </button>
                     </h3>
                     <div className="mt-auto flex items-center justify-between pt-1.5">
-                      <span className="text-[15px] font-bold text-[#f07a2c]">
+                      <span className="text-[15px] font-bold text-[#e0651c]">
                         <span className="text-[11px]">¥</span>
                         {s.price}
                       </span>
@@ -177,7 +177,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
               type="button"
               onClick={removeChecked}
               disabled={!checkedRows.length}
-              className="ml-auto h-10 rounded-full border border-[#f05252] px-6 text-[14px] font-medium text-[#f05252] disabled:border-border disabled:text-[#b8c2d6]"
+              className="ml-auto h-10 rounded-full border border-[#e5603a] px-6 text-[14px] font-medium text-[#e5603a] disabled:border-border disabled:text-[#b8c2d6]"
             >
               删除{checkedRows.length > 0 && `(${checkedRows.length})`}
             </button>
@@ -186,7 +186,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
               <div className="ml-auto text-right">
                 <p className="text-[13px] text-foreground">
                   合计：
-                  <span className="text-[18px] font-bold tabular-nums text-[#f07a2c]">
+                  <span className="text-[18px] font-bold tabular-nums text-[#e0651c]">
                     <span className="text-[12px]">¥</span>
                     {total.toLocaleString('zh-CN')}
                   </span>
@@ -246,7 +246,7 @@ function CartRow({
         </p>
         <div className="mt-auto flex items-center justify-between pt-1.5">
           <p className="flex items-baseline gap-1">
-            <span className="text-[15px] font-bold text-[#f07a2c]">
+            <span className="text-[15px] font-bold text-[#e0651c]">
               <span className="text-[11px]">¥</span>
               {service.price}
             </span>

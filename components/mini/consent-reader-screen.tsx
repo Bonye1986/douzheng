@@ -59,11 +59,13 @@ const sections: { title: string; body: string[] }[] = [
 ]
 
 type Props = {
-  onAgree: () => void
+  onAgree?: () => void
   onBack: () => void
+  readOnly?: boolean
+  signedAt?: string
 }
 
-export function ConsentReaderScreen({ onAgree, onBack }: Props) {
+export function ConsentReaderScreen({ onAgree, onBack, readOnly = false, signedAt }: Props) {
   const [remaining, setRemaining] = useState(MIN_READ_SECONDS)
   const [reachedBottom, setReachedBottom] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -92,9 +94,16 @@ export function ConsentReaderScreen({ onAgree, onBack }: Props) {
   return (
     <SubPage title="基因检测知情同意书" titleId="consent-title" onBack={onBack}>
       <div ref={scrollRef} onScroll={checkBottom} className="min-h-0 flex-1 overflow-y-auto bg-white px-5 pb-6 pt-4">
-        <p className="rounded-xl bg-[#eef4ff] px-3 py-2 text-[12px] leading-5 text-primary">
-          请您仔细阅读以下内容，阅读满 {MIN_READ_SECONDS} 秒并滑动至底部后方可确认同意。
-        </p>
+        {readOnly ? (
+          <p className="flex items-center gap-1.5 rounded-xl bg-[#e6f7ef] px-3 py-2 text-[12px] leading-5 text-[#1f9d6b]">
+            <CircleCheck className="size-3.5 shrink-0" aria-hidden="true" />
+            已于 {signedAt} 签署，本同意书作为检测依据存档
+          </p>
+        ) : (
+          <p className="rounded-xl bg-[#eef4ff] px-3 py-2 text-[12px] leading-5 text-primary">
+            请您仔细阅读以下内容，阅读满 {MIN_READ_SECONDS} 秒并滑动至底部后方可确认同意。
+          </p>
+        )}
         <h2 className="mt-4 text-center text-[16px] font-semibold text-foreground">药物基因检测知情同意书</h2>
         <p className="mt-1 text-center text-[11px] text-muted-foreground">版本号 V2.3 · 2026 年 9 月更新</p>
 
@@ -114,13 +123,14 @@ export function ConsentReaderScreen({ onAgree, onBack }: Props) {
         <p className="mt-6 text-center text-[11px] text-[#a9b3c6]">— 已到底部 —</p>
       </div>
 
+      {!readOnly && (
       <div className="shrink-0 border-t border-border bg-white px-4 pb-6 pt-2.5">
         <div className="mb-2 flex items-center justify-center gap-4 text-[11px]">
-          <span className={cn('flex items-center gap-1', timeDone ? 'text-[#2fae7a]' : 'text-muted-foreground')}>
+          <span className={cn('flex items-center gap-1', timeDone ? 'text-[#1f9d6b]' : 'text-muted-foreground')}>
             {timeDone ? <CircleCheck className="size-3.5" aria-hidden="true" /> : <Clock className="size-3.5" aria-hidden="true" />}
             阅读满 {MIN_READ_SECONDS} 秒
           </span>
-          <span className={cn('flex items-center gap-1', reachedBottom ? 'text-[#2fae7a]' : 'text-muted-foreground')}>
+          <span className={cn('flex items-center gap-1', reachedBottom ? 'text-[#1f9d6b]' : 'text-muted-foreground')}>
             <CircleCheck className="size-3.5" aria-hidden="true" />
             滑动至底部
           </span>
@@ -138,6 +148,7 @@ export function ConsentReaderScreen({ onAgree, onBack }: Props) {
           {buttonLabel}
         </button>
       </div>
+      )}
     </SubPage>
   )
 }

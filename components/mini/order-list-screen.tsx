@@ -261,7 +261,7 @@ export function OrderListScreen({
                   <span className="rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
                 )}
                 {o.priceChanged && (
-                  <span className="rounded bg-[#ffeadb] px-1 text-[10px] font-medium text-[#d9621a]">已改价</span>
+                  <span className="rounded bg-[#ffeadb] px-1 text-[10px] font-medium text-[#e0651c]">已改价</span>
                 )}
                 <span
                   className={cn(

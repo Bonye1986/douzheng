@@ -199,7 +199,7 @@ function ArticleMeta({ article }: { article: Article }) {
   )
 }
 
-function GuideList({ onOpen }: { onOpen: (id: string) => void }) {
+function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onContact?: () => void }) {
   const [category, setCategory] = useState<Category>('all')
   const [keyword, setKeyword] = useState('')
 
@@ -315,7 +315,11 @@ function GuideList({ onOpen }: { onOpen: (id: string) => void }) {
         <div className="mt-2.5 flex items-center gap-3 rounded-2xl bg-white p-3">
           <Headphones className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <p className="flex-1 text-[12px] text-muted-foreground">没有找到答案？</p>
-          <button type="button" className="h-7 rounded-full border border-primary px-3 text-[12px] text-primary">
+          <button
+            type="button"
+            onClick={onContact}
+            className="h-7 rounded-full border border-primary px-3 text-[12px] text-primary"
+          >
             联系客服
           </button>
         </div>
@@ -324,7 +328,15 @@ function GuideList({ onOpen }: { onOpen: (id: string) => void }) {
   )
 }
 
-function GuideDetail({ article, onOpen }: { article: Article; onOpen: (id: string) => void }) {
+function GuideDetail({
+  article,
+  onOpen,
+  onContact,
+}: {
+  article: Article
+  onOpen: (id: string) => void
+  onContact?: () => void
+}) {
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
   const related = articles.filter((a) => a.id !== article.id && a.category === article.category).slice(0, 2)
   const more = related.length ? related : articles.filter((a) => a.id !== article.id).slice(0, 2)
@@ -437,6 +449,7 @@ function GuideDetail({ article, onOpen }: { article: Article; onOpen: (id: strin
       <div className="flex shrink-0 gap-2.5 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
         <button
           type="button"
+          onClick={onContact}
           className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary text-[14px] text-primary"
         >
           <Headphones className="size-4" aria-hidden="true" />
@@ -458,10 +471,12 @@ export function GuideScreen({
   initialView = 'list',
   initialArticleId = 'saliva',
   onBack,
+  onContact,
 }: {
   initialView?: GuideView
   initialArticleId?: string
   onBack: () => void
+  onContact?: () => void
 }) {
   const [articleId, setArticleId] = useState<string | null>(initialView === 'detail' ? initialArticleId : null)
   const article = articles.find((a) => a.id === articleId)
@@ -469,14 +484,14 @@ export function GuideScreen({
   if (article) {
     return (
       <SubPage key={article.id} title="指南详情" titleId="guide-detail-title" onBack={() => setArticleId(null)}>
-        <GuideDetail article={article} onOpen={setArticleId} />
+        <GuideDetail article={article} onOpen={setArticleId} onContact={onContact} />
       </SubPage>
     )
   }
 
   return (
     <SubPage title="使用指南" titleId="guide-title" onBack={onBack}>
-      <GuideList onOpen={setArticleId} />
+      <GuideList onOpen={setArticleId} onContact={onContact} />
     </SubPage>
   )
 }

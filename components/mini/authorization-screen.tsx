@@ -13,14 +13,15 @@ import {
 } from '@/components/mini/checkout-data'
 import { testServices } from '@/components/mini/tests-data'
 import { ResearchSignFlow, type SignAction } from '@/components/mini/research-sign-flow'
+import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { cn } from '@/lib/utils'
 
 type Tab = 'test' | 'research'
 
 const statusStyle: Record<ResearchStatus, string> = {
-  signed: 'bg-[#e6f7ef] text-[#2fb57a]',
+  signed: 'bg-[#e6f7ef] text-[#1f9d6b]',
   withdrawn: 'bg-secondary text-[#8a94a6]',
-  unsigned: 'bg-[#fff4e8] text-[#f07a2c]',
+  unsigned: 'bg-[#fff4e8] text-[#e0651c]',
 }
 
 const memberName = (id: string) => initialExaminees.find((m) => m.id === id)?.name ?? ''
@@ -36,6 +37,7 @@ export function AuthorizationScreen({ onBack, initialTab = 'test' }: { onBack: (
   const [tab, setTab] = useState<Tab>(initialTab)
   const [auths, setAuths] = useState<ResearchAuth[]>(initialResearchAuths)
   const [pending, setPending] = useState<{ auth: ResearchAuth; action: SignAction } | null>(null)
+  const [viewingSignedAt, setViewingSignedAt] = useState<string | null>(null)
 
   const finish = () => {
     if (!pending) return
@@ -87,7 +89,7 @@ export function AuthorizationScreen({ onBack, initialTab = 'test' }: { onBack: (
         role="tabpanel"
         className="flex-1 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]"
       >
-        {tab === 'test' ? <TestConsentPanel /> : <ResearchPanel auths={auths} onAction={(auth, action) => setPending({ auth, action })} />}
+        {tab === 'test' ? <TestConsentPanel onView={setViewingSignedAt} /> : <ResearchPanel auths={auths} onAction={(auth, action) => setPending({ auth, action })} />}
       </div>
 
       {pending && (
@@ -100,11 +102,15 @@ export function AuthorizationScreen({ onBack, initialTab = 'test' }: { onBack: (
           onDone={finish}
         />
       )}
+
+      {viewingSignedAt && (
+        <ConsentReaderScreen readOnly signedAt={viewingSignedAt} onBack={() => setViewingSignedAt(null)} />
+      )}
     </SubPage>
   )
 }
 
-function TestConsentPanel() {
+function TestConsentPanel({ onView }: { onView: (signedAt: string) => void }) {
   return (
     <>
       <section className="flex items-start gap-2 rounded-2xl bg-[#e8f0fd] px-3.5 py-3 text-[12px] leading-5 text-[#2f5fb3]">
@@ -118,7 +124,7 @@ function TestConsentPanel() {
             <div className="flex items-center gap-2">
               <FileCheck2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
               <p className="min-w-0 flex-1 text-[14px] font-semibold text-foreground">基因检测知情同意书</p>
-              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-[#2fb57a]">已签署</span>
+              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-[#1f9d6b]">已签署</span>
             </div>
             <dl className="mt-2.5 flex flex-col gap-1.5 text-[12px] leading-[18px]">
               <Row label="订单号" value={c.orderNo} mono />
@@ -131,7 +137,11 @@ function TestConsentPanel() {
                 <Lock className="size-3" aria-hidden="true" />
                 不可撤回
               </span>
-              <button type="button" className="h-7 rounded-full border border-border px-3 text-[12px] text-foreground">
+              <button
+                type="button"
+                onClick={() => onView(c.signedAt)}
+                className="h-7 rounded-full border border-border px-3 text-[12px] text-foreground"
+              >
                 查看同意书
               </button>
             </div>

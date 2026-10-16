@@ -148,7 +148,11 @@ export function MineScreen({
       <div className="relative flex-1 overflow-y-auto px-3 pb-24 pt-2 [scrollbar-width:none]">
         {/* 用户信息：头像 / 昵称 / 手机号 */}
         <section aria-label="用户信息">
-          <button type="button" className="flex w-full items-center gap-3 px-1 text-left">
+          <button
+            type="button"
+            onClick={() => setAccountView('main')}
+            className="flex w-full items-center gap-3 px-1 text-left"
+          >
             <DefaultAvatar className="size-14 shrink-0 border-2 border-white shadow-sm" />
             <span className="min-w-0 flex-1">
                 <span className="block text-[18px] font-semibold text-foreground">{DEFAULT_NICKNAME}</span>
@@ -182,7 +186,7 @@ export function MineScreen({
                     <span className="relative">
                       <p.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
                       {count > 0 && (
-                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f07a2c] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e0651c] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
                           {count}
                           <span className="sr-only">笔</span>
                         </span>
@@ -231,11 +235,11 @@ export function MineScreen({
             onClick={() => setMyCouponsOpen(true)}
             className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
           >
-            <TicketPercent className="size-6 shrink-0 text-[#f07a2c]" strokeWidth={1.6} aria-hidden="true" />
+            <TicketPercent className="size-6 shrink-0 text-[#e0651c]" strokeWidth={1.6} aria-hidden="true" />
             <span>
               <span className="block text-[14px] font-medium text-foreground">我的优惠券</span>
               <span className="block text-[11px] text-muted-foreground">
-                <span className="tabular-nums text-[#f07a2c]">{usableCouponCount}</span> 张可用
+                <span className="tabular-nums text-[#e0651c]">{usableCouponCount}</span> 张可用
               </span>
             </span>
           </button>
@@ -244,7 +248,7 @@ export function MineScreen({
             onClick={() => setCouponCenterOpen(true)}
             className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
           >
-            <Gift className="size-6 shrink-0 text-[#f07a2c]" strokeWidth={1.6} aria-hidden="true" />
+            <Gift className="size-6 shrink-0 text-[#e0651c]" strokeWidth={1.6} aria-hidden="true" />
             <span>
               <span className="block text-[14px] font-medium text-foreground">领券中心</span>
               <span className="block text-[11px] text-muted-foreground">新人券待领取</span>
@@ -305,7 +309,9 @@ export function MineScreen({
       {reminderView && (
         <MedicationReminderScreen initialView={reminderView} onBack={() => setReminderView(null)} />
       )}
-      {guideView && <GuideScreen initialView={guideView} onBack={() => setGuideView(null)} />}
+      {guideView && (
+        <GuideScreen initialView={guideView} onBack={() => setGuideView(null)} onContact={() => setServiceOpen(true)} />
+      )}
       {aboutOpen && <AboutScreen onBack={() => setAboutOpen(false)} />}
       {serviceOpen && <CustomerServiceScreen onBack={() => setServiceOpen(false)} />}
       {accountView && <AccountSettingsScreen initialView={accountView} onBack={() => setAccountView(null)} />}

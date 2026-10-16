@@ -155,7 +155,7 @@ const screens = [
   {
     id: '28',
     title: '检测人管理 · 空状态',
-    desc: '尚未添加任何检测人时展示引导插图与说明，点击添加检测人进入添加表单',
+    desc: '尚未添加任何检测人时展示引导插图与说明，点击添加检测人进入���加表单',
     node: <MineScreen initialExamineeView="empty" />,
   },
   {
@@ -197,7 +197,7 @@ const screens = [
   {
     id: '36',
     title: '用药提醒 · 添加提醒',
-    desc: '选择用药人，填写药品名称、单次剂量与单位、服用要求；设置频率（每天 / 隔天 / 每周指定日）、最多 6 个服用时间、开始日期与疗程；配置短信接收手机号与发送时间并实时预览短信内容',
+    desc: '选择用药人，填写药品名称、单次剂量���单位、服用要求；设置频率（每天 / 隔天 / 每周指定日）、最多 6 个服用时间、开始日期与疗程；配置短信接收手机号与发送时间并实时预览短信内容',
     node: <MineScreen initialReminderView="add" />,
   },
   {
@@ -334,7 +334,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'guide',
     title: '使用指南',
-    summary: '指南文章列表（搜索 + 分类）与文章���情��步骤、注意事项、反馈、相关推荐）',
+    summary: '指南文章列表（搜索 + 分类）与文章详情（步骤、注意事项、反馈、相关推荐）',
     ids: ['40', '41'],
   },
   {
@@ -355,7 +355,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     summary: '个人资料、短信通知开关、隐私协议，更换手机号、注销账号与退出登录',
     ids: ['44', '45', '46'],
   },
-  { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关��检测人后的个性化用药解答', ids: ['05', '07', '08'] },
+  { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
 
 const sections: BoardSection[] = sectionPlan.map(({ ids, ...section }) => ({
@@ -374,7 +374,7 @@ export default function Page() {
           <BrandMark size="lg" />
           <div>
             <p className="text-[13px] font-medium text-primary">都正生物 · 药问基因用户端小程序</p>
-            <h1 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">登录注册 · 首页 · AI咨询 UI 设计稿</h1>
+            <h1 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">UI设计</h1>
           </div>
         </div>
         <dl className="flex gap-6 text-[13px] text-muted-foreground">

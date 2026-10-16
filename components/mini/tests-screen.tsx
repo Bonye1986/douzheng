@@ -247,7 +247,7 @@ export function CartButton({
     >
       <ShoppingCart className="size-[22px]" strokeWidth={1.8} aria-hidden="true" />
       {count > 0 && (
-        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f05252] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e5603a] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
           {count > 99 ? '99+' : count}
         </span>
       )}
@@ -292,7 +292,7 @@ function ServiceCard({
         </p>
         <div className="mt-auto flex items-end justify-between pt-1.5">
           <p className="flex items-baseline gap-1.5">
-            <span className="text-[17px] font-bold leading-none text-[#f07a2c]">
+            <span className="text-[17px] font-bold leading-none text-[#e0651c]">
               <span className="text-[11px]">¥</span>
               {service.price}
             </span>

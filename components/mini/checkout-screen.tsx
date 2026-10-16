@@ -196,7 +196,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       <Shell title="支付结果" onBack={onDone}>
         <div className="flex-1 overflow-y-auto px-3 pt-2.5 [scrollbar-width:none]">
           <section className="flex flex-col items-center rounded-2xl bg-white px-6 pb-6 pt-8 text-center">
-            <CircleCheck className="size-14 text-[#2fb57a]" strokeWidth={1.6} aria-hidden="true" />
+            <CircleCheck className="size-14 text-[#1f9d6b]" strokeWidth={1.6} aria-hidden="true" />
             <p className="mt-3 text-[17px] font-semibold text-foreground">支付成功</p>
             <p className="mt-1 text-[24px] font-bold tabular-nums text-foreground">
               <span className="text-[15px]">¥</span>
@@ -242,7 +242,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                         <p className="truncate text-[11px] text-muted-foreground">{it.serviceName}</p>
                       </div>
                       {done ? (
-                        <span className="rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-[#2fb57a]">已签署</span>
+                        <span className="rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-[#1f9d6b]">已签署</span>
                       ) : (
                         <button
                           type="button"
@@ -408,7 +408,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               + 添加受检人
             </button>
           </div>
-          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">��个项目可选多位受检人，一人一份，报告分别归档</p>
+          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
           <ul>
             {rows.map(({ service }) => {
               const selected = assign[service.id] ?? []
@@ -562,9 +562,9 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             onClick={() => setCouponOpen(true)}
             className="flex h-12 w-full items-center gap-2 text-left"
           >
-            <Ticket className="size-4 text-[#f07a2c]" aria-hidden="true" />
+            <Ticket className="size-4 text-[#e0651c]" aria-hidden="true" />
             <span className="text-[13px] text-foreground">优惠券</span>
-            <span className={cn('ml-auto text-[13px]', coupon ? 'font-medium text-[#f07a2c]' : 'text-muted-foreground')}>
+            <span className={cn('ml-auto text-[13px]', coupon ? 'font-medium text-[#e0651c]' : 'text-muted-foreground')}>
               {coupon ? `-¥${coupon.amount}` : usable.length ? `${usable.length} 张可用` : '暂无可用'}
             </span>
             <ChevronRight className="size-4 text-[#b8c2d6]" aria-hidden="true" />
@@ -683,7 +683,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         <div className="min-w-0">
           <p className="text-[13px] text-foreground">
             实付
-            <span className="ml-1 text-[20px] font-bold tabular-nums text-[#f07a2c]">
+            <span className="ml-1 text-[20px] font-bold tabular-nums text-[#e0651c]">
               <span className="text-[13px]">¥</span>
               {payable.toLocaleString('zh-CN')}
             </span>
@@ -966,7 +966,7 @@ function PriceRow({ label, value, accent }: { label: string; value: string; acce
   return (
     <div className="flex items-center justify-between">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className={cn('tabular-nums', accent ? 'text-[#f07a2c]' : 'text-foreground')}>{value}</dd>
+      <dd className={cn('tabular-nums', accent ? 'text-[#e0651c]' : 'text-foreground')}>{value}</dd>
     </div>
   )
 }
@@ -1018,7 +1018,7 @@ function CouponSheet({
                   onClick={() => onSelect(c.id)}
                   className="flex w-full overflow-hidden rounded-xl bg-white text-left disabled:opacity-50"
                 >
-                  <span className="flex w-[88px] shrink-0 flex-col items-center justify-center bg-[#fff4ec] py-3 text-[#f07a2c]">
+                  <span className="flex w-[88px] shrink-0 flex-col items-center justify-center bg-[#fff4ec] py-3 text-[#e0651c]">
                     <span className="text-[20px] font-bold leading-none">
                       <span className="text-[12px]">¥</span>
                       {c.amount}
@@ -1036,7 +1036,7 @@ function CouponSheet({
                       aria-hidden="true"
                       className={cn(
                         'flex size-[18px] shrink-0 items-center justify-center rounded-full border',
-                        active ? 'border-[#f07a2c] bg-[#f07a2c] text-white' : 'border-[#c3ccdb]',
+                        active ? 'border-[#e0651c] bg-[#e0651c] text-white' : 'border-[#c3ccdb]',
                       )}
                     >
                       {active && <Check className="size-3" strokeWidth={3} />}

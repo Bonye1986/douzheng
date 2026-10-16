@@ -71,7 +71,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
         <div className="relative -mt-4 flex flex-col gap-2.5 px-3">
           <section aria-label="基本信息" className="rounded-2xl bg-white p-4">
             <p className="flex items-baseline gap-2">
-              <span className="text-[24px] font-bold leading-none text-[#f07a2c]">
+              <span className="text-[24px] font-bold leading-none text-[#e0651c]">
                 <span className="text-[14px]">¥</span>
                 {service.price}
               </span>
@@ -149,7 +149,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
             <ul className="mt-1.5 flex flex-col gap-1">
               {service.notes.map((n) => (
                 <li key={n} className="flex gap-2 text-[13px] leading-5 text-muted-foreground">
-                  <span className="mt-2 size-1 shrink-0 rounded-full bg-[#f07a2c]" aria-hidden="true" />
+                  <span className="mt-2 size-1 shrink-0 rounded-full bg-[#e0651c]" aria-hidden="true" />
                   {n}
                 </li>
               ))}

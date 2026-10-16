@@ -161,7 +161,7 @@ function RecommendedTests() {
                 </span>
                 <span className="mt-auto flex items-end justify-between pt-1">
                   <span className="flex items-baseline gap-1">
-                    <span className="text-[16px] font-bold text-[#f07a2c]">
+                    <span className="text-[16px] font-bold text-[#e0651c]">
                       <span className="text-[11px]">¥</span>
                       {t.price}
                     </span>
@@ -188,7 +188,7 @@ function KnowledgeList() {
         {articles.map((a) => (
           <li key={a.id}>
             <button type="button" className="flex w-full items-start gap-3 text-left">
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#fff1e8] text-[#f07a2c]">
+              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#fff1e8] text-[#e0651c]">
                 <BookOpen className="size-4" aria-hidden="true" />
               </span>
               <span className="min-w-0 flex-1">
@@ -235,7 +235,7 @@ function DailyQuiz({ onOpenChat }: Props) {
   return (
     <section aria-labelledby="quiz" className="rounded-2xl bg-white p-4">
       <h2 id="quiz" className="mb-3 flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
-        <Lightbulb className="size-4 text-[#f07a2c]" aria-hidden="true" />
+        <Lightbulb className="size-4 text-[#e0651c]" aria-hidden="true" />
         互动问答
       </h2>
 
@@ -286,7 +286,7 @@ function DailyQuiz({ onOpenChat }: Props) {
                 'flex h-11 items-center justify-between rounded-xl border px-4 text-left text-[13px] transition-colors',
                 !answered && 'border-border bg-[#f8fafd] text-foreground active:bg-[#eef3fa]',
                 answered && isAnswer && 'border-[#1f9d6b] bg-[#e9f8f1] text-[#1f9d6b]',
-                answered && isPicked && !isAnswer && 'border-[#e04a5a] bg-[#feecee] text-[#e04a5a]',
+                answered && isPicked && !isAnswer && 'border-[#e5603a] bg-[#feecee] text-[#e5603a]',
                 answered && !isAnswer && !isPicked && 'border-border bg-[#f8fafd] text-muted-foreground',
               )}
             >
@@ -301,7 +301,7 @@ function DailyQuiz({ onOpenChat }: Props) {
       </div>
       {answered && (
         <div className="mt-3 rounded-xl bg-[#f4f8fe] p-3" aria-live="polite">
-          <p className={cn('text-[13px] font-medium', correct ? 'text-[#1f9d6b]' : 'text-[#e04a5a]')}>
+          <p className={cn('text-[13px] font-medium', correct ? 'text-[#1f9d6b]' : 'text-[#e5603a]')}>
             {correct ? '回答正确！' : `再想想～正确答案是 ${answerLabel}`}
           </p>
           <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">{quiz.explanation}</p>

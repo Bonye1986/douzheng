@@ -87,7 +87,7 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
               <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <FileText className="size-5" aria-hidden="true" />
                 {r.unread && (
-                  <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-[#f07a2c] ring-2 ring-white">
+                  <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-[#e0651c] ring-2 ring-white">
                     <span className="sr-only">新报告</span>
                   </span>
                 )}

@@ -320,7 +320,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
 
       <ul className="mt-3 space-y-1 px-1.5 text-[11px] leading-4 text-muted-foreground">
         <li>· 更换后，登录账号、短信通知（用药提醒、报告出具等）将使用新手机号</li>
-        <li>· 检测人信息中填写的手机号不会自动变更，可在检测人管理中���改</li>
+        <li>· 检测人信息中填写的手机号不会自动变更，可在检测人管理中修改</li>
         <li>· 原手机号无法接收验证码？请联系客服人工处理</li>
       </ul>
 
@@ -475,7 +475,7 @@ const textFields = {
     maxLength: 16,
     type: 'nickname',
     placeholder: '请输入昵称',
-    hint: '可使用微信昵称，��称仅用于展示，不影响检测人信息',
+    hint: '可使用微信昵称，昵称仅用于展示，不影响检测人信息',
   },
   realName: {
     title: '填写真实姓名',
