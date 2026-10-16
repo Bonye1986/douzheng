@@ -219,6 +219,18 @@ const screens = [
     node: <MineScreen initialReminderView="empty" />,
   },
   {
+    id: '40',
+    title: '我的 · 使用指南',
+    desc: '顶部搜索与分类页签（全部 / 下单购买 / 采样寄回 / 查看报告 / 授权隐私），「新手必读」封面推荐 + 文章列表（标题、摘要、分类、阅读时长、阅读量），无结果空状态与联系客服入口（可在画板内交互）',
+    node: <MineScreen initialGuideView="list" />,
+  },
+  {
+    id: '41',
+    title: '使用指南 · 文章详情',
+    desc: '标题、分类、更新时间与阅读信息，封面图，正文段落 / 小标题 / 编号步骤 / 注意事项提示框；底部有帮助反馈、相关指南，联系客服与问问 AI 固定操作栏（可在画板内交互）',
+    node: <MineScreen initialGuideView="detail" />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
@@ -288,6 +300,12 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     title: '用药提醒',
     summary: '提醒列表、添加 / 编辑 / 删除提醒、暂停开关与空状态，到点短信通知用户',
     ids: ['35', '36', '37', '38', '39'],
+  },
+  {
+    key: 'guide',
+    title: '使用指南',
+    summary: '指南文章列表（搜索 + 分类）与文章详情（步骤、注意事项、反馈、相关推荐）',
+    ids: ['40', '41'],
   },
   { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
