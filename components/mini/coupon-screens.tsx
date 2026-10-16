@@ -58,7 +58,7 @@ function CouponCard({
       <div
         className={cn(
           'flex w-[96px] shrink-0 flex-col items-center justify-center py-4',
-          dim ? 'bg-muted text-muted-foreground' : 'bg-[#fff3ea] text-[#f07a2c]',
+          dim ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary',
         )}
       >
         <p className="leading-none">
@@ -68,7 +68,7 @@ function CouponCard({
         <p className="mt-1.5 text-[11px]">{threshold ? `满 ${threshold} 可用` : '无门槛'}</p>
       </div>
       <span
-        className="absolute left-[96px] top-0 h-full border-l border-dashed border-[#f6d3bb]"
+        className="absolute left-[96px] top-0 h-full border-l border-dashed border-primary/30"
         aria-hidden="true"
       />
       <div className="flex min-w-0 flex-1 items-center gap-2 p-3">
@@ -76,7 +76,7 @@ function CouponCard({
           <p className="flex items-center gap-1.5">
             <span className="truncate text-[14px] font-medium text-foreground">{title}</span>
             {tag && (
-              <span className="shrink-0 rounded bg-[#fff3ea] px-1 text-[10px] font-medium text-[#f07a2c]">{tag}</span>
+              <span className="shrink-0 rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">{tag}</span>
             )}
           </p>
           <p className="mt-1 truncate text-[11px] text-muted-foreground">{scope}</p>
@@ -124,11 +124,11 @@ export function MyCouponsScreen({ onBack, onOpenCenter }: { onBack: () => void; 
         <button
           type="button"
           onClick={onOpenCenter}
-          className="flex w-full items-center gap-2 rounded-2xl bg-gradient-to-r from-[#fff3ea] to-white px-3.5 py-3 text-left"
+          className="flex w-full items-center gap-2 rounded-2xl bg-gradient-to-r from-primary/10 to-white px-3.5 py-3 text-left"
         >
-          <Gift className="size-5 text-[#f07a2c]" aria-hidden="true" />
+          <Gift className="size-5 text-primary" aria-hidden="true" />
           <span className="flex-1 text-[13px] text-foreground">领券中心有新券可领</span>
-          <span className="flex items-center text-[12px] text-[#f07a2c]">
+          <span className="flex items-center text-[12px] text-primary">
             去领券
             <ChevronRight className="size-3.5" aria-hidden="true" />
           </span>
@@ -146,7 +146,7 @@ export function MyCouponsScreen({ onBack, onOpenCenter }: { onBack: () => void; 
                     c.status === 'usable' ? (
                       <button
                         type="button"
-                        className="h-7 shrink-0 rounded-full bg-[#f07a2c] px-3 text-[12px] font-medium text-white"
+                        className="h-7 shrink-0 rounded-full bg-primary px-3 text-[12px] font-medium text-white"
                       >
                         去使用
                       </button>
@@ -215,9 +215,9 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
   return (
     <SubPage title="领券中心" titleId="coupon-center-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
-        <div className="bg-gradient-to-b from-[#ffe2cc] to-[#f4f8fe] px-4 pb-6 pt-5">
-          <p className="text-[20px] font-bold text-[#c2541a]">基因检测 限时领券</p>
-          <p className="mt-1 text-[12px] text-[#a0603a]">先领券再下单，结算时自动抵扣</p>
+        <div className="bg-gradient-to-b from-primary/15 to-[#f4f8fe] px-4 pb-6 pt-5">
+          <p className="text-[20px] font-bold text-primary">基因检测 限时领券</p>
+          <p className="mt-1 text-[12px] text-muted-foreground">先领券再下单，结算时自动抵扣</p>
         </div>
 
         <ul className="-mt-2 flex flex-col gap-2.5 px-3">
@@ -237,7 +237,7 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
                   action={
                     <div className="flex shrink-0 flex-col items-center gap-1">
                       {isClaimed ? (
-                        <span className="flex h-7 items-center gap-0.5 rounded-full border border-[#f07a2c] px-2.5 text-[12px] text-[#f07a2c]">
+                        <span className="flex h-7 items-center gap-0.5 rounded-full border border-primary px-2.5 text-[12px] text-primary">
                           <Check className="size-3.5" aria-hidden="true" />
                           已领取
                         </span>
@@ -246,7 +246,7 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
                           type="button"
                           disabled={soldOut}
                           onClick={() => claim(c)}
-                          className="h-7 rounded-full bg-[#f07a2c] px-3 text-[12px] font-medium text-white disabled:bg-muted disabled:text-muted-foreground"
+                          className="h-7 rounded-full bg-primary px-3 text-[12px] font-medium text-white disabled:bg-muted disabled:text-muted-foreground"
                         >
                           {soldOut ? '已抢光' : '立即领取'}
                         </button>
