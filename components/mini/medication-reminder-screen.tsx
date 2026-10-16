@@ -1,8 +1,23 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlarmClock, BellOff, Clock, MessageSquareText, PencilLine, Pill, Plus, ShieldCheck, Trash2, X } from 'lucide-react'
+import {
+  AlarmClock,
+  BellOff,
+  Camera,
+  ChevronRight,
+  Clock,
+  MessageSquareText,
+  PencilLine,
+  Pill,
+  Plus,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { DrugScanSheet, type DrugScanResult } from '@/components/mini/drug-scan-sheet'
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
@@ -418,13 +433,38 @@ function ReminderFormScreen({
   const [advance, setAdvance] = useState<Advance>(initial?.advance ?? 0)
   const [note, setNote] = useState(initial?.note ?? '')
   const [errors, setErrors] = useState<Errors>({})
+  const [scanOpen, setScanOpen] = useState(false)
+  const [scanned, setScanned] = useState<Set<ScanField>>(new Set())
 
   const clear = (k: keyof Errors) => setErrors((e) => ({ ...e, [k]: undefined }))
+  const unmark = (k: ScanField) =>
+    setScanned((s) => {
+      if (!s.has(k)) return s
+      const n = new Set(s)
+      n.delete(k)
+      return n
+    })
+
+  const applyScan = (r: DrugScanResult) => {
+    setDrug(r.drug)
+    setDose(r.dose)
+    setUnit(r.unit)
+    setMeal(r.meal)
+    if (times.length !== r.timesPerDay) {
+      const presets = ['08:00', '12:00', '18:00', '21:00', '22:00', '23:00']
+      setTimes(presets.slice(0, Math.min(MAX_TIMES, r.timesPerDay)))
+    }
+    if (!note.trim()) setNote(`规格 ${r.spec}；${r.usage}`.slice(0, 60))
+    setScanned(new Set<ScanField>(['drug', 'dose', 'meal', 'times']))
+    setErrors({})
+    setScanOpen(false)
+  }
   const masked = phone.includes('*')
 
   const setTime = (i: number, v: string) => {
     setTimes((t) => t.map((x, j) => (j === i ? v : x)))
     clear('times')
+    unmark('times')
   }
   const addTime = () => {
     if (times.length >= MAX_TIMES) return
@@ -473,6 +513,30 @@ function ReminderFormScreen({
             用药信息
           </h2>
 
+          <button
+            type="button"
+            onClick={() => setScanOpen(true)}
+            className="mt-3 flex w-full items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-3 py-2.5 text-left"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Camera className="size-4" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[13px] font-medium text-foreground">
+                {scanned.size ? '重新拍照识别' : '拍照识别药盒'}
+              </span>
+              <span className="block text-[11px] text-muted-foreground">自动识别药名、剂量与用法，并填入下方</span>
+            </span>
+            <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
+          </button>
+
+          {scanned.size > 0 && (
+            <p role="status" className="mt-2 flex items-start gap-1.5 rounded-lg bg-[#fff8e6] px-2.5 py-2 text-[11px] leading-relaxed text-[#8a5a00]">
+              <Sparkles className="mt-px size-3.5 shrink-0" aria-hidden="true" />
+              已根据药盒照片自动填充，标记「识别」的内容请核对，如有误可直接修改
+            </p>
+          )}
+
           <p id="reminder-member-label" className="mt-3 text-[12px] text-muted-foreground">
             用药人
           </p>
@@ -484,12 +548,16 @@ function ReminderFormScreen({
           />
 
           <label className="mt-3 block">
-            <span className="text-[12px] text-muted-foreground">药品名称</span>
+            <span className="flex items-center text-[12px] text-muted-foreground">
+              药品名称
+              {scanned.has('drug') && <ScanBadge />}
+            </span>
             <input
               value={drug}
               onChange={(e) => {
                 setDrug(e.target.value.slice(0, 30))
                 clear('drug')
+                unmark('drug')
               }}
               placeholder="请输入药品通用名或商品名"
               aria-invalid={!!errors.drug}
@@ -513,8 +581,9 @@ function ReminderFormScreen({
           )}
 
           <div className="mt-3">
-            <span id="reminder-dose-label" className="text-[12px] text-muted-foreground">
+            <span id="reminder-dose-label" className="flex items-center text-[12px] text-muted-foreground">
               单次剂量
+              {scanned.has('dose') && <ScanBadge />}
             </span>
             <div className="mt-1.5 flex gap-2">
               <input
@@ -523,6 +592,7 @@ function ReminderFormScreen({
                 onChange={(e) => {
                   setDose(e.target.value.replace(/[^\d.]/g, '').slice(0, 6))
                   clear('dose')
+                  unmark('dose')
                 }}
                 aria-labelledby="reminder-dose-label"
                 aria-invalid={!!errors.dose}
@@ -532,21 +602,28 @@ function ReminderFormScreen({
                 labelledBy="reminder-dose-label"
                 items={units.map((u) => ({ value: u, label: u }))}
                 value={unit}
-                onChange={setUnit}
+                onChange={(u) => {
+                  setUnit(u)
+                  unmark('dose')
+                }}
                 className="mt-0 flex-1"
               />
             </div>
             <FieldError msg={errors.dose} />
           </div>
 
-          <p id="reminder-meal-label" className="mt-3 text-[12px] text-muted-foreground">
+          <p id="reminder-meal-label" className="mt-3 flex items-center text-[12px] text-muted-foreground">
             服用要求
+            {scanned.has('meal') && <ScanBadge />}
           </p>
           <ChipGroup
             labelledBy="reminder-meal-label"
             items={meals.map((m) => ({ value: m, label: m }))}
             value={meal}
-            onChange={setMeal}
+            onChange={(m) => {
+              setMeal(m)
+              unmark('meal')
+            }}
           />
         </section>
 
@@ -745,6 +822,8 @@ function ReminderFormScreen({
           {editing ? '保存修改' : '保存并开启提醒'}
         </button>
       </div>
+
+      {scanOpen && <DrugScanSheet onClose={() => setScanOpen(false)} onApply={applyScan} />}
     </SubPage>
   )
 }
@@ -811,6 +890,17 @@ function Switch({
         )}
       />
     </button>
+  )
+}
+
+type ScanField = 'drug' | 'dose' | 'meal' | 'times'
+
+function ScanBadge() {
+  return (
+    <span className="ml-1.5 inline-flex h-4 items-center gap-0.5 rounded bg-[#fff1cc] px-1 text-[10px] font-medium text-[#8a5a00]">
+      <Sparkles className="size-2.5" aria-hidden="true" />
+      识别
+    </span>
   )
 }
 
