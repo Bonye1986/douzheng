@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Check, ChevronLeft, Minus, Plus, ShoppingCart } from 'lucide-react'
+import { Check, ChevronLeft, Plus, ShoppingCart } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   getSamplingModes,
@@ -98,7 +98,6 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
                     item={item}
                     service={service}
                     onToggle={() => update(item.id, { checked: !item.checked })}
-                    onQty={(qty) => update(item.id, { qty })}
                     onOpen={() => onOpenService(service)}
                   />
                 </li>
@@ -213,13 +212,11 @@ function CartRow({
   item,
   service,
   onToggle,
-  onQty,
   onOpen,
 }: {
   item: CartItem
   service: TestService
   onToggle: () => void
-  onQty: (qty: number) => void
   onOpen: () => void
 }) {
   return (
@@ -254,37 +251,11 @@ function CartRow({
               <span className="text-[10px] text-[#b8c2d6] line-through">¥{service.originalPrice}</span>
             )}
           </p>
-          <Stepper value={item.qty} onChange={onQty} label={service.name} />
+          <span className="text-[13px] tabular-nums text-muted-foreground" aria-label={`共 ${item.qty} 份`}>
+            ×{item.qty}
+          </span>
         </div>
       </div>
-    </div>
-  )
-}
-
-function Stepper({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) {
-  return (
-    <div className="flex h-6 items-center overflow-hidden rounded-md border border-border" role="group" aria-label={`${label}份数`}>
-      <button
-        type="button"
-        onClick={() => onChange(value - 1)}
-        disabled={value <= 1}
-        aria-label="减少一份"
-        className="flex size-6 items-center justify-center text-foreground disabled:text-[#c3ccdb]"
-      >
-        <Minus className="size-3" aria-hidden="true" />
-      </button>
-      <span className="flex h-full w-7 items-center justify-center border-x border-border text-[12px] tabular-nums text-foreground" aria-live="polite">
-        {value}
-      </span>
-      <button
-        type="button"
-        onClick={() => onChange(value + 1)}
-        disabled={value >= MAX_QTY}
-        aria-label="增加一份"
-        className="flex size-6 items-center justify-center text-foreground disabled:text-[#c3ccdb]"
-      >
-        <Plus className="size-3" aria-hidden="true" />
-      </button>
     </div>
   )
 }

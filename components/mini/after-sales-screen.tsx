@@ -26,7 +26,7 @@ type AfterCase = {
   note: string
   refund?: { label: string; value: string }
   newOrderId?: string
-  action?: { label: string; primary?: boolean; handle?: boolean }
+  action?: { label: string; primary?: boolean; handle?: boolean; terminate?: boolean }
 }
 
 const cases: AfterCase[] = [
@@ -51,7 +51,7 @@ const cases: AfterCase[] = [
     product: '药物基因检测',
     examinee: '张伟',
     amount: '¥999',
-    note: '退款申请已提交，客服审核后确定全额或部分退款',
+    note: '采样盒已发出，您选择了自费寄回采样盒，实验室签收后全额退款',
     refund: { label: '申请退款', value: '¥999' },
     action: { label: '查看进度' },
   },
@@ -76,15 +76,23 @@ const cases: AfterCase[] = [
     product: '药物基因检测',
     examinee: '李秀兰',
     amount: '¥999',
-    note: '原订单已关闭，已为您生成新的已付款订单',
+    note: '原订单已关闭，已为您生成新的已付款订单。如需终止检测并退款，需联系客服扣除已产生费用后退款',
     newOrderId: 'DZ20261009011',
-    action: { label: '查看新订单' },
+    action: { label: '终止并退款', terminate: true },
   },
 ]
 
 export const pendingAfterSalesCount = cases.filter((c) => c.kind === 'pending').length
 
-export function AfterSalesScreen({ onBack, onHandleUnqualified }: { onBack: () => void; onHandleUnqualified: () => void }) {
+export function AfterSalesScreen({
+  onBack,
+  onHandleUnqualified,
+  onTerminateResample,
+}: {
+  onBack: () => void
+  onHandleUnqualified: () => void
+  onTerminateResample: () => void
+}) {
   const [kind, setKind] = useState<'all' | AfterKind>('all')
   const visible = cases.filter((c) => kind === 'all' || c.kind === kind)
 
@@ -170,7 +178,10 @@ export function AfterSalesScreen({ onBack, onHandleUnqualified }: { onBack: () =
                 <div className="mt-2.5 flex justify-end">
                   <button
                     type="button"
-                    onClick={() => c.action?.handle && onHandleUnqualified()}
+                    onClick={() => {
+                      if (c.action?.handle) onHandleUnqualified()
+                      if (c.action?.terminate) onTerminateResample()
+                    }}
                     className={cn(
                       'h-7 rounded-full px-3.5 text-[12px] font-medium',
                       c.action.primary ? 'bg-primary text-primary-foreground' : 'border border-[#dfe5ef] text-foreground',

@@ -66,6 +66,7 @@ type Order = {
   resample?: boolean
   priceChanged?: boolean
   unqualified?: boolean
+  refund?: 'shipped' | 'resample'
   action?: { label: string; primary?: boolean }
 }
 
@@ -92,6 +93,7 @@ const orders: Order[] = [
     examinees: '王建国',
     amount: '¥899',
     note: '采样盒运输中，预计明日送达',
+    refund: 'shipped',
     action: { label: '查看物流' },
   },
   {
@@ -146,6 +148,7 @@ const orders: Order[] = [
     amount: '¥0',
     note: '样本已送达实验室，等待上机检测',
     resample: true,
+    refund: 'resample',
   },
   {
     id: 'DZ20260920004',
@@ -178,10 +181,12 @@ export function OrderListScreen({
   initialPhase = 'all',
   onBack,
   onHandleUnqualified,
+  onRefund,
 }: {
   initialPhase?: OrderPhase
   onBack: () => void
   onHandleUnqualified: () => void
+  onRefund: (kind: 'shipped' | 'resample') => void
 }) {
   const [type, setType] = useState<OrderType>('all')
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
@@ -304,6 +309,16 @@ export function OrderListScreen({
 
               <div className="mt-2.5 flex items-center justify-between">
                 <span className="text-[11px] tabular-nums text-muted-foreground">{o.id}</span>
+                <div className="flex items-center gap-2">
+                {o.refund && (
+                  <button
+                    type="button"
+                    onClick={() => o.refund && onRefund(o.refund)}
+                    className="h-7 rounded-full border border-[#dfe5ef] px-3.5 text-[12px] font-medium text-muted-foreground"
+                  >
+                    {o.refund === 'resample' ? '终止并退款' : '申请退款'}
+                  </button>
+                )}
                 {o.action && (
                   <button
                     type="button"
@@ -318,6 +333,7 @@ export function OrderListScreen({
                     {o.action.label}
                   </button>
                 )}
+                </div>
               </div>
             </li>
           )
