@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, Download, Info, Sparkles } from 'lucide-react'
+import { Check, Info, MoveHorizontal, Share2, Sparkles } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
 
@@ -13,98 +12,68 @@ export type ReportSummary = {
   date: string
 }
 
-type Level = 'adjust' | 'caution' | 'normal'
+type Advice = '降低剂量' | '增加剂量' | '更换药物'
 
-type Drug = {
-  name: string
-  category: string
-  level: Level
-  gene: string
-  advice: string
-}
+type SummaryRow = { drug: string; adverse: boolean; insufficient: boolean; advice: Advice }
 
-type GeneResult = {
-  gene: string
-  locus: string
-  genotype: string
-  phenotype: string
-}
+type DetailRow = { drug: string; advice: Advice; gene: string; level: string; source: string; result: string }
 
-const levelMeta: Record<Level, { label: string; text: string; bg: string; dot: string }> = {
-  adjust: { label: '需调整', text: 'text-[#d9542c]', bg: 'bg-[#fdeee8]', dot: 'bg-[#d9542c]' },
-  caution: { label: '谨慎使用', text: 'text-[#b9821c]', bg: 'bg-[#fbf3df]', dot: 'bg-[#d9a23a]' },
-  normal: { label: '正常使用', text: 'text-[#2f9e6a]', bg: 'bg-[#e6f5ee]', dot: 'bg-[#2f9e6a]' },
-}
-
-const drugs: Drug[] = [
-  {
-    name: '氯吡格雷',
-    category: '抗血小板药',
-    level: 'adjust',
-    gene: 'CYP2C19',
-    advice: '代谢能力降低，药效可能减弱，建议医生评估后换用替格瑞洛等替代药物。',
-  },
-  {
-    name: '华法林',
-    category: '抗凝药',
-    level: 'adjust',
-    gene: 'VKORC1 / CYP2C9',
-    advice: '对药物敏感度高，建议降低起始剂量，并加强 INR 监测。',
-  },
-  {
-    name: '阿托伐他汀',
-    category: '降脂药',
-    level: 'caution',
-    gene: 'SLCO1B1',
-    advice: '肌病风险轻度升高，建议从低剂量开始，留意肌肉酸痛等症状。',
-  },
-  {
-    name: '美托洛尔',
-    category: '降压药',
-    level: 'caution',
-    gene: 'CYP2D6',
-    advice: '代谢略慢，血药浓度可能偏高，注意监测心率与血压。',
-  },
-  {
-    name: '奥美拉唑',
-    category: '抑酸药',
-    level: 'caution',
-    gene: 'CYP2C19',
-    advice: '药物清除减慢，疗效可能增强，长期使用时可适当减量。',
-  },
-  {
-    name: '氨氯地平',
-    category: '降压药',
-    level: 'normal',
-    gene: 'CYP3A5',
-    advice: '代谢正常，可按常规剂量使用。',
-  },
-  {
-    name: '阿司匹林',
-    category: '抗血小板药',
-    level: 'normal',
-    gene: 'PTGS1',
-    advice: '未发现影响疗效的基因变异，可按常规剂量使用。',
-  },
-  {
-    name: '二甲双胍',
-    category: '降糖药',
-    level: 'normal',
-    gene: 'SLC22A1',
-    advice: '药物转运正常，可按常规剂量使用。',
-  },
+const stats = [
+  { value: 28, label: '检测药物', color: 'text-primary' },
+  { value: 9, label: '警惕不良反应', color: 'text-primary' },
+  { value: 15, label: '警惕疗效不足', color: 'text-[#e07b35]' },
 ]
 
-const genes: GeneResult[] = [
-  { gene: 'CYP2C19', locus: '*2 / *3', genotype: '*2/*3', phenotype: '慢代谢型' },
-  { gene: 'CYP2C9', locus: '*3', genotype: '*1/*3', phenotype: '中间代谢型' },
-  { gene: 'VKORC1', locus: '-1639G>A', genotype: 'AA', phenotype: '高敏感' },
-  { gene: 'SLCO1B1', locus: '521T>C', genotype: 'TC', phenotype: '功能降低' },
-  { gene: 'CYP2D6', locus: '*10', genotype: '*1/*10', phenotype: '中间代谢型' },
-  { gene: 'CYP3A5', locus: '*3', genotype: '*1/*1', phenotype: '正常代谢型' },
+const summaryRows: SummaryRow[] = [
+  { drug: '华法林', adverse: true, insufficient: false, advice: '降低剂量' },
+  { drug: '醋硝香豆素', adverse: true, insufficient: false, advice: '降低剂量' },
+  { drug: '氯吡格雷', adverse: false, insufficient: true, advice: '增加剂量' },
+  { drug: '普萘洛尔', adverse: false, insufficient: true, advice: '增加剂量' },
+  { drug: '卡维地洛', adverse: true, insufficient: false, advice: '降低剂量' },
+  { drug: '依那普利', adverse: true, insufficient: true, advice: '更换药物' },
+  { drug: '阿司匹林', adverse: true, insufficient: true, advice: '更换药物' },
+  { drug: '地高辛', adverse: true, insufficient: false, advice: '降低剂量' },
 ]
 
-const levelOrder: Level[] = ['adjust', 'caution', 'normal']
+const detailRows: DetailRow[] = [
+  { drug: '华法林', advice: '降低剂量', gene: 'CYP2C9', level: '1A', source: 'CPIC/DPWG', result: '*1/*1' },
+  { drug: '华法林', advice: '降低剂量', gene: 'VKORC1-rs2359612', level: '1B', source: 'PharmGKB', result: 'A/A' },
+  { drug: '醋硝香豆素', advice: '降低剂量', gene: 'CYP2C9', level: '2A', source: 'PharmGKB', result: '*1/*1' },
+  { drug: '氯吡格雷', advice: '增加剂量', gene: 'CYP2C19', level: '1A', source: 'CPIC', result: '*1/*2' },
+  { drug: '普萘洛尔', advice: '增加剂量', gene: 'ADRB2-rs1042713', level: '3', source: 'PharmGKB', result: 'G/G' },
+  { drug: '卡维地洛', advice: '降低剂量', gene: 'CYP2D6', level: '1A', source: 'DPWG', result: '*1/*1' },
+  { drug: '依那普利', advice: '更换药物', gene: 'SLCO1B1', level: '1A', source: 'CPIC', result: '*1/*1' },
+  { drug: '阿司匹林', advice: '更换药物', gene: 'PEAR1-rs12041331', level: '2B', source: 'PharmGKB', result: 'G/A' },
+]
+
+const adviceColor: Record<Advice, string> = {
+  降低剂量: 'text-primary',
+  增加剂量: 'text-[#e07b35]',
+  更换药物: 'text-[#d9542c]',
+}
+
+function SectionTitle({ id, title, extra }: { id: string; title: string; extra?: string }) {
+  return (
+    <div className="mb-2 mt-5 flex items-end justify-between px-1">
+      <h2 id={id} className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
+        <span className="h-3.5 w-1 rounded-full bg-primary" aria-hidden="true" />
+        {title}
+      </h2>
+      {extra && <span className="text-[12px] text-muted-foreground">{extra}</span>}
+    </div>
+  )
+}
+
+function Mark({ on, label }: { on: boolean; label: string }) {
+  return on ? (
+    <>
+      <Check className="mx-auto size-4 text-primary" strokeWidth={2.5} aria-hidden="true" />
+      <span className="sr-only">{label}</span>
+    </>
+  ) : (
+    <span className="sr-only">无</span>
+  )
+}
 
 export function ReportDetailScreen({
   report,
@@ -115,179 +84,111 @@ export function ReportDetailScreen({
   onBack: () => void
   onAiInterpret?: () => void
 }) {
-  const [tab, setTab] = useState<'drug' | 'gene'>('drug')
-  const [level, setLevel] = useState<'all' | Level>('all')
-  const [expanded, setExpanded] = useState<string | null>(drugs[0].name)
-
-  const counts = levelOrder.map((l) => ({ level: l, count: drugs.filter((d) => d.level === l).length }))
-  const visibleDrugs = drugs.filter((d) => level === 'all' || d.level === level)
-
   return (
     <SubPage title="报告详情" titleId="report-detail-title" onBack={onBack}>
-      <div className="flex-1 overflow-y-auto pb-4 [scrollbar-width:none]">
-        <section aria-label="报告信息" className="bg-primary px-4 pb-10 pt-4 text-primary-foreground">
-          <p className="text-[17px] font-semibold">{report.product}</p>
-          <dl className="mt-3 grid grid-cols-2 gap-y-1.5 text-[12px]">
-            <div className="flex gap-1.5">
-              <dt className="opacity-75">受检人</dt>
-              <dd>
-                {report.examinee}（{report.relation}）
-              </dd>
-            </div>
-            <div className="flex gap-1.5">
-              <dt className="opacity-75">出具日期</dt>
-              <dd className="tabular-nums">{report.date}</dd>
-            </div>
-            <div className="col-span-2 flex gap-1.5">
-              <dt className="opacity-75">报告编号</dt>
-              <dd className="tabular-nums">{report.id}</dd>
-            </div>
-          </dl>
-        </section>
-
-        <section aria-labelledby="overview-title" className="relative -mt-7 mx-3 rounded-2xl bg-white p-3.5">
-          <h2 id="overview-title" className="text-[14px] font-semibold text-foreground">
-            检测结论
-          </h2>
-          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-            共检测 {drugs.length} 种常用药物，其中 {counts[0].count} 种建议调整用药，请携带报告咨询医生。
+      <div className="flex-1 overflow-y-auto px-3 pb-4 pt-3 [scrollbar-width:none]">
+        <section aria-label="报告信息" className="rounded-2xl bg-primary px-4 py-4 text-primary-foreground">
+          <span className="inline-block rounded-full bg-white/20 px-2.5 py-0.5 text-[11px]">平台正式检测报告</span>
+          <p className="mt-2.5 text-[18px] font-semibold">{report.product}</p>
+          <p className="mt-1 text-[12px] opacity-80">
+            报告编号：<span className="tabular-nums">{report.id}</span> · 检测人：{report.examinee}
           </p>
-          <div className="mt-3 flex h-2 overflow-hidden rounded-full" aria-hidden="true">
-            {counts.map((c) => (
-              <span key={c.level} className={levelMeta[c.level].dot} style={{ flexGrow: c.count }} />
-            ))}
-          </div>
-          <ul className="mt-2 flex justify-between text-[12px]">
-            {counts.map((c) => (
-              <li key={c.level} className="flex items-center gap-1.5 text-muted-foreground">
-                <span className={cn('size-2 rounded-full', levelMeta[c.level].dot)} aria-hidden="true" />
-                {levelMeta[c.level].label}
-                <span className={cn('font-semibold tabular-nums', levelMeta[c.level].text)}>{c.count}</span>
-              </li>
-            ))}
-          </ul>
         </section>
 
-        <div role="tablist" aria-label="报告内容" className="mx-3 mt-3 flex rounded-full bg-white p-1">
-          {(
-            [
-              ['drug', '用药建议'],
-              ['gene', '基因检测结果'],
-            ] as const
-          ).map(([key, label]) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={tab === key}
-              onClick={() => setTab(key)}
-              className={cn(
-                'h-8 flex-1 rounded-full text-[13px] transition-colors',
-                tab === key ? 'bg-primary font-medium text-primary-foreground' : 'text-muted-foreground',
-              )}
-            >
-              {label}
-            </button>
+        <ul aria-label="检测概况" className="mt-2.5 grid grid-cols-3 gap-2">
+          {stats.map((s) => (
+            <li key={s.label} className="rounded-2xl bg-white py-3 text-center">
+              <p className={cn('text-[20px] font-semibold tabular-nums', s.color)}>{s.value}</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">{s.label}</p>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        {tab === 'drug' ? (
-          <section aria-label="用药建议" className="mx-3 mt-3">
-            <div className="flex gap-2 overflow-x-auto [scrollbar-width:none]">
-              {(['all', ...levelOrder] as const).map((l) => {
-                const active = level === l
-                return (
-                  <button
-                    key={l}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setLevel(l)}
-                    className={cn(
-                      'h-7 shrink-0 rounded-full border px-3 text-[12px] transition-colors',
-                      active ? 'border-primary bg-primary/10 font-medium text-primary' : 'border-transparent bg-white text-muted-foreground',
-                    )}
-                  >
-                    {l === 'all' ? '全部' : levelMeta[l].label}
-                  </button>
-                )
-              })}
-            </div>
-
-            <ul className="mt-2.5 space-y-2">
-              {visibleDrugs.map((d) => {
-                const meta = levelMeta[d.level]
-                const open = expanded === d.name
-                return (
-                  <li key={d.name} className="rounded-2xl bg-white">
-                    <button
-                      type="button"
-                      aria-expanded={open}
-                      onClick={() => setExpanded(open ? null : d.name)}
-                      className="flex w-full items-center gap-3 px-3.5 py-3 text-left"
-                    >
-                      <span className={cn('h-8 w-1 shrink-0 rounded-full', meta.dot)} aria-hidden="true" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[14px] font-medium text-foreground">{d.name}</span>
-                        <span className="block text-[12px] text-muted-foreground">
-                          {d.category} · {d.gene}
-                        </span>
-                      </span>
-                      <span className={cn('shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium', meta.bg, meta.text)}>
-                        {meta.label}
-                      </span>
-                      <ChevronDown
-                        className={cn('size-4 shrink-0 text-muted-foreground transition-transform', open && 'rotate-180')}
-                        aria-hidden="true"
-                      />
-                    </button>
-                    {open && (
-                      <p className="mx-3.5 mb-3 rounded-xl bg-[#f4f8fe] px-3 py-2.5 text-[12px] leading-relaxed text-foreground">
-                        {d.advice}
-                      </p>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
-        ) : (
-          <section aria-label="基因检测结果" className="mx-3 mt-3 overflow-hidden rounded-2xl bg-white">
-            <table className="w-full text-left text-[12px]">
-              <thead className="bg-[#f4f8fe] text-muted-foreground">
-                <tr>
-                  <th scope="col" className="px-3.5 py-2.5 font-medium">
-                    基因
+        <section aria-labelledby="summary-title">
+          <SectionTitle id="summary-title" title="1. 结果摘要" />
+          <div className="overflow-hidden rounded-2xl bg-white">
+            <table className="w-full table-fixed text-center text-[12px]">
+              <thead className="text-foreground">
+                <tr className="bg-[#eaf1fd]">
+                  <th scope="col" rowSpan={2} className="w-[26%] px-2 py-2 font-medium">
+                    药物名称
                   </th>
-                  <th scope="col" className="px-2 py-2.5 font-medium">
-                    检测位点
+                  <th scope="colgroup" colSpan={2} className="border-b border-white bg-[#fdf0e4] px-2 py-1.5 font-medium text-[#c8662a]">
+                    风险提示
                   </th>
-                  <th scope="col" className="px-2 py-2.5 font-medium">
-                    基因型
+                  <th scope="col" rowSpan={2} className="w-[24%] px-2 py-2 font-medium">
+                    用药建议
                   </th>
-                  <th scope="col" className="px-3.5 py-2.5 text-right font-medium">
-                    表型
+                </tr>
+                <tr className="bg-[#eaf1fd] text-[11px]">
+                  <th scope="col" className="px-1 py-1.5 font-medium">
+                    警惕不良反应
+                  </th>
+                  <th scope="col" className="px-1 py-1.5 font-medium">
+                    警惕疗效不足
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eef1f6]">
-                {genes.map((g) => (
-                  <tr key={g.gene}>
-                    <th scope="row" className="px-3.5 py-3 font-medium text-foreground">
-                      {g.gene}
+                {summaryRows.map((r) => (
+                  <tr key={r.drug}>
+                    <th scope="row" className="px-2 py-2.5 font-medium text-foreground">
+                      {r.drug}
                     </th>
-                    <td className="px-2 py-3 tabular-nums text-muted-foreground">{g.locus}</td>
-                    <td className="px-2 py-3 tabular-nums text-foreground">{g.genotype}</td>
-                    <td className="px-3.5 py-3 text-right text-foreground">{g.phenotype}</td>
+                    <td className="py-2.5">
+                      <Mark on={r.adverse} label="警惕不良反应" />
+                    </td>
+                    <td className="py-2.5">
+                      <Mark on={r.insufficient} label="警惕疗效不足" />
+                    </td>
+                    <td className={cn('px-2 py-2.5 font-medium', adviceColor[r.advice])}>{r.advice}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </section>
-        )}
+          </div>
+        </section>
 
-        <p className="mx-4 mt-4 flex gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+        <section aria-labelledby="result-title">
+          <SectionTitle id="result-title" title="2. 检测结果" extra="2.1 心血管疾病用药指导" />
+          <div className="rounded-2xl bg-white">
+            <div className="overflow-x-auto [scrollbar-width:none]">
+              <table className="w-max min-w-full text-left text-[12px]">
+                <thead className="bg-[#eaf1fd] text-foreground">
+                  <tr>
+                    {['药物名称', '用药建议', '检测基因', '证据等级', '证据来源', '检测结果'].map((h) => (
+                      <th key={h} scope="col" className="whitespace-nowrap px-3 py-2.5 font-medium">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#eef1f6]">
+                  {detailRows.map((r) => (
+                    <tr key={`${r.drug}-${r.gene}`}>
+                      <th scope="row" className="whitespace-nowrap px-3 py-2.5 font-medium text-foreground">
+                        {r.drug}
+                      </th>
+                      <td className={cn('whitespace-nowrap px-3 py-2.5', adviceColor[r.advice])}>{r.advice}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5 text-foreground">{r.gene}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5 tabular-nums text-foreground">{r.level}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">{r.source}</td>
+                      <td className="whitespace-nowrap px-3 py-2.5 tabular-nums text-foreground">{r.result}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="flex items-center justify-center gap-1 border-t border-[#eef1f6] py-2 text-[11px] text-muted-foreground">
+              <MoveHorizontal className="size-3.5" aria-hidden="true" />
+              左右滑动查看完整检测结果
+            </p>
+          </div>
+        </section>
+
+        <p className="mx-1 mt-4 flex gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
           <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-          本报告结果仅供临床用药参考，不能替代医生诊断。请勿自行停药或调整剂量，用药调整请遵医嘱。
+          检测结果仅供专业参考，不构成医疗建议，不替代临床诊断、处方或治疗决策。实际报告内容以实验室正式出具版本为准。
         </p>
       </div>
 
@@ -296,8 +197,8 @@ export function ReportDetailScreen({
           type="button"
           className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-[#dfe5ef] text-[14px] text-foreground"
         >
-          <Download className="size-4" aria-hidden="true" />
-          下载 PDF
+          <Share2 className="size-4" aria-hidden="true" />
+          分享
         </button>
         <button
           type="button"
@@ -305,7 +206,7 @@ export function ReportDetailScreen({
           className="flex h-10 flex-[1.4] items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
         >
           <Sparkles className="size-4" aria-hidden="true" />
-          AI 解读报告
+          AI解读
         </button>
       </div>
     </SubPage>
