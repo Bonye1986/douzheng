@@ -9,9 +9,12 @@ import { cn } from '@/lib/utils'
 type Props = {
   hasSelf: boolean
   targetName?: string
+  initial?: Examinee
   onBack: () => void
   onSave: (e: Examinee) => void
 }
+
+const isMasked = (v: string) => v.includes('*')
 
 type Errors = Partial<Record<'relation' | 'name' | 'birth' | 'phone' | 'idCard', string>>
 
@@ -23,13 +26,14 @@ const ageFrom = (birth: string) => {
   return age
 }
 
-export function ExamineeFormScreen({ hasSelf, targetName, onBack, onSave }: Props) {
-  const [relation, setRelation] = useState<string>('')
-  const [name, setName] = useState('')
-  const [gender, setGender] = useState<Gender>('male')
-  const [birth, setBirth] = useState('')
-  const [phone, setPhone] = useState('')
-  const [idCard, setIdCard] = useState('')
+export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSave }: Props) {
+  const editing = !!initial
+  const [relation, setRelation] = useState<string>(initial?.relation ?? '')
+  const [name, setName] = useState(initial?.name ?? '')
+  const [gender, setGender] = useState<Gender>(initial?.gender ?? 'male')
+  const [birth, setBirth] = useState(initial?.birth ?? '')
+  const [phone, setPhone] = useState(initial?.phone ?? '')
+  const [idCard, setIdCard] = useState(initial?.idCard ?? '')
   const [errors, setErrors] = useState<Errors>({})
 
   const today = new Date().toISOString().slice(0, 10)
@@ -39,24 +43,26 @@ export function ExamineeFormScreen({ hasSelf, targetName, onBack, onSave }: Prop
     if (!relation) next.relation = '请选择与本人关系'
     if (!/^[\u4e00-\u9fa5·a-zA-Z]{2,20}$/.test(name.trim())) next.name = '请填写 2–20 位真实姓名'
     if (!birth || birth > today) next.birth = '请选择正确的出生日期'
-    if (phone && !/^1\d{10}$/.test(phone)) next.phone = '请输入 11 位手机号'
-    if (idCard && !/^\d{17}[\dXx]$/.test(idCard)) next.idCard = '请输入 18 位身份证号'
+    if (phone && !isMasked(phone) && !/^1\d{10}$/.test(phone)) next.phone = '请输入 11 位手机号'
+    if (idCard && !isMasked(idCard) && !/^\d{17}[\dXx]$/.test(idCard)) next.idCard = '请输入 18 位身份证号'
     setErrors(next)
     if (Object.keys(next).length) return
     onSave({
-      id: `m-${Date.now()}`,
+      id: initial?.id ?? `m-${Date.now()}`,
       name: name.trim(),
       relation,
       gender,
       age: ageFrom(birth),
-      phone: phone ? `${phone.slice(0, 3)}****${phone.slice(7)}` : undefined,
+      birth,
+      phone: phone ? (isMasked(phone) ? phone : `${phone.slice(0, 3)}****${phone.slice(7)}`) : undefined,
+      idCard: idCard ? (isMasked(idCard) ? idCard : `${idCard.slice(0, 4)}**********${idCard.slice(14)}`) : undefined,
     })
   }
 
   const clear = (k: keyof Errors) => setErrors((e) => ({ ...e, [k]: undefined }))
 
   return (
-    <SubPage title="添加受检人" titleId="examinee-title" onBack={onBack}>
+    <SubPage title={editing ? '编辑检测人' : '添加受检人'} titleId="examinee-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         {targetName && (
           <p className="mb-2.5 rounded-xl bg-[#eef5ff] px-3 py-2 text-[12px] leading-[18px] text-primary">
@@ -73,7 +79,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, onBack, onSave }: Prop
           </h2>
           <div role="radiogroup" aria-labelledby="relation-title" className="mt-2.5 flex flex-wrap gap-2">
             {relations.map((r) => {
-              const disabled = r === '本人' && hasSelf
+              const disabled = editing && initial?.relation === '本人' ? r !== '本人' : r === '本人' && hasSelf
               const on = relation === r
               return (
                 <button
@@ -96,7 +102,11 @@ export function ExamineeFormScreen({ hasSelf, targetName, onBack, onSave }: Prop
               )
             })}
           </div>
-          {hasSelf && <p className="mt-2 text-[11px] text-muted-foreground">「本人」已存在，每个账号仅可添加一位本人</p>}
+          {editing && initial?.relation === '本人' ? (
+            <p className="mt-2 text-[11px] text-muted-foreground">账号本人的关系不可修改</p>
+          ) : (
+            hasSelf && <p className="mt-2 text-[11px] text-muted-foreground">「本人」已存在，每个账号仅可添加一位本人</p>
+          )}
           <FieldError msg={errors.relation} />
         </section>
 
@@ -188,7 +198,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, onBack, onSave }: Prop
           onClick={save}
           className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
         >
-          保存受检人
+          {editing ? '保存修改' : '保存受检人'}
         </button>
       </div>
     </SubPage>

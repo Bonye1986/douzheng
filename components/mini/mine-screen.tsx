@@ -31,6 +31,7 @@ import { AfterSalesScreen, pendingAfterSalesCount } from '@/components/mini/afte
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { ReportListScreen, unreadReportCount } from '@/components/mini/report-list-screen'
 import { CouponCenterScreen, MyCouponsScreen, usableCouponCount } from '@/components/mini/coupon-screens'
+import { ExamineeManageScreen, type ExamineeView } from '@/components/mini/examinee-manage-screen'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
@@ -86,13 +87,16 @@ export function MineScreen({
   initialReportOpen = false,
   initialReportDetailId,
   initialCoupon = null,
+  initialExamineeView = null,
 }: {
   initialAuthOpen?: boolean
   initialResampleOpen?: boolean
   initialReportOpen?: boolean
   initialReportDetailId?: string
   initialCoupon?: 'mine' | 'center' | null
+  initialExamineeView?: ExamineeView | null
 }) {
+  const [examineeView, setExamineeView] = useState<ExamineeView | null>(initialExamineeView)
   const [myCouponsOpen, setMyCouponsOpen] = useState(initialCoupon === 'mine')
   const [couponCenterOpen, setCouponCenterOpen] = useState(initialCoupon === 'center')
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
@@ -233,7 +237,10 @@ export function MineScreen({
               <li key={t.key}>
                 <button
                   type="button"
-                  onClick={() => t.key === 'auth' && setAuthOpen(true)}
+                  onClick={() => {
+                    if (t.key === 'auth') setAuthOpen(true)
+                    if (t.key === 'examinee') setExamineeView('list')
+                  }}
                   className="flex w-full flex-col items-center gap-1.5"
                 >
                   <t.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
@@ -262,6 +269,7 @@ export function MineScreen({
         <MyCouponsScreen onBack={() => setMyCouponsOpen(false)} onOpenCenter={() => setCouponCenterOpen(true)} />
       )}
       {couponCenterOpen && <CouponCenterScreen onBack={() => setCouponCenterOpen(false)} />}
+      {examineeView && <ExamineeManageScreen initialView={examineeView} onBack={() => setExamineeView(null)} />}
     </div>
   )
 }

@@ -7,6 +7,8 @@ export type Examinee = {
   gender: Gender
   age: number
   phone?: string
+  birth?: string
+  idCard?: string
 }
 
 export const relations = ['本人', '配偶', '父母', '子女', '其他'] as const
@@ -16,9 +18,18 @@ export const genderLabel: Record<Gender, string> = { male: '男', female: '女' 
 export const examineeMeta = (e: Examinee) => `${genderLabel[e.gender]} · ${e.age}岁`
 
 export const initialExaminees: Examinee[] = [
-  { id: 'self', name: '王建国', relation: '本人', gender: 'male', age: 58, phone: '138****6721' },
-  { id: 'spouse', name: '李秀兰', relation: '配偶', gender: 'female', age: 56 },
-  { id: 'child', name: '王小米', relation: '子女', gender: 'female', age: 8 },
+  {
+    id: 'self',
+    name: '王建国',
+    relation: '本人',
+    gender: 'male',
+    age: 58,
+    phone: '138****6721',
+    birth: '1968-03-12',
+    idCard: '3101**********1234',
+  },
+  { id: 'spouse', name: '李秀兰', relation: '配偶', gender: 'female', age: 56, birth: '1970-07-21' },
+  { id: 'child', name: '王小米', relation: '子女', gender: 'female', age: 8, birth: '2018-05-06' },
 ]
 
 export type ResearchStatus = 'signed' | 'withdrawn' | 'unsigned'

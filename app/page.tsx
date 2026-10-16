@@ -129,6 +129,36 @@ const screens = [
     node: <MineScreen initialCoupon="center" />,
   },
   {
+    id: '24',
+    title: '我的 · 检测人管理',
+    desc: '展示已添加的检测人（关系、性别年龄、出生日期、手机号、报告数、实名状态），最多 10 位；每张卡片可编辑、删除，底部添加检测人（可在画板内交互）',
+    node: <MineScreen initialExamineeView="list" />,
+  },
+  {
+    id: '25',
+    title: '检测人管理 · 添加检测人',
+    desc: '填写与本人关系、姓名、性别、出生日期（必填）及手机号、身份证号（选填）；「本人」仅可添加一位，校验通过后保存并返回列表',
+    node: <MineScreen initialExamineeView="add" />,
+  },
+  {
+    id: '26',
+    title: '检测人管理 · 编辑检测人',
+    desc: '回填已有信息，可修改后保存；本人的关系不可修改，已脱敏的手机号 / 身份证号不修改时原样保留',
+    node: <MineScreen initialExamineeView="edit" />,
+  },
+  {
+    id: '27',
+    title: '检测人管理 · 删除检测人',
+    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除，弹窗提示原因',
+    node: <MineScreen initialExamineeView="delete" />,
+  },
+  {
+    id: '28',
+    title: '检测人管理 · 空状态',
+    desc: '尚未添加任何检测人时展示引导插图与说明，点击添加检测人进入添加表单',
+    node: <MineScreen initialExamineeView="empty" />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '按受检人 × 检测项目展示科研样本授权状态（已授权 / 未授权 / 已撤回），支持签署、重新签署与撤回，操作前弹出知情同意书或撤回提示（可在画板内交互）',
@@ -174,6 +204,12 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     title: '我的',
     summary: '订单、报告与报告详情、授权与同意书、样本不合格处理',
     ids: ['18', '20', '21', '22', '23', '16', '19'],
+  },
+  {
+    key: 'examinee',
+    title: '检测人管理',
+    summary: '检测人列表、添加 / 编辑 / 删除检测人与空状态',
+    ids: ['24', '25', '26', '27', '28'],
   },
   { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
