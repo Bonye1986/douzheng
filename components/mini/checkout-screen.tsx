@@ -26,6 +26,7 @@ import { ResearchSignFlow } from '@/components/mini/research-sign-flow'
 
 type ResearchItem = { key: string; memberName: string; serviceName: string }
 import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
+import { useExaminees } from '@/components/mini/examinee-store'
 import {
   getSampleTypes,
   samplingLabel,
@@ -76,7 +77,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
     .map((l) => ({ line: l, service: testServices.find((s) => s.id === l.id) }))
     .filter((r): r is { line: CheckoutLine; service: TestService } => !!r.service)
 
-  const [examinees, setExaminees] = useState<Examinee[]>(initialExaminees)
+  const [examinees, setExaminees] = useExaminees()
   const [examineeForm, setExamineeForm] = useState<{ serviceId: string | null } | null>(null)
 
   const [assign, setAssign] = useState<Record<string, string[]>>(() =>

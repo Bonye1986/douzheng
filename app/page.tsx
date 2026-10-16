@@ -294,7 +294,7 @@ const screens = [
     id: '08',
     title: 'AI咨询 · 专业版对话',
     desc: '已关联检测人，专业版回答展示基因型、代谢类型与指南证据来源',
-    node: <AiChatScreen initialMode="pro" initialTesteeId="zhanghua" initialQuestion="我能正常使用氯吡格雷吗？" />,
+    node: <AiChatScreen initialMode="pro" initialTesteeId="self" initialQuestion="我能正常使用氯吡格雷吗？" />,
   },
 ]
 

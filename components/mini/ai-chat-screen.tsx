@@ -27,7 +27,7 @@ import { BrandMark } from '@/components/mini/auth-parts'
 import { ChatComposer, type Attachment } from '@/components/mini/chat-composer'
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
-import { genderLabel } from '@/components/mini/checkout-data'
+import { useExaminees } from '@/components/mini/examinee-store'
 import {
   answerToText,
   confidenceMeta,
@@ -35,7 +35,7 @@ import {
   quickPrompts,
   skills,
   testeeLabel,
-  testees,
+  toTestee,
   type AiAnswer,
   type Confidence,
   type Mode,
@@ -116,11 +116,12 @@ export function AiChatScreen({
   onBack?: () => void
 }) {
   const [mode, setMode] = useState<Mode>(initialMode)
-  const [testee, setTestee] = useState<Testee | null>(
-    () => testees.find((t) => t.id === initialTesteeId) ?? null,
-  )
+  const [examinees, setExaminees] = useExaminees()
+  const testeeList = examinees.map(toTestee)
+  const [testeeId, setTesteeId] = useState<string | null>(initialTesteeId ?? null)
+  const testee = testeeList.find((t) => t.id === testeeId) ?? null
+  const setTestee = (t: Testee | null) => setTesteeId(t?.id ?? null)
   const [sheetOpen, setSheetOpen] = useState(initialSheetOpen)
-  const [testeeList, setTesteeList] = useState<Testee[]>(testees)
   const [addTesteeOpen, setAddTesteeOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sessions, setSessions] = useState<Session[]>(() =>
@@ -418,15 +419,8 @@ export function AiChatScreen({
           hasSelf={testeeList.some((t) => t.relation === '本人')}
           onBack={() => setAddTesteeOpen(false)}
           onSave={(e) => {
-            const added: Testee = {
-              id: e.id,
-              name: e.name,
-              relation: e.relation === '其他' ? undefined : e.relation,
-              meta: `${genderLabel[e.gender]} · ${e.birth ? `${e.birth.slice(0, 4)}年` : `${e.age}岁`}`,
-              reports: 0,
-            }
-            setTesteeList((list) => [...list, added])
-            setTestee(added)
+            setExaminees((list) => [...list, e])
+            setTesteeId(e.id)
             setAddTesteeOpen(false)
             setSheetOpen(false)
           }}

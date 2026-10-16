@@ -1,4 +1,6 @@
 import { fallbackAnswer, presetQuestions, type Answer } from '@/components/mini/home-data'
+import { genderLabel, type Examinee } from '@/components/mini/checkout-data'
+import { examineeReportCount } from '@/components/mini/examinee-store'
 
 export type Mode = 'plain' | 'pro'
 
@@ -23,10 +25,16 @@ export type Testee = {
   reports: number
 }
 
-export const testees: Testee[] = [
-  { id: 'zhanghua', name: '张华', relation: '本人', meta: '男 · 1986年', reports: 2 },
-  { id: 'limin', name: '李敏', meta: '女 · 1990年', reports: 0 },
-]
+/** 由「检测人管理」中的检测人派生，保证 AI 咨询与检测人管理数据一致 */
+export function toTestee(e: Examinee): Testee {
+  return {
+    id: e.id,
+    name: e.name,
+    relation: e.relation === '其他' ? undefined : e.relation,
+    meta: `${genderLabel[e.gender]} · ${e.birth ? `${e.birth.slice(0, 4)}年` : `${e.age}岁`}`,
+    reports: examineeReportCount[e.id] ?? 0,
+  }
+}
 
 export function testeeLabel(t: Testee) {
   return t.relation ? `${t.name}（${t.relation}）` : t.name
@@ -40,7 +48,7 @@ export const skills = [
 export const quickPrompts = ['我能正常使用氯吡格雷吗？', '高血压用药注意事项', '华法林剂量为什么因人而异？']
 
 const reportSource: Source = {
-  title: '张华《心血管用药基因检测报告》',
+  title: '王建国《心血管用药基因检测报告》',
   org: '都正生物 · 2026-06-12',
   kind: 'report',
 }
@@ -73,7 +81,7 @@ const answers: Record<string, AnswerSet> = {
       points: ['点击上方“未选择检测人”，选择已有报告的检测人。', '或通过输入框左侧的附件按钮上传外部机构的检测报告。'],
     },
     plain: {
-      intro: '已读取张华最近一份《心血管用药基因检测报告》，简单来说：',
+      intro: '已读取王建国最近一份《心血管用药基因检测报告》，简单来说：',
       points: [
         '大部分常用心血管药物可以正常使用。',
         '氯吡格雷在您体内“起效偏弱”，医生可能会考虑换药或调整剂量。',
@@ -82,7 +90,7 @@ const answers: Record<string, AnswerSet> = {
       tip: '建议复诊时把报告带给医生，由医生结合病情判断。',
     },
     pro: {
-      intro: '已读取张华《心血管用药基因检测报告》（2026-06-12），主要结果：',
+      intro: '已读取王建国《心血管用药基因检测报告》（2026-06-12），主要结果：',
       points: [
         'CYP2C19 *1/*2，中间代谢型（IM），氯吡格雷活性代谢物生成减少。',
         'SLCO1B1 c.521TT，正常功能，辛伐他汀肌病风险无升高。',
@@ -118,7 +126,7 @@ const answers: Record<string, AnswerSet> = {
       points: ['如已做过检测，请选择检测人以便读取报告。', '如未检测，建议用药前进行 CYP2C19 基因检测。'],
     },
     plain: {
-      intro: '根据张华的检测报告，氯吡格雷在您体内的“转化效率偏低”。',
+      intro: '根据王建国的检测报告，氯吡格雷在您体内的“转化效率偏低”。',
       points: [
         '药效可能比一般人弱，预防血栓的效果会打折扣。',
         '请不要自行停药或换药，复诊时把报告给医生看。',
@@ -127,7 +135,7 @@ const answers: Record<string, AnswerSet> = {
       tip: '如出现胸痛、肢体麻木等症状，请立即就医。',
     },
     pro: {
-      intro: '张华 CYP2C19 基因型为 *1/*2，判定为中间代谢型（IM）。',
+      intro: '王建国 CYP2C19 基因型为 *1/*2，判定为中间代谢型（IM）。',
       points: [
         '氯吡格雷活性代谢物暴露量降低，血小板抑制率下降。',
         'ACS / PCI 患者建议考虑替格瑞洛、普拉格雷等替代药物（无禁忌时）。',

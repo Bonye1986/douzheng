@@ -5,6 +5,7 @@ import { AlertTriangle, PencilLine, Phone, Plus, ShieldCheck, Trash2, UserRound,
 import { SubPage } from '@/components/mini/sub-page'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { examineeMeta, initialExaminees, type Examinee } from '@/components/mini/checkout-data'
+import { examineeReportCount, useExaminees } from '@/components/mini/examinee-store'
 import { cn } from '@/lib/utils'
 
 export type ExamineeView = 'list' | 'add' | 'edit' | 'delete' | 'empty'
@@ -12,7 +13,7 @@ export type ExamineeView = 'list' | 'add' | 'edit' | 'delete' | 'empty'
 const MAX_EXAMINEES = 10
 
 const activeOrderIds = new Set(['spouse'])
-const reportCount: Record<string, number> = { self: 2, spouse: 1, child: 1 }
+const reportCount = examineeReportCount
 
 type Props = {
   onBack: () => void
@@ -20,7 +21,7 @@ type Props = {
 }
 
 export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
-  const [list, setList] = useState<Examinee[]>(initialView === 'empty' ? [] : initialExaminees)
+  const [list, setList] = useExaminees(initialView === 'empty' ? [] : undefined)
   const [form, setForm] = useState<{ target?: Examinee } | null>(
     initialView === 'add' ? {} : initialView === 'edit' ? { target: initialExaminees[1] } : null,
   )
