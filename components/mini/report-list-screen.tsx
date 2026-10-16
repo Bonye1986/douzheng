@@ -14,7 +14,6 @@ type Report = {
   date: string
   unread?: boolean
   resample?: boolean
-  summary?: { adjust: number; caution: number; normal: number }
   step?: number
 }
 
@@ -27,7 +26,6 @@ const reports: Report[] = [
     status: 'ready',
     date: '2026-10-08',
     unread: true,
-    summary: { adjust: 2, caution: 3, normal: 18 },
   },
   {
     id: 'BG20261009011',
@@ -46,17 +44,10 @@ const reports: Report[] = [
     relation: '父亲',
     status: 'ready',
     date: '2026-09-20',
-    summary: { adjust: 1, caution: 2, normal: 12 },
   },
 ]
 
 const steps = ['已收样', '检测中', '出具报告']
-
-const summaryItems = [
-  { key: 'adjust', label: '需调整', className: 'text-[#e0651c]' },
-  { key: 'caution', label: '谨慎使用', className: 'text-[#c9921a]' },
-  { key: 'normal', label: '正常使用', className: 'text-[#2f9e6a]' },
-] as const
 
 export const unreadReportCount = reports.filter((r) => r.unread).length
 
@@ -121,17 +112,6 @@ export function ReportListScreen({ onBack }: { onBack: () => void }) {
                 {r.status === 'ready' ? '已出具' : '检测中'}
               </span>
             </div>
-
-            {r.summary && (
-              <dl className="mt-3 grid grid-cols-3 rounded-xl bg-[#f6f8fc] py-2.5">
-                {summaryItems.map((s) => (
-                  <div key={s.key} className="flex flex-col items-center gap-0.5">
-                    <dd className={cn('text-[17px] font-semibold tabular-nums', s.className)}>{r.summary?.[s.key]}</dd>
-                    <dt className="text-[11px] text-muted-foreground">{s.label}</dt>
-                  </div>
-                ))}
-              </dl>
-            )}
 
             {r.status === 'testing' && r.step !== undefined && (
               <ol aria-label="检测进度" className="mt-3 flex items-center rounded-xl bg-[#f6f8fc] px-3 py-2.5">
