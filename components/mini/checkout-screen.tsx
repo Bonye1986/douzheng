@@ -23,7 +23,14 @@ import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
-import { OrderListScreen, type Order, type RefundKind } from '@/components/mini/order-list-screen'
+import {
+  OrderListScreen,
+  allocateCoupon,
+  formatYuan,
+  splitPricing,
+  type Order,
+  type RefundKind,
+} from '@/components/mini/order-list-screen'
 import { CancelOrderScreen, ShippedRefundScreen } from '@/components/mini/refund-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
 import { WechatIcon } from '@/components/mini/wechat-icon'
@@ -218,28 +225,34 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
     const isSplit = splitOrders.length > 1
     const subOrderNo = (i: number) => `${paidInfo?.orderNo ?? '-'}-${String(i + 1).padStart(2, '0')}`
     const viewOrder = () => (isSplit ? setOrderListOpen(true) : setOrderDetailOpen(true))
+    const couponShares = allocateCoupon(
+      splitOrders.map((o) => o.service.price),
+      couponOff,
+    )
     const subOrders: Order[] = isSplit
       ? splitOrders.map((o, i) =>
           mode === 'site'
             ? {
                 id: subOrderNo(i),
+                parentId: paidInfo?.orderNo,
                 type: 'site',
                 phase: 'toSample',
                 status: '待核销',
                 product: o.service.name,
                 examinees: o.member.name,
-                amount: `¥${o.service.price.toLocaleString('zh-CN')}`,
+                ...splitPricing(o.service.price, couponShares[i]),
                 note: `已支付，请前往 ${site?.name ?? '采样点'} 出示核销码`,
                 action: { label: '核销码', primary: true },
               }
             : {
                 id: subOrderNo(i),
+                parentId: paidInfo?.orderNo,
                 type: 'self',
                 phase: 'toSample',
                 status: '待发货',
                 product: o.service.name,
                 examinees: o.member.name,
-                amount: `¥${o.service.price.toLocaleString('zh-CN')}`,
+                ...splitPricing(o.service.price, couponShares[i]),
                 note: '已支付，实验室将在 24 小时内寄出采样盒',
                 refund: 'cancel',
               },
@@ -307,8 +320,15 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                         </span>
                         <span className="block tabular-nums text-muted-foreground">{subOrderNo(i)}</span>
                       </span>
-                      <span className="shrink-0 tabular-nums text-foreground">
-                        ¥{o.service.price.toLocaleString('zh-CN')}
+                      <span className="shrink-0 text-right tabular-nums">
+                        <span className="block text-foreground">
+                          {formatYuan(Math.round((o.service.price - couponShares[i]) * 100) / 100)}
+                        </span>
+                        {couponShares[i] > 0 && (
+                          <span className="block text-[11px] text-[#e5603a]">
+                            分摊优惠 -{formatYuan(couponShares[i])}
+                          </span>
+                        )}
                       </span>
                     </li>
                   ))}
@@ -365,7 +385,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
 
           <section aria-labelledby="next-steps" className="mt-2.5 rounded-2xl bg-white p-4">
             <h2 id="next-steps" className="text-[14px] font-semibold text-foreground">
-              ���下来
+              接下来
             </h2>
             <ol className="mt-3 flex flex-col gap-3">
               {(hasSelf

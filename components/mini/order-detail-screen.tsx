@@ -18,6 +18,10 @@ type Props = {
   groups: MemberGroup[]
   goodsTotal: number
   couponOff: number
+  /** 优惠来自合并支付的优惠券，按金额比例分摊到本订单 */
+  couponShared?: boolean
+  /** 合并支付单号，拆单后的子订单展示 */
+  parentOrderNo?: string
   payable: number
   status?: string
   statusDesc?: string
@@ -30,7 +34,7 @@ type Props = {
   onBack: () => void
 }
 
-const yuan = (n: number) => `¥${n.toLocaleString('zh-CN')}`
+const yuan = (n: number) => `¥${n.toLocaleString('zh-CN', { maximumFractionDigits: 2 })}`
 
 export function OrderDetailScreen({
   orderNo,
@@ -41,6 +45,8 @@ export function OrderDetailScreen({
   groups,
   goodsTotal,
   couponOff,
+  couponShared = false,
+  parentOrderNo,
   payable,
   status: statusProp,
   statusDesc: statusDescProp,
@@ -156,9 +162,14 @@ export function OrderDetailScreen({
               </>
             ) : (
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">优惠券</dt>
+                <dt className="text-muted-foreground">{couponShared ? '优惠券（分摊）' : '优惠券'}</dt>
                 <dd className="tabular-nums text-[#e5603a]">{couponOff > 0 ? `-${yuan(couponOff)}` : '未使用'}</dd>
               </div>
+            )}
+            {couponShared && couponOff > 0 && (
+              <p className="rounded-lg bg-[#f4f8fe] px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground">
+                合并支付使用的优惠券已按各子订单商品金额比例分摊，退款时按本订单实付金额退回
+              </p>
             )}
             <div className="flex items-baseline justify-between pt-1">
               <dt className="text-[13px] text-foreground">{isPaid ? '实付款' : '需付款'}</dt>
@@ -174,6 +185,7 @@ export function OrderDetailScreen({
           <dl className="mt-2 flex flex-col gap-2 text-[12px]">
             {[
               ['订单编号', orderNo],
+              ...(parentOrderNo ? [['合并单号', parentOrderNo]] : []),
               ['下单时间', payTime],
               ...(isPaid
                 ? [

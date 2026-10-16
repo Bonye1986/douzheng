@@ -18,6 +18,31 @@ const noSampleCodeStatuses = new Set(['待发货', '待核销'])
 
 const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 
+export const formatYuan = (n: number) => `¥${n.toLocaleString('zh-CN', { maximumFractionDigits: 2 })}`
+
+/** 按商品金额比例把优惠分摊到各子订单（精确到分，尾差计入最后一单） */
+export function allocateCoupon(prices: number[], off: number): number[] {
+  const total = prices.reduce((a, b) => a + b, 0)
+  if (off <= 0 || total <= 0) return prices.map(() => 0)
+  const cents = Math.round(Math.min(off, total) * 100)
+  let rest = cents
+  return prices.map((p, i) => {
+    if (i === prices.length - 1) return rest / 100
+    const share = Math.floor((cents * p) / total)
+    rest -= share
+    return share / 100
+  })
+}
+
+export function splitPricing(price: number, share: number): Pick<Order, 'amount' | 'goodsAmount' | 'couponShare'> {
+  if (share <= 0) return { amount: formatYuan(price) }
+  return {
+    amount: formatYuan(Math.round((price - share) * 100) / 100),
+    goodsAmount: formatYuan(price),
+    couponShare: formatYuan(share),
+  }
+}
+
 type OrderActionHandlers = {
   onCancel: (o: Order) => void
   onRefund: (kind: RefundKind) => void
@@ -103,9 +128,9 @@ function OrderDetailFromList({
   onBack: () => void
 }) {
   const payable = parseYuan(order.amount)
-  const goodsTotal = order.originalAmount ? parseYuan(order.originalAmount) : payable
+  const goodsTotal = parseYuan(order.goodsAmount ?? order.originalAmount ?? order.amount)
   const names = order.examinees.split('、')
-  const per = Math.round(goodsTotal / names.length)
+  const per = Math.round((goodsTotal / names.length) * 100) / 100
   const d = order.id.slice(2, 10)
   const payTime = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)} 10:24:36`
   const hasSampleCode = !noSampleCodeStatuses.has(order.status)
@@ -139,7 +164,9 @@ function OrderDetailFromList({
         items: [{ id: `${order.id}-${i}-item`, name: order.product, price: per, sampleType }],
       }))}
       goodsTotal={goodsTotal}
-      couponOff={Math.max(goodsTotal - payable, 0)}
+      couponOff={order.priceChanged ? 0 : Math.max(Math.round((goodsTotal - payable) * 100) / 100, 0)}
+      couponShared={Boolean(order.parentId && order.couponShare)}
+      parentOrderNo={order.parentId}
       payable={payable}
       actions={actions}
       onBack={onBack}
@@ -215,6 +242,12 @@ export type Order = {
   examinees: string
   amount: string
   originalAmount?: string
+  /** 拆单后该子订单的商品原价（未扣优惠） */
+  goodsAmount?: string
+  /** 合并支付使用优惠券时，按金额比例分摊到该子订单的优惠 */
+  couponShare?: string
+  /** 合并支付单号，拆单后的子订单关联此单号 */
+  parentId?: string
   note: string
   resample?: boolean
   priceChanged?: boolean
@@ -391,6 +424,80 @@ const featuredOrders: Order[] = [
   },
 ]
 
+type SplitItem = Pick<Order, 'status' | 'phase' | 'note' | 'refund' | 'action'> & {
+  examinee: string
+  product: { name: string; price: number }
+}
+
+/** 合并支付后按检测人 × 检测项目拆分出的子订单，优惠券按金额比例分摊 */
+function buildSplitOrders(parentId: string, type: Order['type'], couponOff: number, items: SplitItem[]): Order[] {
+  const shares = allocateCoupon(
+    items.map((it) => it.product.price),
+    couponOff,
+  )
+  return items.map((it, i) => ({
+    id: `${parentId}-${String(i + 1).padStart(2, '0')}`,
+    parentId,
+    type,
+    phase: it.phase,
+    status: it.status,
+    product: it.product.name,
+    examinees: it.examinee,
+    ...splitPricing(it.product.price, shares[i]),
+    note: it.note,
+    refund: it.refund,
+    action: it.action,
+  }))
+}
+
+const splitOrders: Order[] = [
+  ...buildSplitOrders('JY20261014283615', 'self', 100, [
+    {
+      examinee: '王建国',
+      product: { name: '药物基因检测', price: 999 },
+      phase: 'toSample',
+      status: '待发货',
+      note: '已支付，实验室将在 24 小时内寄出采样盒',
+      refund: 'cancel',
+    },
+    {
+      examinee: '王建国',
+      product: { name: '心血管用药基因检测', price: 899 },
+      phase: 'toSample',
+      status: '已发货',
+      note: '采样盒运输中，预计明日送达',
+      refund: 'shipped',
+      action: { label: '查看物流' },
+    },
+    {
+      examinee: '李秀兰',
+      product: { name: '药物基因检测', price: 999 },
+      phase: 'testing',
+      status: '检测中',
+      note: '实验室检测中，预计 10-22 出具报告',
+      refund: 'testing',
+    },
+  ]),
+  ...buildSplitOrders('JY20261013517702', 'site', 50, [
+    {
+      examinee: '张伟',
+      product: { name: '药物基因检测', price: 999 },
+      phase: 'toSample',
+      status: '待核销',
+      note: '请于 10-18 前往 都正检测中心（徐汇） 出示核销码',
+      action: { label: '核销码', primary: true },
+    },
+    {
+      examinee: '刘芳',
+      product: { name: '心血管用药基因检测', price: 899 },
+      phase: 'testing',
+      status: '已收样',
+      note: '平台已签收样本，待实验室扫码确认后开始检测',
+      refund: 'testing',
+    },
+  ]),
+]
+
 const ORDERS_PER_STATUS = 5
 
 type StatusSeed = Pick<Order, 'type' | 'phase' | 'status' | 'refund' | 'action'> & { notes: string[] }
@@ -506,7 +613,7 @@ const statusSeeds: StatusSeed[] = [
     type: 'site',
     phase: 'done',
     status: '已完成',
-    action: { label: '查看�������告', primary: true },
+    action: { label: '查看报告', primary: true },
     notes: ['检测报告已出具，可在线查看'],
   },
   {
@@ -517,14 +624,18 @@ const statusSeeds: StatusSeed[] = [
   },
 ]
 
-const seedProducts: { name: string; price: string }[] = [
-  { name: '��物基因检测', price: '¥999' },
-  { name: '心血管用药基因检测', price: '¥899' },
-  { name: '个体化用药基因检测 · 全面版', price: '¥1,299' },
-  { name: '精神类用药基因检测', price: '¥1,299' },
-  { name: '儿童安全用药基因检测', price: '¥699' },
+const seedProducts: { name: string; price: number }[] = [
+  { name: '药物基因检测', price: 999 },
+  { name: '心血管用药基因检测', price: 899 },
+  { name: '个体化用药基因检测 · 全面版', price: 1299 },
+  { name: '精神类用药基因检测', price: 1299 },
+  { name: '儿童安全用药基因检测', price: 699 },
 ]
-const seedExaminees = ['王建国', '李秀兰', '张伟', '王建国、李秀兰', '刘芳']
+/** 支付后已按检测人拆单，只有待付款订单可能包含多位受检人 */
+const seedExaminees = ['王建国', '李秀兰', '张伟', '刘芳', '陈静']
+const mergedExaminees = ['王建国、李秀兰', '张伟', '李秀兰、刘芳', '王建国', '陈静']
+/** 单个订单使用优惠券的示例，0 表示未使用 */
+const seedCoupons = [0, 50, 0, 100, 0]
 
 function buildSeedOrders(existing: Order[]): Order[] {
   const result: Order[] = []
@@ -535,14 +646,18 @@ function buildSeedOrders(existing: Order[]): Order[] {
       const product = seedProducts[n % seedProducts.length]
       const day = String(28 - (n % 27)).padStart(2, '0')
       const month = n % 2 === 0 ? '10' : '09'
+      const isToPay = seed.phase === 'toPay'
+      const examinees = (isToPay ? mergedExaminees : seedExaminees)[(n + seedIndex) % seedExaminees.length]
+      const headcount = examinees.split('、').length
+      const goods = product.price * headcount
       result.push({
         id: `DZ2026${month}${day}${String(200 + n).padStart(3, '0')}`,
         type: seed.type,
         phase: seed.phase,
         status: seed.status,
         product: product.name,
-        examinees: seedExaminees[(n + seedIndex) % seedExaminees.length],
-        amount: product.price,
+        examinees,
+        ...splitPricing(goods, isToPay ? 0 : seedCoupons[(n + seedIndex) % seedCoupons.length]),
         note: seed.notes[i % seed.notes.length],
         refund: seed.refund,
         action: seed.action,
@@ -553,7 +668,8 @@ function buildSeedOrders(existing: Order[]): Order[] {
   return result
 }
 
-const allOrders: Order[] = [...featuredOrders, ...buildSeedOrders(featuredOrders)]
+const curatedOrders: Order[] = [...splitOrders, ...featuredOrders]
+const allOrders: Order[] = [...curatedOrders, ...buildSeedOrders(curatedOrders)]
 
 export function countOrders(phase: Exclude<OrderPhase, 'all'>) {
   return allOrders.filter((o) => o.phase === phase).length
@@ -621,8 +737,26 @@ export function OrderListScreen({
       },
     ]
   })
-  const orders = [...extraOrders, ...resampleOrders, ...allOrders].map((o): Order => {
-    if (paidIds.has(o.id)) {
+  const sourceOrders = [...extraOrders, ...resampleOrders, ...allOrders].flatMap((o): Order[] => {
+    const names = o.examinees.split('、')
+    if (!paidIds.has(o.id) || names.length < 2) return [o]
+    const goods = parseYuan(o.goodsAmount ?? o.originalAmount ?? o.amount)
+    const unit = Math.round((goods / names.length) * 100) / 100
+    const shares = allocateCoupon(
+      names.map(() => unit),
+      Math.max(goods - parseYuan(o.amount), 0),
+    )
+    return names.map((name, i) => ({
+      ...o,
+      id: `${o.id}-${String(i + 1).padStart(2, '0')}`,
+      parentId: o.id,
+      examinees: name,
+      ...splitPricing(unit, shares[i]),
+    }))
+  })
+  const isPaid = (o: Order) => paidIds.has(o.id) || (o.parentId != null && paidIds.has(o.parentId))
+  const orders = sourceOrders.map((o): Order => {
+    if (isPaid(o)) {
       return o.type === 'site'
         ? {
             ...o,
@@ -837,12 +971,20 @@ export function OrderListScreen({
                     {o.product}
                   </button>
                   <p className="mt-0.5 text-[12px] text-muted-foreground">受检人：{o.examinees}</p>
+                  {o.parentId && (
+                    <p className="mt-0.5 text-[11px] tabular-nums text-muted-foreground">合并支付单 {o.parentId}</p>
+                  )}
                 </div>
                 <p className="shrink-0 text-right">
                   <span className="block text-[14px] font-semibold tabular-nums text-foreground">{o.amount}</span>
                   {o.originalAmount && (
                     <span className="block text-[11px] tabular-nums text-muted-foreground line-through">
                       {o.originalAmount}
+                    </span>
+                  )}
+                  {o.couponShare && (
+                    <span className="block text-[11px] tabular-nums text-[#e5603a]">
+                      {o.parentId ? '分摊优惠' : '优惠'} -{o.couponShare}
                     </span>
                   )}
                 </p>
