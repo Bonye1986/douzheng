@@ -1,28 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  AlarmClock,
-  BadgeCheck,
-  BookOpen,
-  ChevronRight,
-  FileSignature,
-  FileText,
-  FlaskConical,
-  Gift,
-  Headphones,
-  Info,
-  MapPin,
-  RotateCcw,
-  Settings,
-  Sparkles,
-  TestTube,
-  TicketPercent,
-  UserRound,
-  Users,
-  Wallet,
-  type LucideIcon,
-} from 'lucide-react'
+import { ChevronRight, Sparkles } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
@@ -45,24 +24,33 @@ import { AccountSettingsScreen, type AccountView } from '@/components/mini/accou
  * 待采样 = 待发货 / 已发货 / 待核销 / 待采样；检测中 = 已寄样 / 已收样 / 检测中；
  * 退款/售后为独立页面（样本不合格待处理、退款、重采样）。订单类型（自采样 / 定点采样）与已关闭订单在订单列表中筛选。
  */
-const orderPhases: { key: Exclude<OrderPhase, 'all' | 'closed'> | 'after'; label: string; icon: LucideIcon }[] = [
-  { key: 'toPay', label: '待付款', icon: Wallet },
-  { key: 'toSample', label: '待采样', icon: TestTube },
-  { key: 'testing', label: '检测中', icon: FlaskConical },
-  { key: 'done', label: '已完成', icon: BadgeCheck },
-  { key: 'after', label: '退款/售后', icon: RotateCcw },
+const iconSrc = (name: string) => `/images/icons/mine-${name}.png`
+
+const orderPhases: { key: Exclude<OrderPhase, 'all' | 'closed'> | 'after'; label: string; icon: string }[] = [
+  { key: 'toPay', label: '待付款', icon: iconSrc('topay') },
+  { key: 'toSample', label: '待采样', icon: iconSrc('tosample') },
+  { key: 'testing', label: '检测中', icon: iconSrc('testing') },
+  { key: 'done', label: '已完成', icon: iconSrc('done') },
+  { key: 'after', label: '退款/售后', icon: iconSrc('after') },
 ]
 
 const tools = [
-  { key: 'examinee', label: '检测人管理', icon: Users },
-  { key: 'address', label: '地址管理', icon: MapPin },
-  { key: 'auth', label: '授权与同意书', icon: FileSignature },
-  { key: 'reminder', label: '用药提醒', icon: AlarmClock },
-  { key: 'guide', label: '使用指南', icon: BookOpen },
-  { key: 'about', label: '关于我们', icon: Info },
-  { key: 'service', label: '联系客服', icon: Headphones },
-  { key: 'account', label: '账号设置', icon: Settings },
+  { key: 'examinee', label: '检测人管理', icon: iconSrc('examinee') },
+  { key: 'address', label: '地址管理', icon: iconSrc('address') },
+  { key: 'auth', label: '授权与同意书', icon: iconSrc('auth') },
+  { key: 'reminder', label: '用药提醒', icon: iconSrc('reminder') },
+  { key: 'guide', label: '使用指南', icon: iconSrc('guide') },
+  { key: 'about', label: '关于我们', icon: iconSrc('about') },
+  { key: 'service', label: '联系客服', icon: iconSrc('service') },
+  { key: 'account', label: '账号设置', icon: iconSrc('account') },
 ] as const
+
+function MineIcon({ src, className = 'size-8' }: { src: string; className?: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" aria-hidden="true" width={96} height={96} className={`${className} object-contain mix-blend-multiply`} />
+  )
+}
 
 function SectionHeader({
   id,
@@ -184,7 +172,7 @@ export function MineScreen({
                     className="flex w-full flex-col items-center gap-1.5"
                   >
                     <span className="relative">
-                      <p.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                      <MineIcon src={p.icon} />
                       {count > 0 && (
                         <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e0651c] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
                           {count}
@@ -209,8 +197,8 @@ export function MineScreen({
             onAction={() => setReportOpen(true)}
           />
           <div className="mt-3 flex items-center gap-3 rounded-xl bg-gradient-to-r from-[#eef5ff] to-[#f8fbff] p-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary shadow-sm">
-              <FileText className="size-5" aria-hidden="true" />
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+              <MineIcon src={iconSrc('report')} className="size-7" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-[13px] font-medium text-foreground">儿童安全用药基因检测</p>
@@ -235,7 +223,7 @@ export function MineScreen({
             onClick={() => setMyCouponsOpen(true)}
             className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
           >
-            <TicketPercent className="size-6 shrink-0 text-[#e0651c]" strokeWidth={1.6} aria-hidden="true" />
+            <MineIcon src={iconSrc('coupon')} className="size-9 shrink-0" />
             <span>
               <span className="block text-[14px] font-medium text-foreground">我的优惠券</span>
               <span className="block text-[11px] text-muted-foreground">
@@ -248,7 +236,7 @@ export function MineScreen({
             onClick={() => setCouponCenterOpen(true)}
             className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
           >
-            <Gift className="size-6 shrink-0 text-[#e0651c]" strokeWidth={1.6} aria-hidden="true" />
+            <MineIcon src={iconSrc('gift')} className="size-9 shrink-0" />
             <span>
               <span className="block text-[14px] font-medium text-foreground">领券中心</span>
               <span className="block text-[11px] text-muted-foreground">新人券待领取</span>
@@ -278,7 +266,7 @@ export function MineScreen({
                   }}
                   className="flex w-full flex-col items-center gap-1.5"
                 >
-                  <t.icon className="size-6 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                  <MineIcon src={t.icon} />
                   <span className="text-[12px] text-foreground">{t.label}</span>
                 </button>
               </li>
