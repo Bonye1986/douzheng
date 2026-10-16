@@ -164,6 +164,25 @@
   75% { transform: translateX(6px); }
 }
 
+@utility bg-brand-page {
+  background-image: linear-gradient(180deg, #e6f1fe 0%, #f4f8fe 40%);
+}
+@utility bg-brand-hero {
+  background-image: linear-gradient(180deg, #e6f1fe 0%, #f4f8fe 100%);
+}
+@utility bg-brand-soft {
+  background-image: linear-gradient(135deg, #eef5ff 0%, #ffffff 100%);
+}
+@utility bg-brand-tile {
+  background-image: linear-gradient(135deg, #e6f1fe 0%, #d6e7ff 100%);
+}
+@utility bg-brand-strong {
+  background-image: linear-gradient(135deg, #5aa2f5 0%, #3b8beb 100%);
+}
+@utility bg-warn-soft {
+  background-image: linear-gradient(135deg, #fff4ea 0%, #ffffff 100%);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

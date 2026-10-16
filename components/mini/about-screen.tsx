@@ -99,7 +99,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
   return (
     <SubPage title="关于我们" titleId="about-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto pb-6 [scrollbar-width:none]">
-        <section aria-label="品牌介绍" className="bg-gradient-to-b from-[#d6e7ff] to-[#f4f8fe] px-4 pb-4 pt-6 text-center">
+        <section aria-label="品牌介绍" className="bg-brand-hero px-4 pb-4 pt-6 text-center">
           <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
             <Dna className="size-9" strokeWidth={1.6} aria-hidden="true" />
           </span>

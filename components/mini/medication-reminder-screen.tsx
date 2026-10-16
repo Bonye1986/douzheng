@@ -186,7 +186,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
           <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
             <section
               aria-label="今日提醒概览"
-              className="rounded-2xl bg-gradient-to-br from-primary to-[#4d8dff] p-4 text-primary-foreground"
+              className="rounded-2xl bg-brand-strong p-4 text-primary-foreground"
             >
               <p className="flex items-center gap-1.5 text-[12px] opacity-90">
                 <MessageSquareText className="size-3.5" aria-hidden="true" />
@@ -301,7 +301,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
 
             <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
-              提醒仅作辅助，请遵医嘱用药；短信免费发送，疗程结束后自动停止。
+              提醒仅作辅助，请遵医嘱用药；短信免费发送，疗程结束后自动停���。
             </p>
           </div>
 

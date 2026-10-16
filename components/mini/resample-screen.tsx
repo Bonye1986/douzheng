@@ -151,7 +151,7 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
       {step === 'choose' && (
         <>
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <div className="rounded-2xl bg-gradient-to-br from-[#fff4ea] to-white p-3.5">
+            <div className="rounded-2xl bg-warn-soft p-3.5">
               <p className="flex items-center gap-1.5 text-[15px] font-semibold text-[#c2541a]">
                 <AlertTriangle className="size-4" aria-hidden="true" />
                 样本检测不合格

@@ -7,7 +7,7 @@ import { presetQuestions } from '@/components/mini/home-data'
 
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
   return (
-    <div className="flex h-full flex-col bg-[linear-gradient(180deg,#e6f1fe_0%,#f4f8fe_45%)]">
+    <div className="flex h-full flex-col bg-brand-page">
       <StatusBar />
       <div className="flex h-11 shrink-0 items-center justify-end px-3">
         <div

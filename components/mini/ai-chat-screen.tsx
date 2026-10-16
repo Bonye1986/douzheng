@@ -243,7 +243,7 @@ export function AiChatScreen({
     : '你好。本次未关联检测人，我会按通用知识回答；你也可以随时选择检测人或上传外部报告。'
 
   return (
-    <div className="relative flex h-full flex-col bg-[linear-gradient(180deg,#e6f1fe_0%,#f4f8fe_30%)]">
+    <div className="relative flex h-full flex-col bg-brand-page">
       <StatusBar />
       <header className="relative flex h-11 items-center justify-center px-2 text-foreground">
         <div className="absolute left-1 flex items-center">

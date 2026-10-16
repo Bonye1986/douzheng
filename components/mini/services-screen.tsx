@@ -207,7 +207,7 @@ function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTes
               onClick={() => onOpenTest?.(t.id)}
               className="flex w-full gap-3 text-left transition-opacity active:opacity-70"
             >
-              <span className="flex size-[72px] shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#e6f1fe,#cfe3fd)]">
+              <span className="flex size-[72px] shrink-0 items-center justify-center rounded-xl bg-brand-tile">
                 <Image src="/images/drugene-icon.png" alt="" width={40} height={40} className="size-10 object-contain" />
               </span>
               <span className="flex min-w-0 flex-1 flex-col">

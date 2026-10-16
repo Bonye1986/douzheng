@@ -188,7 +188,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
       {step === 'choose' && (
         <>
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <div className="flex gap-2.5 rounded-2xl bg-gradient-to-br from-[#eef5ff] to-white p-3.5">
+            <div className="flex gap-2.5 rounded-2xl bg-brand-soft p-3.5">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary">
                 <Truck className="size-[18px]" aria-hidden="true" />
               </span>
@@ -483,7 +483,7 @@ export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void
   return (
     <SubPage title="终止订单并退款" titleId="resample-refund-title" onBack={onBack}>
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-        <div className="flex gap-2.5 rounded-2xl bg-gradient-to-br from-[#fff4ea] to-white p-3.5">
+        <div className="flex gap-2.5 rounded-2xl bg-warn-soft p-3.5">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#e0651c]">
             <Receipt className="size-[18px]" aria-hidden="true" />
           </span>
@@ -563,7 +563,7 @@ export function CancelOrderScreen({ onBack }: { onBack: () => void }) {
   return (
     <SubPage title="取消订单" titleId="cancel-order-title" onBack={onBack}>
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-        <div className="flex gap-2.5 rounded-2xl bg-gradient-to-br from-[#eef5ff] to-white p-3.5">
+        <div className="flex gap-2.5 rounded-2xl bg-brand-soft p-3.5">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary">
             <Package className="size-[18px]" aria-hidden="true" />
           </span>

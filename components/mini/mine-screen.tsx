@@ -134,7 +134,7 @@ export function MineScreen({
 
   return (
     <div className="relative flex h-full flex-col bg-[#f4f8fe]">
-      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[#d6e7ff] to-[#f4f8fe]" aria-hidden="true" />
+      <div className="absolute inset-x-0 top-0 h-64 bg-brand-hero" aria-hidden="true" />
       <div className="relative">
         <StatusBar />
         <header className="relative flex h-11 shrink-0 items-center justify-center">
@@ -206,7 +206,7 @@ export function MineScreen({
             action={`全部报告${unreadReportCount ? ` · ${unreadReportCount} 份新` : ''}`}
             onAction={() => setReportOpen(true)}
           />
-          <div className="mt-3 flex items-center gap-3 rounded-xl bg-gradient-to-r from-[#eef5ff] to-[#f8fbff] p-3">
+          <div className="mt-3 flex items-center gap-3 rounded-xl bg-brand-soft p-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
               <MineIcon src={iconSrc('report')} className="size-7" />
             </span>

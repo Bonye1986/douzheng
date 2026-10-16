@@ -124,7 +124,7 @@ export function MyCouponsScreen({ onBack, onOpenCenter }: { onBack: () => void; 
         <button
           type="button"
           onClick={onOpenCenter}
-          className="flex w-full items-center gap-2 rounded-2xl bg-gradient-to-r from-primary/10 to-white px-3.5 py-3 text-left"
+          className="flex w-full items-center gap-2 rounded-2xl bg-brand-soft px-3.5 py-3 text-left"
         >
           <Gift className="size-5 text-primary" aria-hidden="true" />
           <span className="flex-1 text-[13px] text-foreground">领券中心有新券可领</span>
@@ -215,7 +215,7 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
   return (
     <SubPage title="领券中心" titleId="coupon-center-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
-        <div className="bg-gradient-to-b from-primary/15 to-[#f4f8fe] px-4 pb-6 pt-5">
+        <div className="bg-brand-hero px-4 pb-6 pt-5">
           <p className="text-[20px] font-bold text-primary">基因检测 限时领券</p>
           <p className="mt-1 text-[12px] text-muted-foreground">先领券再下单，结算时自动抵扣</p>
         </div>

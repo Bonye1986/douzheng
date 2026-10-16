@@ -156,7 +156,7 @@ const screens = [
   {
     id: '27',
     title: '检测人管理 · 删除检测人',
-    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除，弹窗提示原因',
+    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除���弹窗提示原因',
     node: <MineScreen initialExamineeView="delete" />,
   },
   {
@@ -420,7 +420,7 @@ const pageCount = pageNo
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#e3f0ff_0%,#f4f8fe_45%)] px-6 py-10 lg:px-12">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#e6f1fe_0%,#f4f8fe_45%)] px-6 py-10 lg:px-12">
       <DesignBoard
         sections={sections}
         header={
