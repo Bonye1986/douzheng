@@ -2,19 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import {
-  AlarmClock,
-  BookOpen,
-  CheckCircle2,
-  ChevronRight,
-  Dna,
-  Eye,
-  FileSearch,
-  HeartPulse,
-  Lightbulb,
-  XCircle,
-  type LucideIcon,
-} from 'lucide-react'
+import { BookOpen, CheckCircle2, ChevronRight, Eye, Lightbulb, XCircle } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
@@ -131,11 +119,11 @@ function BannerCarousel() {
   )
 }
 
-const categoryIcons: Record<ServiceCategoryId, LucideIcon> = {
-  tests: Dna,
-  health: HeartPulse,
-  report: FileSearch,
-  remind: AlarmClock,
+const categoryIcons: Record<ServiceCategoryId, string> = {
+  tests: '/images/icons/svc-tests.png',
+  health: '/images/icons/svc-health.png',
+  report: '/images/icons/svc-report.png',
+  remind: '/images/icons/svc-remind.png',
 }
 
 function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
@@ -143,7 +131,6 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
     <section aria-label="服务分类" className="rounded-2xl bg-white px-2 py-4">
       <ul className="grid grid-cols-4">
         {serviceCategories.map(({ id, label }) => {
-          const Icon = categoryIcons[id]
           return (
             <li key={id}>
               <button
@@ -151,8 +138,14 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
                 onClick={() => onCategory?.(id)}
                 className="group flex w-full flex-col items-center gap-2"
               >
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-[linear-gradient(145deg,#eef5ff,#dce9fd)] text-primary ring-1 ring-inset ring-[#d3e3fb] transition-transform group-active:scale-95">
-                  <Icon className="size-6" strokeWidth={1.75} aria-hidden="true" />
+                <span className="relative size-12 overflow-hidden rounded-2xl bg-[#eaf2fe] transition-transform group-active:scale-95">
+                  <Image
+                    src={categoryIcons[id] || '/placeholder.svg'}
+                    alt=""
+                    fill
+                    sizes="48px"
+                    className="scale-[1.12] object-cover"
+                  />
                 </span>
                 <span className="text-[12px] text-foreground">{label}</span>
               </button>
