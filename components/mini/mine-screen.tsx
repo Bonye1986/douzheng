@@ -6,7 +6,8 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
-import { ResampleRefundScreen, ShippedRefundScreen } from '@/components/mini/refund-screen'
+import { CancelOrderScreen, ResampleRefundScreen, ShippedRefundScreen } from '@/components/mini/refund-screen'
+import type { RefundKind } from '@/components/mini/order-list-screen'
 import { OrderListScreen, countOrders, type OrderPhase } from '@/components/mini/order-list-screen'
 import { AfterSalesScreen, pendingAfterSalesCount } from '@/components/mini/after-sales-screen'
 import { initialExaminees } from '@/components/mini/checkout-data'
@@ -127,7 +128,7 @@ export function MineScreen({
   const [resampleOpen, setResampleOpen] = useState(initialResampleOpen)
   const [orderListPhase, setOrderListPhase] = useState<OrderPhase | null>(null)
   const [afterSalesOpen, setAfterSalesOpen] = useState(false)
-  const [refundKind, setRefundKind] = useState<'shipped' | 'resample' | null>(null)
+  const [refundKind, setRefundKind] = useState<RefundKind | null>(null)
   const self = initialExaminees[0]
   const maskedPhone = (self.phone ?? '').replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
 
@@ -299,6 +300,7 @@ export function MineScreen({
           onTerminateResample={() => setRefundKind('resample')}
         />
       )}
+      {refundKind === 'cancel' && <CancelOrderScreen onBack={() => setRefundKind(null)} />}
       {refundKind === 'shipped' && <ShippedRefundScreen onBack={() => setRefundKind(null)} />}
       {refundKind === 'resample' && (
         <ResampleRefundScreen onBack={() => setRefundKind(null)} onContact={() => setServiceOpen(true)} />

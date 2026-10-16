@@ -66,8 +66,16 @@ type Order = {
   resample?: boolean
   priceChanged?: boolean
   unqualified?: boolean
-  refund?: 'shipped' | 'resample'
+  refund?: RefundKind
   action?: { label: string; primary?: boolean }
+}
+
+export type RefundKind = 'cancel' | 'shipped' | 'resample'
+
+const refundLabels: Record<RefundKind, string> = {
+  cancel: '取消订单',
+  shipped: '申请退款',
+  resample: '终止并退款',
 }
 
 const orders: Order[] = [
@@ -83,6 +91,17 @@ const orders: Order[] = [
     note: '客服已调整订单金额，请按最新价格支付',
     priceChanged: true,
     action: { label: '去支付', primary: true },
+  },
+  {
+    id: 'DZ20261015016',
+    type: 'self',
+    phase: 'toSample',
+    status: '待发货',
+    product: '个体化用药基因检测 · 全面版',
+    examinees: '王建国',
+    amount: '¥1,299',
+    note: '已支付，实验室将在 24 小时内寄出采样盒',
+    refund: 'cancel',
   },
   {
     id: 'DZ20261013008',
@@ -186,7 +205,7 @@ export function OrderListScreen({
   initialPhase?: OrderPhase
   onBack: () => void
   onHandleUnqualified: () => void
-  onRefund: (kind: 'shipped' | 'resample') => void
+  onRefund: (kind: RefundKind) => void
 }) {
   const [type, setType] = useState<OrderType>('all')
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
@@ -316,7 +335,7 @@ export function OrderListScreen({
                     onClick={() => o.refund && onRefund(o.refund)}
                     className="h-7 rounded-full border border-[#dfe5ef] px-3.5 text-[12px] font-medium text-muted-foreground"
                   >
-                    {o.refund === 'resample' ? '终止并退款' : '申请退款'}
+                    {refundLabels[o.refund]}
                   </button>
                 )}
                 {o.action && (

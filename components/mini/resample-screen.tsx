@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { IncurredFeeCard, type IncurredFee } from '@/components/mini/refund-screen'
 import { cn } from '@/lib/utils'
 
 type Step = 'choose' | 'refund' | 'resample' | 'refundDone' | 'resampleDone'
@@ -30,6 +31,14 @@ const order = {
 const newOrderNo = 'DZ20261015092417'
 
 const refundReasons = ['不想重新采样', '检测需求已变更', '等待时间过长', '其他原因'] as const
+
+const unqualifiedFees: IncurredFee[] = [
+  { label: '采样盒及耗材', desc: '已寄出的采样盒', amount: 80 },
+  { label: '物流费用', desc: '采样盒寄送及样本回寄', amount: 30 },
+  { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
+]
+
+const refundAmount = order.paid - unqualifiedFees.reduce((s, f) => s + f.amount, 0)
 
 function OrderBrief({ status, tone = 'warn' }: { status: string; tone?: 'warn' | 'muted' }) {
   return (
@@ -126,7 +135,7 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
 
   const titles: Record<Step, string> = {
     choose: '样本不合格处理',
-    refund: '申请退款',
+    refund: '终止订单并退款',
     resample: '确认重采样',
     refundDone: '退款申请详情',
     resampleDone: '重采样结果',
@@ -171,8 +180,8 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
                     {
                       key: 'refund',
                       icon: CircleDollarSign,
-                      title: '申请退款',
-                      desc: '提交退款申请，由后台审核后确定全额或部分退款，原路退回',
+                      title: '终止订单并退款',
+                      desc: '实验室停止检测，扣除已产生的各类费用后，剩余金额原路退回',
                     },
                   ] as const
                 ).map((o) => {
@@ -318,16 +327,11 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
               <p className="text-right text-[11px] tabular-nums text-muted-foreground">{refundNote.length}/200</p>
             </div>
 
-            <div className="flex gap-2 rounded-2xl bg-[#fff8f2] p-3 text-[11px] leading-relaxed text-[#8a5a33]">
-              <CircleDollarSign className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-              <p>
-                退款金额以后台审核结果为准：可能为全额退款（¥{order.paid}），或扣除已发生的采样盒及检测成本后部分退款。审核通过后原路退回。
-              </p>
-            </div>
+            <IncurredFeeCard paid={order.paid} fees={unqualifiedFees} />
           </div>
           <BottomBar>
             <PrimaryButton disabled={!refundReason} onClick={() => setStep('refundDone')}>
-              提交退款申请
+              确认终止并退款 ¥{refundAmount}
             </PrimaryButton>
           </BottomBar>
         </>
@@ -340,20 +344,23 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
               <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
                 <CircleDollarSign className="size-6" aria-hidden="true" />
               </span>
-              <p className="mt-2.5 text-[16px] font-semibold text-foreground">退款申请已提交</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">后台将在 1-3 个工作日内审核，结果将短信通知您</p>
+              <p className="mt-2.5 text-[16px] font-semibold text-foreground">订单已终止</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                扣除已产生费用后将退款{' '}
+                <span className="font-medium tabular-nums text-[#e0651c]">¥{refundAmount}</span>
+              </p>
             </div>
             <div className="rounded-2xl bg-white p-3.5">
               <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
               <Timeline
                 items={[
-                  { title: '提交退款申请', desc: `原因：${refundReason ?? '—'}`, state: 'done' },
-                  { title: '后台审核中', desc: '审核确定全额退款或部分退款金额', state: 'current' },
-                  { title: '退款到账', desc: '审核通过后原路退回至微信支付账户', state: 'todo' },
+                  { title: '终止订单', desc: `原因：${refundReason ?? '—'}`, state: 'done' },
+                  { title: '退款处理中', desc: '预计 1-3 个工作日内完成', state: 'current' },
+                  { title: '退款到账', desc: `¥${refundAmount} 原路退回至微信支付账户`, state: 'todo' },
                 ]}
               />
             </div>
-            <OrderBrief status="退款审核中" />
+            <OrderBrief status="已关闭" tone="muted" />
           </div>
           <BottomBar>
             <PrimaryButton onClick={onBack}>返回我的</PrimaryButton>

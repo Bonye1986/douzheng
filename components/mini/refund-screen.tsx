@@ -407,64 +407,217 @@ const resampleOrder = {
   status: '重采样 · 已收样',
 }
 
-const incurredFees = [
-  { label: '采样盒及耗材（2 次）', desc: '首次采样盒 + 重采样采样盒' },
-  { label: '物流费用', desc: '采样盒寄送及样本回寄' },
-  { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节' },
+export type IncurredFee = { label: string; desc: string; amount: number }
+
+const resampleFees: IncurredFee[] = [
+  { label: '采样盒及耗材（2 次）', desc: '首次采样盒 + 重采样采样盒', amount: KIT_FEE * 2 },
+  { label: '物流费用', desc: '采样盒寄送及样本回寄（2 次）', amount: 60 },
+  { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
 ]
 
-export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void; onContact: () => void }) {
+export function IncurredFeeCard({ paid, fees }: { paid: number; fees: IncurredFee[] }) {
+  const total = fees.reduce((s, f) => s + f.amount, 0)
   return (
-    <SubPage title="终止检测并退款" titleId="resample-refund-title" onBack={onBack}>
+    <Card>
+      <h2 className="text-[15px] font-semibold text-foreground">已产生费用</h2>
+      <ul className="mt-2.5 divide-y divide-[#eef2f8]">
+        {fees.map((f) => (
+          <li key={f.label} className="flex items-start justify-between gap-3 py-2.5 first:pt-0">
+            <div className="min-w-0">
+              <p className="text-[13px] text-foreground">{f.label}</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">{f.desc}</p>
+            </div>
+            <span className="shrink-0 text-[13px] tabular-nums text-[#e0651c]">-¥{f.amount}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-1 border-t border-dashed border-[#e3eaf4] pt-3">
+        <AmountRows
+          rows={[
+            { label: '实付金额', value: `¥${paid}` },
+            { label: '扣除费用合计', value: `-¥${total}`, minus: true },
+            { label: '实际退款', value: `¥${paid - total}`, strong: true },
+          ]}
+        />
+      </div>
+    </Card>
+  )
+}
+
+export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void; onContact: () => void }) {
+  const [done, setDone] = useState(false)
+  const refund = resampleOrder.paid - resampleFees.reduce((s, f) => s + f.amount, 0)
+
+  if (done) {
+    return (
+      <SubPage title="退款详情" titleId="resample-refund-title" onBack={onBack}>
+        <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
+          <Card className="p-4 text-center">
+            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
+              <CircleDollarSign className="size-6" aria-hidden="true" />
+            </span>
+            <p className="mt-2.5 text-[16px] font-semibold text-foreground">订单已终止</p>
+            <p className="mt-1 text-[12px] text-muted-foreground">
+              扣除已产生费用后将退款 <span className="font-medium tabular-nums text-[#e0651c]">¥{refund}</span>
+            </p>
+          </Card>
+          <Card>
+            <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
+            <Timeline
+              items={[
+                { title: '终止检测', desc: '实验室已停止检测，订单关闭', state: 'done' },
+                { title: '退款处理中', desc: '预计 1-3 个工作日内完成', state: 'current' },
+                { title: '退款到账', desc: `¥${refund} 原路退回至微信支付账户`, state: 'todo' },
+              ]}
+            />
+          </Card>
+          <OrderBrief {...resampleOrder} status="已关闭" />
+        </div>
+        <BottomBar>
+          <PrimaryButton onClick={onBack}>返回订单</PrimaryButton>
+        </BottomBar>
+      </SubPage>
+    )
+  }
+
+  return (
+    <SubPage title="终止订单并退款" titleId="resample-refund-title" onBack={onBack}>
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
         <div className="flex gap-2.5 rounded-2xl bg-gradient-to-br from-[#fff4ea] to-white p-3.5">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#e0651c]">
-            <Headphones className="size-[18px]" aria-hidden="true" />
+            <Receipt className="size-[18px]" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-[#c2541a]">重采样订单需联系客服办理</p>
+            <p className="text-[14px] font-semibold text-[#c2541a]">需扣除已产生的各类费用</p>
             <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
-              客服核实已产生的费用后，扣除相应费用再退款，退款原路退回。
+              样本已进入重采样流程，终止后实验室停止检测，剩余金额原路退回。
             </p>
           </div>
         </div>
 
         <OrderBrief {...resampleOrder} />
+        <IncurredFeeCard paid={resampleOrder.paid} fees={resampleFees} />
 
-        <Card>
-          <h2 className="text-[15px] font-semibold text-foreground">将扣除的已产生费用</h2>
-          <ul className="mt-2.5 divide-y divide-[#eef2f8]">
-            {incurredFees.map((f) => (
-              <li key={f.label} className="flex items-start justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-                <div className="min-w-0">
-                  <p className="text-[13px] text-foreground">{f.label}</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">{f.desc}</p>
-                </div>
-                <span className="shrink-0 text-[12px] text-muted-foreground">客服核算</span>
-              </li>
+        <button
+          type="button"
+          onClick={onContact}
+          className="flex w-full items-center justify-center gap-1 py-1 text-[12px] text-primary"
+        >
+          <Headphones className="size-3.5" aria-hidden="true" />
+          对费用有疑问？联系客服
+        </button>
+      </div>
+      <BottomBar>
+        <PrimaryButton onClick={() => setDone(true)}>确认终止并退款 ¥{refund}</PrimaryButton>
+      </BottomBar>
+    </SubPage>
+  )
+}
+
+const pendingOrder = {
+  no: 'DZ20261015016',
+  product: '个体化用药基因检测 · 全面版',
+  examinee: '王建国',
+  paid: 1299,
+  status: '待发货',
+}
+
+const cancelReasons = ['信息填写有误', '不想检测了', '重复下单', '其他原因'] as const
+
+export function CancelOrderScreen({ onBack }: { onBack: () => void }) {
+  const [reason, setReason] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+
+  if (done) {
+    return (
+      <SubPage title="退款详情" titleId="cancel-order-title" onBack={onBack}>
+        <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
+          <Card className="p-4 text-center">
+            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#e6f6ec] text-[#1f8a4c]">
+              <Check className="size-6" aria-hidden="true" />
+            </span>
+            <p className="mt-2.5 text-[16px] font-semibold text-foreground">订单已取消</p>
+            <p className="mt-1 text-[12px] text-muted-foreground">
+              <span className="font-medium tabular-nums text-[#e0651c]">¥{pendingOrder.paid}</span> 将全额原路退回
+            </p>
+          </Card>
+          <Card>
+            <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
+            <Timeline
+              items={[
+                { title: '取消订单', desc: `原因：${reason}`, state: 'done' },
+                { title: '退款处理中', desc: '无需审核，系统自动发起退款', state: 'current' },
+                { title: '退款到账', desc: '预计 1-3 个工作日退回至微信支付账户', state: 'todo' },
+              ]}
+            />
+          </Card>
+          <OrderBrief {...pendingOrder} status="已取消" />
+        </div>
+        <BottomBar>
+          <PrimaryButton onClick={onBack}>返回订单</PrimaryButton>
+        </BottomBar>
+      </SubPage>
+    )
+  }
+
+  return (
+    <SubPage title="取消订单" titleId="cancel-order-title" onBack={onBack}>
+      <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
+        <div className="flex gap-2.5 rounded-2xl bg-gradient-to-br from-[#eef5ff] to-white p-3.5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary">
+            <Package className="size-[18px]" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[14px] font-semibold text-foreground">采样盒尚未发货</p>
+            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+              发货前可直接取消，订单金额全额原路退回
+            </p>
+          </div>
+        </div>
+
+        <OrderBrief {...pendingOrder} />
+
+        <fieldset className="rounded-2xl bg-white p-3.5">
+          <legend className="float-left mb-2.5 text-[15px] font-semibold text-foreground">取消原因</legend>
+          <div className="clear-both flex flex-wrap gap-2">
+            {cancelReasons.map((r) => (
+              <label
+                key={r}
+                className={cn(
+                  'cursor-pointer rounded-full border px-3 py-1.5 text-[12px] transition-colors',
+                  reason === r ? 'border-primary bg-[#f3f8ff] font-medium text-primary' : 'border-[#e6ecf4] text-foreground',
+                )}
+              >
+                <input
+                  type="radio"
+                  name="cancel-reason"
+                  value={r}
+                  checked={reason === r}
+                  onChange={() => setReason(r)}
+                  className="sr-only"
+                />
+                {r}
+              </label>
             ))}
-          </ul>
-          <p className="mt-3 rounded-lg bg-[#f6f8fc] px-2.5 py-2 text-[11px] leading-relaxed text-muted-foreground">
-            退款金额 = 原订单实付 ¥{resampleOrder.paid} − 已产生费用，以客服最终核算为准。
-          </p>
-        </Card>
+          </div>
+        </fieldset>
 
         <Card>
-          <h2 className="mb-3 text-[15px] font-semibold text-foreground">办理流程</h2>
-          <Timeline
-            items={[
-              { title: '联系客服', desc: '说明终止检测意向并提供订单号', state: 'current' },
-              { title: '核算费用', desc: '客服核实已产生的各类费用并告知退款金额', state: 'todo' },
-              { title: '终止检测', desc: '确认后实验室终止检测，订单关闭', state: 'todo' },
-              { title: '退款到账', desc: '扣除费用后原路退回至微信支付账户', state: 'todo' },
+          <AmountRows
+            rows={[
+              { label: '实付金额', value: `¥${pendingOrder.paid}` },
+              { label: '退款金额', value: `¥${pendingOrder.paid}`, strong: true },
             ]}
           />
+          <p className="mt-2.5 flex gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+            原路退回至微信支付账户；采样盒发出后将无法直接取消，需申请退款。
+          </p>
         </Card>
       </div>
       <BottomBar>
-        <PrimaryButton onClick={onContact}>
-          <Headphones className="size-4" aria-hidden="true" />
-          联系客服
+        <PrimaryButton disabled={!reason} onClick={() => setDone(true)}>
+          确认取消并退款
         </PrimaryButton>
       </BottomBar>
     </SubPage>
