@@ -124,10 +124,13 @@ function OrderDetailFromList({
       status={order.status}
       statusDesc={
         order.payRemaining != null
-          ? `剩余支付时间 ${formatCountdown(order.payRemaining)}，超时订单将自动关闭${order.priceChanged ? `。${order.note}` : ''}`
+          ? `剩余支付时间 ${formatCountdown(order.payRemaining)}，超时订单将自动关闭`
           : order.note
       }
       sampleCodes={sampleCodes}
+      priceAdjust={
+        order.priceChanged && order.status === '待付款' ? { before: goodsTotal, after: payable } : undefined
+      }
       receiver={{ name: '王建国', phone: '138****6621', detail: '上海市徐汇区漕溪北路 398 号 汇智大厦 12 楼' }}
       site={{ name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼', time: '10-18 09:00-11:00' }}
       groups={names.map((name, i) => ({

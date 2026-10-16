@@ -23,6 +23,8 @@ type Props = {
   statusDesc?: string
   /** 管理端发货时自动生成，自采样订单已发货及后续状态展示 */
   sampleCodes?: { name: string; code: string }[]
+  /** 客服改价信息，待付款且已改价订单展示改价前后金额 */
+  priceAdjust?: { before: number; after: number }
   /** 底部操作按钮，与订单列表同状态的操作保持一致 */
   actions?: React.ReactNode
   onBack: () => void
@@ -43,6 +45,7 @@ export function OrderDetailScreen({
   status: statusProp,
   statusDesc: statusDescProp,
   sampleCodes,
+  priceAdjust,
   actions,
   onBack,
 }: Props) {
@@ -128,17 +131,58 @@ export function OrderDetailScreen({
               </li>
             ))}
           </ul>
+          {priceAdjust && (
+            <div className="mt-1 rounded-xl bg-[#fff4ec] p-3">
+              <p className="flex items-center gap-1.5 text-[12px] font-medium text-[#e0651c]">
+                <span className="rounded bg-[#ffeadb] px-1 text-[10px]">已改价</span>
+                客服已调整订单金额，请按最新价格支付
+              </p>
+              <dl className="mt-2 grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-lg bg-white px-1 py-2">
+                  <dt className="text-[11px] text-muted-foreground">改价前</dt>
+                  <dd className="mt-0.5 text-[14px] tabular-nums text-muted-foreground line-through">
+                    {yuan(priceAdjust.before)}
+                  </dd>
+                </div>
+                <div className="rounded-lg bg-white px-1 py-2">
+                  <dt className="text-[11px] text-muted-foreground">改价后</dt>
+                  <dd className="mt-0.5 text-[14px] font-semibold tabular-nums text-[#e0651c]">
+                    {yuan(priceAdjust.after)}
+                  </dd>
+                </div>
+                <div className="rounded-lg bg-white px-1 py-2">
+                  <dt className="text-[11px] text-muted-foreground">
+                    {priceAdjust.after <= priceAdjust.before ? '已减免' : '已加价'}
+                  </dt>
+                  <dd className="mt-0.5 text-[14px] tabular-nums text-foreground">
+                    {priceAdjust.after <= priceAdjust.before ? '-' : '+'}
+                    {yuan(Math.abs(priceAdjust.before - priceAdjust.after))}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          )}
           <dl className="mt-1 flex flex-col gap-1.5 border-t border-border pt-3 text-[12px]">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">商品金额</dt>
               <dd className="tabular-nums text-foreground">{yuan(goodsTotal)}</dd>
             </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">优惠券</dt>
-              <dd className="tabular-nums text-[#e5603a]">{couponOff > 0 ? `-${yuan(couponOff)}` : '未使用'}</dd>
-            </div>
+            {priceAdjust ? (
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">客服改价</dt>
+                <dd className="tabular-nums text-[#e5603a]">
+                  {priceAdjust.after <= priceAdjust.before ? '-' : '+'}
+                  {yuan(Math.abs(priceAdjust.before - priceAdjust.after))}
+                </dd>
+              </div>
+            ) : (
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">优惠券</dt>
+                <dd className="tabular-nums text-[#e5603a]">{couponOff > 0 ? `-${yuan(couponOff)}` : '未使用'}</dd>
+              </div>
+            )}
             <div className="flex items-baseline justify-between pt-1">
-              <dt className="text-[13px] text-foreground">实付款</dt>
+              <dt className="text-[13px] text-foreground">{isPaid ? '实付款' : '需付款'}</dt>
               <dd className="text-[16px] font-semibold tabular-nums text-foreground">{yuan(payable)}</dd>
             </div>
           </dl>
