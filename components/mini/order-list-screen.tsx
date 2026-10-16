@@ -4,7 +4,40 @@ import { useState } from 'react'
 import { AlertTriangle, Building2, Home } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
+import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { cn } from '@/lib/utils'
+
+const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
+
+function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => void }) {
+  const payable = parseYuan(order.amount)
+  const goodsTotal = order.originalAmount ? parseYuan(order.originalAmount) : payable
+  const names = order.examinees.split('、')
+  const per = Math.round(goodsTotal / names.length)
+  const d = order.id.slice(2, 10)
+  const payTime = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)} 10:24:36`
+
+  return (
+    <OrderDetailScreen
+      orderNo={order.id}
+      payTime={payTime}
+      mode={order.type}
+      status={order.status}
+      statusDesc={order.note}
+      receiver={{ name: '王建国', phone: '138****6621', detail: '上海市徐汇区漕溪北路 398 号 汇智大厦 12 楼' }}
+      site={{ name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼', time: '10-18 09:00-11:00' }}
+      groups={names.map((name, i) => ({
+        id: `${order.id}-${i}`,
+        name,
+        items: [{ id: `${order.id}-${i}-item`, name: order.product, price: per }],
+      }))}
+      goodsTotal={goodsTotal}
+      couponOff={Math.max(goodsTotal - payable, 0)}
+      payable={payable}
+      onBack={onBack}
+    />
+  )
+}
 
 export type OrderPhase = 'all' | 'toPay' | 'toSample' | 'testing' | 'done' | 'closed'
 type OrderType = 'all' | 'self' | 'site'
@@ -234,6 +267,7 @@ export function OrderListScreen({
   const [type, setType] = useState<OrderType>('all')
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
+  const [detailOrder, setDetailOrder] = useState<Order | null>(null)
 
   const statusTabs = statusTabsByType[type]
   const groupPhase = groupPhases.find((p) => p === statusKey)
@@ -305,7 +339,7 @@ export function OrderListScreen({
         {visible.map((o) => {
           const TypeIcon = o.type === 'self' ? Home : Building2
           return (
-            <li key={o.id} className="rounded-2xl bg-white p-3.5">
+            <li key={o.id} className="relative rounded-2xl bg-white p-3.5 transition-colors active:bg-[#f6f8fc]">
               <div className="flex items-center gap-1.5">
                 <TypeIcon className="size-3.5 text-primary" aria-hidden="true" />
                 <span className="text-[12px] text-muted-foreground">{o.type === 'self' ? '自采样' : '定点采样'}</span>
@@ -331,7 +365,14 @@ export function OrderListScreen({
 
               <div className="mt-2.5 flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-[14px] font-medium text-foreground">{o.product}</p>
+                  <button
+                    type="button"
+                    onClick={() => setDetailOrder(o)}
+                    aria-label={`查看订单详情：${o.product}，${o.id}`}
+                    className="block max-w-full truncate text-left text-[14px] font-medium text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary"
+                  >
+                    {o.product}
+                  </button>
                   <p className="mt-0.5 text-[12px] text-muted-foreground">受检人：{o.examinees}</p>
                 </div>
                 <p className="shrink-0 text-right">
@@ -356,7 +397,7 @@ export function OrderListScreen({
 
               <div className="mt-2.5 flex items-center justify-between">
                 <span className="text-[11px] tabular-nums text-muted-foreground">{o.id}</span>
-                <div className="flex items-center gap-2">
+                <div className="relative z-10 flex items-center gap-2">
                 {o.refund && (
                   <button
                     type="button"
@@ -391,6 +432,7 @@ export function OrderListScreen({
       </ul>
 
       {guideOpen && <SamplingVideoDialog onClose={() => setGuideOpen(false)} />}
+      {detailOrder && <OrderDetailFromList order={detailOrder} onBack={() => setDetailOrder(null)} />}
     </SubPage>
   )
 }

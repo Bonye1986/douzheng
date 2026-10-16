@@ -15,6 +15,8 @@ type Props = {
   goodsTotal: number
   couponOff: number
   payable: number
+  status?: string
+  statusDesc?: string
   onBack: () => void
 }
 
@@ -30,11 +32,15 @@ export function OrderDetailScreen({
   goodsTotal,
   couponOff,
   payable,
+  status: statusProp,
+  statusDesc: statusDescProp,
   onBack,
 }: Props) {
   const isSelf = mode === 'self'
-  const status = isSelf ? '待发货' : '待核销'
-  const statusDesc = isSelf ? '已支付，实验室将在 24 小时内寄出采样盒' : '请按预约时间前往采样机构，出示核销码完成采样'
+  const status = statusProp ?? (isSelf ? '待发货' : '待核销')
+  const statusDesc =
+    statusDescProp ?? (isSelf ? '已支付，实验室将在 24 小时内寄出采样盒' : '请按预约时间前往采样机构，出示核销码完成采样')
+  const isPaid = status !== '待付款'
 
   return (
     <SubPage title="订单详情" titleId="order-detail-title" onBack={onBack}>
@@ -126,8 +132,12 @@ export function OrderDetailScreen({
             {[
               ['订单编号', orderNo],
               ['下单时间', payTime],
-              ['支付方式', '微信支付'],
-              ['支付时间', payTime],
+              ...(isPaid
+                ? [
+                    ['支付方式', '微信支付'],
+                    ['支付时间', payTime],
+                  ]
+                : []),
             ].map(([k, v]) => (
               <div key={k} className="flex gap-3">
                 <dt className="w-14 shrink-0 text-muted-foreground">{k}</dt>
