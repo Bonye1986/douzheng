@@ -48,7 +48,7 @@ const tools = [
 function MineIcon({ src, className = 'size-8' }: { src: string; className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt="" aria-hidden="true" width={96} height={96} className={`${className} object-contain mix-blend-multiply`} />
+    <img src={src} alt="" aria-hidden="true" width={96} height={96} className={`${className} object-cover mix-blend-multiply`} />
   )
 }
 
