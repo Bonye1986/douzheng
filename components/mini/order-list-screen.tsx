@@ -572,8 +572,8 @@ export function OrderListScreen({
           orderNo={sendTarget.id}
           examinees={sendTarget.examinees}
           onBack={() => setSendTarget(null)}
-          onSubmitted={({ time }) =>
-            setSentNotes((prev) => new Map(prev).set(sendTarget.id, `已预约顺丰上门取件（${time}），快递员将上门取样`))
+          onSubmitted={() =>
+            setSentNotes((prev) => new Map(prev).set(sendTarget.id, '已提交顺丰上门取件，快递员将上门取样'))
           }
         />
       )}

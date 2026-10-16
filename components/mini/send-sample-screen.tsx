@@ -6,9 +6,6 @@ import { SubPage } from '@/components/mini/sub-page'
 import { regionText, savedAddresses } from '@/components/mini/address-manage-screen'
 import { cn } from '@/lib/utils'
 
-const pickupDays = ['今天 10-16', '明天 10-17', '后天 10-18']
-const pickupSlots = ['09:00-11:00', '11:00-13:00', '14:00-16:00', '16:00-18:00']
-
 export function SendSampleScreen({
   orderNo,
   examinees,
@@ -18,17 +15,14 @@ export function SendSampleScreen({
   orderNo: string
   examinees: string
   onBack: () => void
-  onSubmitted: (summary: { address: string; time: string }) => void
+  onSubmitted: (summary: { address: string }) => void
 }) {
   const [addressId, setAddressId] = useState(
     savedAddresses.find((a) => a.isDefault)?.id ?? savedAddresses[0]?.id,
   )
-  const [day, setDay] = useState(0)
-  const [slot, setSlot] = useState(1)
   const [picking, setPicking] = useState(false)
   const [done, setDone] = useState(false)
   const address = savedAddresses.find((a) => a.id === addressId)
-  const time = `${pickupDays[day]} ${pickupSlots[slot]}`
 
   if (done && address) {
     return (
@@ -37,9 +31,9 @@ export function SendSampleScreen({
           <span className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
             <CircleCheck className="size-9" aria-hidden="true" />
           </span>
-          <h2 className="mt-4 text-[18px] font-semibold text-foreground">寄样预约成功</h2>
+          <h2 className="mt-4 text-[18px] font-semibold text-foreground">提交成功</h2>
           <p className="mt-1.5 text-center text-[13px] leading-5 text-muted-foreground">
-            快递员将于 {time} 上门取件，请提前封装好样本
+            顺丰快递员将尽快上门取件，请提前封装好样本
           </p>
           <dl className="mt-6 w-full space-y-2.5 rounded-2xl bg-white p-4 text-[13px]">
             {[
@@ -70,12 +64,12 @@ export function SendSampleScreen({
   }
 
   return (
-    <SubPage title="预约寄样" titleId="send-sample-title" onBack={onBack}>
+    <SubPage title="上门取样" titleId="send-sample-title" onBack={onBack}>
       <div className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         <section className="flex items-center gap-3 rounded-2xl bg-primary/10 p-3.5">
           <Truck className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <p className="text-[12px] leading-[18px] text-foreground">
-            预约后顺丰快递员将上门取走样本，并直接送往实验室，全程免运费。
+            提交后顺丰快递员将上门取走样本，并直接送往实验室，全程免运费。
           </p>
         </section>
 
@@ -109,46 +103,6 @@ export function SendSampleScreen({
           </button>
         </section>
 
-        <section aria-labelledby="pickup-time-label" className="rounded-2xl bg-white p-3.5">
-          <h2 id="pickup-time-label" className="text-[14px] font-semibold text-foreground">
-            期望上门时间
-          </h2>
-          <div role="radiogroup" aria-label="取件日期" className="mt-2.5 grid grid-cols-3 gap-2">
-            {pickupDays.map((d, i) => (
-              <button
-                key={d}
-                type="button"
-                role="radio"
-                aria-checked={day === i}
-                onClick={() => setDay(i)}
-                className={cn(
-                  'h-8 rounded-lg text-[12px]',
-                  day === i ? 'bg-primary font-medium text-primary-foreground' : 'bg-[#f1f4f9] text-foreground',
-                )}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-          <div role="radiogroup" aria-label="取件时段" className="mt-2 grid grid-cols-2 gap-2">
-            {pickupSlots.map((s, i) => (
-              <button
-                key={s}
-                type="button"
-                role="radio"
-                aria-checked={slot === i}
-                onClick={() => setSlot(i)}
-                className={cn(
-                  'h-8 rounded-lg border text-[12px] tabular-nums',
-                  slot === i ? 'border-primary bg-primary/10 font-medium text-primary' : 'border-[#dfe5ef] text-foreground',
-                )}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        </section>
-
         <section className="rounded-2xl bg-white p-3.5">
           <h2 className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
             <PackageCheck className="size-4 text-primary" aria-hidden="true" />
@@ -168,12 +122,12 @@ export function SendSampleScreen({
           disabled={!address}
           onClick={() => {
             if (!address) return
-            onSubmitted({ address: `${regionText(address.region)} ${address.street}`, time })
+            onSubmitted({ address: `${regionText(address.region)} ${address.street}` })
             setDone(true)
           }}
           className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90 disabled:bg-[#e6ebf3] disabled:text-muted-foreground"
         >
-          提交预约
+          提交
         </button>
       </div>
 
