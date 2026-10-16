@@ -47,8 +47,6 @@ const reports: Report[] = [
   },
 ]
 
-const steps = ['已收样', '检测中', '出具报告']
-
 export const unreadReportCount = reports.filter((r) => r.unread).length
 
 export function ReportListScreen({ onBack }: { onBack: () => void }) {
@@ -112,36 +110,6 @@ export function ReportListScreen({ onBack }: { onBack: () => void }) {
                 {r.status === 'ready' ? '已出具' : '检测中'}
               </span>
             </div>
-
-            {r.status === 'testing' && r.step !== undefined && (
-              <ol aria-label="检测进度" className="mt-3 flex items-center rounded-xl bg-[#f6f8fc] px-3 py-2.5">
-                {steps.map((label, i) => {
-                  const done = i <= (r.step ?? 0)
-                  return (
-                    <li key={label} className="flex flex-1 items-center last:flex-none">
-                      <span className="flex items-center gap-1.5">
-                        <span
-                          className={cn('size-2 rounded-full', done ? 'bg-primary' : 'bg-[#d5dce8]')}
-                          aria-hidden="true"
-                        />
-                        <span
-                          className={cn('text-[11px]', done ? 'font-medium text-foreground' : 'text-muted-foreground')}
-                          aria-current={i === r.step ? 'step' : undefined}
-                        >
-                          {label}
-                        </span>
-                      </span>
-                      {i < steps.length - 1 && (
-                        <span
-                          className={cn('mx-2 h-px flex-1', i < (r.step ?? 0) ? 'bg-primary' : 'bg-[#d5dce8]')}
-                          aria-hidden="true"
-                        />
-                      )}
-                    </li>
-                  )
-                })}
-              </ol>
-            )}
 
             {r.status === 'ready' && (
               <div className="mt-3 flex items-center justify-end gap-2">
