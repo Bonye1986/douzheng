@@ -29,16 +29,6 @@ const reports: Report[] = [
     unread: true,
   },
   {
-    id: 'BG20261009011',
-    product: '药物基因检测',
-    examinee: '张伟',
-    relation: '本人',
-    status: 'testing',
-    date: '预计 10-20 出具',
-    resample: true,
-    step: 1,
-  },
-  {
     id: 'BG20260920004',
     product: '心血管用药基因检测',
     examinee: '王建国',
@@ -101,21 +91,12 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
                 </div>
                 <p className="mt-0.5 text-[12px] text-muted-foreground">
                   {r.examinee}（{r.relation}） · <span className="tabular-nums">{r.date}</span>
-                  {r.status === 'ready' && ' 出具'}
+                   出具
                 </p>
               </div>
-              <span
-                className={cn(
-                  'shrink-0 text-[12px] font-medium',
-                  r.status === 'ready' ? 'text-[#2f9e6a]' : 'text-primary',
-                )}
-              >
-                {r.status === 'ready' ? '已出具' : '检测中'}
-              </span>
             </div>
 
-            {r.status === 'ready' && (
-              <div className="mt-3 flex items-center justify-end gap-2">
+            <div className="mt-3 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   className="flex h-7 items-center gap-1 rounded-full border border-[#dfe5ef] px-3 text-[12px] text-foreground"
@@ -138,7 +119,6 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
                   查看报告
                 </button>
               </div>
-            )}
           </li>
         ))}
         <li className="px-2 pt-1 text-center text-[11px] leading-relaxed text-muted-foreground">
