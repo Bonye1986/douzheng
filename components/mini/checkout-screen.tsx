@@ -11,6 +11,7 @@ import {
   FlaskConical,
   House,
   MapPin,
+  MessageSquareText,
   Package,
   ShieldCheck,
   Ticket,
@@ -23,7 +24,7 @@ import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
-import { ResearchSignFlow, researchDocs } from '@/components/mini/research-sign-flow'
+import { researchDocs } from '@/components/mini/research-sign-flow'
 
 type ResearchItem = { key: string; memberName: string; serviceName: string }
 import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
@@ -137,8 +138,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [submitted, setSubmitted] = useState(false)
   const [paying, setPaying] = useState(false)
   const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
-  const [signedResearch, setSignedResearch] = useState<string[]>([])
-  const [signing, setSigning] = useState<ResearchItem | null>(null)
+  const [resentSms, setResentSms] = useState<string[]>([])
   const researchItems: ResearchItem[] = rows.flatMap((r) =>
     (research[r.service.id] ?? []).flatMap((mid) => {
       const m = examinees.find((e) => e.id === mid)
@@ -273,28 +273,29 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 <span className="rounded bg-secondary px-1 text-[10px] font-normal text-[#8a94a6]">自愿</span>
               </h2>
               <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
-                下单时已勾选以下授权，需通过 e签宝 人脸核验后生效；也可稍后在「我的 → 授权与同意书」签署
+                已向以下受检人发送签署短信，受检人点击短信内链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
               </p>
               <ul className="mt-2">
                 {researchItems.map((it) => {
-                  const done = signedResearch.includes(it.key)
+                  const resent = resentSms.includes(it.key)
                   return (
                     <li key={it.key} className="flex items-center gap-2 border-b border-border py-2.5 last:border-0">
+                      <MessageSquareText className="size-4 shrink-0 text-primary" aria-hidden="true" />
                       <div className="min-w-0 flex-1">
-                        <p className="text-[13px] text-foreground">{it.memberName}</p>
-                        <p className="truncate text-[11px] text-muted-foreground">{it.serviceName}</p>
+                        <p className="flex items-center gap-1.5 text-[13px] text-foreground">
+                          {it.memberName}
+                          <span className="rounded bg-[#fff4e5] px-1 py-px text-[10px] text-[#d97706]">待受检人签署</span>
+                        </p>
+                        <p className="truncate text-[11px] text-muted-foreground">{it.serviceName} · 短信已发送</p>
                       </div>
-                      {done ? (
-                        <span className="rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-[#1f9d6b]">已签署</span>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setSigning(it)}
-                          className="h-7 shrink-0 rounded-full bg-primary px-3 text-[12px] text-primary-foreground"
-                        >
-                          去签署
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        disabled={resent}
+                        onClick={() => setResentSms((s) => [...s, it.key])}
+                        className="h-7 shrink-0 rounded-full border border-primary px-3 text-[12px] text-primary disabled:border-border disabled:text-[#8a94a6]"
+                      >
+                        {resent ? '已重新发送' : '重新发送'}
+                      </button>
                     </li>
                   )
                 })}
@@ -321,19 +322,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </ol>
           </section>
         </div>
-        {signing && (
-          <ResearchSignFlow
-            action="sign"
-            memberName={signing.memberName}
-            serviceName={signing.serviceName}
-            orderNo="GX20261015021"
-            onClose={() => setSigning(null)}
-            onDone={() => {
-              setSignedResearch((s) => [...s, signing.key])
-              setSigning(null)
-            }}
-          />
-        )}
       </Shell>
     )
   }
@@ -559,7 +547,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                           })}
                       </ul>
                       <p className="mt-2 text-[10px] leading-4 text-[#8a94a6]">
-                        选填，不影响检测；勾选后需人脸核验签署，可随时在「我的 → 授权与同意书」撤回
+                        选填，不影响检测；勾选后将发送短信给受检人，受检人通过短信内链接完成人脸认证与签署，可随时在「我的 → 授权与同意书」撤回
                       </p>
                     </div>
                   )}
