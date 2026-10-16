@@ -301,7 +301,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
 
             <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
-              提醒仅作辅助，请遵医嘱用药；短信免费发送，疗程结束后自动停���。
+              提醒仅作辅助，请遵医嘱用药；短信免费发送，疗程结束后自动停止。
             </p>
           </div>
 

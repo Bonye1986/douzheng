@@ -706,7 +706,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </span>
           </button>
           <p className="text-[12px] leading-5 text-muted-foreground">
-            我已阅读并同��
+            我已阅读并同意
             <button type="button" onClick={() => setConsentOpen(true)} className="text-primary">
               《基因检测知情同意书》
             </button>
@@ -714,7 +714,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         </div>
         {warn && !agreed && (
           <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
-            请先点��阅读知情同意书（满 8 秒并滑动至底部）后同意
+            请先点击阅读知情同意书（满 8 秒并滑动至底部）后同意
           </p>
         )}
 
