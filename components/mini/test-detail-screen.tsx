@@ -72,19 +72,11 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
               {service.originalPrice && (
                 <span className="text-[12px] text-[#b8c2d6] line-through">¥{service.originalPrice}</span>
               )}
-              <span className="ml-auto text-[12px] text-muted-foreground">{service.sold}</span>
             </p>
             <h1 id="detail-title" className="mt-2.5 text-pretty text-[17px] font-semibold leading-6 text-foreground">
               {service.name}
             </h1>
             <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{service.summary}</p>
-            <p className="mt-2 flex flex-wrap gap-1.5">
-              {service.tags.map((tag) => (
-                <span key={tag} className="rounded bg-[#e8f1fe] px-1.5 py-0.5 text-[11px] text-primary">
-                  {tag}
-                </span>
-              ))}
-            </p>
 
             <div className="mt-3 border-t border-border pt-3">
               <p className="flex items-center gap-1.5 text-[13px] font-medium text-foreground">
