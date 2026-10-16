@@ -46,15 +46,28 @@ export type ResearchAuth = {
 export const researchStatusLabel: Record<ResearchStatus, string> = {
   signed: '已授权',
   withdrawn: '已撤回',
-  unsigned: '未授权',
+  unsigned: '待签署',
 }
 
-/** 科研授权记录 —— 以「受检人 × 检测项目」为单位，下单时勾选生成，可在「我的 → 授权管理」签署或撤回 */
+/** 科研授权记录 —— 以「订单 × 检测项目 × 受检人」为单位，下单时勾选生成，签署 / 撤销均需 e签宝 人脸核验 */
 export const initialResearchAuths: ResearchAuth[] = [
   { id: 'ra1', memberId: 'self', serviceId: 'cardio', orderNo: 'GX20261012008', status: 'signed', updatedAt: '2026-10-12 14:32' },
   { id: 'ra2', memberId: 'spouse', serviceId: 'cardio', orderNo: 'GX20261012008', status: 'unsigned', updatedAt: '2026-10-12 14:32' },
   { id: 'ra3', memberId: 'self', serviceId: 'child', orderNo: 'GX20260928016', status: 'withdrawn', updatedAt: '2026-10-03 09:15' },
   { id: 'ra4', memberId: 'child', serviceId: 'child', orderNo: 'GX20260928016', status: 'signed', updatedAt: '2026-09-28 20:06' },
+]
+
+/** 检测知情同意书 —— 每个订单下单前必须勾选同意，签署后不可撤回 */
+export type TestConsent = {
+  orderNo: string
+  serviceIds: string[]
+  memberIds: string[]
+  signedAt: string
+}
+
+export const testConsents: TestConsent[] = [
+  { orderNo: 'GX20261012008', serviceIds: ['cardio'], memberIds: ['self', 'spouse'], signedAt: '2026-10-12 14:30' },
+  { orderNo: 'GX20260928016', serviceIds: ['child'], memberIds: ['self', 'child'], signedAt: '2026-09-28 20:04' },
 ]
 
 export type SiteType = 'hospital' | 'lab'

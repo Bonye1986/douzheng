@@ -22,6 +22,9 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
+import { ResearchSignFlow } from '@/components/mini/research-sign-flow'
+
+type ResearchItem = { key: string; memberName: string; serviceName: string }
 import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
 import {
   getSampleTypes,
@@ -129,6 +132,14 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [warn, setWarn] = useState(false)
   const [payMethod, setPayMethod] = useState<PayMethod>('wechat')
   const [submitted, setSubmitted] = useState(false)
+  const [signedResearch, setSignedResearch] = useState<string[]>([])
+  const [signing, setSigning] = useState<ResearchItem | null>(null)
+  const researchItems: ResearchItem[] = rows.flatMap((r) =>
+    (research[r.service.id] ?? []).flatMap((mid) => {
+      const m = examinees.find((e) => e.id === mid)
+      return m ? [{ key: `${r.service.id}-${mid}`, memberName: m.name, serviceName: r.service.name }] : []
+    }),
+  )
 
   const coupon = usable.find((c) => c.id === couponId) ?? null
   const couponOff = coupon?.amount ?? 0
@@ -212,6 +223,42 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </div>
           </section>
 
+          {researchItems.length > 0 && (
+            <section aria-labelledby="research-sign" className="mt-2.5 rounded-2xl bg-white p-4">
+              <h2 id="research-sign" className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+                科研知情同意书
+                <span className="rounded bg-secondary px-1 text-[10px] font-normal text-[#8a94a6]">自愿</span>
+              </h2>
+              <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
+                下单时已勾选以下授权，需通过 e签宝 人脸核验后生效；也可稍后在「我的 → 授权与同意书」签署
+              </p>
+              <ul className="mt-2">
+                {researchItems.map((it) => {
+                  const done = signedResearch.includes(it.key)
+                  return (
+                    <li key={it.key} className="flex items-center gap-2 border-b border-border py-2.5 last:border-0">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] text-foreground">{it.memberName}</p>
+                        <p className="truncate text-[11px] text-muted-foreground">{it.serviceName}</p>
+                      </div>
+                      {done ? (
+                        <span className="rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-[#2fb57a]">已签署</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setSigning(it)}
+                          className="h-7 shrink-0 rounded-full bg-primary px-3 text-[12px] text-primary-foreground"
+                        >
+                          去签署
+                        </button>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          )}
+
           <section aria-labelledby="next-steps" className="mt-2.5 rounded-2xl bg-white p-4">
             <h2 id="next-steps" className="text-[14px] font-semibold text-foreground">
               接下来
@@ -231,6 +278,19 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </ol>
           </section>
         </div>
+        {signing && (
+          <ResearchSignFlow
+            action="sign"
+            memberName={signing.memberName}
+            serviceName={signing.serviceName}
+            orderNo="GX20261015021"
+            onClose={() => setSigning(null)}
+            onDone={() => {
+              setSignedResearch((s) => [...s, signing.key])
+              setSigning(null)
+            }}
+          />
+        )}
       </Shell>
     )
   }
@@ -348,7 +408,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               + 添加受检人
             </button>
           </div>
-          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
+          <p className="px-3.5 pt-1 text-[11px] text-muted-foreground">��个项目可选多位受检人，一人一份，报告分别归档</p>
           <ul>
             {rows.map(({ service }) => {
               const selected = assign[service.id] ?? []
@@ -418,6 +478,9 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                         <a href="#" className="ml-auto text-[11px] text-primary">
                           《科研知情同意书》
                         </a>
+                      </p>
+                      <p className="mt-0.5 text-[10px] leading-4 text-[#a9b3c6]">
+                        勾选后可在支付结果页或「授权与同意书」完成人脸核验签署
                       </p>
                       <ul className="mt-1.5 flex flex-col gap-1.5">
                         {examinees

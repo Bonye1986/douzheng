@@ -191,8 +191,14 @@ const screens = [
   {
     id: '16',
     title: '我的 · 授权与同意书',
-    desc: '按受检人 × 检测项目展示科研样本授权状态（已授权 / 未授权 / 已撤回），支持签署、重新签署与撤回，操作前弹出知情同意书或撤回提示（可在画板内交互）',
+    desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
     node: <MineScreen initialAuthOpen />,
+  },
+  {
+    id: '34',
+    title: '授权与同意书 · 科研签署（e签宝人脸核验）',
+    desc: '科研知情同意书签署 / 撤销流程：阅读文书 → e签宝 人脸核验 → 签署完成；已授权可签署《科研知情同意撤销书》撤回授权（可在画板内交互）',
+    node: <MineScreen initialAuthOpen initialAuthTab="research" />,
   },
   {
     id: '19',
@@ -233,7 +239,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'mine',
     title: '我的',
     summary: '订单、报告与报告详情、授权与同意书、样本不合格处理',
-    ids: ['18', '20', '21', '22', '23', '16', '19'],
+    ids: ['18', '20', '21', '22', '23', '16', '34', '19'],
   },
   {
     key: 'examinee',
