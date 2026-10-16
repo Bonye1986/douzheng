@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, CircleUserRound, Info } from 'lucide-react'
+import { Check, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BrandMark } from './auth-parts'
 import { WelcomeScreen } from './welcome-screen'
@@ -36,56 +36,52 @@ export function WechatAuthScreen({ onAllow, onDeny }: { onAllow?: () => void; on
           <Info className="ml-auto size-4 text-muted-foreground" aria-hidden="true" />
         </div>
 
-        <h2 id="wx-auth-title" className="mt-5 text-[17px] font-bold">
+        <h2 id="wx-auth-title" className="mt-5 text-[17px] font-semibold text-[#191919]">
           获取你的手机号
         </h2>
-        <p className="mt-1 text-[13px] text-muted-foreground">用于登录账号、接收检测进度与报告通知</p>
+        <p className="mt-1.5 text-[14px] text-[#9e9e9e]">用于登录账号、接收检测进度与报告通知</p>
 
-        <ul className="mt-5 divide-y divide-border border-y border-border" role="radiogroup" aria-label="选择手机号">
+        <ul className="mt-4 border-t border-[#ededed]" role="radiogroup" aria-label="选择手机号">
           {['138****2608', '186****0417'].map((number, index) => (
-            <li key={number}>
+            <li key={number} className="border-b border-[#ededed]">
               <button
                 type="button"
                 role="radio"
                 aria-checked={selected === index}
                 onClick={() => setSelected(index)}
-                className="flex w-full items-center gap-3 py-4 text-left"
+                className="flex w-full items-center py-3.5 text-left"
               >
-                <CircleUserRound className="size-5 text-muted-foreground" aria-hidden="true" />
                 <span className="flex-1">
-                  <span className="block text-[16px] font-medium tracking-wide">{number}</span>
-                  <span className="text-[12px] text-muted-foreground">
+                  <span className="block text-[17px] text-[#191919]">{number}</span>
+                  <span className="mt-0.5 block text-[12px] text-[#9e9e9e]">
                     {index === 0 ? '微信绑定号码' : '上次提供'}
                   </span>
                 </span>
-                <span
-                  className={cn(
-                    'flex size-5 items-center justify-center rounded-full',
-                    selected === index ? 'bg-primary text-primary-foreground' : 'border border-[#c8cdd6]',
-                  )}
-                >
-                  {selected === index && <Check className="size-3.5" strokeWidth={3} />}
-                </span>
+                <Check
+                  className={cn('size-5 text-[#07c160]', selected === index ? 'opacity-100' : 'opacity-0')}
+                  strokeWidth={2.5}
+                  aria-hidden="true"
+                />
               </button>
             </li>
           ))}
         </ul>
-        <button type="button" className="mt-3 text-[14px] text-[#576b95]">
-          使用其他手机号码
+        <button type="button" className="mt-3.5 text-[15px] text-[#576b95]">
+          使用其它手机号码
         </button>
 
-        <div className="mt-6 flex gap-3">
+        <div className="mt-8 flex justify-center gap-4">
           <button
             type="button"
             onClick={() => respond('denied')}
-            className="h-11 flex-1 rounded-lg bg-[#f2f2f2] text-[15px] font-medium text-primary"
+            className="h-10 w-[120px] rounded-lg bg-[#f2f2f2] text-[16px] font-medium text-[#07c160]"
           >
             拒绝
           </button>
           <button
             type="button"
             onClick={() => respond('allowed')}
-            className="h-11 flex-1 rounded-lg bg-primary text-[15px] font-medium text-primary-foreground"
+            className="h-10 w-[120px] rounded-lg bg-[#07c160] text-[16px] font-medium text-white"
           >
             允许
           </button>
