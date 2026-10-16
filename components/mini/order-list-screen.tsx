@@ -8,6 +8,7 @@ import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { CancelOrderScreen, TestingRefundScreen } from '@/components/mini/refund-screen'
 import { LogisticsScreen } from '@/components/mini/logistics-screen'
 import { SendSampleScreen } from '@/components/mini/send-sample-screen'
+import { ResampleScreen } from '@/components/mini/resample-screen'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +20,7 @@ const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 type OrderActionHandlers = {
   onCancel: (o: Order) => void
   onRefund: (kind: RefundKind) => void
-  onHandleUnqualified: () => void
+  onHandleUnqualified: (o: Order) => void
   onOpenGuide: () => void
   onSendSample: (o: Order) => void
   onTestingRefund: (o: Order) => void
@@ -58,7 +59,7 @@ function OrderActions({
         <button
           type="button"
           onClick={() => {
-            if (o.unqualified) onHandleUnqualified()
+            if (o.unqualified) onHandleUnqualified(o)
             else if (o.action?.label === '采样指引') onOpenGuide()
             else if (o.action?.label === '查看物流') onViewLogistics(o)
           }}
@@ -313,6 +314,18 @@ const allOrders: Order[] = [
     refund: 'testing',
   },
   {
+    id: 'DZ20261008153',
+    type: 'self',
+    phase: 'testing',
+    status: '检测中',
+    product: '药物基因检测',
+    examinees: '李秀兰',
+    amount: '¥897',
+    note: '样本 DNA 浓度不足，已短信通知您：可选择终止订单或同意重采样',
+    unqualified: true,
+    action: { label: '去处理', primary: true },
+  },
+  {
     id: 'DZ20261009011',
     type: 'site',
     phase: 'testing',
@@ -320,7 +333,7 @@ const allOrders: Order[] = [
     product: '药物基因检测',
     examinees: '李秀兰',
     amount: '¥0',
-    note: '样本已送达实验室，等待上机���测',
+    note: '平台已签收样本，待实验室扫码确认后开始检测',
     resample: true,
     refund: 'resample',
   },
@@ -355,13 +368,12 @@ export function OrderListScreen({
   initialPhase = 'all',
   initialGuideOpen = false,
   onBack,
-  onHandleUnqualified,
   onRefund,
 }: {
   initialPhase?: OrderPhase
   initialGuideOpen?: boolean
   onBack: () => void
-  onHandleUnqualified: () => void
+  onHandleUnqualified?: () => void
   onRefund: (kind: RefundKind) => void
 }) {
   const [type, setType] = useState<OrderType>('all')
@@ -375,7 +387,41 @@ export function OrderListScreen({
   const [logisticsTarget, setLogisticsTarget] = useState<Order | null>(null)
   const [refundTarget, setRefundTarget] = useState<Order | null>(null)
   const [refundAppliedIds, setRefundAppliedIds] = useState<ReadonlySet<string>>(() => new Set())
-  const orders = allOrders.map((o): Order => {
+  const [resampleTarget, setResampleTarget] = useState<Order | null>(null)
+  const [resampledTo, setResampledTo] = useState<ReadonlyMap<string, string>>(() => new Map())
+  const [terminatedIds, setTerminatedIds] = useState<ReadonlySet<string>>(() => new Set())
+  const resampleOrders: Order[] = allOrders.flatMap((o) => {
+    const newId = resampledTo.get(o.id)
+    if (!newId) return []
+    return [
+      {
+        id: newId,
+        type: o.type,
+        phase: 'toSample',
+        status: '待发货',
+        product: o.product,
+        examinees: o.examinees,
+        amount: '¥0',
+        note: `重采样订单（关联原订单 ${o.id}），实验室将在 24 小时内寄出新的采样盒`,
+        resample: true,
+      },
+    ]
+  })
+  const orders = [...resampleOrders, ...allOrders].map((o): Order => {
+    const resampledId = resampledTo.get(o.id)
+    if (resampledId || terminatedIds.has(o.id)) {
+      return {
+        ...o,
+        phase: 'closed',
+        status: '已关闭',
+        note: resampledId
+          ? `已同意重采样，原订单关闭，新订单 ${resampledId}`
+          : '已终止订单，扣除已产生费用后剩余金额原路退回',
+        unqualified: false,
+        refund: undefined,
+        action: undefined,
+      }
+    }
     const sentNote = sentNotes.get(o.id)
     const base: Order = sentNote
       ? {
@@ -413,7 +459,7 @@ export function OrderListScreen({
   const actionHandlers: OrderActionHandlers = {
     onCancel: setCancelTarget,
     onRefund,
-    onHandleUnqualified,
+    onHandleUnqualified: setResampleTarget,
     onOpenGuide: () => setGuideOpen(true),
     onSendSample: setSendTarget,
     onTestingRefund: setRefundTarget,
@@ -564,6 +610,33 @@ export function OrderListScreen({
           order={detailOrder}
           actions={hasActions(detailOrder) ? <OrderActions order={detailOrder} {...actionHandlers} /> : undefined}
           onBack={() => setDetailId(null)}
+        />
+      )}
+      {resampleTarget && (
+        <ResampleScreen
+          order={{
+            no: resampleTarget.id,
+            product: resampleTarget.product,
+            examinee: resampleTarget.examinees,
+            mode: resampleTarget.type === 'self' ? '自采样' : '定点采样',
+            paid: parseYuan(resampleTarget.amount),
+            reason: '样本 DNA 浓度不足，无法完成检测',
+            notifiedAt: '2026-10-14 10:32',
+          }}
+          newOrderNo={resampledTo.get(resampleTarget.id) ?? `DZ20261016${String(resampledTo.size + 1).padStart(3, '0')}`}
+          doneLabel="返回订单列表"
+          onBack={() => setResampleTarget(null)}
+          onResampled={() =>
+            setResampledTo((prev) =>
+              new Map(prev).set(resampleTarget.id, `DZ20261016${String(prev.size + 1).padStart(3, '0')}`),
+            )
+          }
+          onTerminated={() => setTerminatedIds((prev) => new Set(prev).add(resampleTarget.id))}
+          onViewNewOrder={() => {
+            const newId = resampledTo.get(resampleTarget.id)
+            setResampleTarget(null)
+            if (newId) setDetailId(newId)
+          }}
         />
       )}
       {guideOpen && <SamplingVideoDialog onClose={() => setGuideOpen(false)} />}

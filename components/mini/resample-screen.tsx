@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils'
 type Step = 'choose' | 'refund' | 'resample' | 'refundDone' | 'resampleDone'
 type Choice = 'refund' | 'resample'
 
-const order = {
+const defaultOrder = {
   no: 'DZ20261008153021',
   product: '药物基因检测',
   examinee: '李秀兰',
@@ -28,7 +28,9 @@ const order = {
   notifiedAt: '2026-10-14 10:32',
 }
 
-const newOrderNo = 'DZ20261015092417'
+export type ResampleOrder = typeof defaultOrder
+
+const defaultNewOrderNo = 'DZ20261015092417'
 
 const refundReasons = ['不想重新采样', '检测需求已变更', '等待时间过长', '其他原因'] as const
 
@@ -38,9 +40,17 @@ const unqualifiedFees: IncurredFee[] = [
   { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
 ]
 
-const refundAmount = order.paid - unqualifiedFees.reduce((s, f) => s + f.amount, 0)
+const incurredTotal = unqualifiedFees.reduce((s, f) => s + f.amount, 0)
 
-function OrderBrief({ status, tone = 'warn' }: { status: string; tone?: 'warn' | 'muted' }) {
+function OrderBrief({
+  order,
+  status,
+  tone = 'warn',
+}: {
+  order: ResampleOrder
+  status: string
+  tone?: 'warn' | 'muted'
+}) {
   return (
     <div className="rounded-2xl bg-white p-3.5">
       <div className="flex items-center justify-between">
@@ -127,7 +137,26 @@ function Timeline({ items }: { items: { title: string; desc: string; state: 'don
   )
 }
 
-export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () => void; initialStep?: Step }) {
+export function ResampleScreen({
+  onBack,
+  initialStep = 'choose',
+  order = defaultOrder,
+  newOrderNo = defaultNewOrderNo,
+  doneLabel = '返回我的',
+  onResampled,
+  onTerminated,
+  onViewNewOrder,
+}: {
+  onBack: () => void
+  initialStep?: Step
+  order?: ResampleOrder
+  newOrderNo?: string
+  doneLabel?: string
+  onResampled?: () => void
+  onTerminated?: () => void
+  onViewNewOrder?: () => void
+}) {
+  const refundAmount = Math.max(order.paid - incurredTotal, 0)
   const [step, setStep] = useState<Step>(initialStep)
   const [choice, setChoice] = useState<Choice | null>(null)
   const [refundReason, setRefundReason] = useState<string | null>(null)
@@ -163,7 +192,7 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
               </p>
             </div>
 
-            <OrderBrief status="样本不合格" />
+            <OrderBrief order={order} status="样本不合格" />
 
             <fieldset className="rounded-2xl bg-white p-3.5">
               <legend className="float-left mb-3 text-[15px] font-semibold text-foreground">请选择处理方式</legend>
@@ -173,9 +202,9 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
                     {
                       key: 'resample',
                       icon: RotateCcw,
-                      title: '免费重新采样',
+                      title: '同意重新采样',
                       tag: '推荐',
-                      desc: '原订单关闭，系统生成一笔新的已付款订单（标记为重采样），无需再次付款，重新寄送采样盒',
+                      desc: '原订单关闭，系统生成一笔新的待发货订单（标记为重采样），无需再次付款，重新寄送采样盒',
                     },
                     {
                       key: 'refund',
@@ -249,7 +278,7 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
                 </li>
                 <li className="flex gap-2">
                   <RotateCcw className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
-                  系统自动生成一笔新的已付款订单，标记为「重采样」，无需再次支付
+                  系统自动生成一笔新的待发货订单，标记为「重采样」，无需再次支付
                 </li>
                 <li className="flex gap-2">
                   <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-[#1f8a4c]" aria-hidden="true" />
@@ -275,7 +304,14 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
             </div>
           </div>
           <BottomBar>
-            <PrimaryButton onClick={() => setStep('resampleDone')}>确认重新采样</PrimaryButton>
+            <PrimaryButton
+              onClick={() => {
+                onResampled?.()
+                setStep('resampleDone')
+              }}
+            >
+              同意重新采样
+            </PrimaryButton>
           </BottomBar>
         </>
       )}
@@ -283,7 +319,7 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
       {step === 'refund' && (
         <>
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <OrderBrief status="样本不合格" />
+            <OrderBrief order={order} status="样本不合格" />
 
             <fieldset className="rounded-2xl bg-white p-3.5">
               <legend className="float-left mb-2.5 text-[15px] font-semibold text-foreground">退款原因</legend>
@@ -330,7 +366,13 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
             <IncurredFeeCard paid={order.paid} fees={unqualifiedFees} />
           </div>
           <BottomBar>
-            <PrimaryButton disabled={!refundReason} onClick={() => setStep('refundDone')}>
+            <PrimaryButton
+              disabled={!refundReason}
+              onClick={() => {
+                onTerminated?.()
+                setStep('refundDone')
+              }}
+            >
               确认终止并退款 ¥{refundAmount}
             </PrimaryButton>
           </BottomBar>
@@ -360,10 +402,10 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
                 ]}
               />
             </div>
-            <OrderBrief status="已关闭" tone="muted" />
+            <OrderBrief order={order} status="已关闭" tone="muted" />
           </div>
           <BottomBar>
-            <PrimaryButton onClick={onBack}>返回我的</PrimaryButton>
+            <PrimaryButton onClick={onBack}>{doneLabel}</PrimaryButton>
           </BottomBar>
         </>
       )}
@@ -403,10 +445,10 @@ export function ResampleScreen({ onBack, initialStep = 'choose' }: { onBack: () 
               </p>
             </div>
 
-            <OrderBrief status="已关闭" tone="muted" />
+            <OrderBrief order={order} status="已关闭" tone="muted" />
           </div>
           <BottomBar>
-            <PrimaryButton onClick={onBack}>查看新订单</PrimaryButton>
+            <PrimaryButton onClick={onViewNewOrder ?? onBack}>查看新订单</PrimaryButton>
           </BottomBar>
         </>
       )}
