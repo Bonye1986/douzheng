@@ -12,7 +12,12 @@ export function OrderListArtboard({ initialGuideOpen = false }: { initialGuideOp
 }
 
 export function CancelOrderArtboard() {
-  return <CancelOrderScreen onBack={noop} />
+  return (
+    <>
+      <OrderListScreen onBack={noop} onHandleUnqualified={noop} onRefund={noop} />
+      <CancelOrderScreen onBack={noop} />
+    </>
+  )
 }
 
 export function ShippedRefundArtboard() {

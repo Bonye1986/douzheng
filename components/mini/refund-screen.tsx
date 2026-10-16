@@ -522,10 +522,7 @@ const pendingOrder = {
   status: '待发货',
 }
 
-const cancelReasons = ['信息填写有误', '不想检测了', '重复下单', '其他原因'] as const
-
 export function CancelOrderScreen({ onBack }: { onBack: () => void }) {
-  const [reason, setReason] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
   if (done) {
@@ -545,7 +542,7 @@ export function CancelOrderScreen({ onBack }: { onBack: () => void }) {
             <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
             <Timeline
               items={[
-                { title: '取消订单', desc: `原因：${reason}`, state: 'done' },
+                { title: '取消订单', desc: '采样盒尚未发货，订单已直接取消', state: 'done' },
                 { title: '退款处理中', desc: '无需审核，系统自动发起退款', state: 'current' },
                 { title: '退款到账', desc: '预计 1-3 个工作日退回至微信支付账户', state: 'todo' },
               ]}
@@ -560,66 +557,61 @@ export function CancelOrderScreen({ onBack }: { onBack: () => void }) {
     )
   }
 
+  return <CancelConfirmDialog paid={pendingOrder.paid} onCancel={onBack} onConfirm={() => setDone(true)} />
+}
+
+function CancelConfirmDialog({
+  paid,
+  onCancel,
+  onConfirm,
+}: {
+  paid: number
+  onCancel: () => void
+  onConfirm: () => void
+}) {
   return (
-    <SubPage title="取消订单" titleId="cancel-order-title" onBack={onBack}>
-      <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-        <div className="flex gap-2.5 rounded-2xl bg-brand-soft p-3.5">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary">
-            <Package className="size-[18px]" aria-hidden="true" />
-          </span>
-          <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-foreground">采样盒尚未发货</p>
-            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
-              发货前可直接取消，订单金额全额原路退回
+    <div
+      className="absolute inset-0 z-40 flex items-center justify-center bg-black/45 px-8 motion-safe:animate-in motion-safe:fade-in"
+      onClick={onCancel}
+    >
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="cancel-confirm-title"
+        aria-describedby="cancel-confirm-desc"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+        className="w-full overflow-hidden rounded-2xl bg-white motion-safe:animate-in motion-safe:zoom-in-95"
+      >
+        <div className="px-5 pb-4 pt-5 text-center">
+          <h2 id="cancel-confirm-title" className="text-[16px] font-semibold text-foreground">
+            确定取消该订单吗？
+          </h2>
+          <div id="cancel-confirm-desc" className="mt-2 space-y-1 text-[13px] leading-relaxed text-muted-foreground">
+            <p>
+              取消后 <span className="font-medium tabular-nums text-[#e0651c]">¥{paid}</span> 将全额原路退回
             </p>
+            <p>订单取消后不可恢复，如需检测请重新下单</p>
           </div>
         </div>
-
-        <OrderBrief {...pendingOrder} />
-
-        <fieldset className="rounded-2xl bg-white p-3.5">
-          <legend className="float-left mb-2.5 text-[15px] font-semibold text-foreground">取消原因</legend>
-          <div className="clear-both flex flex-wrap gap-2">
-            {cancelReasons.map((r) => (
-              <label
-                key={r}
-                className={cn(
-                  'cursor-pointer rounded-full border px-3 py-1.5 text-[12px] transition-colors',
-                  reason === r ? 'border-primary bg-[#f3f8ff] font-medium text-primary' : 'border-[#e6ecf4] text-foreground',
-                )}
-              >
-                <input
-                  type="radio"
-                  name="cancel-reason"
-                  value={r}
-                  checked={reason === r}
-                  onChange={() => setReason(r)}
-                  className="sr-only"
-                />
-                {r}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <Card>
-          <AmountRows
-            rows={[
-              { label: '实付金额', value: `¥${pendingOrder.paid}` },
-              { label: '退款金额', value: `¥${pendingOrder.paid}`, strong: true },
-            ]}
-          />
-          <p className="mt-2.5 flex gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
-            <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-            原路退回至微信支付账户；采样盒发出后将无法直接取消，需申请退款。
-          </p>
-        </Card>
+        <div className="flex border-t border-[#eef2f8]">
+          <button
+            type="button"
+            autoFocus
+            onClick={onCancel}
+            className="h-12 flex-1 text-[15px] text-foreground"
+          >
+            再想想
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="h-12 flex-1 border-l border-[#eef2f8] text-[15px] font-medium text-[#e5484d]"
+          >
+            确认取消
+          </button>
+        </div>
       </div>
-      <BottomBar>
-        <PrimaryButton disabled={!reason} onClick={() => setDone(true)}>
-          确认取消并退款
-        </PrimaryButton>
-      </BottomBar>
-    </SubPage>
+    </div>
   )
 }
