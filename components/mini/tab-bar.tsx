@@ -36,11 +36,11 @@ export function TabBar({
                 <Image
                   src={icon}
                   alt=""
-                  width={26}
-                  height={26}
+                  width={24}
+                  height={24}
                   className={cn(
-                    'size-[26px] object-contain mix-blend-multiply transition',
-                    isActive ? 'scale-110' : 'opacity-55 grayscale',
+                    'size-6 object-contain mix-blend-multiply transition',
+                    !isActive && 'opacity-45 grayscale',
                   )}
                 />
                 {label}
