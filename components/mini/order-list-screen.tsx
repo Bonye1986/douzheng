@@ -13,8 +13,7 @@ import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
-const shippedOrLaterStatuses = new Set(['已发货', '待采样', '已寄样', '已收样', '检测中', '已完成'])
-const verifiedOrLaterStatuses = new Set(['待采样', '已收样', '检测中', '已完成'])
+const noSampleCodeStatuses = new Set(['待发货', '待核销'])
 
 const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 
@@ -105,10 +104,7 @@ function OrderDetailFromList({
   const per = Math.round(goodsTotal / names.length)
   const d = order.id.slice(2, 10)
   const payTime = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)} 10:24:36`
-  const hasSampleCode =
-    order.type === 'self'
-      ? shippedOrLaterStatuses.has(order.status)
-      : verifiedOrLaterStatuses.has(order.status)
+  const hasSampleCode = !noSampleCodeStatuses.has(order.status)
   const service = testServices.find((s) => s.name === order.product)
   const sampleType =
     (service && getSampleTypes(service.id, order.type)[0]?.label) ?? (order.type === 'self' ? '唾液' : '口腔拭子')
@@ -405,7 +401,7 @@ const statusSeeds: StatusSeed[] = [
     status: '已寄样',
     refund: 'testing',
     action: { label: '查看物流' },
-    notes: ['快递员已上门取件，样本运往实验室中'],
+    notes: ['快递员已��门取件，样本运往实验室中'],
   },
   {
     type: 'self',
