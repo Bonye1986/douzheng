@@ -13,6 +13,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { DefaultAvatar } from '@/components/mini/default-avatar'
 import { genderLabel, initialExaminees, type Gender } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
@@ -206,8 +207,8 @@ function MainView({
         <li>
           <button type="button" className="flex w-full items-center gap-2 px-3.5 py-3 text-left">
             <span className="flex-1 text-[14px] text-foreground">头像</span>
-            <span className="relative flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <UserRound className="size-6" aria-hidden="true" />
+                <span className="relative flex size-11 items-center justify-center">
+                  <DefaultAvatar className="size-11" />
               <span className="absolute -bottom-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-white text-primary shadow-sm">
                 <Camera className="size-3" aria-hidden="true" />
               </span>
@@ -474,7 +475,7 @@ const textFields = {
     maxLength: 16,
     type: 'nickname',
     placeholder: '请输入昵称',
-    hint: '可使用微信昵称，昵称仅用于展示，不影响检测人信息',
+    hint: '可使用微信昵称，��称仅用于展示，不影响检测人信息',
   },
   realName: {
     title: '填写真实姓名',
@@ -590,7 +591,7 @@ export function AccountSettingsScreen({
   const self = initialExaminees[0]
   const [view, setView] = useState<AccountView>(initialView)
   const [profile, setProfile] = useState<Profile>({
-    nickname: '建国',
+    nickname: maskPhone(self.phone ?? '13812345678'),
     realName: self.name,
     gender: self.gender,
     birth: self.birth ?? '',

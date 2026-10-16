@@ -24,6 +24,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
+import { DefaultAvatar } from '@/components/mini/default-avatar'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { OrderListScreen, countOrders, type OrderPhase } from '@/components/mini/order-list-screen'
@@ -148,12 +149,10 @@ export function MineScreen({
         {/* 用户信息：头像 / 昵称 / 手机号 */}
         <section aria-label="用户信息">
           <button type="button" className="flex w-full items-center gap-3 px-1 text-left">
-            <span className="flex size-14 shrink-0 items-center justify-center rounded-full border-2 border-white bg-primary text-primary-foreground shadow-sm">
-              <UserRound className="size-7" aria-hidden="true" />
-            </span>
+            <DefaultAvatar className="size-14 shrink-0 border-2 border-white shadow-sm" />
             <span className="min-w-0 flex-1">
-              <span className="block text-[18px] font-semibold text-foreground">{self.name}</span>
-              <span className="mt-0.5 block text-[12px] tabular-nums text-muted-foreground">{maskedPhone}</span>
+              <span className="block text-[18px] font-semibold tabular-nums text-foreground">{maskedPhone}</span>
+              <span className="mt-0.5 block text-[12px] text-muted-foreground">完善个人资料</span>
             </span>
             <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
             <span className="sr-only">进入个人资料</span>
