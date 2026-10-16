@@ -13,7 +13,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
-import { initialExaminees } from '@/components/mini/checkout-data'
+import { genderLabel, initialExaminees, type Gender } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
 export type AccountView = 'main' | 'phone' | 'deactivate'
@@ -177,17 +177,25 @@ function Toast({ message }: { message: string }) {
   )
 }
 
+export type Profile = { nickname: string; realName: string; gender: Gender | null; birth: string }
+type ProfileField = 'nickname' | 'realName' | 'gender' | 'birth'
+
+const formatBirth = (birth: string) => {
+  const [y, m, d] = birth.split('-')
+  return `${y}年${Number(m)}月${Number(d)}日`
+}
+
 function MainView({
-  nickname,
+  profile,
   phone,
-  onEditNickname,
+  onEdit,
   onPhone,
   onDeactivate,
   onLogout,
 }: {
-  nickname: string
+  profile: Profile
   phone: string
-  onEditNickname: () => void
+  onEdit: (field: ProfileField) => void
   onPhone: () => void
   onDeactivate: () => void
   onLogout: () => void
@@ -208,7 +216,14 @@ function MainView({
             <span className="sr-only">更换头像（使用微信头像或从相册选择）</span>
           </button>
         </li>
-        <Row label="昵称" value={nickname} onClick={onEditNickname} />
+        <Row label="昵称" value={profile.nickname} onClick={() => onEdit('nickname')} />
+        <Row label="真实姓名" value={profile.realName || '未填写'} onClick={() => onEdit('realName')} />
+        <Row label="性别" value={profile.gender ? genderLabel[profile.gender] : '未填写'} onClick={() => onEdit('gender')} />
+        <Row
+          label="出生日期"
+          value={profile.birth ? <span className="tabular-nums">{formatBirth(profile.birth)}</span> : '未填写'}
+          onClick={() => onEdit('birth')}
+        />
         <Row label="绑定手机号" value={<span className="tabular-nums">{maskPhone(phone)}</span>} onClick={onPhone} />
       </Card>
 
@@ -410,46 +425,158 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
   )
 }
 
-function NicknameSheet({ value, onSave, onClose }: { value: string; onSave: (v: string) => void; onClose: () => void }) {
-  const [draft, setDraft] = useState(value)
-  const trimmed = draft.trim()
+function BottomSheet({
+  id,
+  title,
+  onClose,
+  children,
+}: {
+  id: string
+  title: string
+  onClose: () => void
+  children: React.ReactNode
+}) {
   return (
     <div className="absolute inset-0 z-40 flex flex-col justify-end bg-black/45" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="nickname-title"
+        aria-labelledby={`${id}-title`}
         onClick={(e) => e.stopPropagation()}
         className="rounded-t-2xl bg-white px-4 pb-6 pt-4 motion-safe:animate-in motion-safe:slide-in-from-bottom"
       >
-        <h2 id="nickname-title" className="text-center text-[16px] font-semibold text-foreground">
-          修改昵称
+        <h2 id={`${id}-title`} className="text-center text-[16px] font-semibold text-foreground">
+          {title}
         </h2>
-        <label htmlFor="nickname-input" className="sr-only">
-          昵称
-        </label>
-        <div className="mt-4 flex items-center rounded-xl bg-[#f4f6fa] px-3">
-          <input
-            id="nickname-input"
-            type="nickname"
-            value={draft}
-            maxLength={16}
-            onChange={(e) => setDraft(e.target.value)}
-            className="h-11 min-w-0 flex-1 bg-transparent text-[14px] outline-none"
-          />
-          <span className="text-[11px] tabular-nums text-muted-foreground">{draft.length}/16</span>
-        </div>
-        <p className="mt-1.5 text-[11px] text-muted-foreground">可使用微信昵称，昵称仅用于展示，不影响检测人信息</p>
-        <button
-          type="button"
-          disabled={!trimmed || trimmed === value}
-          onClick={() => onSave(trimmed)}
-          className="mt-4 h-11 w-full rounded-full bg-primary text-[15px] font-medium text-primary-foreground disabled:opacity-40"
-        >
-          保存
-        </button>
+        {children}
       </div>
     </div>
+  )
+}
+
+function SaveButton({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className="mt-4 h-11 w-full rounded-full bg-primary text-[15px] font-medium text-primary-foreground disabled:opacity-40"
+    >
+      保存
+    </button>
+  )
+}
+
+const textFields = {
+  nickname: {
+    title: '修改昵称',
+    label: '昵称',
+    maxLength: 16,
+    type: 'nickname',
+    placeholder: '请输入昵称',
+    hint: '可使用微信昵称，昵称仅用于展示，不影响检测人信息',
+  },
+  realName: {
+    title: '填写真实姓名',
+    label: '真实姓名',
+    maxLength: 20,
+    type: 'text',
+    placeholder: '请输入与身份证一致的姓名',
+    hint: '用于检测报告与健康档案，请与身份证件保持一致',
+  },
+} as const
+
+function TextSheet({
+  field,
+  value,
+  onSave,
+  onClose,
+}: {
+  field: keyof typeof textFields
+  value: string
+  onSave: (v: string) => void
+  onClose: () => void
+}) {
+  const config = textFields[field]
+  const [draft, setDraft] = useState(value)
+  const trimmed = draft.trim()
+  const inputId = `${field}-input`
+  return (
+    <BottomSheet id={field} title={config.title} onClose={onClose}>
+      <label htmlFor={inputId} className="sr-only">
+        {config.label}
+      </label>
+      <div className="mt-4 flex items-center rounded-xl bg-[#f4f6fa] px-3">
+        <input
+          id={inputId}
+          type={config.type}
+          value={draft}
+          maxLength={config.maxLength}
+          placeholder={config.placeholder}
+          onChange={(e) => setDraft(e.target.value)}
+          className="h-11 min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground/70"
+        />
+        <span className="text-[11px] tabular-nums text-muted-foreground">
+          {draft.length}/{config.maxLength}
+        </span>
+      </div>
+      <p className="mt-1.5 text-[11px] text-muted-foreground">{config.hint}</p>
+      <SaveButton disabled={!trimmed || trimmed === value} onClick={() => onSave(trimmed)} />
+    </BottomSheet>
+  )
+}
+
+function GenderSheet({
+  value,
+  onSave,
+  onClose,
+}: {
+  value: Gender | null
+  onSave: (v: Gender) => void
+  onClose: () => void
+}) {
+  return (
+    <BottomSheet id="gender" title="选择性别" onClose={onClose}>
+      <ul className="mt-3 divide-y divide-[#eef1f6]" role="radiogroup" aria-labelledby="gender-title">
+        {(Object.keys(genderLabel) as Gender[]).map((g) => (
+          <li key={g}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={value === g}
+              onClick={() => onSave(g)}
+              className="flex h-12 w-full items-center justify-between px-1 text-[15px] text-foreground"
+            >
+              {genderLabel[g]}
+              {value === g && <Check className="size-4.5 text-primary" aria-hidden="true" />}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </BottomSheet>
+  )
+}
+
+function BirthSheet({ value, onSave, onClose }: { value: string; onSave: (v: string) => void; onClose: () => void }) {
+  const [draft, setDraft] = useState(value)
+  const today = new Date().toISOString().slice(0, 10)
+  return (
+    <BottomSheet id="birth" title="选择出生日期" onClose={onClose}>
+      <label htmlFor="birth-input" className="sr-only">
+        出生日期
+      </label>
+      <input
+        id="birth-input"
+        type="date"
+        value={draft}
+        min="1900-01-01"
+        max={today}
+        onChange={(e) => setDraft(e.target.value)}
+        className="mt-4 h-11 w-full rounded-xl bg-[#f4f6fa] px-3 text-[14px] tabular-nums outline-none"
+      />
+      <p className="mt-1.5 text-[11px] text-muted-foreground">用于计算年龄及剂量相关指标，请如实填写</p>
+      <SaveButton disabled={!draft || draft === value || draft > today} onClick={() => onSave(draft)} />
+    </BottomSheet>
   )
 }
 
@@ -462,9 +589,20 @@ export function AccountSettingsScreen({
 }) {
   const self = initialExaminees[0]
   const [view, setView] = useState<AccountView>(initialView)
-  const [nickname, setNickname] = useState(self.name)
+  const [profile, setProfile] = useState<Profile>({
+    nickname: '建国',
+    realName: self.name,
+    gender: self.gender,
+    birth: self.birth ?? '',
+  })
   const [phone, setPhone] = useState(self.phone ?? '13812345678')
-  const [editingNickname, setEditingNickname] = useState(false)
+  const [editing, setEditing] = useState<ProfileField | null>(null)
+
+  const saveProfile = <K extends ProfileField>(field: K, value: Profile[K]) => {
+    setProfile((p) => ({ ...p, [field]: value }))
+    setEditing(null)
+    setToast('已保存')
+  }
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
@@ -484,9 +622,9 @@ export function AccountSettingsScreen({
     >
       {view === 'main' && (
         <MainView
-          nickname={nickname}
+          profile={profile}
           phone={phone}
-          onEditNickname={() => setEditingNickname(true)}
+          onEdit={setEditing}
           onPhone={() => setView('phone')}
           onDeactivate={() => setView('deactivate')}
           onLogout={() => setLogoutOpen(true)}
@@ -512,16 +650,20 @@ export function AccountSettingsScreen({
         />
       )}
 
-      {editingNickname && (
-        <NicknameSheet
-          value={nickname}
-          onClose={() => setEditingNickname(false)}
-          onSave={(v) => {
-            setNickname(v)
-            setEditingNickname(false)
-            setToast('昵称已保存')
-          }}
+      {(editing === 'nickname' || editing === 'realName') && (
+        <TextSheet
+          key={editing}
+          field={editing}
+          value={profile[editing]}
+          onClose={() => setEditing(null)}
+          onSave={(v) => saveProfile(editing, v)}
         />
+      )}
+      {editing === 'gender' && (
+        <GenderSheet value={profile.gender} onClose={() => setEditing(null)} onSave={(v) => saveProfile('gender', v)} />
+      )}
+      {editing === 'birth' && (
+        <BirthSheet value={profile.birth} onClose={() => setEditing(null)} onSave={(v) => saveProfile('birth', v)} />
       )}
       {logoutOpen && (
         <ConfirmDialog
