@@ -116,8 +116,18 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                   </dl>
 
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-[11px] text-muted-foreground">
-                      {activeOrderIds.has(m.id) ? '有进行中的检测订单' : m.idCard ? '已实名' : '未实名'}
+                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      {m.relation === '本人' && (
+                        <span
+                          className={cn(
+                            'rounded px-1.5 py-px',
+                            m.idCard ? 'bg-[#e8f7ef] text-[#1f9d55]' : 'bg-[#fff1eb] text-[#e5603a]',
+                          )}
+                        >
+                          {m.idCard ? '已实名' : '未实名'}
+                        </span>
+                      )}
+                      {activeOrderIds.has(m.id) && '有进行中的检测订单'}
                     </span>
                     <div className="flex gap-2">
                       <button

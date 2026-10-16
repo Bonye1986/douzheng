@@ -39,6 +39,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
   const [pickerOpen, setPickerOpen] = useState(false)
 
   const today = new Date().toISOString().slice(0, 10)
+  const isSelf = relation === '本人'
 
   const save = () => {
     const next: Errors = {}
@@ -46,7 +47,10 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
     if (!/^[\u4e00-\u9fa5·a-zA-Z]{2,20}$/.test(name.trim())) next.name = '请填写 2–20 位真实姓名'
     if (!birth || birth > today) next.birth = '请选择正确的出生日期'
     if (phone && !isMasked(phone) && !/^1\d{10}$/.test(phone)) next.phone = '请输入 11 位手机号'
-    if (idCard && !isMasked(idCard) && !/^\d{17}[\dXx]$/.test(idCard)) next.idCard = '请输入 18 位身份证号'
+    if (isSelf) {
+      if (!idCard) next.idCard = '本人需完成实名认证，请填写身份证号'
+      else if (!isMasked(idCard) && !/^\d{17}[\dXx]$/.test(idCard)) next.idCard = '请输入 18 位身份证号'
+    }
     setErrors(next)
     if (Object.keys(next).length) return
     onSave({
@@ -57,7 +61,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
       age: ageFrom(birth),
       birth,
       phone: phone ? (isMasked(phone) ? phone : `${phone.slice(0, 3)}****${phone.slice(7)}`) : undefined,
-      idCard: idCard ? (isMasked(idCard) ? idCard : `${idCard.slice(0, 4)}**********${idCard.slice(14)}`) : undefined,
+      idCard: isSelf && idCard ? (isMasked(idCard) ? idCard : `${idCard.slice(0, 4)}**********${idCard.slice(14)}`) : undefined,
     })
   }
 
@@ -158,7 +162,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               <ChevronRight className="size-4 shrink-0 text-[#a9b3c6]" aria-hidden="true" />
             </button>
           </Row>
-          <Row label="手机号" error={errors.phone}>
+          <Row label="手机号" error={errors.phone} last={!isSelf}>
             <input
               type="tel"
               inputMode="numeric"
@@ -172,19 +176,27 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-[#a9b3c6]"
             />
           </Row>
-          <Row label="身份证号" error={errors.idCard} last>
-            <input
-              value={idCard}
-              onChange={(e) => {
-                setIdCard(e.target.value.replace(/[^\dXx]/g, '').slice(0, 18).toUpperCase())
-                clear('idCard')
-              }}
-              placeholder="选填，用于报告实名归档"
-              aria-invalid={!!errors.idCard}
-              className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-[#a9b3c6]"
-            />
-          </Row>
+          {isSelf && (
+            <Row label="身份证号" required error={errors.idCard} last>
+              <input
+                value={idCard}
+                onChange={(e) => {
+                  setIdCard(e.target.value.replace(/[^\dXx]/g, '').slice(0, 18).toUpperCase())
+                  clear('idCard')
+                }}
+                placeholder="用于本人实名认证"
+                aria-invalid={!!errors.idCard}
+                className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-[#a9b3c6]"
+              />
+            </Row>
+          )}
         </section>
+
+        {relation && !isSelf && (
+          <p className="mt-2.5 rounded-xl bg-[#eef5ff] px-3 py-2 text-[12px] leading-[18px] text-primary">
+            家人无需实名认证，填写姓名、性别和出生日期即可下单检测
+          </p>
+        )}
 
         <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
           <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
