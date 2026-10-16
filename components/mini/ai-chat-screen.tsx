@@ -24,7 +24,7 @@ import {
 import { cn } from '@/lib/utils'
 import { StatusBar } from '@/components/mini/phone-frame'
 import { BrandMark } from '@/components/mini/auth-parts'
-import { ChatComposer, type Attachment } from '@/components/mini/chat-composer'
+import { ChatComposer, answerStyles, type Attachment } from '@/components/mini/chat-composer'
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { useExaminees } from '@/components/mini/examinee-store'
@@ -276,11 +276,11 @@ export function AiChatScreen({
       </header>
 
       <div className="shrink-0 px-4 pb-3 pt-2">
-        <div className="flex items-stretch gap-2">
+        <div className="flex items-center rounded-2xl bg-white py-1.5 pl-1.5 pr-2 shadow-[0_4px_14px_#3b8beb0d]">
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            className="flex min-w-0 flex-1 items-center gap-2.5 rounded-2xl bg-white px-3 py-2 text-left shadow-[0_4px_14px_#3b8beb0d]"
+            className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-1.5 py-1 text-left active:bg-secondary/60"
           >
             <span
               className={cn(
@@ -300,6 +300,28 @@ export function AiChatScreen({
             </span>
             <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" />
           </button>
+          <span aria-hidden="true" className="mx-2 h-7 w-px shrink-0 bg-border" />
+          <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-[#f1f5fb] p-0.5">
+            {answerStyles.map((s) => {
+              const selected = s.key === mode
+              return (
+                <button
+                  key={s.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  aria-label={`${s.label}：${s.desc}`}
+                  onClick={() => setMode(s.key)}
+                  className={cn(
+                    'h-7 rounded-full px-3 text-[12px] font-medium transition-colors',
+                    selected ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground',
+                  )}
+                >
+                  {s.short}
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -381,7 +403,7 @@ export function AiChatScreen({
         )}
       </div>
 
-      <ChatComposer disabled={isReplying} onSend={ask} answerStyle={mode} onAnswerStyleChange={setMode} />
+      <ChatComposer disabled={isReplying} onSend={ask} />
 
       {drawerOpen && (
         <ChatHistoryDrawer
