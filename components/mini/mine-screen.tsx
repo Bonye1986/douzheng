@@ -36,6 +36,7 @@ import { AddressManageScreen, type AddressView } from '@/components/mini/address
 import { MedicationReminderScreen, type ReminderView } from '@/components/mini/medication-reminder-screen'
 import { GuideScreen, type GuideView } from '@/components/mini/guide-screen'
 import { AboutScreen } from '@/components/mini/about-screen'
+import { CustomerServiceScreen } from '@/components/mini/customer-service-screen'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
@@ -97,8 +98,10 @@ export function MineScreen({
   initialReminderView = null,
   initialGuideView = null,
   initialAboutOpen = false,
+  initialServiceOpen = false,
 }: {
   initialAboutOpen?: boolean
+  initialServiceOpen?: boolean
   initialGuideView?: GuideView | null
   initialReminderView?: ReminderView | null
   initialAuthTab?: 'test' | 'research'
@@ -115,6 +118,7 @@ export function MineScreen({
   const [reminderView, setReminderView] = useState<ReminderView | null>(initialReminderView)
   const [guideView, setGuideView] = useState<GuideView | null>(initialGuideView)
   const [aboutOpen, setAboutOpen] = useState(initialAboutOpen)
+  const [serviceOpen, setServiceOpen] = useState(initialServiceOpen)
   const [myCouponsOpen, setMyCouponsOpen] = useState(initialCoupon === 'mine')
   const [couponCenterOpen, setCouponCenterOpen] = useState(initialCoupon === 'center')
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
@@ -262,6 +266,7 @@ export function MineScreen({
                     if (t.key === 'reminder') setReminderView('list')
                     if (t.key === 'guide') setGuideView('list')
                     if (t.key === 'about') setAboutOpen(true)
+                    if (t.key === 'service') setServiceOpen(true)
                   }}
                   className="flex w-full flex-col items-center gap-1.5"
                 >
@@ -298,6 +303,7 @@ export function MineScreen({
       )}
       {guideView && <GuideScreen initialView={guideView} onBack={() => setGuideView(null)} />}
       {aboutOpen && <AboutScreen onBack={() => setAboutOpen(false)} />}
+      {serviceOpen && <CustomerServiceScreen onBack={() => setServiceOpen(false)} />}
     </div>
   )
 }

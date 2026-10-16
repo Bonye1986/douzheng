@@ -237,6 +237,12 @@ const screens = [
     node: <MineScreen initialAboutOpen />,
   },
   {
+    id: '43',
+    title: '我的 · 联系客服',
+    desc: '小程序客服会话：人工客服接入提示、消息气泡、订单推荐卡片一键发送、常见问题快捷提问、输入栏与更多功能面板（图片 / 订单 / 报告）（可在画板内交互）',
+    node: <MineScreen initialServiceOpen />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
@@ -310,7 +316,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'guide',
     title: '使用指南',
-    summary: '指南文章列表（搜索 + 分类）与文章详情（步骤、注意事项、反馈、相关推荐）',
+    summary: '指南文章列表（搜索 + 分类）与文章详情��步骤、注意事项、反馈、相关推荐）',
     ids: ['40', '41'],
   },
   {
@@ -319,7 +325,13 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     summary: '品牌介绍、资质认证、发展历程、联系方式与协议版本信息',
     ids: ['42'],
   },
-  { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
+  {
+    key: 'service',
+    title: '联系客服',
+    summary: '小程序客服会话页：消息收发、订单卡片发送、常见问题快捷提问',
+    ids: ['43'],
+  },
+  { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关��检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
 
 const sections: BoardSection[] = sectionPlan.map(({ ids, ...section }) => ({
