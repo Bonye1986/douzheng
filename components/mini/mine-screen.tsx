@@ -29,6 +29,7 @@ import { ResampleScreen } from '@/components/mini/resample-screen'
 import { OrderListScreen, countOrders, type OrderPhase } from '@/components/mini/order-list-screen'
 import { AfterSalesScreen, pendingAfterSalesCount } from '@/components/mini/after-sales-screen'
 import { initialExaminees } from '@/components/mini/checkout-data'
+import { ReportListScreen, unreadReportCount } from '@/components/mini/report-list-screen'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
@@ -81,10 +82,13 @@ function SectionHeader({
 export function MineScreen({
   initialAuthOpen = false,
   initialResampleOpen = false,
+  initialReportOpen = false,
 }: {
   initialAuthOpen?: boolean
   initialResampleOpen?: boolean
+  initialReportOpen?: boolean
 }) {
+  const [reportOpen, setReportOpen] = useState(initialReportOpen)
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
   const [resampleOpen, setResampleOpen] = useState(initialResampleOpen)
   const [orderListPhase, setOrderListPhase] = useState<OrderPhase | null>(null)
@@ -158,7 +162,12 @@ export function MineScreen({
 
         {/* 我的报告 */}
         <section aria-labelledby="mine-report" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <SectionHeader id="mine-report" title="我的报告" action="报告列表" />
+          <SectionHeader
+            id="mine-report"
+            title="我的报告"
+            action={`全部报告${unreadReportCount ? ` · ${unreadReportCount} 份新` : ''}`}
+            onAction={() => setReportOpen(true)}
+          />
           <div className="mt-3 flex items-center gap-3 rounded-xl bg-gradient-to-r from-[#eef5ff] to-[#f8fbff] p-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary shadow-sm">
               <FileText className="size-5" aria-hidden="true" />
@@ -231,6 +240,7 @@ export function MineScreen({
       {afterSalesOpen && (
         <AfterSalesScreen onBack={() => setAfterSalesOpen(false)} onHandleUnqualified={() => setResampleOpen(true)} />
       )}
+      {reportOpen && <ReportListScreen onBack={() => setReportOpen(false)} />}
       {authOpen && <AuthorizationScreen onBack={() => setAuthOpen(false)} />}
       {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
     </div>
