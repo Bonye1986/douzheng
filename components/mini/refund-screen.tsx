@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import {
   Check,
-  CircleDollarSign,
   Copy,
   Headphones,
   Info,
@@ -66,7 +65,7 @@ function PrimaryButton({
   )
 }
 
-function useRefundSuccess(onFinish: () => void) {
+export function useRefundSuccess(onFinish: () => void) {
   const [amount, setAmount] = useState<number | null>(null)
   const show = (refund: number) => {
     if (amount !== null) return
@@ -127,37 +126,6 @@ function AmountRows({ rows }: { rows: { label: string; value: string; strong?: b
         </div>
       ))}
     </dl>
-  )
-}
-
-function Timeline({ items }: { items: { title: string; desc: string; state: 'done' | 'current' | 'todo' }[] }) {
-  return (
-    <ol>
-      {items.map((it, i) => (
-        <li key={it.title} className="flex gap-3">
-          <div className="flex flex-col items-center">
-            <span
-              className={cn(
-                'flex size-5 items-center justify-center rounded-full',
-                it.state === 'done' && 'bg-primary text-primary-foreground',
-                it.state === 'current' && 'bg-primary text-primary-foreground ring-4 ring-primary/15',
-                it.state === 'todo' && 'border border-[#d4dce8] bg-white',
-              )}
-            >
-              {it.state === 'done' && <Check className="size-3" aria-hidden="true" />}
-              {it.state === 'current' && <span className="size-1.5 rounded-full bg-white" />}
-            </span>
-            {i < items.length - 1 && <span className="w-px flex-1 bg-[#e3eaf4]" aria-hidden="true" />}
-          </div>
-          <div className="pb-4">
-            <p className={cn('text-[13px] font-medium', it.state === 'todo' ? 'text-muted-foreground' : 'text-foreground')}>
-              {it.title}
-            </p>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{it.desc}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
   )
 }
 
@@ -399,7 +367,7 @@ export type IncurredFee = { label: string; desc: string; amount: number }
 
 const resampleFees: IncurredFee[] = [
   { label: '采样盒及耗材（2 次）', desc: '首次采样盒 + 重采样采样盒', amount: KIT_FEE * 2 },
-  { label: '物流费用', desc: '采样盒寄送及样本回寄（2 次）', amount: 60 },
+  { label: '物流费用', desc: '��样盒寄送及样本回寄（2 次）', amount: 60 },
   { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
 ]
 
@@ -433,40 +401,8 @@ export function IncurredFeeCard({ paid, fees }: { paid: number; fees: IncurredFe
 }
 
 export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void; onContact: () => void }) {
-  const [done, setDone] = useState(false)
   const refund = resampleOrder.paid - resampleFees.reduce((s, f) => s + f.amount, 0)
-
-  if (done) {
-    return (
-      <SubPage title="退款详情" titleId="resample-refund-title" onBack={onBack}>
-        <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-          <Card className="p-4 text-center">
-            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
-              <CircleDollarSign className="size-6" aria-hidden="true" />
-            </span>
-            <p className="mt-2.5 text-[16px] font-semibold text-foreground">订单已终止</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">
-              扣除已产生费用后将退款 <span className="font-medium tabular-nums text-[#e0651c]">¥{refund}</span>
-            </p>
-          </Card>
-          <Card>
-            <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
-            <Timeline
-              items={[
-                { title: '终止检测', desc: '实验室已停止检测，订单关闭', state: 'done' },
-                { title: '退款处理中', desc: '预计 1-3 个工作日内完成', state: 'current' },
-                { title: '退款到账', desc: `¥${refund} 原路退回至微信支付账户`, state: 'todo' },
-              ]}
-            />
-          </Card>
-          <OrderBrief {...resampleOrder} status="已关闭" />
-        </div>
-        <BottomBar>
-          <PrimaryButton onClick={onBack}>返回订单</PrimaryButton>
-        </BottomBar>
-      </SubPage>
-    )
-  }
+  const success = useRefundSuccess(onBack)
 
   return (
     <SubPage title="终止订单并退款" titleId="resample-refund-title" onBack={onBack}>
@@ -496,8 +432,9 @@ export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void
         </button>
       </div>
       <BottomBar>
-        <PrimaryButton onClick={() => setDone(true)}>确认终止并退款 ¥{refund}</PrimaryButton>
+        <PrimaryButton onClick={() => success.show(refund)}>确认终止并退款 ¥{refund}</PrimaryButton>
       </BottomBar>
+      {success.toast}
     </SubPage>
   )
 }

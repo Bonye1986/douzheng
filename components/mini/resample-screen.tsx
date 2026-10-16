@@ -12,10 +12,10 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
-import { IncurredFeeCard, type IncurredFee } from '@/components/mini/refund-screen'
+import { IncurredFeeCard, useRefundSuccess, type IncurredFee } from '@/components/mini/refund-screen'
 import { cn } from '@/lib/utils'
 
-type Step = 'choose' | 'refund' | 'resample' | 'refundDone' | 'resampleDone'
+type Step = 'choose' | 'refund' | 'resample' | 'resampleDone'
 type Choice = 'refund' | 'resample'
 
 const defaultOrder = {
@@ -106,37 +106,6 @@ function PrimaryButton({
   )
 }
 
-function Timeline({ items }: { items: { title: string; desc: string; state: 'done' | 'current' | 'todo' }[] }) {
-  return (
-    <ol className="space-y-0">
-      {items.map((it, i) => (
-        <li key={it.title} className="flex gap-3">
-          <div className="flex flex-col items-center">
-            <span
-              className={cn(
-                'flex size-5 items-center justify-center rounded-full',
-                it.state === 'done' && 'bg-primary text-primary-foreground',
-                it.state === 'current' && 'bg-primary text-primary-foreground ring-4 ring-primary/15',
-                it.state === 'todo' && 'border border-[#d4dce8] bg-white',
-              )}
-            >
-              {it.state === 'done' && <Check className="size-3" aria-hidden="true" />}
-              {it.state === 'current' && <span className="size-1.5 rounded-full bg-white" />}
-            </span>
-            {i < items.length - 1 && <span className="w-px flex-1 bg-[#e3eaf4]" aria-hidden="true" />}
-          </div>
-          <div className="pb-4">
-            <p className={cn('text-[13px] font-medium', it.state === 'todo' ? 'text-muted-foreground' : 'text-foreground')}>
-              {it.title}
-            </p>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{it.desc}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
-  )
-}
-
 export function ResampleScreen({
   onBack,
   initialStep = 'choose',
@@ -161,12 +130,12 @@ export function ResampleScreen({
   const [choice, setChoice] = useState<Choice | null>(null)
   const [refundReason, setRefundReason] = useState<string | null>(null)
   const [refundNote, setRefundNote] = useState('')
+  const success = useRefundSuccess(onBack)
 
   const titles: Record<Step, string> = {
     choose: '样本不合格处理',
     refund: '终止订单并退款',
     resample: '确认重采样',
-    refundDone: '退款申请详情',
     resampleDone: '重采样结果',
   }
 
@@ -375,42 +344,11 @@ export function ResampleScreen({
               disabled={!refundReason}
               onClick={() => {
                 onTerminated?.()
-                setStep('refundDone')
+                success.show(refundAmount)
               }}
             >
               确认终止并退款 ¥{refundAmount}
             </PrimaryButton>
-          </BottomBar>
-        </>
-      )}
-
-      {step === 'refundDone' && (
-        <>
-          <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <div className="rounded-2xl bg-white p-4 text-center">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
-                <CircleDollarSign className="size-6" aria-hidden="true" />
-              </span>
-              <p className="mt-2.5 text-[16px] font-semibold text-foreground">订单已终止</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                扣除已产生费用后将退款{' '}
-                <span className="font-medium tabular-nums text-[#e0651c]">¥{refundAmount}</span>
-              </p>
-            </div>
-            <div className="rounded-2xl bg-white p-3.5">
-              <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
-              <Timeline
-                items={[
-                  { title: '终止订单', desc: `原因：${refundReason ?? '—'}`, state: 'done' },
-                  { title: '退款处理中', desc: '预计 1-3 个工作日内完成', state: 'current' },
-                  { title: '退款到账', desc: `¥${refundAmount} 原路退回至微信支付账户`, state: 'todo' },
-                ]}
-              />
-            </div>
-            <OrderBrief order={order} status="已关闭" tone="muted" />
-          </div>
-          <BottomBar>
-            <PrimaryButton onClick={onBack}>{doneLabel}</PrimaryButton>
           </BottomBar>
         </>
       )}
@@ -463,6 +401,7 @@ export function ResampleScreen({
           </BottomBar>
         </>
       )}
+      {success.toast}
     </SubPage>
   )
 }
