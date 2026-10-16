@@ -131,50 +131,29 @@ export function OrderDetailScreen({
               </li>
             ))}
           </ul>
-          {priceAdjust && (
-            <div className="mt-1 rounded-xl bg-[#fff4ec] p-3">
-              <p className="flex items-center gap-1.5 text-[12px] font-medium text-[#e0651c]">
-                <span className="rounded bg-[#ffeadb] px-1 text-[10px]">已改价</span>
-                客服已调整订单金额，请按最新价格支付
-              </p>
-              <dl className="mt-2 grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-lg bg-white px-1 py-2">
-                  <dt className="text-[11px] text-muted-foreground">改价前</dt>
-                  <dd className="mt-0.5 text-[14px] tabular-nums text-muted-foreground line-through">
-                    {yuan(priceAdjust.before)}
-                  </dd>
-                </div>
-                <div className="rounded-lg bg-white px-1 py-2">
-                  <dt className="text-[11px] text-muted-foreground">改价后</dt>
-                  <dd className="mt-0.5 text-[14px] font-semibold tabular-nums text-[#e0651c]">
-                    {yuan(priceAdjust.after)}
-                  </dd>
-                </div>
-                <div className="rounded-lg bg-white px-1 py-2">
-                  <dt className="text-[11px] text-muted-foreground">
-                    {priceAdjust.after <= priceAdjust.before ? '已减免' : '已加价'}
-                  </dt>
-                  <dd className="mt-0.5 text-[14px] tabular-nums text-foreground">
-                    {priceAdjust.after <= priceAdjust.before ? '-' : '+'}
-                    {yuan(Math.abs(priceAdjust.before - priceAdjust.after))}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          )}
           <dl className="mt-1 flex flex-col gap-1.5 border-t border-border pt-3 text-[12px]">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">商品金额</dt>
               <dd className="tabular-nums text-foreground">{yuan(goodsTotal)}</dd>
             </div>
             {priceAdjust ? (
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">客服改价</dt>
-                <dd className="tabular-nums text-[#e5603a]">
-                  {priceAdjust.after <= priceAdjust.before ? '-' : '+'}
-                  {yuan(Math.abs(priceAdjust.before - priceAdjust.after))}
-                </dd>
-              </div>
+              <>
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">改价前</dt>
+                  <dd className="tabular-nums text-muted-foreground line-through">{yuan(priceAdjust.before)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">改价后</dt>
+                  <dd className="tabular-nums text-foreground">{yuan(priceAdjust.after)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">客服改价</dt>
+                  <dd className="tabular-nums text-[#e5603a]">
+                    {priceAdjust.after <= priceAdjust.before ? '-' : '+'}
+                    {yuan(Math.abs(priceAdjust.before - priceAdjust.after))}
+                  </dd>
+                </div>
+              </>
             ) : (
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">优惠券</dt>
@@ -208,7 +187,7 @@ export function OrderDetailScreen({
                 <dd className="min-w-0 flex-1 text-right tabular-nums text-foreground">{v}</dd>
               </div>
             ))}
-            {sampleCodes && sampleCodes.length > 0 && (
+            {isPaid && sampleCodes && sampleCodes.length > 0 && (
               <div className="flex gap-3">
                 <dt className="w-14 shrink-0 text-muted-foreground">样本编码</dt>
                 <dd className="min-w-0 flex-1">
