@@ -284,8 +284,7 @@ function MainView({
 
       <Card title="隐私与协议">
         <Row label="用户服务协议" />
-        <Row label="隐私政策" />
-        <Row label="系统权限管理" value="相机、相册" />
+          <Row label="隐私政策" />
       </Card>
 
       <Card title="其他">
