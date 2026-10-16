@@ -13,6 +13,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { LegalDocScreen, type LegalDocKind } from '@/components/mini/legal-doc-screen'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
 import { genderLabel, initialExaminees, type Gender } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
@@ -201,6 +202,7 @@ function MainView({
   onDeactivate: () => void
   onLogout: () => void
 }) {
+  const [doc, setDoc] = useState<LegalDocKind | null>(null)
   return (
     <div className="flex-1 overflow-y-auto px-3 pb-8 pt-1 [scrollbar-width:none]">
       <Card title="个人资料">
@@ -229,9 +231,10 @@ function MainView({
       </Card>
 
       <Card title="隐私与协议">
-        <Row label="用户服务协议" />
-          <Row label="隐私政策" />
+        <Row label="用户服务协议" onClick={() => setDoc('terms')} />
+        <Row label="隐私政策" onClick={() => setDoc('privacy')} />
       </Card>
+      {doc && <LegalDocScreen kind={doc} onBack={() => setDoc(null)} />}
 
       <Card title="其他">
         <Row label="清除缓存" value="12.6 MB" />

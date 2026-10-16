@@ -1,7 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+import { useState } from 'react'
 import { Check } from 'lucide-react'
+import { LegalDocScreen, type LegalDocKind } from '@/components/mini/legal-doc-screen'
 import { cn } from '@/lib/utils'
 
 export function BrandMark({ size = 'md', className }: { size?: 'md' | 'lg'; className?: string }) {
@@ -39,7 +41,10 @@ export function Agreement({
   highlight?: boolean
 }) {
   const isLight = tone === 'light'
+  const [doc, setDoc] = useState<LegalDocKind | null>(null)
+  const linkClass = cn('mx-0.5', isLight ? 'text-white' : 'text-primary')
   return (
+    <>
     <div
       className={cn(
         'flex items-start gap-2 text-[12px] leading-5 transition-transform',
@@ -66,15 +71,17 @@ export function Agreement({
       </button>
       <p>
         我已阅读并同意
-        <a href="#" className={cn('mx-0.5', isLight ? 'text-white' : 'text-primary')}>
+        <button type="button" onClick={() => setDoc('terms')} className={linkClass}>
           《用户服务协议》
-        </a>
+        </button>
         和
-        <a href="#" className={cn('mx-0.5', isLight ? 'text-white' : 'text-primary')}>
+        <button type="button" onClick={() => setDoc('privacy')} className={linkClass}>
           《隐私政策》
-        </a>
+        </button>
       </p>
     </div>
+    {doc && <LegalDocScreen kind={doc} onBack={() => setDoc(null)} />}
+    </>
   )
 }
 
