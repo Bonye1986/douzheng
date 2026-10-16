@@ -14,44 +14,45 @@ const typeTabs: { key: OrderType; label: string }[] = [
   { key: 'site', label: '定点采样订单' },
 ]
 
-type StatusTab = { key: string; label: string; match: (o: Order) => boolean }
+type GroupPhase = Exclude<OrderPhase, 'all'>
+type StatusTab = { key: string; label: string; phase?: GroupPhase; match: (o: Order) => boolean }
 
-const byPhase = (phase: Exclude<OrderPhase, 'all'>) => (o: Order) => o.phase === phase
+const byPhase = (phase: GroupPhase) => (o: Order) => o.phase === phase
 const byStatus = (status: string) => (o: Order) => o.status === status
 const allTab: StatusTab = { key: 'all', label: '全部', match: () => true }
-const closedTab: StatusTab = { key: 'closed', label: '已关闭', match: byPhase('closed') }
+
+const tab = {
+  toPay: { key: 'toPay', label: '待付款', phase: 'toPay', match: byPhase('toPay') },
+  toShip: { key: 'toShip', label: '待发货', phase: 'toSample', match: byStatus('待发货') },
+  shipped: { key: 'shipped', label: '已发货', phase: 'toSample', match: byStatus('已发货') },
+  toVerify: { key: 'toVerify', label: '待核销', phase: 'toSample', match: byStatus('待核销') },
+  toSample: { key: 'siteToSample', label: '待采样', phase: 'toSample', match: byStatus('待采样') },
+  sent: { key: 'sent', label: '已寄样', phase: 'testing', match: byStatus('已寄样') },
+  received: { key: 'received', label: '已收样', phase: 'testing', match: byStatus('已收样') },
+  testing: { key: 'testingStatus', label: '检测中', phase: 'testing', match: byStatus('检测中') },
+  done: { key: 'done', label: '已完成', phase: 'done', match: byPhase('done') },
+  closed: { key: 'closed', label: '已关闭', phase: 'closed', match: byPhase('closed') },
+} satisfies Record<string, StatusTab>
 
 const statusTabsByType: Record<OrderType, StatusTab[]> = {
   all: [
     allTab,
-    { key: 'toPay', label: '待付款', match: byPhase('toPay') },
-    { key: 'toSample', label: '待采样', match: byPhase('toSample') },
-    { key: 'testing', label: '检测中', match: byPhase('testing') },
-    { key: 'done', label: '已完成', match: byPhase('done') },
-    closedTab,
+    tab.toPay,
+    tab.toShip,
+    tab.shipped,
+    tab.toVerify,
+    tab.toSample,
+    tab.sent,
+    tab.received,
+    tab.testing,
+    tab.done,
+    tab.closed,
   ],
-  self: [
-    allTab,
-    { key: 'toPay', label: '待付款', match: byPhase('toPay') },
-    { key: 'toShip', label: '待发货', match: byStatus('待发货') },
-    { key: 'shipped', label: '已发货', match: byStatus('已发货') },
-    { key: 'sent', label: '已寄样', match: byStatus('已寄样') },
-    { key: 'received', label: '已收样', match: byStatus('已收样') },
-    { key: 'testing', label: '检测中', match: byStatus('检测中') },
-    { key: 'done', label: '已完成', match: byPhase('done') },
-    closedTab,
-  ],
-  site: [
-    allTab,
-    { key: 'toPay', label: '待付款', match: byPhase('toPay') },
-    { key: 'toVerify', label: '待核销', match: byStatus('待核销') },
-    { key: 'toSample', label: '待采样', match: byStatus('待采样') },
-    { key: 'received', label: '已收样', match: byStatus('已收样') },
-    { key: 'testing', label: '检测中', match: byStatus('检测中') },
-    { key: 'done', label: '已完成', match: byPhase('done') },
-    closedTab,
-  ],
+  self: [allTab, tab.toPay, tab.toShip, tab.shipped, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
+  site: [allTab, tab.toPay, tab.toVerify, tab.toSample, tab.received, tab.testing, tab.done, tab.closed],
 }
+
+const groupPhases: GroupPhase[] = ['toSample', 'testing']
 
 type Order = {
   id: string
@@ -211,7 +212,10 @@ export function OrderListScreen({
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
 
   const statusTabs = statusTabsByType[type]
-  const activeTab = statusTabs.find((t) => t.key === statusKey) ?? allTab
+  const groupPhase = groupPhases.find((p) => p === statusKey)
+  const activeTab: StatusTab = groupPhase
+    ? { key: groupPhase, label: '', match: byPhase(groupPhase) }
+    : (statusTabs.find((t) => t.key === statusKey) ?? allTab)
   const visible = orders.filter((o) => (type === 'all' || o.type === type) && activeTab.match(o))
 
   const selectType = (next: OrderType) => {
@@ -248,7 +252,7 @@ export function OrderListScreen({
       >
         {statusTabs.map((t) => {
           const count = t.key === 'all' ? 0 : orders.filter((o) => (type === 'all' || o.type === type) && t.match(o)).length
-          const active = activeTab.key === t.key
+          const active = groupPhase ? t.phase === groupPhase : activeTab.key === t.key
           return (
             <button
               key={t.key}
