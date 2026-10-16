@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Check, Info, MoveHorizontal, Share2, Sparkles } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
@@ -84,6 +85,44 @@ export function ReportDetailScreen({
   onBack: () => void
   onAiInterpret?: () => void
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const drag = useRef<{ x: number; left: number } | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const [thumb, setThumb] = useState({ size: 1, offset: 0 })
+
+  const updateProgress = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const size = Math.min(1, el.clientWidth / el.scrollWidth)
+    const max = el.scrollWidth - el.clientWidth
+    setThumb({ size, offset: max > 0 ? (el.scrollLeft / max) * (1 - size) : 0 })
+  }, [])
+
+  useEffect(() => {
+    updateProgress()
+    const el = scrollRef.current
+    if (!el) return
+    const ro = new ResizeObserver(updateProgress)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [updateProgress])
+
+  // Touch devices already swipe natively; only mouse/pen need drag-to-scroll.
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'touch' || !scrollRef.current) return
+    drag.current = { x: e.clientX, left: scrollRef.current.scrollLeft }
+    e.currentTarget.setPointerCapture(e.pointerId)
+    setDragging(true)
+  }
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current || !scrollRef.current) return
+    scrollRef.current.scrollLeft = drag.current.left - (e.clientX - drag.current.x)
+  }
+  const endDrag = () => {
+    drag.current = null
+    setDragging(false)
+  }
+
   return (
     <SubPage title="报告详情" titleId="report-detail-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-3 [scrollbar-width:none]">
@@ -151,13 +190,33 @@ export function ReportDetailScreen({
 
         <section aria-labelledby="result-title">
           <SectionTitle id="result-title" title="2. 检测结果" extra="2.1 心血管疾病用药指导" />
-          <div className="rounded-2xl bg-white">
-            <div className="overflow-x-auto [scrollbar-width:none]">
+          <div className="overflow-hidden rounded-2xl bg-white">
+            <div
+              ref={scrollRef}
+              tabIndex={0}
+              aria-label="检测结果表格，可左右滑动"
+              onScroll={updateProgress}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
+              className={cn(
+                'select-none overflow-x-auto overscroll-x-contain [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-scrollbar]:hidden',
+                dragging ? 'cursor-grabbing' : 'cursor-grab',
+              )}
+            >
               <table className="w-max min-w-full text-left text-[12px]">
                 <thead className="bg-[#eaf1fd] text-foreground">
                   <tr>
-                    {['药物名称', '用药建议', '检测基因', '证据等级', '证据来源', '检测结果'].map((h) => (
-                      <th key={h} scope="col" className="whitespace-nowrap px-3 py-2.5 font-medium">
+                    {['药物名称', '用药建议', '检测基因', '证据等级', '证据来源', '检测结果'].map((h, i) => (
+                      <th
+                        key={h}
+                        scope="col"
+                        className={cn(
+                          'whitespace-nowrap px-3 py-2.5 font-medium',
+                          i === 0 && 'sticky left-0 z-10 bg-[#eaf1fd] shadow-[4px_0_6px_-4px_rgba(30,60,120,0.18)]',
+                        )}
+                      >
                         {h}
                       </th>
                     ))}
@@ -166,7 +225,10 @@ export function ReportDetailScreen({
                 <tbody className="divide-y divide-[#eef1f6]">
                   {detailRows.map((r) => (
                     <tr key={`${r.drug}-${r.gene}`}>
-                      <th scope="row" className="whitespace-nowrap px-3 py-2.5 font-medium text-foreground">
+                      <th
+                        scope="row"
+                        className="sticky left-0 z-10 whitespace-nowrap bg-white px-3 py-2.5 font-medium text-foreground shadow-[4px_0_6px_-4px_rgba(30,60,120,0.18)]"
+                      >
                         {r.drug}
                       </th>
                       <td className={cn('whitespace-nowrap px-3 py-2.5', adviceColor[r.advice])}>{r.advice}</td>
@@ -179,10 +241,18 @@ export function ReportDetailScreen({
                 </tbody>
               </table>
             </div>
-            <p className="flex items-center justify-center gap-1 border-t border-[#eef1f6] py-2 text-[11px] text-muted-foreground">
-              <MoveHorizontal className="size-3.5" aria-hidden="true" />
-              左右滑动查看完整检测结果
-            </p>
+            <div className="flex flex-col items-center gap-1.5 border-t border-[#eef1f6] py-2">
+              <div className="h-1 w-12 overflow-hidden rounded-full bg-[#e3e9f3]" aria-hidden="true">
+                <div
+                  className="h-full rounded-full bg-primary"
+                  style={{ width: `${thumb.size * 100}%`, transform: `translateX(${(thumb.offset / thumb.size) * 100}%)` }}
+                />
+              </div>
+              <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <MoveHorizontal className="size-3.5" aria-hidden="true" />
+                左右滑动查看完整检测结果
+              </p>
+            </div>
           </div>
         </section>
 
