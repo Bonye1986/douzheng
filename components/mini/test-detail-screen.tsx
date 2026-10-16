@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { ChevronLeft, Clock, Dna, FlaskConical, Headset, Pill, ShieldCheck } from 'lucide-react'
+import { ChevronLeft, Dna, FlaskConical, Headset, ShieldCheck } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { CartButton } from '@/components/mini/tests-screen'
 import {
@@ -23,17 +23,11 @@ type Props = {
 }
 
 export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBuyNow, onContact, onOpenCart }: Props) {
-  const facts = [
-    {
-      icon: FlaskConical,
-      label: '采样方式',
-      value: getSamplingModes(service.id)
-        .map((m) => `${samplingLabel[m]}：${sampleTypeText(service.id, m)}`)
-        .join('；'),
-    },
-    { icon: Clock, label: '出报告时间', value: `样本签收后 ${service.turnaround}` },
-    { icon: Pill, label: '覆盖药物', value: `${service.drugCount} 种常用药物` },
-  ]
+  const samplingOptions = getSamplingModes(service.id).map((mode) => ({
+    mode,
+    label: samplingLabel[mode],
+    samples: sampleTypeText(service.id, mode),
+  }))
 
   return (
     <div
@@ -92,15 +86,22 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
               ))}
             </p>
 
-            <dl className="mt-3 flex flex-col gap-2.5 border-t border-border pt-3">
-              {facts.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-center gap-2 text-[13px]">
-                  <Icon className="size-4 shrink-0 text-primary" aria-hidden="true" />
-                  <dt className="w-[70px] shrink-0 text-muted-foreground">{label}</dt>
-                  <dd className="text-foreground">{value}</dd>
-                </div>
-              ))}
-            </dl>
+            <div className="mt-3 border-t border-border pt-3">
+              <p className="flex items-center gap-1.5 text-[13px] font-medium text-foreground">
+                <FlaskConical className="size-4 text-primary" aria-hidden="true" />
+                采样方式
+              </p>
+              <dl className="mt-2 flex flex-col gap-2">
+                {samplingOptions.map(({ mode, label, samples }) => (
+                  <div key={mode} className="flex items-start gap-2.5 rounded-xl bg-[#f4f8fe] px-3 py-2.5">
+                    <dt className="shrink-0 rounded-md bg-white px-1.5 py-0.5 text-[12px] font-medium leading-[18px] text-primary">
+                      {label}
+                    </dt>
+                    <dd className="text-[13px] leading-[22px] text-foreground">{samples}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </section>
 
           <section aria-labelledby="detail-intro" className="rounded-2xl bg-white p-4">
