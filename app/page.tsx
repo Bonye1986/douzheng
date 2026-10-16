@@ -6,6 +6,13 @@ import { HomeFlow } from '@/components/mini/home-flow'
 import { AiChatScreen } from '@/components/mini/ai-chat-screen'
 import { ConsentReaderArtboard, ExamineeFormArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
 import { MineScreen } from '@/components/mini/mine-screen'
+import {
+  AfterSalesArtboard,
+  CancelOrderArtboard,
+  OrderListArtboard,
+  ResampleRefundArtboard,
+  ShippedRefundArtboard,
+} from '@/components/mini/order-artboards'
 
 const screens = [
   {
@@ -53,7 +60,7 @@ const screens = [
   {
     id: '12',
     title: '检测 · 购物车',
-    desc: '勾选 / 全选、份数加减（单项最多 10 份）、合计与优惠金额、去结算；「管理」切换批量删除；空购物车引导去逛逛，底部为你推荐可快速加购（可在画板内交互）',
+    desc: '勾选 / 全选、份数仅展示不可手动增减、合计与优惠金额、去结算；「管理」切换批量删除；空购物车引导去逛逛，底部为你推荐可快速加购（可在画板内交互）',
     node: (
       <HomeFlow
         initialTab="test"
@@ -69,7 +76,7 @@ const screens = [
   {
     id: '13',
     title: '检测 · 确认订单',
-    desc: '选择受检人（报告归档至成员档案）、采样盒寄送地址 / 定点采样机构、检测项目清单、优惠券（自动选最优，可切换）、价格明细；须勾选知情同意书后提交，提交后进入支付结果与后续步骤（可在画板内交互）',
+    desc: '选择受检人（报告归档至成员档案）、采样盒寄送地址 / 定点采样机构、检测项目清单、优惠券（自动选最优，可切换）、价格明细；须勾选知情同意书后提交；点击提交订单唤起微信支付，支付完成后跳转订单结果页（可在画板内交互）',
     node: (
       <HomeFlow
         initialTab="test"
@@ -101,7 +108,7 @@ const screens = [
   {
     id: '18',
     title: '我的',
-    desc: '用户信息（头像 / 昵称 / 手机号）、我的订单（全部 / 自采样 / 定点采样 × 待付款 / 待采样 / 检测中 / 已完成 / 退款售后五阶段，切换类型时售后对应自采或定点重采样）、待处理（改价待支付 / 样本不合格待选择）、我的报告与 AI 解读、我的优惠券 / 领券中心、检测人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 使用指南 / 关于我们 / 联系客服 / 账号设置（可在画板内交互）',
+    desc: '用户信息（头像 / 昵称 / 手机号）、我的订单（状态快捷入口与数量角标，进入订单列表 / 退款售后）、待处理（改价待支付 / 样本不合格待选择）、我的报告与 AI 解读、我的优惠券 / 领券中心、检测人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 使用指南 / 关于我们 / 联系客服 / 账号设置（可在画板内交互）',
     node: <HomeFlow initialTab="me" />,
   },
   {
@@ -131,7 +138,7 @@ const screens = [
   {
     id: '24',
     title: '我的 · 检测人管理',
-    desc: '展示已添加的检测人（关系、性别年龄、出生日期、手机号、报告数、实名状态），最多 10 位；每张卡片可编辑、删除，底部添加检测人（可在画板内交互）',
+    desc: '展示已添加的检测人（关系、性别年龄、出生日期、手机号、报告数；仅本人展示实名状态），最多 10 位；每张卡片可编辑、删除，底部添加检测人（可在画板内交互）',
     node: <MineScreen initialExamineeView="list" />,
   },
   {
@@ -274,9 +281,45 @@ const screens = [
   },
   {
     id: '19',
-    title: '我的 · 样本不合格处理',
-    desc: '后台发起重采后短信通知用户，用户自选：申请退款（提交原因，后台审核全额 / 部分退款）或免费重采样（原订单关闭，生成新的已付款订单并标记「重采样」，重新走订单流程）（可在画板内交互）',
+    title: '售后 · 样本不合格处理',
+    desc: '后台点击重采样后短信通知用户，用户自选：免费重采样（原订单关闭，生成新的已付款订单并标记「重采样」）或终止订单并退款（需联系客服，扣除已产生的各类费用后退款）（可在画板内交互）',
     node: <MineScreen initialResampleOpen />,
+  },
+  {
+    id: '47',
+    title: '我的 · 订单列表',
+    desc: '按采样类型（全部 / 自采样 / 定点采样）切换对应状态集合：待发货、已发货、待核销、待采样、已寄样、已收样、检测中、已完成、已关闭；订单卡片按状态展示操作（可在画板内交互）',
+    node: <OrderListArtboard />,
+  },
+  {
+    id: '48',
+    title: '订单列表 · 采样指引视频',
+    desc: '点击「采样指引」弹窗播放后台上传的采样操作视频，时长读取自视频文件，可关闭弹窗（可在画板内交互）',
+    node: <OrderListArtboard initialGuideOpen />,
+  },
+  {
+    id: '49',
+    title: '售后 · 取消订单',
+    desc: '支付完成且尚未发货的订单可直接取消，选择原因后确认，订单金额原路退回',
+    node: <CancelOrderArtboard />,
+  },
+  {
+    id: '50',
+    title: '售后 · 发货后申请退款',
+    desc: '采样盒已发货后申请退款，二选一：①自费寄回采样盒，全额退款；②扣除采样盒费用后退款（可在画板内交互）',
+    node: <ShippedRefundArtboard />,
+  },
+  {
+    id: '51',
+    title: '我的 · 退款 / 售后',
+    desc: '售后记录列表：取消退款、发货后退款、样本不合格处理，展示处理状态与退款金额，待处理项可直接去处理（可在画板内交互）',
+    node: <AfterSalesArtboard />,
+  },
+  {
+    id: '52',
+    title: '售后 · 终止订单并退款',
+    desc: '样本不合格后选择终止订单：展示已产生费用明细与预计退款金额，需联系客服确认，扣除已产生的各类费用后退款',
+    node: <ResampleRefundArtboard />,
   },
   {
     id: '05',
@@ -300,18 +343,36 @@ const screens = [
 
 const sectionPlan: { key: string; title: string; summary: string; ids: string[] }[] = [
   { key: 'login', title: '登录注册', summary: '微信手机号授权登录，拒绝授权的拦截与提示', ids: ['01', '02', '03'] },
-  { key: 'home', title: '首页与服务', summary: 'AI 对话入口、预设问题，服务内容与一键带入咨询', ids: ['04', '09'] },
+  {
+    key: 'home',
+    title: '首页与AI咨询',
+    summary: 'AI 对话入口与预设问题，通俗 / 专业版切换、关联检测人后的个性化用药解答',
+    ids: ['04', '05', '07', '08'],
+  },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检查、知识科普与互动问答，一键带入 AI 咨询', ids: ['09'] },
   {
     key: 'order',
     title: '检测下单',
-    summary: '检测列表、服务详情、购物车与确认订单（受检人、采样机构、知情同意书）',
+    summary: '检测列表、服务详情、购物车、确认订单（受检人、采样机构、知情同意书）与微信支付',
     ids: ['10', '11', '12', '13', '14', '15', '17'],
+  },
+  {
+    key: 'orders',
+    title: '我的订单与售后',
+    summary: '订单列表与采样指引视频，发货前取消、发货后退款、样本不合格重采样或终止退款',
+    ids: ['47', '48', '49', '50', '51', '19', '52'],
   },
   {
     key: 'mine',
     title: '我的',
-    summary: '订单、报告与报告详情、授权与同意书、样本不合格处理',
-    ids: ['18', '20', '21', '22', '23', '16', '34', '19'],
+    summary: '个人中心、我的报告与报告详情、我的优惠券与领券中心',
+    ids: ['18', '20', '21', '22', '23'],
+  },
+  {
+    key: 'consent',
+    title: '授权与同意书',
+    summary: '检测知情同意书存档，科研知情同意书签署 / 撤销（e签宝人脸核验）',
+    ids: ['16', '34'],
   },
   {
     key: 'examinee',
@@ -332,36 +393,30 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     ids: ['35', '36', '37', '38', '39'],
   },
   {
-    key: 'guide',
-    title: '使用指南',
-    summary: '指南文章列表（搜索 + 分类）与文章详情（步骤、注意事项、反馈、相关推荐）',
-    ids: ['40', '41'],
-  },
-  {
-    key: 'about',
-    title: '关于我们',
-    summary: '品牌介绍、资质认证、发展历程、联系方式与协议版本信息',
-    ids: ['42'],
-  },
-  {
-    key: 'service',
-    title: '联系客服',
-    summary: '小程序客服会话页：消息收发、订单卡片发送、常见问题快捷提问',
-    ids: ['43'],
+    key: 'help',
+    title: '帮助与客服',
+    summary: '使用指南（搜索 + 分类、文章详情）与小程序客服会话',
+    ids: ['40', '41', '43'],
   },
   {
     key: 'account',
-    title: '账号设置',
-    summary: '个人资料、短信通知开关、隐私协议，更换手机号、注销账号与退出登录',
-    ids: ['44', '45', '46'],
+    title: '设置与关于',
+    summary: '账号设置、更换手机号、注销账号，以及品牌介绍、资质与协议版本信息',
+    ids: ['44', '45', '46', '42'],
   },
-  { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
 
+let pageNo = 0
 const sections: BoardSection[] = sectionPlan.map(({ ids, ...section }) => ({
   ...section,
-  screens: ids.map((id) => screens.find((screen) => screen.id === id)).filter((s): s is (typeof screens)[number] => !!s),
+  screens: ids.flatMap((noteKey) => {
+    const screen = screens.find((s) => s.id === noteKey)
+    if (!screen) return []
+    pageNo += 1
+    return [{ ...screen, noteKey, id: String(pageNo).padStart(2, '0') }]
+  }),
 }))
+const pageCount = pageNo
 
 export default function Page() {
   return (
@@ -388,7 +443,7 @@ export default function Page() {
           </div>
           <div>
             <dt>页面数</dt>
-            <dd className="font-medium text-foreground">{screens.length} 个</dd>
+            <dd className="font-medium text-foreground">{pageCount} 个</dd>
           </div>
         </dl>
           </div>

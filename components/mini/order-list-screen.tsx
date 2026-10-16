@@ -220,18 +220,20 @@ export function countOrders(phase: Exclude<OrderPhase, 'all'>) {
 
 export function OrderListScreen({
   initialPhase = 'all',
+  initialGuideOpen = false,
   onBack,
   onHandleUnqualified,
   onRefund,
 }: {
   initialPhase?: OrderPhase
+  initialGuideOpen?: boolean
   onBack: () => void
   onHandleUnqualified: () => void
   onRefund: (kind: RefundKind) => void
 }) {
   const [type, setType] = useState<OrderType>('all')
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
-  const [guideOpen, setGuideOpen] = useState(false)
+  const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
 
   const statusTabs = statusTabsByType[type]
   const groupPhase = groupPhases.find((p) => p === statusKey)

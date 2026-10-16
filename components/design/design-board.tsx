@@ -7,7 +7,7 @@ import { PhoneFrame } from '@/components/mini/phone-frame'
 import { DemoApp } from './demo-app'
 import { screenNotes } from './screen-notes'
 
-export type BoardScreen = { id: string; title: string; desc: string; node: ReactNode }
+export type BoardScreen = { id: string; noteKey: string; title: string; desc: string; node: ReactNode }
 export type BoardSection = { key: string; title: string; summary: string; screens: BoardScreen[] }
 
 type Mode = 'demo' | 'explain'
@@ -112,6 +112,7 @@ function DemoView({ sections }: { sections: BoardSection[] }) {
 
 function ExplainView({ sections }: { sections: BoardSection[] }) {
   const [active, setActive] = useState<BoardScreen | null>(null)
+  const pageNumbers = Object.fromEntries(sections.flatMap((s) => s.screens.map((screen) => [screen.noteKey, screen.id])))
 
   return (
     <div className="mx-auto mt-8 max-w-[1720px]">
@@ -168,12 +169,20 @@ function ExplainView({ sections }: { sections: BoardSection[] }) {
         </section>
       ))}
 
-      <NoteDialog screen={active} onClose={() => setActive(null)} />
+      <NoteDialog screen={active} pageNumbers={pageNumbers} onClose={() => setActive(null)} />
     </div>
   )
 }
 
-function NoteDialog({ screen, onClose }: { screen: BoardScreen | null; onClose: () => void }) {
+function NoteDialog({
+  screen,
+  pageNumbers,
+  onClose,
+}: {
+  screen: BoardScreen | null
+  pageNumbers: Record<string, string>
+  onClose: () => void
+}) {
   const ref = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -183,7 +192,9 @@ function NoteDialog({ screen, onClose }: { screen: BoardScreen | null; onClose: 
     if (!screen && dialog.open) dialog.close()
   }, [screen])
 
-  const note = screen ? screenNotes[screen.id] : undefined
+  const note = screen ? screenNotes[screen.noteKey] : undefined
+  // Notes reference pages by their stable note key; show the current sequential page number instead.
+  const renumber = (text: string) => text.replace(/\b\d{2}\b/g, (key) => pageNumbers[key] ?? key)
 
   return (
     <dialog
@@ -228,7 +239,7 @@ function NoteDialog({ screen, onClose }: { screen: BoardScreen | null; onClose: 
                   <ul className="flex flex-wrap gap-2">
                     {note.links.map((link) => (
                       <li key={link} className="rounded-lg bg-accent px-3 py-1.5 text-[13px] text-primary">
-                        {link}
+                        {renumber(link)}
                       </li>
                     ))}
                   </ul>
