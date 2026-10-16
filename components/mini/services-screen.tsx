@@ -2,7 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { BookOpen, CheckCircle2, ChevronRight, Eye, Lightbulb, XCircle } from 'lucide-react'
+import {
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardCheck,
+  Eye,
+  Lightbulb,
+  XCircle,
+  type LucideIcon,
+} from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
@@ -57,17 +66,20 @@ export function ServicesScreen({
 function SectionHeader({
   id,
   title,
+  icon: Icon,
   action,
   onAction,
 }: {
   id: string
   title: string
+  icon: LucideIcon
   action?: string
   onAction?: () => void
 }) {
   return (
     <div className="mb-3 flex items-center justify-between">
-      <h2 id={id} className="text-[15px] font-semibold text-foreground">
+      <h2 id={id} className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
+        <Icon className="size-4 text-[#e0651c]" aria-hidden="true" />
         {title}
       </h2>
       {action && (
@@ -186,7 +198,7 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
 function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTest' | 'onViewAllTests'>) {
   return (
     <section aria-labelledby="rec-tests" className="rounded-2xl bg-white p-4">
-      <SectionHeader id="rec-tests" title="推荐检查" action="全部" onAction={onViewAllTests} />
+      <SectionHeader id="rec-tests" title="推荐检查" icon={ClipboardCheck} action="全部" onAction={onViewAllTests} />
       <ul className="flex flex-col divide-y divide-border">
         {recommendedTests.map((t) => (
           <li key={t.id} className="py-3 first:pt-0 last:pb-0">
@@ -232,32 +244,31 @@ function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTes
 function KnowledgeList({ onOpenArticle, onViewAllArticles }: Pick<Props, 'onOpenArticle' | 'onViewAllArticles'>) {
   return (
     <section aria-labelledby="knowledge" className="rounded-2xl bg-white p-4">
-      <SectionHeader id="knowledge" title="知识科普" action="更多" onAction={onViewAllArticles} />
-      <ul className="flex flex-col gap-3">
-        {articles.slice(0, 3).map((a) => (
-          <li key={a.id}>
-            <button
-              type="button"
-              onClick={() => onOpenArticle?.(a.id)}
-              className="flex w-full items-start gap-3 text-left transition-opacity active:opacity-70"
-            >
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#fff1e8] text-[#e0651c]">
-                <BookOpen className="size-4" aria-hidden="true" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="line-clamp-1 text-[14px] text-foreground">{a.title}</span>
-                <span className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-                  <span>{a.category}</span>
-                  <span className="flex items-center gap-0.5">
-                    <Eye className="size-3" aria-hidden="true" />
-                    {a.reads}
-                  </span>
-                </span>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      <SectionHeader id="knowledge" title="知识科普" icon={BookOpen} action="更多" onAction={onViewAllArticles} />
+  <ul className="-mb-1 divide-y divide-border/70">
+  {articles.slice(0, 3).map((a) => (
+  <li key={a.id}>
+  <button
+  type="button"
+  onClick={() => onOpenArticle?.(a.id)}
+  className="flex w-full items-center gap-3 py-3.5 text-left transition-opacity active:opacity-70"
+  >
+  <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+  <span className="line-clamp-1 text-[15px] font-medium leading-snug text-foreground">{a.title}</span>
+  <span className="line-clamp-1 text-[12px] leading-relaxed text-muted-foreground">{a.summary}</span>
+  <span className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
+  <span className="rounded bg-[#fff1e8] px-1.5 py-0.5 text-[#e0651c]">{a.category}</span>
+  <span className="flex items-center gap-1">
+  <Eye className="size-3" aria-hidden="true" />
+  {a.reads}
+  </span>
+  </span>
+  </span>
+  <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" aria-hidden="true" />
+  </button>
+  </li>
+  ))}
+  </ul>
     </section>
   )
 }
