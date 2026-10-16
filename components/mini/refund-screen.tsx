@@ -522,42 +522,8 @@ const pendingOrder = {
   status: '待发货',
 }
 
-export function CancelOrderScreen({ onBack }: { onBack: () => void }) {
-  const [done, setDone] = useState(false)
-
-  if (done) {
-    return (
-      <SubPage title="退款详情" titleId="cancel-order-title" onBack={onBack}>
-        <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-          <Card className="p-4 text-center">
-            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#e6f6ec] text-[#1f8a4c]">
-              <Check className="size-6" aria-hidden="true" />
-            </span>
-            <p className="mt-2.5 text-[16px] font-semibold text-foreground">订单已取消</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">
-              <span className="font-medium tabular-nums text-[#e0651c]">¥{pendingOrder.paid}</span> 将全额原路退回
-            </p>
-          </Card>
-          <Card>
-            <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
-            <Timeline
-              items={[
-                { title: '取消订单', desc: '采样盒尚未发货，订单已直接取消', state: 'done' },
-                { title: '退款处理中', desc: '无需审核，系统自动发起退款', state: 'current' },
-                { title: '退款到账', desc: '预计 1-3 个工作日退回至微信支付账户', state: 'todo' },
-              ]}
-            />
-          </Card>
-          <OrderBrief {...pendingOrder} status="已取消" />
-        </div>
-        <BottomBar>
-          <PrimaryButton onClick={onBack}>返回订单</PrimaryButton>
-        </BottomBar>
-      </SubPage>
-    )
-  }
-
-  return <CancelConfirmDialog paid={pendingOrder.paid} onCancel={onBack} onConfirm={() => setDone(true)} />
+export function CancelOrderScreen({ onBack, onCancelled }: { onBack: () => void; onCancelled?: () => void }) {
+  return <CancelConfirmDialog paid={pendingOrder.paid} onCancel={onBack} onConfirm={onCancelled ?? onBack} />
 }
 
 function CancelConfirmDialog({
