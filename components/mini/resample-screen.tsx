@@ -106,7 +106,7 @@ function Timeline({ items }: { items: { title: string; desc: string; state: 'don
               className={cn(
                 'flex size-5 items-center justify-center rounded-full',
                 it.state === 'done' && 'bg-primary text-primary-foreground',
-                it.state === 'current' && 'bg-[#e0651c] text-white',
+                it.state === 'current' && 'bg-primary text-primary-foreground ring-4 ring-primary/15',
                 it.state === 'todo' && 'border border-[#d4dce8] bg-white',
               )}
             >

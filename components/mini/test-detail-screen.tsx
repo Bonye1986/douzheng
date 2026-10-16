@@ -150,7 +150,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
             <ul className="mt-1.5 flex flex-col gap-1">
               {service.notes.map((n) => (
                 <li key={n} className="flex gap-2 text-[13px] leading-5 text-muted-foreground">
-                  <span className="mt-2 size-1 shrink-0 rounded-full bg-[#e0651c]" aria-hidden="true" />
+                  <span className="mt-2 size-1 shrink-0 rounded-full bg-primary" aria-hidden="true" />
                   {n}
                 </li>
               ))}

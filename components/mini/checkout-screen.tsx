@@ -1159,7 +1159,7 @@ function CouponSheet({
                       aria-hidden="true"
                       className={cn(
                         'flex size-[18px] shrink-0 items-center justify-center rounded-full border',
-                        active ? 'border-[#e0651c] bg-[#e0651c] text-white' : 'border-[#c3ccdb]',
+                        active ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb]',
                       )}
                     >
                       {active && <Check className="size-3" strokeWidth={3} />}

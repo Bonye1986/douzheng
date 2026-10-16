@@ -79,7 +79,7 @@ function SectionHeader({
   return (
     <div className="mb-3 flex items-center justify-between">
       <h2 id={id} className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
-        <Icon className="size-4 text-[#e0651c]" aria-hidden="true" />
+        <Icon className="size-4 text-primary" aria-hidden="true" />
         {title}
       </h2>
       {action && (
@@ -257,7 +257,7 @@ function KnowledgeList({ onOpenArticle, onViewAllArticles }: Pick<Props, 'onOpen
   <span className="line-clamp-1 text-[15px] font-medium leading-snug text-foreground">{a.title}</span>
   <span className="line-clamp-1 text-[12px] leading-relaxed text-muted-foreground">{a.summary}</span>
   <span className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
-  <span className="rounded bg-[#fff1e8] px-1.5 py-0.5 text-[#e0651c]">{a.category}</span>
+  <span className="rounded bg-secondary px-1.5 py-0.5 text-primary">{a.category}</span>
   <span className="flex items-center gap-1">
   <Eye className="size-3" aria-hidden="true" />
   {a.reads}
@@ -299,7 +299,7 @@ function DailyQuiz({ onOpenChat }: Props) {
   return (
     <section aria-labelledby="quiz" className="rounded-2xl bg-white p-4">
       <h2 id="quiz" className="mb-3 flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
-        <Lightbulb className="size-4 text-[#e0651c]" aria-hidden="true" />
+        <Lightbulb className="size-4 text-primary" aria-hidden="true" />
         互动问答
       </h2>
 

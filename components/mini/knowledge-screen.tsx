@@ -63,7 +63,7 @@ function KnowledgeList({ onOpen }: { onOpen: (id: string) => void }) {
                   onClick={() => onOpen(a.id)}
                   className="flex w-full items-start gap-3 p-3 text-left transition-opacity active:opacity-70"
                 >
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#fff1e8] text-[#e0651c]">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                     <BookOpen className="size-5" aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -106,7 +106,7 @@ function KnowledgeDetail({
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto pb-4 [scrollbar-width:none]">
         <article className="bg-white px-4 pb-5 pt-3">
-          <span className="rounded bg-[#fff1e8] px-1.5 py-0.5 text-[11px] text-[#e0651c]">{article.category}</span>
+          <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] text-primary">{article.category}</span>
           <h2 className="mt-2 text-[19px] font-semibold leading-snug text-foreground text-balance">{article.title}</h2>
           <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-muted-foreground">
             <span>{article.author}</span>
@@ -166,7 +166,7 @@ function KnowledgeDetail({
             {related.map((a) => (
               <li key={a.id}>
                 <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-center gap-2.5 py-2.5 text-left">
-                  <BookOpen className="size-4 shrink-0 text-[#e0651c]" aria-hidden="true" />
+                  <BookOpen className="size-4 shrink-0 text-primary" aria-hidden="true" />
                   <span className="flex-1 truncate text-[13px] text-foreground">{a.title}</span>
                   <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
                 </button>

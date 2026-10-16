@@ -184,7 +184,7 @@ export function MineScreen({
                     <span className="relative">
                       <MineIcon src={p.icon} />
                       {count > 0 && (
-                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e0651c] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e5603a] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
                           {count}
                           <span className="sr-only">笔</span>
                         </span>
