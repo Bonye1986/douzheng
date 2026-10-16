@@ -9,6 +9,7 @@ import { CancelOrderScreen, TestingRefundScreen } from '@/components/mini/refund
 import { LogisticsScreen } from '@/components/mini/logistics-screen'
 import { SendSampleScreen } from '@/components/mini/send-sample-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
+import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +26,7 @@ type OrderActionHandlers = {
   onSendSample: (o: Order) => void
   onTestingRefund: (o: Order) => void
   onViewLogistics: (o: Order) => void
+  onViewReport: (o: Order) => void
 }
 
 const canSendSample = (o: Order) => o.type === 'self' && o.status === '待采样'
@@ -38,6 +40,7 @@ function OrderActions({
   onSendSample,
   onTestingRefund,
   onViewLogistics,
+  onViewReport,
 }: { order: Order } & OrderActionHandlers) {
   const sendable = canSendSample(o)
   return (
@@ -62,6 +65,7 @@ function OrderActions({
             if (o.unqualified) onHandleUnqualified(o)
             else if (o.action?.label === '采样指引') onOpenGuide()
             else if (o.action?.label === '查看物流') onViewLogistics(o)
+            else if (o.action?.label === '查看报告') onViewReport(o)
           }}
           className={cn(
             'h-7 rounded-full px-3.5 text-[12px] font-medium',
@@ -548,6 +552,7 @@ export function OrderListScreen({
   const [sendTarget, setSendTarget] = useState<Order | null>(null)
   const [sentNotes, setSentNotes] = useState<ReadonlyMap<string, string>>(() => new Map())
   const [logisticsTarget, setLogisticsTarget] = useState<Order | null>(null)
+  const [reportTarget, setReportTarget] = useState<Order | null>(null)
   const [refundTarget, setRefundTarget] = useState<Order | null>(null)
   const [refundAppliedIds, setRefundAppliedIds] = useState<ReadonlySet<string>>(() => new Set())
   const [resampleTarget, setResampleTarget] = useState<Order | null>(null)
@@ -630,6 +635,7 @@ export function OrderListScreen({
     onSendSample: setSendTarget,
     onTestingRefund: setRefundTarget,
     onViewLogistics: setLogisticsTarget,
+    onViewReport: setReportTarget,
   }
   const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
   const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
@@ -821,6 +827,18 @@ export function OrderListScreen({
           direction={logisticsTarget.status === '已发货' ? 'outbound' : 'return'}
           orderNo={logisticsTarget.id}
           onBack={() => setLogisticsTarget(null)}
+        />
+      )}
+      {reportTarget && (
+        <ReportDetailScreen
+          report={{
+            id: `BG${reportTarget.id.slice(2)}`,
+            product: reportTarget.product,
+            examinee: reportTarget.examinees.split('、')[0],
+            relation: '本人',
+            date: `${reportTarget.id.slice(2, 6)}-${reportTarget.id.slice(6, 8)}-${reportTarget.id.slice(8, 10)}`,
+          }}
+          onBack={() => setReportTarget(null)}
         />
       )}
       {refundTarget && (
