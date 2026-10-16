@@ -46,7 +46,6 @@ const tools = [
 ] as const
 
 function MineIcon({ src, className = 'size-8' }: { src: string; className?: string }) {
-  const padded = src.includes('mine-examinee')
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -55,7 +54,7 @@ function MineIcon({ src, className = 'size-8' }: { src: string; className?: stri
       aria-hidden="true"
       width={96}
       height={96}
-      className={`${className} object-cover mix-blend-multiply ${padded ? 'scale-[1.3]' : ''}`}
+      className={`${className} object-contain`}
     />
   )
 }
