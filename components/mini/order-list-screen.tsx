@@ -5,6 +5,7 @@ import { AlertTriangle, Building2, Home } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
+import { CancelOrderScreen } from '@/components/mini/refund-screen'
 import { cn } from '@/lib/utils'
 
 const shippedOrLaterStatuses = new Set(['已发货', '待采样', '已寄样', '已收样', '检测中', '已完成'])
@@ -122,7 +123,7 @@ const refundLabels: Record<RefundKind, string> = {
   resample: '终止并退款',
 }
 
-const orders: Order[] = [
+const allOrders: Order[] = [
   {
     id: 'DZ20261015001',
     type: 'self',
@@ -259,7 +260,7 @@ const orders: Order[] = [
 ]
 
 export function countOrders(phase: Exclude<OrderPhase, 'all'>) {
-  return orders.filter((o) => o.phase === phase).length
+  return allOrders.filter((o) => o.phase === phase).length
 }
 
 export function OrderListScreen({
@@ -279,6 +280,27 @@ export function OrderListScreen({
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
   const [detailOrder, setDetailOrder] = useState<Order | null>(null)
+  const [cancelTarget, setCancelTarget] = useState<Order | null>(null)
+  const [cancelledIds, setCancelledIds] = useState<ReadonlySet<string>>(() => new Set())
+  const orders = allOrders.map((o): Order =>
+    cancelledIds.has(o.id)
+      ? {
+          ...o,
+          phase: 'closed',
+          status: '已关闭',
+          note: '用户已取消订单，支付金额将原路退回',
+          refund: undefined,
+          action: undefined,
+        }
+      : o,
+  )
+
+  const confirmCancel = () => {
+    if (!cancelTarget) return
+    const id = cancelTarget.id
+    setCancelledIds((prev) => new Set(prev).add(id))
+    setCancelTarget(null)
+  }
 
   const statusTabs = statusTabsByType[type]
   const groupPhase = groupPhases.find((p) => p === statusKey)
@@ -412,7 +434,10 @@ export function OrderListScreen({
                 {o.refund && (
                   <button
                     type="button"
-                    onClick={() => o.refund && onRefund(o.refund)}
+                    onClick={() => {
+                      if (o.refund === 'cancel') setCancelTarget(o)
+                      else if (o.refund) onRefund(o.refund)
+                    }}
                     className="h-7 rounded-full border border-[#dfe5ef] px-3.5 text-[12px] font-medium text-muted-foreground"
                   >
                     {refundLabels[o.refund]}
@@ -444,6 +469,7 @@ export function OrderListScreen({
 
       {guideOpen && <SamplingVideoDialog onClose={() => setGuideOpen(false)} />}
       {detailOrder && <OrderDetailFromList order={detailOrder} onBack={() => setDetailOrder(null)} />}
+      {cancelTarget && <CancelOrderScreen onBack={() => setCancelTarget(null)} onCancelled={confirmCancel} />}
     </SubPage>
   )
 }
