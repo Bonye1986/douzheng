@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ShieldCheck } from 'lucide-react'
+import { ChevronRight, ShieldCheck } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { DatePickerSheet } from '@/components/mini/date-picker-sheet'
 import { genderLabel, relations, type Examinee, type Gender } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
@@ -35,6 +36,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
   const [phone, setPhone] = useState(initial?.phone ?? '')
   const [idCard, setIdCard] = useState(initial?.idCard ?? '')
   const [errors, setErrors] = useState<Errors>({})
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   const today = new Date().toISOString().slice(0, 10)
 
@@ -143,20 +145,18 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
             </div>
           </Row>
           <Row label="出生日期" required error={errors.birth}>
-            <input
-              type="date"
-              value={birth}
-              max={today}
-              onChange={(e) => {
-                setBirth(e.target.value)
-                clear('birth')
-              }}
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              aria-haspopup="dialog"
               aria-invalid={!!errors.birth}
-              className={cn(
-                'min-w-0 flex-1 bg-transparent text-right text-[14px] outline-none',
-                birth ? 'text-foreground' : 'text-[#a9b3c6]',
-              )}
-            />
+              className="flex min-w-0 flex-1 items-center justify-end gap-1 text-[14px]"
+            >
+              <span className={cn('tabular-nums', birth ? 'text-foreground' : 'text-[#a9b3c6]')}>
+                {birth ? birth.replace(/^(\d+)-(\d+)-(\d+)$/, '$1年$2月$3日') : '请选择出生日期'}
+              </span>
+              <ChevronRight className="size-4 shrink-0 text-[#a9b3c6]" aria-hidden="true" />
+            </button>
           </Row>
           <Row label="手机号" error={errors.phone}>
             <input
@@ -201,6 +201,19 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
           {editing ? '保存修改' : '保存受检人'}
         </button>
       </div>
+
+      {pickerOpen && (
+        <DatePickerSheet
+          value={birth}
+          max={today}
+          onCancel={() => setPickerOpen(false)}
+          onConfirm={(v) => {
+            setBirth(v)
+            clear('birth')
+            setPickerOpen(false)
+          }}
+        />
+      )}
     </SubPage>
   )
 }
