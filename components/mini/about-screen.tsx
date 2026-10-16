@@ -1,11 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import {
   BellRing,
   Building2,
-  Check,
-  ChevronRight,
   ClipboardList,
   Database,
   Dna,
@@ -17,7 +14,6 @@ import {
   MessagesSquare,
   Newspaper,
   Phone,
-  RefreshCw,
   Rocket,
   Search,
   type LucideIcon,
@@ -90,8 +86,6 @@ const modules: Module[] = [
   },
 ]
 
-const legalLinks = ['用户协议', '隐私政策', '检测知情同意书', '营业执照与资质']
-
 function SectionTitle({ id, icon: Icon, children }: { id: string; icon: LucideIcon; children: string }) {
   return (
     <h3 id={id} className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
@@ -102,14 +96,6 @@ function SectionTitle({ id, icon: Icon, children }: { id: string; icon: LucideIc
 }
 
 export function AboutScreen({ onBack }: { onBack: () => void }) {
-  const [updateState, setUpdateState] = useState<'idle' | 'checking' | 'latest'>('idle')
-
-  const handleCheckUpdate = () => {
-    if (updateState === 'checking') return
-    setUpdateState('checking')
-    setTimeout(() => setUpdateState('latest'), 1000)
-  }
-
   return (
     <SubPage title="关于我们" titleId="about-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto pb-6 [scrollbar-width:none]">
@@ -176,6 +162,30 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
             </p>
           </section>
 
+          <section aria-labelledby="about-company" className="rounded-2xl bg-white p-3.5">
+            <SectionTitle id="about-company" icon={Building2}>
+              公司简介
+            </SectionTitle>
+            <p className="mt-2 text-[13px] leading-relaxed text-foreground/80">
+              {COMPANY_NAME}（简称「都正生物」）成立于 2016 年，位于湘江新区，集「产、学、研」于一体，提供临床研究、医药研发信息化、医学检验技术服务，是一家以临床研究为基础、以「数据」沉淀为核心的学术型合同研究组织（Academic CRO）。
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-foreground/80">
+              公司拥有「药物临床评价技术」国家地方联合工程实验室、「复杂基质样本生物分析」湖南省重点实验室等平台，是国家级专精特新「小巨人」企业、「中国研发 CRO 20 强」。旗下长沙都正医学检验有限责任公司专注药物基因组检测、治疗药物监测（TDM）等精准医学服务。
+            </p>
+            <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+              {[
+                { label: '员工', value: '630+' },
+                { label: '外聘专家', value: '67' },
+                { label: '合作医院', value: '240+' },
+              ].map((s) => (
+                <div key={s.label} className="rounded-lg bg-[#f4f8fe] py-2">
+                  <dt className="text-[11px] text-muted-foreground">{s.label}</dt>
+                  <dd className="mt-0.5 text-[15px] font-semibold tabular-nums text-primary">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
           <section aria-labelledby="about-contact" className="rounded-2xl bg-white p-3.5">
             <h3 id="about-contact" className="sr-only">
               客服联系电话
@@ -195,49 +205,6 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
                 拨打
               </a>
             </div>
-          </section>
-
-          <section aria-label="协议与版本" className="rounded-2xl bg-white px-3.5">
-            <ul className="divide-y divide-border">
-              {legalLinks.map((l) => (
-                <li key={l}>
-                  <button type="button" className="flex w-full items-center justify-between py-3 text-left">
-                    <span className="text-[13px] text-foreground">{l}</span>
-                    <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
-              <li>
-                <button
-                  type="button"
-                  onClick={handleCheckUpdate}
-                  className="flex w-full items-center justify-between py-3 text-left"
-                  aria-live="polite"
-                >
-                  <span className="text-[13px] text-foreground">检查更新</span>
-                  <span className="flex items-center gap-1 text-[12px] text-muted-foreground">
-                    {updateState === 'checking' && (
-                      <>
-                        <RefreshCw className="size-3.5 motion-safe:animate-spin" aria-hidden="true" />
-                        检查中…
-                      </>
-                    )}
-                    {updateState === 'latest' && (
-                      <>
-                        <Check className="size-3.5 text-primary" aria-hidden="true" />
-                        已是最新版本
-                      </>
-                    )}
-                    {updateState === 'idle' && (
-                      <>
-                        <span className="tabular-nums">V{APP_VERSION}</span>
-                        <ChevronRight className="size-4" aria-hidden="true" />
-                      </>
-                    )}
-                  </span>
-                </button>
-              </li>
-            </ul>
           </section>
 
           <footer className="flex flex-col items-center gap-1 pt-2 text-center text-[10px] text-muted-foreground">
