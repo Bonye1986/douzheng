@@ -36,8 +36,6 @@ const tab = {
 
 const statusTabsByType: Record<OrderType, StatusTab[]> = {
   all: [
-    allTab,
-    tab.toPay,
     tab.toShip,
     tab.shipped,
     tab.toVerify,
@@ -48,8 +46,8 @@ const statusTabsByType: Record<OrderType, StatusTab[]> = {
     tab.done,
     tab.closed,
   ],
-  self: [allTab, tab.toPay, tab.toShip, tab.shipped, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
-  site: [allTab, tab.toPay, tab.toVerify, tab.toSample, tab.received, tab.testing, tab.done, tab.closed],
+  self: [allTab, tab.toShip, tab.shipped, tab.toSample, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
+  site: [allTab, tab.toVerify, tab.toSample, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
 }
 
 const groupPhases: GroupPhase[] = ['toSample', 'testing']
@@ -115,6 +113,28 @@ const orders: Order[] = [
     note: '采样盒运输中，预计明日送达',
     refund: 'shipped',
     action: { label: '查看物流' },
+  },
+  {
+    id: 'DZ20261012010',
+    type: 'self',
+    phase: 'toSample',
+    status: '待采样',
+    product: '药物基因检测',
+    examinees: '李秀兰',
+    amount: '¥999',
+    note: '采样盒已签收，请按说明完成采样并回寄',
+    refund: 'shipped',
+    action: { label: '采样指引', primary: true },
+  },
+  {
+    id: 'DZ20261011012',
+    type: 'site',
+    phase: 'testing',
+    status: '已寄样',
+    product: '个体化用药基因检测 · 全面版',
+    examinees: '张伟',
+    amount: '¥1,299',
+    note: '采样点已寄出样本，正在运往实验室',
   },
   {
     id: 'DZ20261014002',
@@ -259,7 +279,7 @@ export function OrderListScreen({
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => setStatusKey(t.key)}
+              onClick={() => setStatusKey(active && type === 'all' ? 'all' : t.key)}
               className={cn(
                 'flex h-7 shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 text-[12px] transition-colors',
                 active ? 'bg-primary font-medium text-primary-foreground' : 'bg-white text-muted-foreground',
