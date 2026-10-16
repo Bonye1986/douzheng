@@ -13,7 +13,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
-import { DefaultAvatar } from '@/components/mini/default-avatar'
+import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
 import { genderLabel, initialExaminees, type Gender } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
@@ -320,7 +320,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
 
       <ul className="mt-3 space-y-1 px-1.5 text-[11px] leading-4 text-muted-foreground">
         <li>· 更换后，登录账号、短信通知（用药提醒、报告出具等）将使用新手机号</li>
-        <li>· 检测人信息中填写的手机号不会自动变更，可在检测人管理中修改</li>
+        <li>· 检测人信息中填写的手机号不会自动变更，可在检测人管理中���改</li>
         <li>· 原手机号无法接收验证码？请联系客服人工处理</li>
       </ul>
 
@@ -591,7 +591,7 @@ export function AccountSettingsScreen({
   const self = initialExaminees[0]
   const [view, setView] = useState<AccountView>(initialView)
   const [profile, setProfile] = useState<Profile>({
-    nickname: maskPhone(self.phone ?? '13812345678'),
+    nickname: DEFAULT_NICKNAME,
     realName: self.name,
     gender: self.gender,
     birth: self.birth ?? '',
