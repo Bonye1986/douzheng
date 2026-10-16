@@ -117,6 +117,18 @@ const screens = [
     node: <MineScreen initialReportOpen initialReportDetailId="BG20261008001" />,
   },
   {
+    id: '22',
+    title: '我的 · 我的优惠券',
+    desc: '按可使用 / 已使用 / 已过期分类展示优惠券（面额、门槛、适用范围、有效期），即将过期标签提醒；可使用券点击去使用，顶部入口跳转领券中心；底部展示使用说明（可在画板内交互）',
+    node: <MineScreen initialCoupon="mine" />,
+  },
+  {
+    id: '23',
+    title: '我的 · 领券中心',
+    desc: '展示可领取的优惠券（新人券、套餐券、项目专享券），显示剩余比例；点击立即领取后变为已领取并提示，库存为 0 显示已抢光；领取的券进入我的优惠券（可在画板内交互）',
+    node: <MineScreen initialCoupon="center" />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '按受检人 × 检测项目展示科研样本授权状态（已授权 / 未授权 / 已撤回），支持签署、重新签署与撤回，操作前弹出知情同意书或撤回提示（可在画板内交互）',
@@ -161,7 +173,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'mine',
     title: '我的',
     summary: '订单、报告与报告详情、授权与同意书、样本不合格处理',
-    ids: ['18', '20', '21', '16', '19'],
+    ids: ['18', '20', '21', '22', '23', '16', '19'],
   },
   { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]

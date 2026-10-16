@@ -30,6 +30,7 @@ import { OrderListScreen, countOrders, type OrderPhase } from '@/components/mini
 import { AfterSalesScreen, pendingAfterSalesCount } from '@/components/mini/after-sales-screen'
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { ReportListScreen, unreadReportCount } from '@/components/mini/report-list-screen'
+import { CouponCenterScreen, MyCouponsScreen, usableCouponCount } from '@/components/mini/coupon-screens'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
@@ -84,12 +85,16 @@ export function MineScreen({
   initialResampleOpen = false,
   initialReportOpen = false,
   initialReportDetailId,
+  initialCoupon = null,
 }: {
   initialAuthOpen?: boolean
   initialResampleOpen?: boolean
   initialReportOpen?: boolean
   initialReportDetailId?: string
+  initialCoupon?: 'mine' | 'center' | null
 }) {
+  const [myCouponsOpen, setMyCouponsOpen] = useState(initialCoupon === 'mine')
+  const [couponCenterOpen, setCouponCenterOpen] = useState(initialCoupon === 'center')
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
   const [resampleOpen, setResampleOpen] = useState(initialResampleOpen)
@@ -192,16 +197,24 @@ export function MineScreen({
 
         {/* 我的优惠券 / 领券中心 */}
         <section aria-label="优惠券" className="mt-2.5 grid grid-cols-2 gap-2.5">
-          <button type="button" className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left">
+          <button
+            type="button"
+            onClick={() => setMyCouponsOpen(true)}
+            className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
+          >
             <TicketPercent className="size-6 shrink-0 text-[#f07a2c]" strokeWidth={1.6} aria-hidden="true" />
             <span>
               <span className="block text-[14px] font-medium text-foreground">我的优惠券</span>
               <span className="block text-[11px] text-muted-foreground">
-                <span className="tabular-nums text-[#f07a2c]">2</span> 张可用
+                <span className="tabular-nums text-[#f07a2c]">{usableCouponCount}</span> 张可用
               </span>
             </span>
           </button>
-          <button type="button" className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left">
+          <button
+            type="button"
+            onClick={() => setCouponCenterOpen(true)}
+            className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
+          >
             <Gift className="size-6 shrink-0 text-[#f07a2c]" strokeWidth={1.6} aria-hidden="true" />
             <span>
               <span className="block text-[14px] font-medium text-foreground">领券中心</span>
@@ -245,6 +258,10 @@ export function MineScreen({
       {reportOpen && <ReportListScreen onBack={() => setReportOpen(false)} initialDetailId={initialReportDetailId} />}
       {authOpen && <AuthorizationScreen onBack={() => setAuthOpen(false)} />}
       {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
+      {myCouponsOpen && (
+        <MyCouponsScreen onBack={() => setMyCouponsOpen(false)} onOpenCenter={() => setCouponCenterOpen(true)} />
+      )}
+      {couponCenterOpen && <CouponCenterScreen onBack={() => setCouponCenterOpen(false)} />}
     </div>
   )
 }
