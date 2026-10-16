@@ -22,7 +22,7 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
-import { ResearchSignFlow } from '@/components/mini/research-sign-flow'
+import { ResearchSignFlow, researchDocs } from '@/components/mini/research-sign-flow'
 
 type ResearchItem = { key: string; memberName: string; serviceName: string }
 import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
@@ -124,6 +124,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [couponOpen, setCouponOpen] = useState(false)
   const [agreed, setAgreed] = useState(false)
   const [consentOpen, setConsentOpen] = useState(false)
+  const [researchDocOpen, setResearchDocOpen] = useState(false)
   const [research, setResearch] = useState<Record<string, string[]>>({})
   const toggleResearch = (serviceId: string, memberId: string) =>
     setResearch((r) => {
@@ -476,14 +477,16 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                       <p className="flex items-center gap-1 text-[12px] text-foreground">
                         科研授权
                         <span className="rounded bg-white px-1 py-px text-[10px] text-[#8a94a6]">可选</span>
-                        <a href="#" className="ml-auto text-[11px] text-primary">
+                        <button
+                          type="button"
+                          onClick={() => setResearchDocOpen(true)}
+                          className="ml-auto flex items-center text-[11px] text-primary"
+                        >
                           《科研知情同意书》
-                        </a>
+                          <ChevronRight className="size-3" aria-hidden="true" />
+                        </button>
                       </p>
-                      <p className="mt-0.5 text-[10px] leading-4 text-[#a9b3c6]">
-                        勾选后可在支付结果页或「授权与同意书」完成人脸核验签署
-                      </p>
-                      <ul className="mt-1.5 flex flex-col gap-1.5">
+                      <ul className="mt-2 flex flex-col gap-1.5">
                         {examinees
                           .filter((e) => selected.includes(e.id))
                           .map((e) => {
@@ -514,8 +517,8 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                             )
                           })}
                       </ul>
-                      <p className="mt-1.5 text-[10px] leading-4 text-[#a9b3c6]">
-                        不勾选不影响检测，可在「我的 → 授权与同意书」中签署或撤回
+                      <p className="mt-2 text-[10px] leading-4 text-[#8a94a6]">
+                        选填，不影响检测；勾选后需人脸核验签署，可随时在「我的 → 授权与同意书」撤回
                       </p>
                     </div>
                   )}
@@ -755,6 +758,8 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         />
       )}
 
+      {researchDocOpen && <ResearchDocSheet onClose={() => setResearchDocOpen(false)} />}
+
       {sheet === 'site' && (
         <SiteListScreen
           selected={siteId}
@@ -839,34 +844,108 @@ function SampleTypePicker({
     )
   }
 
+  const labelId = `sample-${serviceId}`
+
   return (
-    <div className="mt-2.5 flex items-start gap-2">
-      <span className="flex h-7 shrink-0 items-center gap-1 text-[12px] text-muted-foreground">
-        <FlaskConical className="size-3.5" aria-hidden="true" />
-        样本类型
-      </span>
-      <div className="min-w-0 flex-1">
-        <div role="radiogroup" aria-label={`${serviceName}的样本类型`} className="flex flex-wrap gap-1.5">
-          {opts.map((o) => {
-            const on = o.id === value
-            return (
-              <button
-                key={o.id}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                onClick={() => onChange(o.id)}
-                className={cn(
-                  'h-7 rounded-md border px-2.5 text-[12px] transition-colors',
-                  on ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-[#f7f9fc] text-foreground',
-                )}
-              >
-                {o.label}
-              </button>
-            )
-          })}
+    <div className={cn('mt-2.5 rounded-xl border p-3 transition-colors', warn && !current ? 'border-[#f3b6a3] bg-[#fff7f4]' : 'border-border')}>
+      <p className="flex items-center gap-1.5">
+        <span className="flex size-5 items-center justify-center rounded-md bg-[#eef5ff] text-primary" aria-hidden="true">
+          <FlaskConical className="size-3" />
+        </span>
+        <span id={labelId} className="text-[12px] font-medium text-foreground">
+          样本类型
+        </span>
+        <span className="ml-auto text-[10px] text-[#8a94a6]">
+          {opts.length > 1 ? `${opts.length} 种可选` : `${samplingLabel[mode]}仅支持此类型`}
+        </span>
+      </p>
+      <div
+        role="radiogroup"
+        aria-labelledby={labelId}
+        aria-label={`${serviceName}的样本类型`}
+        className={cn('mt-2 grid gap-1.5', opts.length > 1 ? 'grid-cols-2' : 'grid-cols-1')}
+      >
+        {opts.map((o) => {
+          const on = o.id === value
+          return (
+            <button
+              key={o.id}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => onChange(o.id)}
+              className={cn(
+                'relative flex flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 text-left transition-colors',
+                on ? 'border-primary bg-[#eef5ff]' : 'border-transparent bg-[#f5f7fb]',
+              )}
+            >
+              <span className={cn('text-[13px] font-medium', on ? 'text-primary' : 'text-foreground')}>{o.label}</span>
+              <span className="pr-4 text-[10px] leading-[14px] text-muted-foreground">{o.hint}</span>
+              {on && (
+                <span
+                  aria-hidden="true"
+                  className="absolute right-1.5 top-1.5 flex size-3.5 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                >
+                  <Check className="size-2.5" strokeWidth={3} />
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+      {warn && !current && (
+        <p role="alert" className="mt-1.5 text-[11px] text-[#e5603a]">
+          请选择样本类型
+        </p>
+      )}
+    </div>
+  )
+}
+
+function ResearchDocSheet({ onClose }: { onClose: () => void }) {
+  const doc = researchDocs.sign
+  return (
+    <div className="absolute inset-0 z-30 flex flex-col justify-end">
+      <button type="button" aria-label="关闭" onClick={onClose} className="absolute inset-0 bg-black/40" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="research-doc-title"
+        className="relative flex max-h-[78%] flex-col rounded-t-2xl bg-white motion-safe:animate-in motion-safe:slide-in-from-bottom"
+      >
+        <div className="flex h-12 shrink-0 items-center justify-center border-b border-border px-4">
+          <h2 id="research-doc-title" className="text-[15px] font-semibold text-foreground">
+            《{doc.title}》
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="关闭"
+            className="absolute right-3 flex size-8 items-center justify-center rounded-full text-muted-foreground"
+          >
+            <X className="size-4" aria-hidden="true" />
+          </button>
         </div>
-        {current && <p className="mt-1 text-[11px] text-muted-foreground">{current.hint}</p>}
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 [scrollbar-width:none]">
+          {doc.body.map((p) => (
+            <p key={p} className="mb-2.5 text-[13px] leading-6 text-foreground/80">
+              {p}
+            </p>
+          ))}
+          <p className="flex items-start gap-1.5 rounded-lg bg-[#f4f8fe] px-3 py-2 text-[11px] leading-[18px] text-muted-foreground">
+            <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
+            此处仅供预览。勾选同意后，需在支付完成后通过 e签宝 人脸核验完成正式签署。
+          </p>
+        </div>
+        <div className="shrink-0 px-4 pb-6 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
+          >
+            我知道了
+          </button>
+        </div>
       </div>
     </div>
   )

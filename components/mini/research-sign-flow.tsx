@@ -17,7 +17,7 @@ type Props = {
   onDone: () => void
 }
 
-const docs: Record<SignAction, { title: string; body: string[] }> = {
+export const researchDocs: Record<SignAction, { title: string; body: string[] }> = {
   sign: {
     title: '科研知情同意书',
     body: [
@@ -43,7 +43,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
 
-  const doc = docs[action]
+  const doc = researchDocs[action]
   const isSign = action === 'sign'
 
   const startVerify = () => {
