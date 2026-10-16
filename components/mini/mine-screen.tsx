@@ -33,6 +33,7 @@ import { ReportListScreen, unreadReportCount } from '@/components/mini/report-li
 import { CouponCenterScreen, MyCouponsScreen, usableCouponCount } from '@/components/mini/coupon-screens'
 import { ExamineeManageScreen, type ExamineeView } from '@/components/mini/examinee-manage-screen'
 import { AddressManageScreen, type AddressView } from '@/components/mini/address-manage-screen'
+import { MedicationReminderScreen, type ReminderView } from '@/components/mini/medication-reminder-screen'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
@@ -91,7 +92,9 @@ export function MineScreen({
   initialExamineeView = null,
   initialAddressView = null,
   initialAuthTab = 'test',
+  initialReminderView = null,
 }: {
+  initialReminderView?: ReminderView | null
   initialAuthTab?: 'test' | 'research'
   initialAuthOpen?: boolean
   initialResampleOpen?: boolean
@@ -103,6 +106,7 @@ export function MineScreen({
 }) {
   const [examineeView, setExamineeView] = useState<ExamineeView | null>(initialExamineeView)
   const [addressView, setAddressView] = useState<AddressView | null>(initialAddressView)
+  const [reminderView, setReminderView] = useState<ReminderView | null>(initialReminderView)
   const [myCouponsOpen, setMyCouponsOpen] = useState(initialCoupon === 'mine')
   const [couponCenterOpen, setCouponCenterOpen] = useState(initialCoupon === 'center')
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
@@ -247,6 +251,7 @@ export function MineScreen({
                     if (t.key === 'auth') setAuthOpen(true)
                     if (t.key === 'examinee') setExamineeView('list')
                     if (t.key === 'address') setAddressView('list')
+                    if (t.key === 'reminder') setReminderView('list')
                   }}
                   className="flex w-full flex-col items-center gap-1.5"
                 >
@@ -278,6 +283,9 @@ export function MineScreen({
       {couponCenterOpen && <CouponCenterScreen onBack={() => setCouponCenterOpen(false)} />}
       {examineeView && <ExamineeManageScreen initialView={examineeView} onBack={() => setExamineeView(null)} />}
       {addressView && <AddressManageScreen initialView={addressView} onBack={() => setAddressView(null)} />}
+      {reminderView && (
+        <MedicationReminderScreen initialView={reminderView} onBack={() => setReminderView(null)} />
+      )}
     </div>
   )
 }

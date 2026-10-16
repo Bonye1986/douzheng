@@ -189,6 +189,36 @@ const screens = [
     node: <MineScreen initialAddressView="empty" />,
   },
   {
+    id: '35',
+    title: '我的 · 用药提醒',
+    desc: '顶部概览下一次提醒时间、今日提醒次数与进行中数量；提醒卡片展示药品、用药人、剂量、服用要求、频率与时间点，可开关暂停短信、编辑、删除，最多 20 条（可在画板内交互）',
+    node: <MineScreen initialReminderView="list" />,
+  },
+  {
+    id: '36',
+    title: '用药提醒 · 添加提醒',
+    desc: '选择用药人，填写药品名称、单次剂量与单位、服用要求；设置频率（每天 / 隔天 / 每周指定日）、最多 6 个服用时间、开始日期与疗程；配置短信接收手机号与发送时间并实时预览短信内容',
+    node: <MineScreen initialReminderView="add" />,
+  },
+  {
+    id: '37',
+    title: '用药提醒 · 编辑提醒',
+    desc: '回填已有提醒信息，修改后保存立即按新计划发送短信；脱敏手机号不修改时原样保留，保留开关状态',
+    node: <MineScreen initialReminderView="edit" />,
+  },
+  {
+    id: '38',
+    title: '用药提醒 · 删除提醒',
+    desc: '删除前二次确认并展示药品、用药人与时间摘要，提示删除后不再发送短信且不可恢复，仅想暂停可关闭开关',
+    node: <MineScreen initialReminderView="delete" />,
+  },
+  {
+    id: '39',
+    title: '用药提醒 · 空状态',
+    desc: '尚未设置任何提醒时展示引导插图与说明，点击添加用药提醒进入表单',
+    node: <MineScreen initialReminderView="empty" />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
@@ -252,6 +282,12 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     title: '地址管理',
     summary: '收货地址列表、新增 / 编辑 / 删除地址、设为默认与空状态',
     ids: ['29', '30', '31', '32', '33'],
+  },
+  {
+    key: 'reminder',
+    title: '用药提醒',
+    summary: '提醒列表、添加 / 编辑 / 删除提醒、暂停开关与空状态，到点短信通知用户',
+    ids: ['35', '36', '37', '38', '39'],
   },
   { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
