@@ -35,7 +35,7 @@ const returnAddress = {
 }
 
 type RefundOption = 'return' | 'deduct'
-type Step = 'choose' | 'return' | 'deduct' | 'done'
+type Step = 'choose' | 'return' | 'deduct'
 
 function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return <div className={cn('rounded-2xl bg-white p-3.5', className)}>{children}</div>
@@ -162,12 +162,10 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
   const [trackingNo, setTrackingNo] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const selected = options.find((o) => o.key === option)
   const titles: Record<Step, string> = {
     choose: '申请退款',
     return: '寄回采样盒',
     deduct: '确认退款',
-    done: '退款申请详情',
   }
 
   const handleBack = () => {
@@ -325,8 +323,8 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
             </Card>
           </div>
           <BottomBar>
-            <PrimaryButton disabled={trackingNo.trim().length < 6} onClick={() => setStep('done')}>
-              提交退款申请
+            <PrimaryButton disabled={trackingNo.trim().length < 6} onClick={onBack}>
+              确认退款 ¥{shippedOrder.paid}
             </PrimaryButton>
           </BottomBar>
         </>
@@ -352,49 +350,11 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
             </p>
           </div>
           <BottomBar>
-            <PrimaryButton onClick={() => setStep('done')}>确认退款 ¥{shippedOrder.paid - KIT_FEE}</PrimaryButton>
+            <PrimaryButton onClick={onBack}>确认退款 ¥{shippedOrder.paid - KIT_FEE}</PrimaryButton>
           </BottomBar>
         </>
       )}
 
-      {step === 'done' && selected && (
-        <>
-          <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <Card className="p-4 text-center">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
-                <CircleDollarSign className="size-6" aria-hidden="true" />
-              </span>
-              <p className="mt-2.5 text-[16px] font-semibold text-foreground">退款申请已提交</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                {option === 'return' ? '实验室签收采样盒后' : '审核通过后'}将退款{' '}
-                <span className="font-medium tabular-nums text-[#e0651c]">¥{selected.amount}</span>
-              </p>
-            </Card>
-            <Card>
-              <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
-              <Timeline
-                items={
-                  option === 'return'
-                    ? [
-                        { title: '提交退款申请', desc: `自费寄回 · 快递单号 ${trackingNo}`, state: 'done' },
-                        { title: '采样盒回寄中', desc: '实验室签收并确认采样盒完好', state: 'current' },
-                        { title: '全额退款到账', desc: `¥${selected.amount} 原路退回至微信支付账户`, state: 'todo' },
-                      ]
-                    : [
-                        { title: '提交退款申请', desc: `扣除采样盒费用 ¥${KIT_FEE}`, state: 'done' },
-                        { title: '审核中', desc: '预计 1 个工作日内完成', state: 'current' },
-                        { title: '退款到账', desc: `¥${selected.amount} 原路退回至微信支付账户`, state: 'todo' },
-                      ]
-                }
-              />
-            </Card>
-            <OrderBrief {...shippedOrder} status="退款中" />
-          </div>
-          <BottomBar>
-            <PrimaryButton onClick={onBack}>返回订单</PrimaryButton>
-          </BottomBar>
-        </>
-      )}
     </SubPage>
   )
 }
@@ -554,41 +514,8 @@ export function TestingRefundScreen({
   onSubmitted?: () => void
 }) {
   const [reason, setReason] = useState<string | null>(null)
-  const [done, setDone] = useState(false)
   const fees = testingFees(order)
   const refund = Math.max(order.paid - fees.reduce((s, f) => s + f.amount, 0), 0)
-
-  if (done) {
-    return (
-      <SubPage title="退款详情" titleId="testing-refund-title" onBack={onBack}>
-        <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-          <Card className="p-4 text-center">
-            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#fff1e6] text-[#e0651c]">
-              <CircleDollarSign className="size-6" aria-hidden="true" />
-            </span>
-            <p className="mt-2.5 text-[16px] font-semibold text-foreground">退款申请已提交</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">
-              审核通过后将退款 <span className="font-medium tabular-nums text-[#e0651c]">¥{refund}</span>
-            </p>
-          </Card>
-          <Card>
-            <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款进度</h2>
-            <Timeline
-              items={[
-                { title: '提交退款申请', desc: `退款原因：${reason}`, state: 'done' },
-                { title: '审核中', desc: '实验室核算已产生费用，预计 1-3 个工作日内完成', state: 'current' },
-                { title: '退款到账', desc: `¥${refund} 原路退回至微信支付账户`, state: 'todo' },
-              ]}
-            />
-          </Card>
-          <OrderBrief {...order} status="退款审核中" />
-        </div>
-        <BottomBar>
-          <PrimaryButton onClick={onBack}>返回订单</PrimaryButton>
-        </BottomBar>
-      </SubPage>
-    )
-  }
 
   return (
     <SubPage title="申请退款" titleId="testing-refund-title" onBack={onBack}>
@@ -600,7 +527,7 @@ export function TestingRefundScreen({
           <div className="min-w-0">
             <p className="text-[14px] font-semibold text-[#c2541a]">需扣除已产生的费用</p>
             <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
-              订单当前为「{order.status}」，退款审核通过后实验室将停止检测并销毁样本，剩余金额原路退回。
+              订单当前为「{order.status}」，确认退款后实验室将停止检测并销毁样本，剩余金额原路退回。
             </p>
           </div>
         </div>
@@ -634,7 +561,7 @@ export function TestingRefundScreen({
 
         <p className="flex gap-1.5 px-1 text-[11px] leading-relaxed text-muted-foreground">
           <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-          最终退款金额以实验室审核核算为准，审核期间检测暂停。
+          确认后无需等待审核，订单关闭，退款金额原路退回至微信支付账户。
         </p>
         {onContact && (
           <button
@@ -651,11 +578,11 @@ export function TestingRefundScreen({
         <PrimaryButton
           disabled={!reason}
           onClick={() => {
-            setDone(true)
-            onSubmitted?.()
-          }}
-        >
-          提交退款申请 ¥{refund}
+              onSubmitted?.()
+              onBack()
+            }}
+          >
+            确认退款 ¥{refund}
         </PrimaryButton>
       </BottomBar>
     </SubPage>

@@ -506,7 +506,7 @@ const statusSeeds: StatusSeed[] = [
     type: 'site',
     phase: 'done',
     status: '已完成',
-    action: { label: '查看报告', primary: true },
+    action: { label: '查看���告', primary: true },
     notes: ['检测报告已出具，可在线查看'],
   },
   {
@@ -683,7 +683,14 @@ export function OrderListScreen({
         }
       : o
     if (refundAppliedIds.has(o.id)) {
-      return { ...base, note: '退款申请已提交，实验室审核中，检测已暂停', refund: undefined }
+      return {
+        ...base,
+        phase: 'closed',
+        status: '已关闭',
+        note: '已退款，扣除已产生费用后剩余金额已原路退回',
+        refund: undefined,
+        action: undefined,
+      }
     }
     if (sentNote) return base
     return cancelledIds.has(o.id)
