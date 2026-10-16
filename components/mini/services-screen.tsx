@@ -17,9 +17,20 @@ import { cn } from '@/lib/utils'
 type Props = {
   onOpenChat?: (question?: string) => void
   onCategory?: (id: ServiceCategoryId) => void
+  onOpenTest?: (id: string) => void
+  onViewAllTests?: () => void
+  onOpenArticle?: (id: string) => void
+  onViewAllArticles?: () => void
 }
 
-export function ServicesScreen({ onOpenChat, onCategory }: Props) {
+export function ServicesScreen({
+  onOpenChat,
+  onCategory,
+  onOpenTest,
+  onViewAllTests,
+  onOpenArticle,
+  onViewAllArticles,
+}: Props) {
   return (
     <div className="flex h-full flex-col bg-[#f4f8fe]">
       <div className="bg-white">
@@ -34,8 +45,8 @@ export function ServicesScreen({ onOpenChat, onCategory }: Props) {
         <div className="flex flex-col gap-3 px-4 pt-3">
           <BannerCarousel />
           <CategoryGrid onCategory={onCategory} />
-          <RecommendedTests />
-          <KnowledgeList />
+          <RecommendedTests onOpenTest={onOpenTest} onViewAllTests={onViewAllTests} />
+          <KnowledgeList onOpenArticle={onOpenArticle} onViewAllArticles={onViewAllArticles} />
           <DailyQuiz onOpenChat={onOpenChat} />
         </div>
       </div>
@@ -43,14 +54,29 @@ export function ServicesScreen({ onOpenChat, onCategory }: Props) {
   )
 }
 
-function SectionHeader({ id, title, action }: { id: string; title: string; action?: string }) {
+function SectionHeader({
+  id,
+  title,
+  action,
+  onAction,
+}: {
+  id: string
+  title: string
+  action?: string
+  onAction?: () => void
+}) {
   return (
     <div className="mb-3 flex items-center justify-between">
       <h2 id={id} className="text-[15px] font-semibold text-foreground">
         {title}
       </h2>
       {action && (
-        <button type="button" className="flex items-center text-[12px] text-muted-foreground">
+        <button
+          type="button"
+          onClick={onAction}
+          aria-label={`${title}：${action}`}
+          className="flex items-center text-[12px] text-muted-foreground"
+        >
           {action}
           <ChevronRight className="size-3.5" aria-hidden="true" />
         </button>
@@ -157,14 +183,18 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
   )
 }
 
-function RecommendedTests() {
+function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTest' | 'onViewAllTests'>) {
   return (
     <section aria-labelledby="rec-tests" className="rounded-2xl bg-white p-4">
-      <SectionHeader id="rec-tests" title="推荐检查" action="全部" />
+      <SectionHeader id="rec-tests" title="推荐检查" action="全部" onAction={onViewAllTests} />
       <ul className="flex flex-col divide-y divide-border">
         {recommendedTests.map((t) => (
           <li key={t.id} className="py-3 first:pt-0 last:pb-0">
-            <button type="button" className="flex w-full gap-3 text-left">
+            <button
+              type="button"
+              onClick={() => onOpenTest?.(t.id)}
+              className="flex w-full gap-3 text-left transition-opacity active:opacity-70"
+            >
               <span className="flex size-[72px] shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#e6f1fe,#cfe3fd)]">
                 <Image src="/images/drugene-icon.png" alt="" width={40} height={40} className="size-10 object-contain" />
               </span>
@@ -199,14 +229,18 @@ function RecommendedTests() {
   )
 }
 
-function KnowledgeList() {
+function KnowledgeList({ onOpenArticle, onViewAllArticles }: Pick<Props, 'onOpenArticle' | 'onViewAllArticles'>) {
   return (
     <section aria-labelledby="knowledge" className="rounded-2xl bg-white p-4">
-      <SectionHeader id="knowledge" title="知识科普" action="更多" />
+      <SectionHeader id="knowledge" title="知识科普" action="更多" onAction={onViewAllArticles} />
       <ul className="flex flex-col gap-3">
-        {articles.map((a) => (
+        {articles.slice(0, 3).map((a) => (
           <li key={a.id}>
-            <button type="button" className="flex w-full items-start gap-3 text-left">
+            <button
+              type="button"
+              onClick={() => onOpenArticle?.(a.id)}
+              className="flex w-full items-start gap-3 text-left transition-opacity active:opacity-70"
+            >
               <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#fff1e8] text-[#e0651c]">
                 <BookOpen className="size-4" aria-hidden="true" />
               </span>

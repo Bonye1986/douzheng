@@ -14,6 +14,7 @@ import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { ExamineeManageScreen } from '@/components/mini/examinee-manage-screen'
 import { MedicationReminderScreen } from '@/components/mini/medication-reminder-screen'
 import { LoginRequiredDialog } from '@/components/mini/login-required-dialog'
+import { KnowledgeScreen } from '@/components/mini/knowledge-screen'
 import {
   reportChatQuestion,
   serviceCategories,
@@ -44,6 +45,17 @@ export function HomeFlow({
   const [request, setRequest] = useState<ChatRequest | null>(null)
   const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
   const [loginPrompt, setLoginPrompt] = useState<string | null>(null)
+  const [knowledgeEntry, setKnowledgeEntry] = useState<{ key: number; articleId?: string } | null>(null)
+  // Remounting TestsScreen via key lets it re-read the requested detail id when entered from 服务.
+  const [testEntry, setTestEntry] = useState<{ key: number; detailId?: string }>({
+    key: 0,
+    detailId: initialDetailId,
+  })
+
+  const openTests = (detailId?: string) => {
+    setTestEntry({ key: Date.now(), detailId })
+    setTab('test')
+  }
 
   const openChat = (question?: string) => {
     if (question) setRequest({ question, id: Date.now() })
@@ -57,7 +69,7 @@ export function HomeFlow({
       setLoginPrompt(category.label)
       return
     }
-    if (id === 'tests') setTab('test')
+    if (id === 'tests') openTests()
     else if (id === 'report') openChat(reportChatQuestion)
     else if (id === 'health') setSubPage('examinee')
     else if (id === 'remind') setSubPage('reminder')
@@ -69,9 +81,20 @@ export function HomeFlow({
         {tab === 'home' ? (
           <HomeScreen onOpenChat={openChat} />
         ) : tab === 'service' ? (
-          <ServicesScreen onOpenChat={openChat} onCategory={handleCategory} />
+          <ServicesScreen
+            onOpenChat={openChat}
+            onCategory={handleCategory}
+            onOpenTest={(id) => openTests(id)}
+            onViewAllTests={() => openTests()}
+            onOpenArticle={(id) => setKnowledgeEntry({ key: Date.now(), articleId: id })}
+            onViewAllArticles={() => setKnowledgeEntry({ key: Date.now() })}
+          />
         ) : tab === 'test' ? (
-          <TestsScreen initialDetailId={initialDetailId} initialCart={initialCart} initialCartOpen={initialCartOpen}
+          <TestsScreen
+            key={testEntry.key}
+            initialDetailId={testEntry.detailId}
+            initialCart={initialCart}
+            initialCartOpen={initialCartOpen}
             initialCheckout={initialCheckout}
           />
         ) : tab === 'me' ? (
@@ -100,6 +123,14 @@ export function HomeFlow({
 
       {subPage === 'examinee' && <ExamineeManageScreen onBack={() => setSubPage(null)} />}
       {subPage === 'reminder' && <MedicationReminderScreen onBack={() => setSubPage(null)} />}
+      {knowledgeEntry && (
+        <KnowledgeScreen
+          key={knowledgeEntry.key}
+          initialArticleId={knowledgeEntry.articleId}
+          onBack={() => setKnowledgeEntry(null)}
+          onAskAi={(question) => openChat(question)}
+        />
+      )}
 
       {loginPrompt && (
         <LoginRequiredDialog
