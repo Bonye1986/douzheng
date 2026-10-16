@@ -17,6 +17,8 @@ type Props = {
   payable: number
   status?: string
   statusDesc?: string
+  /** 管理端发货时自动生成，自采样订单已发货及后续状态展示 */
+  sampleCodes?: { name: string; code: string }[]
   onBack: () => void
 }
 
@@ -34,6 +36,7 @@ export function OrderDetailScreen({
   payable,
   status: statusProp,
   statusDesc: statusDescProp,
+  sampleCodes,
   onBack,
 }: Props) {
   const isSelf = mode === 'self'
@@ -144,6 +147,21 @@ export function OrderDetailScreen({
                 <dd className="min-w-0 flex-1 text-right tabular-nums text-foreground">{v}</dd>
               </div>
             ))}
+            {isSelf && sampleCodes && sampleCodes.length > 0 && (
+              <div className="flex gap-3">
+                <dt className="w-14 shrink-0 text-muted-foreground">样本编码</dt>
+                <dd className="min-w-0 flex-1">
+                  <ul className="flex flex-col items-end gap-1">
+                    {sampleCodes.map((s) => (
+                      <li key={s.code} className="flex items-center gap-1.5 text-foreground">
+                        {sampleCodes.length > 1 && <span className="text-muted-foreground">{s.name}</span>}
+                        <span className="font-mono tabular-nums">{s.code}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
           </dl>
         </section>
       </div>

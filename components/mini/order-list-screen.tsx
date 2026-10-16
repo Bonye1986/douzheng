@@ -7,6 +7,8 @@ import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { cn } from '@/lib/utils'
 
+const shippedOrLaterStatuses = new Set(['已发货', '待采样', '已寄样', '已收样', '检测中', '已完成'])
+
 const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 
 function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => void }) {
@@ -16,6 +18,10 @@ function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => vo
   const per = Math.round(goodsTotal / names.length)
   const d = order.id.slice(2, 10)
   const payTime = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)} 10:24:36`
+  const hasShipped = order.type === 'self' && shippedOrLaterStatuses.has(order.status)
+  const sampleCodes = hasShipped
+    ? names.map((name, i) => ({ name, code: `YB${order.id.slice(4)}${String(i + 1).padStart(2, '0')}` }))
+    : undefined
 
   return (
     <OrderDetailScreen
@@ -24,6 +30,7 @@ function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => vo
       mode={order.type}
       status={order.status}
       statusDesc={order.note}
+      sampleCodes={sampleCodes}
       receiver={{ name: '王建国', phone: '138****6621', detail: '上海市徐汇区漕溪北路 398 号 汇智大厦 12 楼' }}
       site={{ name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼', time: '10-18 09:00-11:00' }}
       groups={names.map((name, i) => ({
