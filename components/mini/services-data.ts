@@ -22,7 +22,7 @@ export const banners: Banner[] = [
     subtitle: '看懂基因型与用药建议',
     cta: '去解读',
     image: '/images/banner-report.png',
-    tone: 'dark',
+    tone: 'light',
   },
 ]
 

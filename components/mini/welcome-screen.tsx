@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CircleAlert, FileSearch, MessageCircleHeart, ShieldCheck, Smartphone } from 'lucide-react'
 import { Agreement, BrandLogo } from './auth-parts'
 import { NavBar, StatusBar } from './phone-frame'
@@ -17,14 +17,23 @@ export function WelcomeScreen({
   onCancel,
   defaultAgreed = false,
   notice,
-}: {
+  noticeDuration,
+  }: {
   onWechatLogin?: () => void
   onCancel?: () => void
   defaultAgreed?: boolean
   notice?: string
-}) {
+  noticeDuration?: number
+  }) {
   const [agreed, setAgreed] = useState(defaultAgreed)
   const [warn, setWarn] = useState(false)
+  const [noticeVisible, setNoticeVisible] = useState(Boolean(notice))
+
+  useEffect(() => {
+    if (!notice || !noticeDuration) return
+    const timer = window.setTimeout(() => setNoticeVisible(false), noticeDuration)
+    return () => window.clearTimeout(timer)
+  }, [notice, noticeDuration])
 
   const guard = (action?: () => void) => () => {
     if (!agreed) {
@@ -96,7 +105,7 @@ export function WelcomeScreen({
             <p className="text-center text-[12px] text-muted-foreground">未注册的手机号授权后将自动创建账号</p>
           </div>
 
-          {notice && (
+          {notice && noticeVisible && (
             <div
               role="alert"
               className="pointer-events-none absolute inset-x-0 top-[42%] mx-auto flex w-fit max-w-[260px] flex-col items-center gap-2 rounded-xl bg-[#2a3a52]/80 px-5 py-4 text-center backdrop-blur"
