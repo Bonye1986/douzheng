@@ -20,35 +20,6 @@ export type AccountView = 'main' | 'phone' | 'deactivate'
 
 const maskPhone = (phone: string) => phone.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
 
-type SmsKey = 'reminder' | 'report' | 'logistics' | 'marketing'
-
-const smsOptions: { key: SmsKey; title: string; desc: string }[] = [
-  { key: 'reminder', title: '用药提醒短信', desc: '到达设定服药时间时发送短信提醒' },
-  { key: 'report', title: '报告出具通知', desc: '检测报告出具后第一时间通知' },
-  { key: 'logistics', title: '订单与样本进度', desc: '采样盒发货、样本签收、重采样等通知' },
-  { key: 'marketing', title: '优惠活动推送', desc: '新品上线、优惠券发放等活动信息' },
-]
-
-function Toggle({ checked, onChange, labelledBy }: { checked: boolean; onChange: () => void; labelledBy: string }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-labelledby={labelledBy}
-      onClick={onChange}
-      className={cn('relative h-6 w-11 shrink-0 rounded-full transition-colors', checked ? 'bg-primary' : 'bg-[#d5dbe6]')}
-    >
-      <span
-        className={cn(
-          'absolute left-0 top-0.5 size-5 rounded-full bg-white shadow-sm transition-transform',
-          checked ? 'translate-x-[22px]' : 'translate-x-0.5',
-        )}
-      />
-    </button>
-  )
-}
-
 function Row({
   label,
   value,
@@ -221,13 +192,6 @@ function MainView({
   onDeactivate: () => void
   onLogout: () => void
 }) {
-  const [sms, setSms] = useState<Record<SmsKey, boolean>>({
-    reminder: true,
-    report: true,
-    logistics: true,
-    marketing: false,
-  })
-
   return (
     <div className="flex-1 overflow-y-auto px-3 pb-8 pt-1 [scrollbar-width:none]">
       <Card title="个人资料">
@@ -247,40 +211,6 @@ function MainView({
         <Row label="昵称" value={nickname} onClick={onEditNickname} />
         <Row label="绑定手机号" value={<span className="tabular-nums">{maskPhone(phone)}</span>} onClick={onPhone} />
       </Card>
-
-      <section className="mt-2.5" aria-labelledby="sms-settings-title">
-        <div className="flex items-center justify-between px-1.5 pb-1.5">
-          <h2 id="sms-settings-title" className="text-[12px] text-muted-foreground">
-            短信通知
-          </h2>
-          <span className="text-[11px] text-muted-foreground">
-            发送至 <span className="tabular-nums">{maskPhone(phone)}</span>
-          </span>
-        </div>
-        <ul className="divide-y divide-[#eef1f6] rounded-2xl bg-white">
-          {smsOptions.map((o) => (
-            <li key={o.key} className="flex items-center gap-3 px-3.5 py-3">
-              <span className="min-w-0 flex-1">
-                <span id={`sms-${o.key}`} className="block text-[14px] text-foreground">
-                  {o.title}
-                </span>
-                <span className="mt-0.5 block text-[11px] text-muted-foreground">{o.desc}</span>
-              </span>
-              <Toggle
-                checked={sms[o.key]}
-                labelledBy={`sms-${o.key}`}
-                onChange={() => setSms((s) => ({ ...s, [o.key]: !s[o.key] }))}
-              />
-            </li>
-          ))}
-        </ul>
-        {!sms.reminder && (
-          <p className="mt-1.5 flex items-start gap-1 px-1.5 text-[11px] leading-4 text-[#c27a12]">
-            <AlertTriangle className="mt-px size-3 shrink-0" aria-hidden="true" />
-            已关闭用药提醒短信，到点将不再通知，可能影响按时服药。
-          </p>
-        )}
-      </section>
 
       <Card title="隐私与协议">
         <Row label="用户服务协议" />
