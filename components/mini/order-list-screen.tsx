@@ -14,7 +14,56 @@ const verifiedOrLaterStatuses = new Set(['待采样', '已收样', '检测中', 
 
 const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 
-function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => void }) {
+type OrderActionHandlers = {
+  onCancel: (o: Order) => void
+  onRefund: (kind: RefundKind) => void
+  onHandleUnqualified: () => void
+  onOpenGuide: () => void
+}
+
+function OrderActions({ order: o, onCancel, onRefund, onHandleUnqualified, onOpenGuide }: { order: Order } & OrderActionHandlers) {
+  return (
+    <>
+      {o.refund && (
+        <button
+          type="button"
+          onClick={() => {
+            if (o.refund === 'cancel') onCancel(o)
+            else if (o.refund) onRefund(o.refund)
+          }}
+          className="h-7 rounded-full border border-[#dfe5ef] px-3.5 text-[12px] font-medium text-muted-foreground"
+        >
+          {refundLabels[o.refund]}
+        </button>
+      )}
+      {o.action && (
+        <button
+          type="button"
+          onClick={() => {
+            if (o.unqualified) onHandleUnqualified()
+            else if (o.action?.label === '采样指引') onOpenGuide()
+          }}
+          className={cn(
+            'h-7 rounded-full px-3.5 text-[12px] font-medium',
+            o.action.primary ? 'bg-primary text-primary-foreground' : 'border border-[#dfe5ef] text-foreground',
+          )}
+        >
+          {o.action.label}
+        </button>
+      )}
+    </>
+  )
+}
+
+function OrderDetailFromList({
+  order,
+  actions,
+  onBack,
+}: {
+  order: Order
+  actions?: React.ReactNode
+  onBack: () => void
+}) {
   const payable = parseYuan(order.amount)
   const goodsTotal = order.originalAmount ? parseYuan(order.originalAmount) : payable
   const names = order.examinees.split('、')
@@ -50,6 +99,7 @@ function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => vo
       goodsTotal={goodsTotal}
       couponOff={Math.max(goodsTotal - payable, 0)}
       payable={payable}
+      actions={actions}
       onBack={onBack}
     />
   )
@@ -255,7 +305,7 @@ const allOrders: Order[] = [
     id: 'DZ20261001007',
     type: 'site',
     phase: 'closed',
-    status: '已关闭',
+    status: '���关闭',
     product: '药物基因检测',
     examinees: '李秀兰',
     amount: '¥999',
@@ -283,7 +333,7 @@ export function OrderListScreen({
   const [type, setType] = useState<OrderType>('all')
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
-  const [detailOrder, setDetailOrder] = useState<Order | null>(null)
+  const [detailId, setDetailId] = useState<string | null>(null)
   const [cancelTarget, setCancelTarget] = useState<Order | null>(null)
   const [cancelledIds, setCancelledIds] = useState<ReadonlySet<string>>(() => new Set())
   const orders = allOrders.map((o): Order =>
@@ -305,6 +355,15 @@ export function OrderListScreen({
     setCancelledIds((prev) => new Set(prev).add(id))
     setCancelTarget(null)
   }
+
+  const actionHandlers: OrderActionHandlers = {
+    onCancel: setCancelTarget,
+    onRefund,
+    onHandleUnqualified,
+    onOpenGuide: () => setGuideOpen(true),
+  }
+  const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
+  const hasActions = (o: Order) => Boolean(o.refund || o.action)
 
   const statusTabs = statusTabsByType[type]
   const groupPhase = groupPhases.find((p) => p === statusKey)
@@ -404,7 +463,7 @@ export function OrderListScreen({
                 <div className="min-w-0">
                   <button
                     type="button"
-                    onClick={() => setDetailOrder(o)}
+                    onClick={() => setDetailId(o.id)}
                     aria-label={`查看订单详情：${o.product}，${o.id}`}
                     className="block max-w-full truncate text-left text-[14px] font-medium text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary"
                   >
@@ -435,35 +494,7 @@ export function OrderListScreen({
               <div className="mt-2.5 flex items-center justify-between">
                 <span className="text-[11px] tabular-nums text-muted-foreground">{o.id}</span>
                 <div className="relative z-10 flex items-center gap-2">
-                {o.refund && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (o.refund === 'cancel') setCancelTarget(o)
-                      else if (o.refund) onRefund(o.refund)
-                    }}
-                    className="h-7 rounded-full border border-[#dfe5ef] px-3.5 text-[12px] font-medium text-muted-foreground"
-                  >
-                    {refundLabels[o.refund]}
-                  </button>
-                )}
-                {o.action && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (o.unqualified) onHandleUnqualified()
-                      else if (o.action?.label === '采样指引') setGuideOpen(true)
-                    }}
-                    className={cn(
-                      'h-7 rounded-full px-3.5 text-[12px] font-medium',
-                      o.action.primary
-                        ? 'bg-primary text-primary-foreground'
-                        : 'border border-[#dfe5ef] text-foreground',
-                    )}
-                  >
-                    {o.action.label}
-                  </button>
-                )}
+                  <OrderActions order={o} {...actionHandlers} />
                 </div>
               </div>
             </li>
@@ -471,8 +502,14 @@ export function OrderListScreen({
         })}
       </ul>
 
+      {detailOrder && (
+        <OrderDetailFromList
+          order={detailOrder}
+          actions={hasActions(detailOrder) ? <OrderActions order={detailOrder} {...actionHandlers} /> : undefined}
+          onBack={() => setDetailId(null)}
+        />
+      )}
       {guideOpen && <SamplingVideoDialog onClose={() => setGuideOpen(false)} />}
-      {detailOrder && <OrderDetailFromList order={detailOrder} onBack={() => setDetailOrder(null)} />}
       {cancelTarget && <CancelOrderScreen onBack={() => setCancelTarget(null)} onCancelled={confirmCancel} />}
     </SubPage>
   )

@@ -23,6 +23,8 @@ type Props = {
   statusDesc?: string
   /** 管理端发货时自动生成，自采样订单已发货及后续状态展示 */
   sampleCodes?: { name: string; code: string }[]
+  /** 底部操作按钮，与订单列表同状态的操作保持一致 */
+  actions?: React.ReactNode
   onBack: () => void
 }
 
@@ -41,6 +43,7 @@ export function OrderDetailScreen({
   status: statusProp,
   statusDesc: statusDescProp,
   sampleCodes,
+  actions,
   onBack,
 }: Props) {
   const isSelf = mode === 'self'
@@ -179,6 +182,11 @@ export function OrderDetailScreen({
           </dl>
         </section>
       </div>
+      {actions && (
+        <div className="flex shrink-0 items-center justify-end gap-2 border-t border-border bg-white px-3 pb-[max(env(safe-area-inset-bottom),12px)] pt-3">
+          {actions}
+        </div>
+      )}
     </SubPage>
   )
 }
