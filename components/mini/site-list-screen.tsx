@@ -46,7 +46,7 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
 
       <div className="flex shrink-0 items-center gap-1.5 px-4 py-2 text-[12px] text-muted-foreground">
         <LocateFixed className="size-3.5 text-primary" aria-hidden="true" />
-        <span>当前定位：杭州市西湖区</span>
+        <span>当前定位：长沙市芙蓉区</span>
         <span className="ml-auto">按距离排序 · {list.length} 家</span>
       </div>
 
