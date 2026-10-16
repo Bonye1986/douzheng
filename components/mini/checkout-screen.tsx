@@ -22,6 +22,7 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
+import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
 import { WechatIcon } from '@/components/mini/wechat-icon'
 import { researchDocs } from '@/components/mini/research-sign-flow'
@@ -139,6 +140,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [paying, setPaying] = useState(false)
   const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
   const [resentSms, setResentSms] = useState<string[]>([])
+  const [orderDetailOpen, setOrderDetailOpen] = useState(false)
   const researchItems: ResearchItem[] = rows.flatMap((r) =>
     (research[r.service.id] ?? []).flatMap((mid) => {
       const m = examinees.find((e) => e.id === mid)
@@ -231,7 +233,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               </button>
               <button
                 type="button"
-                onClick={onDone}
+                onClick={() => setOrderDetailOpen(true)}
                 className="h-10 flex-1 rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
               >
                 查看订单
@@ -322,6 +324,24 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </ol>
           </section>
         </div>
+        {orderDetailOpen && (
+          <OrderDetailScreen
+            orderNo={paidInfo?.orderNo ?? '-'}
+            payTime={paidInfo?.time ?? '-'}
+            mode={mode}
+            receiver={address}
+            site={site ? { name: site.name, address: `${site.district} ${site.detail}`, time: site.time } : null}
+            groups={byMember.map((g) => ({
+              id: g.member.id,
+              name: g.member.name,
+              items: g.items.map((s) => ({ id: s.id, name: s.name, price: s.price })),
+            }))}
+            goodsTotal={goodsTotal}
+            couponOff={couponOff}
+            payable={payable}
+            onBack={() => setOrderDetailOpen(false)}
+          />
+        )}
       </Shell>
     )
   }
