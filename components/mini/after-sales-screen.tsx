@@ -43,19 +43,6 @@ const cases: AfterCase[] = [
     action: { label: '去处理', primary: true, handle: true },
   },
   {
-    id: 'DZ20261006010',
-    kind: 'refund',
-    type: 'site',
-    status: '退款审核中',
-    tone: 'primary',
-    product: '药物基因检测',
-    examinee: '张伟',
-    amount: '¥999',
-    note: '采样盒已发出，您选择了自费寄回采样盒，实验室签收后全额退款',
-    refund: { label: '申请退款', value: '¥999' },
-    action: { label: '查看进度' },
-  },
-  {
     id: 'DZ20260918002',
     kind: 'refund',
     type: 'self',
@@ -64,7 +51,7 @@ const cases: AfterCase[] = [
     product: '心血管用药基因检测',
     examinee: '王建国',
     amount: '¥899',
-    note: '审核通过，部分退款已原路退回（扣除已发生的采样盒费用）',
+    note: '退款已原路退回（扣除已发生的采样盒费用）',
     refund: { label: '部分退款', value: '¥600' },
   },
   {

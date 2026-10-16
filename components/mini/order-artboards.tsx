@@ -50,7 +50,20 @@ export function ShippedRefundArtboard() {
 }
 
 export function AfterSalesArtboard() {
-  return <AfterSalesScreen onBack={noop} onHandleUnqualified={noop} onTerminateResample={noop} />
+  const [resampleOpen, setResampleOpen] = useState(false)
+  const [refundOpen, setRefundOpen] = useState(false)
+
+  return (
+    <>
+      <AfterSalesScreen
+        onBack={noop}
+        onHandleUnqualified={() => setResampleOpen(true)}
+        onTerminateResample={() => setRefundOpen(true)}
+      />
+      {refundOpen && <ResampleRefundScreen onBack={() => setRefundOpen(false)} onContact={noop} />}
+      {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
+    </>
+  )
 }
 
 export function ResampleArtboard() {
