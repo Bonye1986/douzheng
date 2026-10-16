@@ -66,6 +66,30 @@ function PrimaryButton({
   )
 }
 
+function useRefundSuccess(onFinish: () => void) {
+  const [amount, setAmount] = useState<number | null>(null)
+  const show = (refund: number) => {
+    if (amount !== null) return
+    setAmount(refund)
+    setTimeout(onFinish, 1500)
+  }
+  const toast =
+    amount === null ? null : (
+      <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/10" role="status" aria-live="polite">
+        <div className="flex w-52 flex-col items-center rounded-2xl bg-[#1f2a3d]/90 px-5 py-4 text-center text-white">
+          <span className="flex size-10 items-center justify-center rounded-full bg-white/15">
+            <Check className="size-5" aria-hidden="true" />
+          </span>
+          <p className="mt-2 text-[15px] font-semibold">退款成功</p>
+          <p className="mt-1 text-[12px] leading-relaxed text-white/75">
+            <span className="tabular-nums">¥{amount}</span> 将原路退回至微信支付账户
+          </p>
+        </div>
+      </div>
+    )
+  return { show, toast }
+}
+
 function OrderBrief({ no, product, examinee, paid, status }: { no: string; product: string; examinee: string; paid: number; status: string }) {
   return (
     <Card>
@@ -161,6 +185,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
   const [option, setOption] = useState<RefundOption | null>(null)
   const [trackingNo, setTrackingNo] = useState('')
   const [copied, setCopied] = useState(false)
+  const success = useRefundSuccess(onBack)
 
   const titles: Record<Step, string> = {
     choose: '申请退款',
@@ -323,7 +348,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
             </Card>
           </div>
           <BottomBar>
-            <PrimaryButton disabled={trackingNo.trim().length < 6} onClick={onBack}>
+            <PrimaryButton disabled={trackingNo.trim().length < 6} onClick={() => success.show(shippedOrder.paid)}>
               确认退款 ¥{shippedOrder.paid}
             </PrimaryButton>
           </BottomBar>
@@ -350,11 +375,14 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
             </p>
           </div>
           <BottomBar>
-            <PrimaryButton onClick={onBack}>确认退款 ¥{shippedOrder.paid - KIT_FEE}</PrimaryButton>
+            <PrimaryButton onClick={() => success.show(shippedOrder.paid - KIT_FEE)}>
+              确认退款 ¥{shippedOrder.paid - KIT_FEE}
+            </PrimaryButton>
           </BottomBar>
         </>
       )}
 
+      {success.toast}
     </SubPage>
   )
 }
@@ -516,6 +544,10 @@ export function TestingRefundScreen({
   const [reason, setReason] = useState<string | null>(null)
   const fees = testingFees(order)
   const refund = Math.max(order.paid - fees.reduce((s, f) => s + f.amount, 0), 0)
+  const success = useRefundSuccess(() => {
+    onSubmitted?.()
+    onBack()
+  })
 
   return (
     <SubPage title="申请退款" titleId="testing-refund-title" onBack={onBack}>
@@ -575,16 +607,11 @@ export function TestingRefundScreen({
         )}
       </div>
       <BottomBar>
-        <PrimaryButton
-          disabled={!reason}
-          onClick={() => {
-              onSubmitted?.()
-              onBack()
-            }}
-          >
-            确认退款 ¥{refund}
+        <PrimaryButton disabled={!reason} onClick={() => success.show(refund)}>
+          确认退款 ¥{refund}
         </PrimaryButton>
       </BottomBar>
+      {success.toast}
     </SubPage>
   )
 }
