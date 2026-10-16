@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, type PointerEvent } from 'react'
-import Image from 'next/image'
+import { Sparkles } from 'lucide-react'
 
 const EDGE_GAP = 12
 const TOP_SAFE = 96
@@ -92,18 +92,11 @@ export function FloatingAiButton({ onClick }: { onClick: () => void }) {
       onPointerCancel={handlePointerUp}
       aria-label="打开 AI 咨询（可拖动调整位置）"
       style={position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined}
-      className={`absolute bottom-[92px] right-3 z-20 flex size-11 touch-none select-none items-center justify-center rounded-full shadow-[0_6px_14px_#3b8beb40] ${
+      className={`absolute bottom-[92px] right-3 z-20 flex size-11 touch-none select-none items-center justify-center rounded-full bg-brand-strong text-white shadow-[0_6px_14px_#3b8beb40] ring-2 ring-white/90 ${
         dragging ? 'scale-110 cursor-grabbing' : 'cursor-grab transition-[left,top,transform] duration-200 ease-out active:scale-95'
       }`}
     >
-      <Image
-        src="/images/icons/ai-float.png"
-        alt=""
-        width={48}
-        height={48}
-        draggable={false}
-        className="pointer-events-none size-12"
-      />
+      <Sparkles className="size-[18px]" strokeWidth={2.2} />
     </button>
   )
 }
