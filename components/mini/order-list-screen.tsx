@@ -206,7 +206,7 @@ const statusTabsByType: Record<OrderType, StatusTab[]> = {
 
 const groupPhases: GroupPhase[] = ['toSample', 'testing']
 
-type Order = {
+export type Order = {
   id: string
   type: Exclude<OrderType, 'all'>
   phase: Exclude<OrderPhase, 'all'>
@@ -506,7 +506,7 @@ const statusSeeds: StatusSeed[] = [
     type: 'site',
     phase: 'done',
     status: '已完成',
-    action: { label: '查看�����告', primary: true },
+    action: { label: '查看�������告', primary: true },
     notes: ['检测报告已出具，可在线查看'],
   },
   {
@@ -518,7 +518,7 @@ const statusSeeds: StatusSeed[] = [
 ]
 
 const seedProducts: { name: string; price: string }[] = [
-  { name: '药物基因检测', price: '¥999' },
+  { name: '��物基因检测', price: '¥999' },
   { name: '心血管用药基因检测', price: '¥899' },
   { name: '个体化用药基因检测 · 全面版', price: '¥1,299' },
   { name: '精神类用药基因检测', price: '¥1,299' },
@@ -564,6 +564,7 @@ export function OrderListScreen({
   initialType = 'all',
   initialStatus,
   initialGuideOpen = false,
+  extraOrders = [],
   onBack,
   onRefund,
 }: {
@@ -571,6 +572,7 @@ export function OrderListScreen({
   initialType?: OrderType
   initialStatus?: 'toShip' | 'toVerify'
   initialGuideOpen?: boolean
+  extraOrders?: Order[]
   onBack: () => void
   onHandleUnqualified?: () => void
   onRefund: (kind: RefundKind) => void
@@ -619,7 +621,7 @@ export function OrderListScreen({
       },
     ]
   })
-  const orders = [...resampleOrders, ...allOrders].map((o): Order => {
+  const orders = [...extraOrders, ...resampleOrders, ...allOrders].map((o): Order => {
     if (paidIds.has(o.id)) {
       return o.type === 'site'
         ? {
