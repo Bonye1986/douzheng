@@ -209,7 +209,7 @@ const refundLabels: Record<RefundKind, string> = {
   resample: '终止并退款',
 }
 
-const allOrders: Order[] = [
+const featuredOrders: Order[] = [
   {
     id: 'DZ20261015001',
     type: 'self',
@@ -352,13 +352,176 @@ const allOrders: Order[] = [
     id: 'DZ20261001007',
     type: 'site',
     phase: 'closed',
-    status: '���关闭',
+    status: '已关闭',
     product: '药物基因检测',
     examinees: '李秀兰',
     amount: '¥999',
     note: '已选择重新采样，原订单关闭',
   },
 ]
+
+const ORDERS_PER_STATUS = 5
+
+type StatusSeed = Pick<Order, 'type' | 'phase' | 'status' | 'refund' | 'action'> & { notes: string[] }
+
+const statusSeeds: StatusSeed[] = [
+  {
+    type: 'self',
+    phase: 'toPay',
+    status: '待付款',
+    action: { label: '去支付', primary: true },
+    notes: ['订单将在 30 分钟后自动取消，请尽快支付'],
+  },
+  {
+    type: 'self',
+    phase: 'toSample',
+    status: '待发货',
+    refund: 'cancel',
+    notes: ['已支付，实验室将在 24 小时内寄出采样盒'],
+  },
+  {
+    type: 'self',
+    phase: 'toSample',
+    status: '已发货',
+    refund: 'shipped',
+    action: { label: '查看物流' },
+    notes: ['采样盒运输中，预计明日送达', '采样盒已到达派送网点，今日派送'],
+  },
+  {
+    type: 'self',
+    phase: 'toSample',
+    status: '待采样',
+    refund: 'shipped',
+    action: { label: '采样指引', primary: true },
+    notes: ['采样盒已签收，请按说明完成采样并回寄'],
+  },
+  {
+    type: 'self',
+    phase: 'testing',
+    status: '已寄样',
+    refund: 'testing',
+    action: { label: '查看物流' },
+    notes: ['快递员已上门取件，样本运往实验室中'],
+  },
+  {
+    type: 'self',
+    phase: 'testing',
+    status: '已收样',
+    refund: 'testing',
+    notes: ['平台已签收样本，待实验室扫码确认后开始检测'],
+  },
+  {
+    type: 'self',
+    phase: 'testing',
+    status: '检测中',
+    refund: 'testing',
+    notes: ['实验室检测中，预计 5 个工作日内出具报告'],
+  },
+  {
+    type: 'self',
+    phase: 'done',
+    status: '已完成',
+    action: { label: '查看报告', primary: true },
+    notes: ['检测报告已出具，可在线查看'],
+  },
+  {
+    type: 'self',
+    phase: 'closed',
+    status: '已关闭',
+    notes: ['订单已取消，款项已原路退回', '超时未支付，订单已自动关闭'],
+  },
+  {
+    type: 'site',
+    phase: 'toPay',
+    status: '待付款',
+    action: { label: '去支付', primary: true },
+    notes: ['订单将在 30 分钟后自动取消，请尽快支付'],
+  },
+  {
+    type: 'site',
+    phase: 'toSample',
+    status: '待核销',
+    action: { label: '核销码', primary: true },
+    notes: ['请前往 都正检测中心（徐汇） 出示核销码', '请前往 都正检测中心（浦东） 出示核销码'],
+  },
+  {
+    type: 'site',
+    phase: 'toSample',
+    status: '待采样',
+    notes: ['已核销，请在采样点完成采样'],
+  },
+  {
+    type: 'site',
+    phase: 'testing',
+    status: '已寄样',
+    refund: 'testing',
+    notes: ['采样点已寄出样本，正在运往实验室'],
+  },
+  {
+    type: 'site',
+    phase: 'testing',
+    status: '已收样',
+    refund: 'testing',
+    notes: ['平台已签收样本，待实验室扫码确认后开始检测'],
+  },
+  {
+    type: 'site',
+    phase: 'testing',
+    status: '检测中',
+    refund: 'testing',
+    notes: ['实验室检测中，预计 5 个工作日内出具报告'],
+  },
+  {
+    type: 'site',
+    phase: 'done',
+    status: '已完成',
+    action: { label: '查看报告', primary: true },
+    notes: ['检测报告已出具，可在线查看'],
+  },
+  {
+    type: 'site',
+    phase: 'closed',
+    status: '已关闭',
+    notes: ['订单已取消，款项已原路退回', '超时未支付，订单已自动关闭'],
+  },
+]
+
+const seedProducts: { name: string; price: string }[] = [
+  { name: '药物基因检测', price: '¥999' },
+  { name: '心血管用药基因检测', price: '¥899' },
+  { name: '个体化用药基因检测 · 全面版', price: '¥1,299' },
+  { name: '精神类用药基因检测', price: '¥1,299' },
+  { name: '儿童安全用药基因检测', price: '¥699' },
+]
+const seedExaminees = ['王建国', '李秀兰', '张伟', '王建国、李秀兰', '刘芳']
+
+function buildSeedOrders(existing: Order[]): Order[] {
+  const result: Order[] = []
+  statusSeeds.forEach((seed, seedIndex) => {
+    const have = existing.filter((o) => o.type === seed.type && o.status === seed.status).length
+    for (let i = 0; i < ORDERS_PER_STATUS - have; i++) {
+      const n = seedIndex * ORDERS_PER_STATUS + i
+      const product = seedProducts[n % seedProducts.length]
+      const day = String(28 - (n % 27)).padStart(2, '0')
+      const month = n % 2 === 0 ? '10' : '09'
+      result.push({
+        id: `DZ2026${month}${day}${String(200 + n).padStart(3, '0')}`,
+        type: seed.type,
+        phase: seed.phase,
+        status: seed.status,
+        product: product.name,
+        examinees: seedExaminees[(n + seedIndex) % seedExaminees.length],
+        amount: product.price,
+        note: seed.notes[i % seed.notes.length],
+        refund: seed.refund,
+        action: seed.action,
+      })
+    }
+  })
+  return result
+}
+
+const allOrders: Order[] = [...featuredOrders, ...buildSeedOrders(featuredOrders)]
 
 export function countOrders(phase: Exclude<OrderPhase, 'all'>) {
   return allOrders.filter((o) => o.phase === phase).length
@@ -398,11 +561,14 @@ export function OrderListScreen({
         id: newId,
         type: o.type,
         phase: 'toSample',
-        status: '待发货',
+        status: o.type === 'site' ? '待核销' : '待发货',
         product: o.product,
         examinees: o.examinees,
         amount: '¥0',
-        note: `重采样订单（关联原订单 ${o.id}），实验室将在 24 小时内寄出新的采样盒`,
+        note:
+          o.type === 'site'
+            ? `重采样订单（关联原订单 ${o.id}），请到店出示核销码重新采样`
+            : `重采样订单（关联原订单 ${o.id}），实验室将在 24 小时内寄出新的采样盒`,
         resample: true,
       },
     ]

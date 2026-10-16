@@ -310,7 +310,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                 </li>
                 <li className="flex gap-1.5">
                   <Package className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                  运费自理，请勿使用到���
+                  运费自理，请勿使用到付
                 </li>
               </ul>
             </Card>

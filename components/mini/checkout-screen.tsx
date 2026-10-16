@@ -727,7 +727,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         </div>
         {warn && !agreed && (
           <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
-            请先点击阅读知情同意书（满 8 秒并滑���至底部）后同意
+            请先点击阅读知情同意书（满 8 秒并滑动至底部）后同意
           </p>
         )}
 

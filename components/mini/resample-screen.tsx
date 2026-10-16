@@ -204,7 +204,10 @@ export function ResampleScreen({
                       icon: RotateCcw,
                       title: '同意重新采样',
                       tag: '推荐',
-                      desc: '原订单关闭，系统生成一笔新的待发货订单（标记为重采样），无需再次付款，重新寄送采样盒',
+                      desc:
+                        order.mode === '定点采样'
+                          ? '原订单关闭，系统生成一笔新的待核销订单（标记为重采样），无需再次付款，到店出示核销码重新采样'
+                          : '原订单关闭，系统生成一笔新的待发货订单（标记为重采样），无需再次付款，重新寄送采样盒',
                     },
                     {
                       key: 'refund',
@@ -278,7 +281,7 @@ export function ResampleScreen({
                 </li>
                 <li className="flex gap-2">
                   <RotateCcw className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
-                  系统自动生成一笔新的待发货订单，标记为「重采样」，无需再次支付
+                  系统自动生成一笔新的{order.mode === '定点采样' ? '待核销' : '待发货'}订单，标记为「重采样」，无需再次支付
                 </li>
                 <li className="flex gap-2">
                   <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-[#1f8a4c]" aria-hidden="true" />
@@ -287,6 +290,7 @@ export function ResampleScreen({
               </ul>
             </div>
 
+            {order.mode !== '定点采样' && (
             <div className="rounded-2xl bg-white p-3.5">
               <h2 className="text-[15px] font-semibold text-foreground">采样盒寄送地址</h2>
               <button type="button" className="mt-2.5 flex w-full items-start gap-2.5 text-left">
@@ -302,6 +306,7 @@ export function ResampleScreen({
                 <span className="text-[12px] text-primary">修改</span>
               </button>
             </div>
+            )}
           </div>
           <BottomBar>
             <PrimaryButton
@@ -418,7 +423,11 @@ export function ResampleScreen({
                 <RotateCcw className="size-6" aria-hidden="true" />
               </span>
               <p className="mt-2.5 text-[16px] font-semibold text-foreground">已为您生成重采样订单</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">新的采样盒将尽快寄出，请留意物流信息</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                {order.mode === '定点采样'
+                  ? '请前往采样机构出示核销码重新采样'
+                  : '新的采样盒将尽快寄出，请留意物流信息'}
+              </p>
             </div>
 
             <div className="rounded-2xl border border-primary/30 bg-white p-3.5">
@@ -427,7 +436,9 @@ export function ResampleScreen({
                   <span className="rounded bg-[#fff1e6] px-1.5 py-0.5 text-[10px] font-medium text-[#e0651c]">重采样</span>
                   <span className="text-[12px] tabular-nums text-muted-foreground">订单号 {newOrderNo}</span>
                 </span>
-                <span className="rounded bg-[#eef5ff] px-1.5 py-0.5 text-[11px] font-medium text-primary">待发货</span>
+                <span className="rounded bg-[#eef5ff] px-1.5 py-0.5 text-[11px] font-medium text-primary">
+                  {order.mode === '定点采样' ? '待核销' : '待发货'}
+                </span>
               </div>
               <div className="mt-2.5 flex items-end justify-between">
                 <div>
