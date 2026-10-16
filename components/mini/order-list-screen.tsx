@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { AlertTriangle, Building2, Home } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { AlertTriangle, Building2, Clock, Home } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
@@ -10,6 +10,7 @@ import { LogisticsScreen } from '@/components/mini/logistics-screen'
 import { SendSampleScreen } from '@/components/mini/send-sample-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
+import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
@@ -26,6 +27,7 @@ type OrderActionHandlers = {
   onTestingRefund: (o: Order) => void
   onViewLogistics: (o: Order) => void
   onViewReport: (o: Order) => void
+  onPay: (o: Order) => void
 }
 
 const canSendSample = (o: Order) => o.type === 'self' && o.status === '待采样'
@@ -40,6 +42,7 @@ function OrderActions({
   onTestingRefund,
   onViewLogistics,
   onViewReport,
+  onPay,
 }: { order: Order } & OrderActionHandlers) {
   const sendable = canSendSample(o)
   return (
@@ -65,6 +68,7 @@ function OrderActions({
             else if (o.action?.label === '采样指引') onOpenGuide()
             else if (o.action?.label === '查看物流') onViewLogistics(o)
             else if (o.action?.label === '查看报告') onViewReport(o)
+            else if (o.action?.label === '去支付') onPay(o)
           }}
           className={cn(
             'h-7 rounded-full px-3.5 text-[12px] font-medium',
@@ -118,7 +122,11 @@ function OrderDetailFromList({
       payTime={payTime}
       mode={order.type}
       status={order.status}
-      statusDesc={order.note}
+      statusDesc={
+        order.payRemaining != null
+          ? `剩余支付时间 ${formatCountdown(order.payRemaining)}，超时订单将自动关闭${order.priceChanged ? `。${order.note}` : ''}`
+          : order.note
+      }
       sampleCodes={sampleCodes}
       receiver={{ name: '王建国', phone: '138****6621', detail: '上海市徐汇区漕溪北路 398 号 汇智大厦 12 楼' }}
       site={{ name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼', time: '10-18 09:00-11:00' }}
@@ -210,7 +218,14 @@ type Order = {
   unqualified?: boolean
   refund?: RefundKind
   action?: { label: string; primary?: boolean }
+  payExpiresIn?: number
+  payRemaining?: number
 }
+
+const formatCountdown = (seconds: number) =>
+  `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
+
+const payCountdowns = [35, 1680, 1260, 840, 420]
 
 export type RefundKind = 'cancel' | 'shipped' | 'resample' | 'testing'
 
@@ -234,6 +249,7 @@ const featuredOrders: Order[] = [
     note: '客服已调整订单金额，请按最新价格支付',
     priceChanged: true,
     action: { label: '去支付', primary: true },
+    payExpiresIn: 1725,
   },
   {
     id: 'DZ20261015016',
@@ -382,7 +398,7 @@ const statusSeeds: StatusSeed[] = [
     phase: 'toPay',
     status: '待付款',
     action: { label: '去支付', primary: true },
-    notes: ['订单将在 30 分钟后自动取消，请尽快支付'],
+    notes: ['请在倒计时结束前完成支付，超时订单将自动关闭'],
   },
   {
     type: 'self',
@@ -413,7 +429,7 @@ const statusSeeds: StatusSeed[] = [
     status: '已寄样',
     refund: 'testing',
     action: { label: '查看物流' },
-    notes: ['快递员已��门取件，样本运往实验室中'],
+    notes: ['快递员已上门取件，样本运往实验室中'],
   },
   {
     type: 'self',
@@ -447,7 +463,7 @@ const statusSeeds: StatusSeed[] = [
     phase: 'toPay',
     status: '待付款',
     action: { label: '去支付', primary: true },
-    notes: ['订单将在 30 分钟后自动取消，请尽快支付'],
+    notes: ['请在倒计时结束前完成支付，超时订单将自动关闭'],
   },
   {
     type: 'site',
@@ -527,6 +543,7 @@ function buildSeedOrders(existing: Order[]): Order[] {
         note: seed.notes[i % seed.notes.length],
         refund: seed.refund,
         action: seed.action,
+        payExpiresIn: seed.phase === 'toPay' ? payCountdowns[i % payCountdowns.length] : undefined,
       })
     }
   })
@@ -566,6 +583,15 @@ export function OrderListScreen({
   const [resampleTarget, setResampleTarget] = useState<Order | null>(null)
   const [resampledTo, setResampledTo] = useState<ReadonlyMap<string, string>>(() => new Map())
   const [terminatedIds, setTerminatedIds] = useState<ReadonlySet<string>>(() => new Set())
+  const [payTarget, setPayTarget] = useState<Order | null>(null)
+  const [paidIds, setPaidIds] = useState<ReadonlySet<string>>(() => new Set())
+  const [startedAt] = useState(() => Date.now())
+  const [now, setNow] = useState(startedAt)
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+  const elapsed = Math.floor((now - startedAt) / 1000)
   const resampleOrders: Order[] = allOrders.flatMap((o) => {
     const newId = resampledTo.get(o.id)
     if (!newId) return []
@@ -587,6 +613,47 @@ export function OrderListScreen({
     ]
   })
   const orders = [...resampleOrders, ...allOrders].map((o): Order => {
+    if (paidIds.has(o.id)) {
+      return o.type === 'site'
+        ? {
+            ...o,
+            phase: 'toSample',
+            status: '待核销',
+            note: '已支付，请前往 都正检测中心（徐汇） 出示核销码',
+            priceChanged: false,
+            originalAmount: undefined,
+            action: { label: '核销码', primary: true },
+          }
+        : {
+            ...o,
+            phase: 'toSample',
+            status: cancelledIds.has(o.id) ? '已关闭' : '待发货',
+            note: '已支付，实验室将在 24 小时内寄出采样盒',
+            priceChanged: false,
+            originalAmount: undefined,
+            refund: 'cancel',
+            action: undefined,
+            ...(cancelledIds.has(o.id) && {
+              phase: 'closed' as const,
+              note: '用户已取消订单，支付金额将原路退回',
+              refund: undefined,
+            }),
+          }
+    }
+    if (o.phase === 'toPay' && o.payExpiresIn != null) {
+      const remaining = o.payExpiresIn - elapsed
+      return remaining > 0
+        ? { ...o, payRemaining: remaining }
+        : {
+            ...o,
+            phase: 'closed',
+            status: '已关闭',
+            note: '超时未支付，订单已自动关闭',
+            priceChanged: false,
+            originalAmount: undefined,
+            action: undefined,
+          }
+    }
     const resampledId = resampledTo.get(o.id)
     if (resampledId || terminatedIds.has(o.id)) {
       return {
@@ -644,6 +711,7 @@ export function OrderListScreen({
     onTestingRefund: setRefundTarget,
     onViewLogistics: setLogisticsTarget,
     onViewReport: setReportTarget,
+    onPay: setPayTarget,
   }
   const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
   const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
@@ -764,6 +832,15 @@ export function OrderListScreen({
                 </p>
               </div>
 
+              {o.payRemaining != null && (
+                <p role="timer" className="mt-2 flex items-center gap-1 text-[12px] text-[#e0651c]">
+                  <Clock className="size-3.5 shrink-0" aria-hidden="true" />
+                  剩余支付时间
+                  <span className="font-semibold tabular-nums">{formatCountdown(o.payRemaining)}</span>
+                  ，超时自动关闭
+                </p>
+              )}
+
               <p
                 className={cn(
                   'mt-2 flex items-start gap-1 rounded-lg px-2.5 py-1.5 text-[11px] leading-relaxed',
@@ -861,6 +938,16 @@ export function OrderListScreen({
           }}
           onBack={() => setRefundTarget(null)}
           onSubmitted={() => setRefundAppliedIds((prev) => new Set(prev).add(refundTarget.id))}
+        />
+      )}
+      {payTarget && orders.some((o) => o.id === payTarget.id && o.phase === 'toPay') && (
+        <WechatPaySheet
+          amount={parseYuan(payTarget.amount)}
+          onCancel={() => setPayTarget(null)}
+          onSuccess={() => {
+            setPaidIds((prev) => new Set(prev).add(payTarget.id))
+            setPayTarget(null)
+          }}
         />
       )}
       {cancelTarget && <CancelOrderScreen onBack={() => setCancelTarget(null)} onCancelled={confirmCancel} />}
