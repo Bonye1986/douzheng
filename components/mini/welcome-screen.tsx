@@ -108,11 +108,15 @@ export function WelcomeScreen({
 
           <div className="mt-6">
             <Agreement checked={agreed} onChange={setAgreed} highlight={warn} />
-            {warn && !agreed && (
-              <p role="alert" className="mt-2 pl-6 text-[12px] text-destructive">
-                请先阅读并勾选协议
-              </p>
-            )}
+  <p
+  role="alert"
+  aria-hidden={!(warn && !agreed)}
+  className={`mt-2 h-4 pl-6 text-[12px] leading-4 text-destructive ${
+  warn && !agreed ? "visible" : "invisible"
+  }`}
+  >
+  {warn && !agreed ? "请先阅读并勾选协议" : ""}
+  </p>
           </div>
         </div>
       </div>
