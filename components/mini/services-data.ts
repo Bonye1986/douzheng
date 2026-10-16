@@ -97,6 +97,7 @@ export type Article = {
   minutes: number
   updated: string
   author: string
+  cover: string
   content: ArticleBlock[]
 }
 
@@ -105,6 +106,7 @@ export const articleCategories = ['全部', '基因与药物', '心血管', '精
 export const articles: Article[] = [
   {
     id: 'a1',
+    cover: '/images/articles/a1.png',
     title: '同一种药，为什么别人有效我却没用？',
     category: '基因与药物',
     reads: '3.2万',
@@ -124,6 +126,7 @@ export const articles: Article[] = [
   },
   {
     id: 'a2',
+    cover: '/images/articles/a2.png',
     title: '吃氯吡格雷前，建议先了解 CYP2C19 基因',
     category: '心血管',
     reads: '1.8万',
@@ -141,6 +144,7 @@ export const articles: Article[] = [
   },
   {
     id: 'a3',
+    cover: '/images/articles/a3.png',
     title: '药物基因检测需要空腹吗？采样常见问题汇总',
     category: '检测须知',
     reads: '9.6千',
@@ -160,6 +164,7 @@ export const articles: Article[] = [
   },
   {
     id: 'a4',
+    cover: '/images/articles/a4.png',
     title: '抗抑郁药换了好几种都不理想？可能与基因有关',
     category: '精神神经',
     reads: '1.2万',
@@ -177,6 +182,7 @@ export const articles: Article[] = [
   },
   {
     id: 'a5',
+    cover: '/images/articles/a5.png',
     title: '华法林剂量为什么因人而异？',
     category: '心血管',
     reads: '7.4千',
@@ -185,7 +191,7 @@ export const articles: Article[] = [
     updated: '2026-09-22',
     author: '临床药学部',
     content: [
-      { type: 'p', text: '华法林是常用的口服抗凝药，治疗窗窄，剂量过高易出血，过低则无法预防血栓，不同患者所需剂量可相差 10 倍以上。' },
+      { type: 'p', text: '华法林是常用的口服抗凝药，治疗窗窄，剂量过高易出血，过低则无法预防血栓。不同患者所需剂量可相差 10 倍以上。' },
       { type: 'h', text: '关键基因' },
       { type: 'list', items: ['CYP2C9：影响华法林的代谢清除速度', 'VKORC1：影响药物作用靶点的敏感性'] },
       { type: 'p', text: '结合基因型的剂量算法，可帮助医生估算更合适的起始剂量，缩短调药时间。' },
@@ -194,6 +200,7 @@ export const articles: Article[] = [
   },
   {
     id: 'a6',
+    cover: '/images/articles/a6.png',
     title: '一次检测终身有效？关于报告时效的三个误区',
     category: '基因与药物',
     reads: '5.1千',

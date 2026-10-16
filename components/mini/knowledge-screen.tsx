@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { BookOpen, ChevronRight, Clock, Eye, Info, Sparkles } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { articleCategories, articles, type Article } from '@/components/mini/services-data'
@@ -63,9 +64,14 @@ function KnowledgeList({ onOpen }: { onOpen: (id: string) => void }) {
                   onClick={() => onOpen(a.id)}
                   className="flex w-full items-start gap-3 p-3 text-left transition-opacity active:opacity-70"
                 >
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-                    <BookOpen className="size-5" aria-hidden="true" />
-                  </span>
+                  <Image
+                    src={a.cover}
+                    alt=""
+                    width={88}
+                    height={88}
+                    sizes="88px"
+                    className="size-[88px] shrink-0 rounded-xl bg-secondary object-cover"
+                  />
                   <span className="min-w-0 flex-1">
                     <span className="line-clamp-2 text-[14px] font-medium leading-snug text-foreground">{a.title}</span>
                     <span className="mt-1 line-clamp-2 block text-[12px] leading-relaxed text-muted-foreground">
