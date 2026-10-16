@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { AlertTriangle, Building2, Home } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { cn } from '@/lib/utils'
 
 export type OrderPhase = 'all' | 'toPay' | 'toSample' | 'testing' | 'done' | 'closed'
@@ -230,6 +231,7 @@ export function OrderListScreen({
 }) {
   const [type, setType] = useState<OrderType>('all')
   const [statusKey, setStatusKey] = useState<string>(initialPhase)
+  const [guideOpen, setGuideOpen] = useState(false)
 
   const statusTabs = statusTabsByType[type]
   const groupPhase = groupPhases.find((p) => p === statusKey)
@@ -365,7 +367,10 @@ export function OrderListScreen({
                 {o.action && (
                   <button
                     type="button"
-                    onClick={() => o.unqualified && onHandleUnqualified()}
+                    onClick={() => {
+                      if (o.unqualified) onHandleUnqualified()
+                      else if (o.action?.label === '采样指引') setGuideOpen(true)
+                    }}
                     className={cn(
                       'h-7 rounded-full px-3.5 text-[12px] font-medium',
                       o.action.primary
@@ -382,6 +387,8 @@ export function OrderListScreen({
           )
         })}
       </ul>
+
+      {guideOpen && <SamplingVideoDialog onClose={() => setGuideOpen(false)} />}
     </SubPage>
   )
 }
