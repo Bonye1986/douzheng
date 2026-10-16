@@ -6,6 +6,7 @@ import { SubPage } from '@/components/mini/sub-page'
 import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { CancelOrderScreen } from '@/components/mini/refund-screen'
+import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
 const shippedOrLaterStatuses = new Set(['已发货', '待采样', '已寄样', '已收样', '检测中', '已完成'])
@@ -24,6 +25,9 @@ function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => vo
     order.type === 'self'
       ? shippedOrLaterStatuses.has(order.status)
       : verifiedOrLaterStatuses.has(order.status)
+  const service = testServices.find((s) => s.name === order.product)
+  const sampleType =
+    (service && getSampleTypes(service.id, order.type)[0]?.label) ?? (order.type === 'self' ? '唾液' : '口腔拭子')
   const sampleCodes = hasSampleCode
     ? names.map((name, i) => ({ name, code: `YB${order.id.slice(4)}${String(i + 1).padStart(2, '0')}` }))
     : undefined
@@ -41,7 +45,7 @@ function OrderDetailFromList({ order, onBack }: { order: Order; onBack: () => vo
       groups={names.map((name, i) => ({
         id: `${order.id}-${i}`,
         name,
-        items: [{ id: `${order.id}-${i}-item`, name: order.product, price: per }],
+        items: [{ id: `${order.id}-${i}-item`, name: order.product, price: per, sampleType }],
       }))}
       goodsTotal={goodsTotal}
       couponOff={Math.max(goodsTotal - payable, 0)}
@@ -232,7 +236,7 @@ const allOrders: Order[] = [
     product: '药物基因检测',
     examinees: '李秀兰',
     amount: '¥0',
-    note: '样本已送达实验室，等待上机检测',
+    note: '样本已送达实验室，等待上机���测',
     resample: true,
     refund: 'resample',
   },

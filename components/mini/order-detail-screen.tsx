@@ -3,7 +3,11 @@
 import { Building2, Clock, House, MapPin, UserRound } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 
-type MemberGroup = { id: string; name: string; items: { id: string; name: string; price: number }[] }
+type MemberGroup = {
+  id: string
+  name: string
+  items: { id: string; name: string; price: number; sampleType?: string }[]
+}
 
 type Props = {
   orderNo: string
@@ -100,11 +104,21 @@ export function OrderDetailScreen({
                   <UserRound className="size-3.5 text-primary" aria-hidden="true" />
                   {g.name}
                 </p>
-                <ul className="mt-1.5 flex flex-col gap-1">
+                <ul className="mt-1.5 flex flex-col gap-2">
                   {g.items.map((s) => (
-                    <li key={s.id} className="flex items-center justify-between gap-3 text-[12px]">
-                      <span className="min-w-0 truncate text-muted-foreground">{s.name}</span>
-                      <span className="shrink-0 tabular-nums text-foreground">{yuan(s.price)}</span>
+                    <li key={s.id} className="text-[12px]">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="min-w-0 truncate text-muted-foreground">{s.name}</span>
+                        <span className="shrink-0 tabular-nums text-foreground">{yuan(s.price)}</span>
+                      </div>
+                      {s.sampleType && (
+                        <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                          样本类型
+                          <span className="rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
+                            {s.sampleType}
+                          </span>
+                        </p>
+                      )}
                     </li>
                   ))}
                 </ul>

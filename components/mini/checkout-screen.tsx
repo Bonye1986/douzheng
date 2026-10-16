@@ -334,7 +334,12 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             groups={byMember.map((g) => ({
               id: g.member.id,
               name: g.member.name,
-              items: g.items.map((s) => ({ id: s.id, name: s.name, price: s.price })),
+              items: g.items.map((s) => ({
+                id: s.id,
+                name: s.name,
+                price: s.price,
+                sampleType: getSampleTypes(s.id, mode).find((t) => t.id === sampleType[s.id])?.label,
+              })),
             }))}
             goodsTotal={goodsTotal}
             couponOff={couponOff}
@@ -722,7 +727,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         </div>
         {warn && !agreed && (
           <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
-            请先点击阅读知情同意书（满 8 秒并滑动至底部）后同意
+            请先点击阅读知情同意书（满 8 秒并滑���至底部）后同意
           </p>
         )}
 
