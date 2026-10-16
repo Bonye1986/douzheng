@@ -16,7 +16,6 @@ import {
   ShieldCheck,
   Ticket,
   UserRound,
-  Wallet,
   X,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
@@ -24,6 +23,7 @@ import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
+import { WechatIcon } from '@/components/mini/wechat-icon'
 import { researchDocs } from '@/components/mini/research-sign-flow'
 
 type ResearchItem = { key: string; memberName: string; serviceName: string }
@@ -55,8 +55,8 @@ const samplingModes: { key: SamplingMode; icon: typeof House; desc: string }[] =
 
 type PayMethod = 'wechat'
 
-const payMethods: { key: PayMethod; label: string; desc: string; tag?: string; icon: typeof House; color: string }[] = [
-  { key: 'wechat', label: '微信支付', desc: '使用微信零钱或绑定银行卡支付', icon: Wallet, color: '#07c160' },
+const payMethods: { key: PayMethod; label: string; desc: string; tag?: string; icon: typeof WechatIcon; color: string }[] = [
+  { key: 'wechat', label: '微信支付', desc: '使用微信零钱或绑定银行卡支付', icon: WechatIcon, color: '#07c160' },
 ]
 
 type Coupon = { id: string; title: string; threshold: number; amount: number; expire: string }

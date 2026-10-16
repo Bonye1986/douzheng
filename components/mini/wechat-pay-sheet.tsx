@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Check, ChevronRight, Delete, Loader2, Wallet, X } from 'lucide-react'
+import { Check, ChevronRight, Delete, Loader2, X } from 'lucide-react'
+import { WechatIcon } from '@/components/mini/wechat-icon'
 import { cn } from '@/lib/utils'
 
 type Step = 'confirm' | 'password' | 'processing' | 'success'
@@ -85,7 +86,7 @@ export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检�
               <span className="text-[#888]">支付方式</span>
               <span className="flex items-center gap-1.5 text-[#1a1a1a]">
                 <span className="flex size-4 items-center justify-center rounded bg-[#07c160]">
-                  <Wallet className="size-2.5 text-white" aria-hidden="true" />
+                  <WechatIcon className="size-2.5 text-white" />
                 </span>
                 零钱
                 <ChevronRight className="size-3.5 text-[#bbb]" aria-hidden="true" />
