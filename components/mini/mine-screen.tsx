@@ -35,6 +35,7 @@ import { ExamineeManageScreen, type ExamineeView } from '@/components/mini/exami
 import { AddressManageScreen, type AddressView } from '@/components/mini/address-manage-screen'
 import { MedicationReminderScreen, type ReminderView } from '@/components/mini/medication-reminder-screen'
 import { GuideScreen, type GuideView } from '@/components/mini/guide-screen'
+import { AboutScreen } from '@/components/mini/about-screen'
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
@@ -95,7 +96,9 @@ export function MineScreen({
   initialAuthTab = 'test',
   initialReminderView = null,
   initialGuideView = null,
+  initialAboutOpen = false,
 }: {
+  initialAboutOpen?: boolean
   initialGuideView?: GuideView | null
   initialReminderView?: ReminderView | null
   initialAuthTab?: 'test' | 'research'
@@ -111,6 +114,7 @@ export function MineScreen({
   const [addressView, setAddressView] = useState<AddressView | null>(initialAddressView)
   const [reminderView, setReminderView] = useState<ReminderView | null>(initialReminderView)
   const [guideView, setGuideView] = useState<GuideView | null>(initialGuideView)
+  const [aboutOpen, setAboutOpen] = useState(initialAboutOpen)
   const [myCouponsOpen, setMyCouponsOpen] = useState(initialCoupon === 'mine')
   const [couponCenterOpen, setCouponCenterOpen] = useState(initialCoupon === 'center')
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
@@ -257,6 +261,7 @@ export function MineScreen({
                     if (t.key === 'address') setAddressView('list')
                     if (t.key === 'reminder') setReminderView('list')
                     if (t.key === 'guide') setGuideView('list')
+                    if (t.key === 'about') setAboutOpen(true)
                   }}
                   className="flex w-full flex-col items-center gap-1.5"
                 >
@@ -292,6 +297,7 @@ export function MineScreen({
         <MedicationReminderScreen initialView={reminderView} onBack={() => setReminderView(null)} />
       )}
       {guideView && <GuideScreen initialView={guideView} onBack={() => setGuideView(null)} />}
+      {aboutOpen && <AboutScreen onBack={() => setAboutOpen(false)} />}
     </div>
   )
 }

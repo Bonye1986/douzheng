@@ -231,6 +231,12 @@ const screens = [
     node: <MineScreen initialGuideView="detail" />,
   },
   {
+    id: '42',
+    title: '我的 · 关于我们',
+    desc: '品牌头部（Logo、口号、版本号），平台数据概览，公司简介、核心优势、资质认证、发展历程，联系我们（拨打 / 复制），协议与资质入口、检查更新，底部公司主体与备案信息（可在画板内交互）',
+    node: <MineScreen initialAboutOpen />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
@@ -306,6 +312,12 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     title: '使用指南',
     summary: '指南文章列表（搜索 + 分类）与文章详情（步骤、注意事项、反馈、相关推荐）',
     ids: ['40', '41'],
+  },
+  {
+    key: 'about',
+    title: '关于我们',
+    summary: '品牌介绍、资质认证、发展历程、联系方式与协议版本信息',
+    ids: ['42'],
   },
   { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
