@@ -159,6 +159,36 @@ const screens = [
     node: <MineScreen initialExamineeView="empty" />,
   },
   {
+    id: '29',
+    title: '我的 · 地址管理',
+    desc: '展示已保存的收货地址（收货人、手机号、标签、省市区与详细地址），默认地址置顶，最多 20 个；每张卡片可设为默认、编辑、删除，底部新增收货地址（可在画板内交互）',
+    node: <MineScreen initialAddressView="list" />,
+  },
+  {
+    id: '30',
+    title: '地址管理 · 新增地址',
+    desc: '填写收货人、手机号、所在地区（省 / 市 / 区三级选择）与详细地址，可选标签与设为默认；首个地址自动设为默认，校验通过后保存',
+    node: <MineScreen initialAddressView="add" />,
+  },
+  {
+    id: '31',
+    title: '地址管理 · 编辑地址',
+    desc: '回填已有地址信息，可修改后保存；脱敏手机号不修改时原样保留，当前默认地址不可取消默认',
+    node: <MineScreen initialAddressView="edit" />,
+  },
+  {
+    id: '32',
+    title: '地址管理 · 删除地址',
+    desc: '删除前二次确认并展示地址摘要；删除默认地址时自动顺延下一个为默认；有待发货采样盒订单使用的地址不可删除',
+    node: <MineScreen initialAddressView="delete" />,
+  },
+  {
+    id: '33',
+    title: '地址管理 · 空状态',
+    desc: '尚未保存任何地址时展示引导插图与说明，点击新增收货地址进入表单',
+    node: <MineScreen initialAddressView="empty" />,
+  },
+  {
     id: '16',
     title: '我的 · 授权与同意书',
     desc: '按受检人 × 检测项目展示科研样本授权状态（已授权 / 未授权 / 已撤回），支持签署、重新签署与撤回，操作前弹出知情同意书或撤回提示（可在画板内交互）',
@@ -210,6 +240,12 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     title: '检测人管理',
     summary: '检测人列表、添加 / 编辑 / 删除检测人与空状态',
     ids: ['24', '25', '26', '27', '28'],
+  },
+  {
+    key: 'address',
+    title: '地址管理',
+    summary: '收货地址列表、新增 / 编辑 / 删除地址、设为默认与空状态',
+    ids: ['29', '30', '31', '32', '33'],
   },
   { key: 'ai', title: 'AI咨询', summary: '通俗 / 专业版切换、关联检测人后的个性化用药解答', ids: ['05', '07', '08'] },
 ]
