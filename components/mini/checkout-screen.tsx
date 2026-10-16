@@ -22,6 +22,7 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
+import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
 import { ResearchSignFlow, researchDocs } from '@/components/mini/research-sign-flow'
 
 type ResearchItem = { key: string; memberName: string; serviceName: string }
@@ -134,6 +135,8 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [warn, setWarn] = useState(false)
   const [payMethod, setPayMethod] = useState<PayMethod>('wechat')
   const [submitted, setSubmitted] = useState(false)
+  const [paying, setPaying] = useState(false)
+  const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
   const [signedResearch, setSignedResearch] = useState<string[]>([])
   const [signing, setSigning] = useState<ResearchItem | null>(null)
   const researchItems: ResearchItem[] = rows.flatMap((r) =>
@@ -189,13 +192,24 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       setWarn(true)
       return
     }
+    setPaying(true)
+  }
+
+  const paySuccess = () => {
+    const now = new Date()
+    const pad = (n: number) => String(n).padStart(2, '0')
+    setPaidInfo({
+      orderNo: `JY${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${String(now.getTime()).slice(-6)}`,
+      time: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+    })
+    setPaying(false)
     setSubmitted(true)
     onSubmitted()
   }
 
   if (submitted) {
     return (
-      <Shell title="支付结果" onBack={onDone}>
+      <Shell title="订单结果" onBack={onDone}>
         <div className="flex-1 overflow-y-auto px-3 pt-2.5 [scrollbar-width:none]">
           <section className="flex flex-col items-center rounded-2xl bg-white px-6 pb-6 pt-8 text-center">
             <CircleCheck className="size-14 text-[#1f9d6b]" strokeWidth={1.6} aria-hidden="true" />
@@ -223,6 +237,33 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 查看订单
               </button>
             </div>
+          </section>
+
+          <section aria-labelledby="order-info" className="mt-2.5 rounded-2xl bg-white p-4">
+            <h2 id="order-info" className="text-[14px] font-semibold text-foreground">
+              订单信息
+            </h2>
+            <dl className="mt-2 flex flex-col gap-2 text-[12px]">
+              {[
+                ['订单编号', paidInfo?.orderNo ?? '-'],
+                ['支付方式', '微信支付'],
+                ['支付时间', paidInfo?.time ?? '-'],
+                ['采样方式', hasSelf ? `居家自采样 · ${address.name} ${address.phone}` : `定点采样 · ${site?.name ?? '-'}`],
+              ].map(([k, v]) => (
+                <div key={k} className="flex gap-3">
+                  <dt className="w-14 shrink-0 text-muted-foreground">{k}</dt>
+                  <dd className="min-w-0 flex-1 text-right tabular-nums text-foreground">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <ul className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+              {byMember.map((g) => (
+                <li key={g.member.id} className="flex items-start justify-between gap-3 text-[12px]">
+                  <span className="shrink-0 font-medium text-foreground">{g.member.name}</span>
+                  <span className="min-w-0 text-right text-muted-foreground">{g.items.map((s) => s.name).join('、')}</span>
+                </li>
+              ))}
+            </ul>
           </section>
 
           {researchItems.length > 0 && (
@@ -665,7 +706,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </span>
           </button>
           <p className="text-[12px] leading-5 text-muted-foreground">
-            我已阅读并同意
+            我已阅读并同��
             <button type="button" onClick={() => setConsentOpen(true)} className="text-primary">
               《基因检测知情同意书》
             </button>
@@ -673,7 +714,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         </div>
         {warn && !agreed && (
           <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
-            请先点击阅读知情同意书（满 8 秒并滑动至底部）后同意
+            请先点��阅读知情同意书（满 8 秒并滑动至底部）后同意
           </p>
         )}
 
@@ -759,6 +800,8 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       )}
 
       {researchDocOpen && <ResearchDocSheet onClose={() => setResearchDocOpen(false)} />}
+
+      {paying && <WechatPaySheet amount={payable} onCancel={() => setPaying(false)} onSuccess={paySuccess} />}
 
       {sheet === 'site' && (
         <SiteListScreen
