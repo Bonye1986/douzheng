@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, Circle, Ellipsis, MessageCircleQuestion, Sparkles } from 'lucide-react'
+import { ChevronRight, Circle, Ellipsis } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
 import { presetQuestions } from '@/components/mini/home-data'
@@ -38,13 +38,13 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           onClick={() => onOpenChat?.()}
           className="mt-8 flex h-14 w-full items-center gap-3 rounded-2xl border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3b8beb1a] transition-transform active:scale-[0.99]"
         >
-          <Sparkles className="size-5 shrink-0 text-primary" />
+          <Image src="/images/icons/ai-sparkle.png" alt="" width={24} height={24} className="size-6 shrink-0" />
           <span className="min-w-0 flex-1 truncate text-[15px] text-[#a3adc2]">输入您的用药或基因问题</span>
         </button>
 
         <section aria-labelledby="hot-q" className="mt-8">
           <h2 id="hot-q" className="mb-3 flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
-            <MessageCircleQuestion className="size-4 text-primary" />
+            <Image src="/images/icons/ai-question.png" alt="" width={20} height={20} className="size-5" />
             大家都在问
           </h2>
           <ul className="flex flex-col gap-2">
