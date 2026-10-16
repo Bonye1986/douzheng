@@ -6,6 +6,7 @@ import { SubPage } from '@/components/mini/sub-page'
 import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { CancelOrderScreen } from '@/components/mini/refund-screen'
+import { SendSampleScreen } from '@/components/mini/send-sample-screen'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
@@ -19,9 +20,20 @@ type OrderActionHandlers = {
   onRefund: (kind: RefundKind) => void
   onHandleUnqualified: () => void
   onOpenGuide: () => void
+  onSendSample: (o: Order) => void
 }
 
-function OrderActions({ order: o, onCancel, onRefund, onHandleUnqualified, onOpenGuide }: { order: Order } & OrderActionHandlers) {
+const canSendSample = (o: Order) => o.type === 'self' && o.status === '待采样'
+
+function OrderActions({
+  order: o,
+  onCancel,
+  onRefund,
+  onHandleUnqualified,
+  onOpenGuide,
+  onSendSample,
+}: { order: Order } & OrderActionHandlers) {
+  const sendable = canSendSample(o)
   return (
     <>
       {o.refund && (
@@ -45,10 +57,21 @@ function OrderActions({ order: o, onCancel, onRefund, onHandleUnqualified, onOpe
           }}
           className={cn(
             'h-7 rounded-full px-3.5 text-[12px] font-medium',
-            o.action.primary ? 'bg-primary text-primary-foreground' : 'border border-[#dfe5ef] text-foreground',
+            o.action.primary && !sendable
+              ? 'bg-primary text-primary-foreground'
+              : 'border border-[#dfe5ef] text-foreground',
           )}
         >
           {o.action.label}
+        </button>
+      )}
+      {sendable && (
+        <button
+          type="button"
+          onClick={() => onSendSample(o)}
+          className="h-7 rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
+        >
+          寄样
         </button>
       )}
     </>
@@ -336,8 +359,21 @@ export function OrderListScreen({
   const [detailId, setDetailId] = useState<string | null>(null)
   const [cancelTarget, setCancelTarget] = useState<Order | null>(null)
   const [cancelledIds, setCancelledIds] = useState<ReadonlySet<string>>(() => new Set())
-  const orders = allOrders.map((o): Order =>
-    cancelledIds.has(o.id)
+  const [sendTarget, setSendTarget] = useState<Order | null>(null)
+  const [sentNotes, setSentNotes] = useState<ReadonlyMap<string, string>>(() => new Map())
+  const orders = allOrders.map((o): Order => {
+    const sentNote = sentNotes.get(o.id)
+    if (sentNote) {
+      return {
+        ...o,
+        phase: 'testing',
+        status: '已寄样',
+        note: sentNote,
+        refund: undefined,
+        action: { label: '查看物流' },
+      }
+    }
+    return cancelledIds.has(o.id)
       ? {
           ...o,
           phase: 'closed',
@@ -346,8 +382,8 @@ export function OrderListScreen({
           refund: undefined,
           action: undefined,
         }
-      : o,
-  )
+      : o
+  })
 
   const confirmCancel = () => {
     if (!cancelTarget) return
@@ -361,9 +397,10 @@ export function OrderListScreen({
     onRefund,
     onHandleUnqualified,
     onOpenGuide: () => setGuideOpen(true),
+    onSendSample: setSendTarget,
   }
   const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
-  const hasActions = (o: Order) => Boolean(o.refund || o.action)
+  const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
 
   const statusTabs = statusTabsByType[type]
   const groupPhase = groupPhases.find((p) => p === statusKey)
@@ -510,6 +547,16 @@ export function OrderListScreen({
         />
       )}
       {guideOpen && <SamplingVideoDialog onClose={() => setGuideOpen(false)} />}
+      {sendTarget && (
+        <SendSampleScreen
+          orderNo={sendTarget.id}
+          examinees={sendTarget.examinees}
+          onBack={() => setSendTarget(null)}
+          onSubmitted={({ time }) =>
+            setSentNotes((prev) => new Map(prev).set(sendTarget.id, `已预约顺丰上门取件（${time}），快递员将上门取样`))
+          }
+        />
+      )}
       {cancelTarget && <CancelOrderScreen onBack={() => setCancelTarget(null)} onCancelled={confirmCancel} />}
     </SubPage>
   )

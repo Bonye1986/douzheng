@@ -63,7 +63,9 @@ const initialAddresses: ManagedAddress[] = [
 /** 有待发货采样盒订单正在使用的地址，不可删除 */
 const shippingAddressIds = new Set(['work'])
 
-const regionText = (r: Region) => (r[0] === r[1] ? `${r[0]} ${r[2]}` : r.join(' '))
+export const savedAddresses = initialAddresses
+
+export const regionText = (r: Region) => (r[0] === r[1] ? `${r[0]} ${r[2]}` : r.join(' '))
 
 type Props = {
   onBack: () => void

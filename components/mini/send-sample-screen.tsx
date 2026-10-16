@@ -1,0 +1,249 @@
+'use client'
+
+import { useState } from 'react'
+import { Check, ChevronRight, CircleCheck, MapPin, PackageCheck, Truck, X } from 'lucide-react'
+import { SubPage } from '@/components/mini/sub-page'
+import { regionText, savedAddresses } from '@/components/mini/address-manage-screen'
+import { cn } from '@/lib/utils'
+
+const pickupDays = ['今天 10-16', '明天 10-17', '后天 10-18']
+const pickupSlots = ['09:00-11:00', '11:00-13:00', '14:00-16:00', '16:00-18:00']
+
+export function SendSampleScreen({
+  orderNo,
+  examinees,
+  onBack,
+  onSubmitted,
+}: {
+  orderNo: string
+  examinees: string
+  onBack: () => void
+  onSubmitted: (summary: { address: string; time: string }) => void
+}) {
+  const [addressId, setAddressId] = useState(
+    savedAddresses.find((a) => a.isDefault)?.id ?? savedAddresses[0]?.id,
+  )
+  const [day, setDay] = useState(0)
+  const [slot, setSlot] = useState(1)
+  const [picking, setPicking] = useState(false)
+  const [done, setDone] = useState(false)
+  const address = savedAddresses.find((a) => a.id === addressId)
+  const time = `${pickupDays[day]} ${pickupSlots[slot]}`
+
+  if (done && address) {
+    return (
+      <SubPage title="寄样结果" titleId="send-sample-result-title" onBack={onBack}>
+        <div className="flex flex-1 flex-col items-center overflow-y-auto px-4 pb-6 pt-10">
+          <span className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <CircleCheck className="size-9" aria-hidden="true" />
+          </span>
+          <h2 className="mt-4 text-[18px] font-semibold text-foreground">寄样预约成功</h2>
+          <p className="mt-1.5 text-center text-[13px] leading-5 text-muted-foreground">
+            快递员将于 {time} 上门取件，请提前封装好样本
+          </p>
+          <dl className="mt-6 w-full space-y-2.5 rounded-2xl bg-white p-4 text-[13px]">
+            {[
+              ['订单编号', orderNo],
+              ['受检人', examinees],
+              ['取件地址', `${address.name} ${address.phone}`],
+              ['', `${regionText(address.region)} ${address.street}`],
+              ['承运快递', '顺丰速运（运费由都正承担）'],
+            ].map(([k, v], i) => (
+              <div key={i} className="flex gap-3">
+                <dt className="w-[68px] shrink-0 text-muted-foreground">{k}</dt>
+                <dd className="min-w-0 flex-1 text-foreground">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+        <div className="shrink-0 border-t border-border bg-white px-4 pb-6 pt-2.5">
+          <button
+            type="button"
+            onClick={onBack}
+            className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
+          >
+            返回订单
+          </button>
+        </div>
+      </SubPage>
+    )
+  }
+
+  return (
+    <SubPage title="预约寄样" titleId="send-sample-title" onBack={onBack}>
+      <div className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
+        <section className="flex items-center gap-3 rounded-2xl bg-primary/10 p-3.5">
+          <Truck className="size-5 shrink-0 text-primary" aria-hidden="true" />
+          <p className="text-[12px] leading-[18px] text-foreground">
+            预约后顺丰快递员将上门取走样本，并直接送往实验室，全程免运费。
+          </p>
+        </section>
+
+        <section aria-labelledby="pickup-address-label" className="rounded-2xl bg-white p-3.5">
+          <h2 id="pickup-address-label" className="text-[14px] font-semibold text-foreground">
+            取件地址
+          </h2>
+          <button
+            type="button"
+            onClick={() => setPicking(true)}
+            className="mt-2.5 flex w-full items-center gap-3 text-left"
+            aria-label={address ? `取件地址：${address.street}，点击更换` : '选择取件地址'}
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eef5ff] text-primary">
+              <MapPin className="size-[18px]" aria-hidden="true" />
+            </span>
+            {address ? (
+              <span className="min-w-0 flex-1">
+                <span className="block text-[14px] font-medium text-foreground">
+                  {address.name}
+                  <span className="ml-2 font-normal tabular-nums text-muted-foreground">{address.phone}</span>
+                </span>
+                <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">
+                  {regionText(address.region)} {address.street}
+                </span>
+              </span>
+            ) : (
+              <span className="flex-1 text-[14px] text-muted-foreground">请从地址管理中选择取件地址</span>
+            )}
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </button>
+        </section>
+
+        <section aria-labelledby="pickup-time-label" className="rounded-2xl bg-white p-3.5">
+          <h2 id="pickup-time-label" className="text-[14px] font-semibold text-foreground">
+            期望上门时间
+          </h2>
+          <div role="radiogroup" aria-label="取件日期" className="mt-2.5 grid grid-cols-3 gap-2">
+            {pickupDays.map((d, i) => (
+              <button
+                key={d}
+                type="button"
+                role="radio"
+                aria-checked={day === i}
+                onClick={() => setDay(i)}
+                className={cn(
+                  'h-8 rounded-lg text-[12px]',
+                  day === i ? 'bg-primary font-medium text-primary-foreground' : 'bg-[#f1f4f9] text-foreground',
+                )}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+          <div role="radiogroup" aria-label="取件时段" className="mt-2 grid grid-cols-2 gap-2">
+            {pickupSlots.map((s, i) => (
+              <button
+                key={s}
+                type="button"
+                role="radio"
+                aria-checked={slot === i}
+                onClick={() => setSlot(i)}
+                className={cn(
+                  'h-8 rounded-lg border text-[12px] tabular-nums',
+                  slot === i ? 'border-primary bg-primary/10 font-medium text-primary' : 'border-[#dfe5ef] text-foreground',
+                )}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-white p-3.5">
+          <h2 className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+            <PackageCheck className="size-4 text-primary" aria-hidden="true" />
+            寄样前请确认
+          </h2>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-[12px] leading-[18px] text-muted-foreground">
+            <li>样本管已拧紧并贴好受检人标签</li>
+            <li>样本放入密封袋后装回采样盒</li>
+            <li>采样后 72 小时内寄出，避免高温暴晒</li>
+          </ul>
+        </section>
+      </div>
+
+      <div className="shrink-0 border-t border-border bg-white px-4 pb-6 pt-2.5">
+        <button
+          type="button"
+          disabled={!address}
+          onClick={() => {
+            if (!address) return
+            onSubmitted({ address: `${regionText(address.region)} ${address.street}`, time })
+            setDone(true)
+          }}
+          className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90 disabled:bg-[#e6ebf3] disabled:text-muted-foreground"
+        >
+          提交预约
+        </button>
+      </div>
+
+      {picking && (
+        <div className="absolute inset-0 z-40 flex flex-col justify-end bg-black/45" onClick={() => setPicking(false)}>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pick-address-title"
+            className="max-h-[70%] rounded-t-2xl bg-white pb-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3">
+              <h2 id="pick-address-title" className="text-[15px] font-semibold text-foreground">
+                选择取件地址
+              </h2>
+              <button type="button" onClick={() => setPicking(false)} aria-label="关闭">
+                <X className="size-5 text-muted-foreground" aria-hidden="true" />
+              </button>
+            </div>
+            <ul role="radiogroup" aria-labelledby="pick-address-title" className="space-y-2 overflow-y-auto px-3">
+              {savedAddresses.map((a) => {
+                const selected = a.id === addressId
+                return (
+                  <li key={a.id}>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => {
+                        setAddressId(a.id)
+                        setPicking(false)
+                      }}
+                      className={cn(
+                        'flex w-full items-start gap-3 rounded-xl border p-3 text-left',
+                        selected ? 'border-primary bg-primary/5' : 'border-[#dfe5ef]',
+                      )}
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[14px] font-medium text-foreground">{a.name}</span>
+                          <span className="text-[12px] tabular-nums text-muted-foreground">{a.phone}</span>
+                          {a.isDefault && (
+                            <span className="rounded bg-primary px-1.5 py-px text-[10px] text-primary-foreground">默认</span>
+                          )}
+                          {a.tag && (
+                            <span className="rounded bg-[#eef5ff] px-1.5 py-px text-[10px] text-primary">{a.tag}</span>
+                          )}
+                        </span>
+                        <span className="mt-1 block text-[12px] leading-[18px] text-muted-foreground">
+                          {regionText(a.region)} {a.street}
+                        </span>
+                      </span>
+                      <span
+                        className={cn(
+                          'mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border',
+                          selected ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c4ccda]',
+                        )}
+                        aria-hidden="true"
+                      >
+                        {selected && <Check className="size-3" strokeWidth={3} />}
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
+    </SubPage>
+  )
+}
