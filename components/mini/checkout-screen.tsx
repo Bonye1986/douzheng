@@ -23,6 +23,8 @@ import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { SiteListScreen } from '@/components/mini/site-list-screen'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
+import { OrderListScreen, type RefundKind } from '@/components/mini/order-list-screen'
+import { CancelOrderScreen, ShippedRefundScreen } from '@/components/mini/refund-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
 import { WechatIcon } from '@/components/mini/wechat-icon'
 import { researchDocs } from '@/components/mini/research-sign-flow'
@@ -141,6 +143,8 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
   const [resentSms, setResentSms] = useState<string[]>([])
   const [orderDetailOpen, setOrderDetailOpen] = useState(false)
+  const [orderListOpen, setOrderListOpen] = useState(false)
+  const [refundKind, setRefundKind] = useState<RefundKind | null>(null)
   const researchItems: ResearchItem[] = rows.flatMap((r) =>
     (research[r.service.id] ?? []).flatMap((mid) => {
       const m = examinees.find((e) => e.id === mid)
@@ -210,6 +214,10 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   }
 
   if (submitted) {
+    const splitOrders = byMember.flatMap((g) => g.items.map((s) => ({ member: g.member, service: s })))
+    const isSplit = splitOrders.length > 1
+    const subOrderNo = (i: number) => `${paidInfo?.orderNo ?? '-'}-${String(i + 1).padStart(2, '0')}`
+    const viewOrder = () => (isSplit ? setOrderListOpen(true) : setOrderDetailOpen(true))
     return (
       <Shell title="订单结果" onBack={onDone}>
         <div className="flex-1 overflow-y-auto px-3 pt-2.5 [scrollbar-width:none]">
@@ -233,7 +241,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               </button>
               <button
                 type="button"
-                onClick={() => setOrderDetailOpen(true)}
+                onClick={viewOrder}
                 className="h-10 flex-1 rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
               >
                 查看订单
@@ -258,14 +266,37 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 </div>
               ))}
             </dl>
-            <ul className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
-              {byMember.map((g) => (
-                <li key={g.member.id} className="flex items-start justify-between gap-3 text-[12px]">
-                  <span className="shrink-0 font-medium text-foreground">{g.member.name}</span>
-                  <span className="min-w-0 text-right text-muted-foreground">{g.items.map((s) => s.name).join('、')}</span>
-                </li>
-              ))}
-            </ul>
+            {isSplit ? (
+              <div className="mt-3 border-t border-border pt-3">
+                <p className="rounded-lg bg-[#f4f8fe] px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground">
+                  本次合并支付已按检测人及检测项目拆分为 {splitOrders.length} 个订单，可在订单列表分别查看
+                </p>
+                <ul className="mt-2 flex flex-col gap-2">
+                  {splitOrders.map((o, i) => (
+                    <li key={`${o.member.id}-${o.service.id}`} className="flex items-start justify-between gap-3 text-[12px]">
+                      <span className="min-w-0">
+                        <span className="block font-medium text-foreground">
+                          {o.member.name} · {o.service.name}
+                        </span>
+                        <span className="block tabular-nums text-muted-foreground">{subOrderNo(i)}</span>
+                      </span>
+                      <span className="shrink-0 tabular-nums text-foreground">
+                        ¥{o.service.price.toLocaleString('zh-CN')}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <ul className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+                {byMember.map((g) => (
+                  <li key={g.member.id} className="flex items-start justify-between gap-3 text-[12px]">
+                    <span className="shrink-0 font-medium text-foreground">{g.member.name}</span>
+                    <span className="min-w-0 text-right text-muted-foreground">{g.items.map((s) => s.name).join('、')}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           {researchItems.length > 0 && (
@@ -347,6 +378,16 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             onBack={() => setOrderDetailOpen(false)}
           />
         )}
+        {orderListOpen && (
+          <OrderListScreen
+            initialType={mode}
+            initialStatus={mode === 'self' ? 'toShip' : 'toVerify'}
+            onBack={() => setOrderListOpen(false)}
+            onRefund={setRefundKind}
+          />
+        )}
+        {refundKind === 'cancel' && <CancelOrderScreen onBack={() => setRefundKind(null)} />}
+        {refundKind === 'shipped' && <ShippedRefundScreen onBack={() => setRefundKind(null)} />}
       </Shell>
     )
   }

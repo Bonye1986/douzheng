@@ -506,7 +506,7 @@ const statusSeeds: StatusSeed[] = [
     type: 'site',
     phase: 'done',
     status: '已完成',
-    action: { label: '查看���告', primary: true },
+    action: { label: '查看�����告', primary: true },
     notes: ['检测报告已出具，可在线查看'],
   },
   {
@@ -561,18 +561,22 @@ export function countOrders(phase: Exclude<OrderPhase, 'all'>) {
 
 export function OrderListScreen({
   initialPhase = 'all',
+  initialType = 'all',
+  initialStatus,
   initialGuideOpen = false,
   onBack,
   onRefund,
 }: {
   initialPhase?: OrderPhase
+  initialType?: OrderType
+  initialStatus?: 'toShip' | 'toVerify'
   initialGuideOpen?: boolean
   onBack: () => void
   onHandleUnqualified?: () => void
   onRefund: (kind: RefundKind) => void
 }) {
-  const [type, setType] = useState<OrderType>('all')
-  const [statusKey, setStatusKey] = useState<string>(initialPhase)
+  const [type, setType] = useState<OrderType>(initialType)
+  const [statusKey, setStatusKey] = useState<string>(initialStatus ?? initialPhase)
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
   const [detailId, setDetailId] = useState<string | null>(null)
   const [cancelTarget, setCancelTarget] = useState<Order | null>(null)
