@@ -90,11 +90,11 @@ export function WechatAuthScreen({ onAllow, onDeny }: { onAllow?: () => void; on
             允许
           </button>
         </div>
-        {result && (
-          <p role="status" className="mt-3 text-center text-[12px] text-muted-foreground">
-            {result === 'allowed' ? '授权成功，正在登录…' : '需授权手机号才能登录，请重新授权'}
-          </p>
-        )}
+  {result === 'allowed' && (
+  <p role="status" className="mt-3 text-center text-[12px] text-muted-foreground">
+  授权成功，正在登录…
+  </p>
+  )}
       </div>
     </div>
   )
