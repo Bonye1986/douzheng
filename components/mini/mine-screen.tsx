@@ -102,7 +102,9 @@ export function MineScreen({
   initialAboutOpen = false,
   initialServiceOpen = false,
   initialAccountView = null,
+  onOpenTests,
 }: {
+  onOpenTests?: () => void
   initialAccountView?: AccountView | null
   initialAboutOpen?: boolean
   initialServiceOpen?: boolean
@@ -326,7 +328,14 @@ export function MineScreen({
       {authOpen && <AuthorizationScreen initialTab={initialAuthTab} onBack={() => setAuthOpen(false)} />}
       {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
       {myCouponsOpen && (
-        <MyCouponsScreen onBack={() => setMyCouponsOpen(false)} onOpenCenter={() => setCouponCenterOpen(true)} />
+        <MyCouponsScreen
+  onBack={() => setMyCouponsOpen(false)}
+  onOpenCenter={() => setCouponCenterOpen(true)}
+  onUse={() => {
+  setMyCouponsOpen(false)
+  onOpenTests?.()
+  }}
+  />
       )}
       {couponCenterOpen && <CouponCenterScreen onBack={() => setCouponCenterOpen(false)} />}
       {examineeView && <ExamineeManageScreen initialView={examineeView} onBack={() => setExamineeView(null)} />}

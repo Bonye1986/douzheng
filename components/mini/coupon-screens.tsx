@@ -88,7 +88,15 @@ function CouponCard({
   )
 }
 
-export function MyCouponsScreen({ onBack, onOpenCenter }: { onBack: () => void; onOpenCenter: () => void }) {
+export function MyCouponsScreen({
+  onBack,
+  onOpenCenter,
+  onUse,
+}: {
+  onBack: () => void
+  onOpenCenter: () => void
+  onUse?: () => void
+}) {
   const [tab, setTab] = useState<CouponStatus>('usable')
   const list = myCoupons.filter((c) => c.status === tab)
 
@@ -146,6 +154,7 @@ export function MyCouponsScreen({ onBack, onOpenCenter }: { onBack: () => void; 
                     c.status === 'usable' ? (
                       <button
                         type="button"
+                        onClick={onUse}
                         className="h-7 shrink-0 rounded-full bg-primary px-3 text-[12px] font-medium text-white"
                       >
                         去使用

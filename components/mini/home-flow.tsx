@@ -98,7 +98,7 @@ export function HomeFlow({
             initialCheckout={initialCheckout}
           />
         ) : tab === 'me' ? (
-          <MineScreen />
+          <MineScreen onOpenTests={() => openTests()} />
         ) : (
           <TabPlaceholderScreen tab={tab} />
         )}
