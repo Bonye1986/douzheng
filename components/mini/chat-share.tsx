@@ -80,12 +80,37 @@ async function copyToClipboard(text: string) {
 }
 
 export function ShareSheet({ items, onClose }: { items: ShareItem[]; onClose: () => void }) {
+  const url = `https://yaowen.example.com/share/${items.map((i) => i.id).join('-') || 'empty'}`
+  return (
+    <ShareSheetBase
+      url={url}
+      empty={items.length === 0}
+      onClose={onClose}
+      qrCard={<QrCard url={url} title="药问基因 · AI 咨询" hint="微信扫一扫，查看分享的对话" footnote="内容由 AI 生成，仅供参考" />}
+      poster={<PosterCard items={items} url={url} />}
+    />
+  )
+}
+
+export function ShareSheetBase({
+  url: shareUrl,
+  empty = false,
+  notice,
+  qrCard,
+  poster,
+  onClose,
+}: {
+  url: string
+  empty?: boolean
+  notice?: ReactNode
+  qrCard: ReactNode
+  poster: ReactNode
+  onClose: () => void
+}) {
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [overlay, setOverlay] = useState<Overlay>(null)
   const timers = useRef<number[]>([])
-  const shareUrl = `https://yaowen.example.com/share/${items.map((i) => i.id).join('-') || 'empty'}`
-  const empty = items.length === 0
 
   useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), [])
 
@@ -163,6 +188,7 @@ export function ShareSheet({ items, onClose }: { items: ShareItem[]; onClose: ()
             <X className="size-5" />
           </button>
         </div>
+        {notice}
         <ul className="mt-4 grid grid-cols-5 gap-1">
           {options.map((o) => (
             <li key={o.key}>
@@ -212,7 +238,7 @@ export function ShareSheet({ items, onClose }: { items: ShareItem[]; onClose: ()
             aria-label={overlay === 'qrcode' ? '分享二维码' : '分享图片预览'}
             className="relative flex max-h-full w-full max-w-[300px] flex-col animate-in zoom-in-95 fade-in duration-200"
           >
-            {overlay === 'qrcode' ? <QrCard url={shareUrl} /> : <PosterCard items={items} url={shareUrl} />}
+            {overlay === 'qrcode' ? qrCard : poster}
             <div className="mt-4 flex gap-3">
               <button
                 type="button"
@@ -239,15 +265,15 @@ export function ShareSheet({ items, onClose }: { items: ShareItem[]; onClose: ()
   )
 }
 
-function QrCard({ url }: { url: string }) {
+export function QrCard({ url, title, hint, footnote }: { url: string; title: string; hint: string; footnote: string }) {
   return (
     <div className="flex flex-col items-center rounded-2xl bg-white px-6 py-7 text-center">
-      <strong className="text-[16px] font-semibold text-foreground">药问基因 · AI 咨询</strong>
-      <p className="mt-1 text-[12px] text-muted-foreground">微信扫一扫，查看分享的对话</p>
+      <strong className="text-[16px] font-semibold text-foreground">{title}</strong>
+      <p className="mt-1 text-[12px] text-muted-foreground">{hint}</p>
       <div className="mt-5 rounded-xl border border-border p-3">
         <QRCodeSVG value={url} size={168} fgColor="#1e2a3d" />
       </div>
-      <p className="mt-4 text-[11px] text-muted-foreground">内容由 AI 生成，仅供参考</p>
+      <p className="mt-4 text-[11px] text-muted-foreground">{footnote}</p>
     </div>
   )
 }

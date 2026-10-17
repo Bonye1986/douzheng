@@ -1,8 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Check, Info, MoveHorizontal, Share2, Sparkles } from 'lucide-react'
+import { Check, Info, MoveHorizontal, Share2, ShieldAlert } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import { SubPage } from '@/components/mini/sub-page'
+import { QrCard, ShareSheetBase } from '@/components/mini/chat-share'
 import { cn } from '@/lib/utils'
 
 export type ReportSummary = {
@@ -76,15 +78,75 @@ function Mark({ on, label }: { on: boolean; label: string }) {
   )
 }
 
-export function ReportDetailScreen({
-  report,
-  onBack,
-  onAiInterpret,
-}: {
-  report: ReportSummary
-  onBack: () => void
-  onAiInterpret?: () => void
-}) {
+function ReportShareSheet({ report, onClose }: { report: ReportSummary; onClose: () => void }) {
+  const url = `https://yaowen.example.com/report/${report.id}`
+  return (
+    <div className="absolute inset-0 z-20 flex flex-col justify-end">
+      <button type="button" aria-label="取消分享" onClick={onClose} className="absolute inset-0 bg-[#1e2a3d]/45" />
+      <ShareSheetBase
+        url={url}
+        onClose={onClose}
+        notice={
+          <p className="mt-2 flex gap-1.5 rounded-xl bg-[#fdf3e8] px-3 py-2 text-[11px] leading-relaxed text-[#b4602a]">
+            <ShieldAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+            报告包含受检人基因与健康信息，请仅分享给信任的家人或医生。
+          </p>
+        }
+        qrCard={
+          <QrCard
+            url={url}
+            title={report.product}
+            hint={`微信扫一扫，查看${report.examinee}的检测报告`}
+            footnote="链接 7 天内有效，仅供专业参考"
+          />
+        }
+        poster={<ReportPoster report={report} url={url} />}
+      />
+    </div>
+  )
+}
+
+function ReportPoster({ report, url }: { report: ReportSummary; url: string }) {
+  return (
+    <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl bg-[#f3f7fd]">
+      <div className="bg-primary px-4 py-3 text-white">
+        <strong className="block text-[15px] font-semibold">{report.product}</strong>
+        <span className="text-[11px] text-white/80">
+          检测人：{report.examinee} · 出具日期 <span className="tabular-nums">{report.date}</span>
+        </span>
+      </div>
+      <div className="flex max-h-[46vh] flex-col gap-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
+        <ul className="grid grid-cols-3 gap-2">
+          {stats.map((s) => (
+            <li key={s.label} className="rounded-xl bg-white py-2 text-center">
+              <p className={cn('text-[17px] font-semibold tabular-nums', s.color)}>{s.value}</p>
+              <p className="text-[10px] text-muted-foreground">{s.label}</p>
+            </li>
+          ))}
+        </ul>
+        <ul className="divide-y divide-[#eef1f6] rounded-xl bg-white px-3 text-[12px]">
+          {summaryRows.slice(0, 5).map((r) => (
+            <li key={r.drug} className="flex items-center justify-between py-2">
+              <span className="text-foreground">{r.drug}</span>
+              <span className={cn('font-medium', adviceColor[r.advice])}>{r.advice}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex items-center gap-3 border-t border-[#dbe5f3] bg-white px-4 py-3">
+        <QRCodeSVG value={url} size={44} fgColor="#1e2a3d" />
+        <span className="text-[11px] leading-4 text-muted-foreground">
+          长按识别二维码
+          <br />
+          查看完整报告
+        </span>
+      </div>
+    </div>
+  )
+}
+
+export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; onBack: () => void }) {
+  const [sharing, setSharing] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const drag = useRef<{ x: number; left: number } | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -262,23 +324,19 @@ export function ReportDetailScreen({
         </p>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2.5 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
+      <div className="flex shrink-0 items-center border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
         <button
           type="button"
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-[#dfe5ef] text-[14px] text-foreground"
+          onClick={() => setSharing(true)}
+          aria-haspopup="dialog"
+          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
         >
           <Share2 className="size-4" aria-hidden="true" />
           分享报告
         </button>
-        <button
-          type="button"
-          onClick={onAiInterpret}
-          className="flex h-10 flex-[1.4] items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
-        >
-          <Sparkles className="size-4" aria-hidden="true" />
-          AI解读
-        </button>
       </div>
+
+      {sharing && <ReportShareSheet report={report} onClose={() => setSharing(false)} />}
     </SubPage>
   )
 }
