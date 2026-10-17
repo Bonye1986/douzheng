@@ -205,7 +205,7 @@ const statusTabs: StatusTab[] = [
   { key: 'toPay', label: '待付款', match: byStatuses('待付款') },
   { key: 'toUse', label: '待使用', match: byStatuses('待发货', '待收货', '待核销') },
   { key: 'toSample', label: '待采样', match: byStatuses('待采样', '待寄样') },
-  { key: 'testing', label: '检��中', match: byStatuses('待收样', '待检测', '检测中') },
+  { key: 'testing', label: '检测中', match: byStatuses('待收样', '待检测', '检测中') },
   { key: 'done', label: '已完成', match: byStatuses('已完成') },
   { key: 'closed', label: '已关闭', match: byStatuses('已关闭') },
 ]
@@ -716,7 +716,7 @@ export function OrderListScreen({
           status: '待收样',
           note: sentNote,
           refund: 'testing',
-          action: { label: '查看��流' },
+          action: { label: '查看物流' },
         }
       : o
     if (refundAppliedIds.has(o.id)) {
