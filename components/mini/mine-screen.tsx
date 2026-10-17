@@ -23,7 +23,7 @@ import { AccountSettingsScreen, type AccountView } from '@/components/mini/accou
 
 /**
  * 面向用户的 5 个阶段，后台细分状态归并其中：
- * 待采样 = 待发货 / 已发货 / 待核销 / 待采样；检测中 = 已寄样 / 已收样 / 检测中；
+ * 待使用 = 待发货 / 待收货 / 待核销；待采样 = 待采样 / 待寄样；检测中 = 待收样 / 待检测 / 检测中；
  * 退款/售后为独立页面（样本不合格待处理、退款、重采样）。订单类型（自采样 / 定点采样）与已关闭订单在订单列表中筛选。
  */
 const iconSrc = (name: string) => `/images/icons/mine-${name}.png`

@@ -23,7 +23,7 @@ const shippedOrder = {
   product: '心血管用药基因检测',
   examinee: '王建国',
   paid: 899,
-  status: '已发货',
+  status: '待收货',
   tracking: '顺丰 SF1407 3382 9015',
 }
 
@@ -360,7 +360,7 @@ const resampleOrder = {
   product: '药物基因检测',
   examinee: '李秀兰',
   paid: 999,
-  status: '重采样 · 已收样',
+  status: '重采样 · 待检测',
 }
 
 export type IncurredFee = { label: string; desc: string; amount: number }
@@ -458,7 +458,7 @@ function testingFees(o: TestingRefundOrder): IncurredFee[] {
           { label: '物流费用', desc: '采样盒寄送及样本回寄', amount: 30 },
         ]
       : [{ label: '采样服务费', desc: '采样机构现场采样及样本寄送', amount: 100 }]
-  if (o.status === '已收样' || o.status === '检测中') {
+  if (o.status === '待检测' || o.status === '检测中') {
     fees.push({ label: '样本处理费用', desc: '实验室签收、登记及 DNA 提取', amount: 100 })
   }
   if (o.status === '检测中') {
