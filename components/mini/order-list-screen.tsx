@@ -57,7 +57,7 @@ type OrderActionHandlers = {
   onShowVerifyCode: (o: Order) => void
 }
 
-const canSendSample = (o: Order) => o.type === 'self' && o.status === '待采样'
+const canSendSample = (o: Order) => o.status === '待采样'
 
 function OrderActions({
   order: o,
@@ -512,7 +512,7 @@ const statusSeeds: StatusSeed[] = [
     phase: 'toPay',
     status: '待付款',
     action: { label: '去支付', primary: true },
-    notes: ['请在倒计时结束前完成支付，超时订单将自动关闭'],
+    notes: ['请��倒计时结束前完成支付，超时订单将自动关闭'],
   },
   {
     type: 'self',
@@ -742,7 +742,13 @@ export function OrderListScreen({
       },
     ]
   })
-  const sourceOrders = [...extraOrders, ...resampleOrders, ...allOrders].flatMap((o): Order[] => {
+  const withSiteActions = (o: Order): Order => {
+    if (o.type !== 'site') return o
+    if (o.status === '待核销' && !o.refund) return { ...o, refund: 'cancel' }
+    if (o.status === '已寄样' && !o.action) return { ...o, action: { label: '查看物流' } }
+    return o
+  }
+  const sourceOrders = [...extraOrders, ...resampleOrders, ...allOrders].map(withSiteActions).flatMap((o): Order[] => {
     const names = o.examinees.split('、')
     if (!paidIds.has(o.id) || names.length < 2) return [o]
     const goods = parseYuan(o.goodsAmount ?? o.originalAmount ?? o.amount)
@@ -770,12 +776,20 @@ export function OrderListScreen({
             note: '已支付，请前往 都正检测中心（徐汇） 出示核销码',
             priceChanged: false,
             originalAmount: undefined,
+            refund: 'cancel',
             action: { label: '核销码', primary: true },
+            ...(cancelledIds.has(o.id) && {
+              phase: 'closed' as const,
+              status: '已关闭',
+              note: '用户已取消订单，支付金额已全额原路退回',
+              refund: undefined,
+              action: undefined,
+            }),
           }
         : {
             ...o,
             phase: 'toSample',
-            status: cancelledIds.has(o.id) ? '已关闭' : '待发货',
+            status: cancelledIds.has(o.id) ? '已关闭' : '��发货',
             note: '已支付，实验室将在 24 小时内寄出采样盒',
             priceChanged: false,
             originalAmount: undefined,
