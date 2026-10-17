@@ -19,6 +19,7 @@ import { ResampleScreen } from '@/components/mini/resample-screen'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
 import { VerifyCodeSheet } from '@/components/mini/verify-code-sheet'
+import { OrderFilterBar, type OrderTypeFilter } from '@/components/mini/order-filter-bar'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
@@ -186,63 +187,37 @@ function OrderDetailFromList({
 }
 
 export type OrderPhase = 'all' | 'toPay' | 'toSample' | 'testing' | 'done' | 'closed'
-type OrderType = 'all' | 'self' | 'site'
+type OrderType = OrderTypeFilter
 
-const typeTabs: { key: OrderType; label: string }[] = [
-  { key: 'all', label: '全部订单' },
-  { key: 'self', label: '自采样订单' },
-  { key: 'site', label: '定点采样订单' },
+type StatusTabKey = 'all' | 'toPay' | 'toUse' | 'toSample' | 'testing' | 'done'
+type StatusTab = { key: StatusTabKey; label: string; match: (o: Order) => boolean }
+
+const byStatuses =
+  (...statuses: string[]) =>
+  (o: Order) =>
+    statuses.includes(o.status)
+
+/** 列表 Tab 按「用户下一步要做什么」归组，卡片上仍显示细分状态 */
+const statusTabs: StatusTab[] = [
+  { key: 'all', label: '全部', match: () => true },
+  { key: 'toPay', label: '待付款', match: byStatuses('待付款') },
+  { key: 'toUse', label: '待使用', match: byStatuses('待发货', '已发货', '待核销') },
+  { key: 'toSample', label: '待采样', match: byStatuses('待采样') },
+  { key: 'testing', label: '检测中', match: byStatuses('已寄样', '已收样', '检测中') },
+  { key: 'done', label: '已完成', match: byStatuses('已完成') },
 ]
 
-type GroupPhase = Exclude<OrderPhase, 'all'>
-type StatusTab = { key: string; label: string; phase?: GroupPhase; match: (o: Order) => boolean }
-
-const byPhase = (phase: GroupPhase) => (o: Order) => o.phase === phase
-const byStatus = (status: string) => (o: Order) => o.status === status
-const allTab: StatusTab = { key: 'all', label: '全部', match: () => true }
-
-const tab = {
-  toPay: { key: 'toPay', label: '待付款', phase: 'toPay', match: byPhase('toPay') },
-  toShip: { key: 'toShip', label: '待发货', phase: 'toSample', match: byStatus('待发货') },
-  shipped: { key: 'shipped', label: '已发货', phase: 'toSample', match: byStatus('已发货') },
-  toVerify: { key: 'toVerify', label: '待核销', phase: 'toSample', match: byStatus('待核销') },
-  toSample: { key: 'siteToSample', label: '待采样', phase: 'toSample', match: byStatus('待采样') },
-  sent: { key: 'sent', label: '已寄样', phase: 'testing', match: byStatus('已寄样') },
-  received: { key: 'received', label: '已收样', phase: 'testing', match: byStatus('已收样') },
-  testing: { key: 'testingStatus', label: '检测中', phase: 'testing', match: byStatus('检测中') },
-  done: { key: 'done', label: '已完成', phase: 'done', match: byPhase('done') },
-  closed: { key: 'closed', label: '已关闭', phase: 'closed', match: byPhase('closed') },
-} satisfies Record<string, StatusTab>
-
-const statusTabsByType: Record<OrderType, StatusTab[]> = {
-  all: [
-    tab.toPay,
-    tab.toShip,
-    tab.shipped,
-    tab.toVerify,
-    tab.toSample,
-    tab.sent,
-    tab.received,
-    tab.testing,
-    tab.done,
-    tab.closed,
-  ],
-  self: [
-    allTab,
-    tab.toPay,
-    tab.toShip,
-    tab.shipped,
-    tab.toSample,
-    tab.sent,
-    tab.received,
-    tab.testing,
-    tab.done,
-    tab.closed,
-  ],
-  site: [allTab, tab.toPay, tab.toVerify, tab.toSample, tab.sent, tab.received, tab.testing, tab.done, tab.closed],
+const phaseToTab: Record<OrderPhase, StatusTabKey> = {
+  all: 'all',
+  toPay: 'toPay',
+  toSample: 'toSample',
+  testing: 'testing',
+  done: 'done',
+  closed: 'all',
 }
 
-const groupPhases: GroupPhase[] = ['toSample', 'testing']
+const matchesKeyword = (o: Order, keyword: string) =>
+  !keyword || [o.id, o.product, o.examinees, o.parentId ?? ''].some((field) => field.includes(keyword))
 
 export type Order = {
   id: string
@@ -476,7 +451,7 @@ const splitOrders: Order[] = [
       product: { name: '心血管用药基因检测', price: 899 },
       phase: 'toSample',
       status: '已发货',
-      note: '采样盒运输中，预计明日送达',
+      note: '采样盒运输中，预计明日送���',
       refund: 'shipped',
       action: { label: '查看物流' },
     },
@@ -682,14 +657,17 @@ function buildSeedOrders(existing: Order[]): Order[] {
 const curatedOrders: Order[] = [...splitOrders, ...featuredOrders]
 const allOrders: Order[] = [...curatedOrders, ...buildSeedOrders(curatedOrders)]
 
-export function countOrders(phase: Exclude<OrderPhase, 'all'>) {
-  return allOrders.filter((o) => o.phase === phase).length
+export type OrderTabKey = StatusTabKey
+
+export function countOrders(key: Exclude<StatusTabKey, 'all'>) {
+  const tabDef = statusTabs.find((t) => t.key === key)
+  return tabDef ? allOrders.filter(tabDef.match).length : 0
 }
 
 export function OrderListScreen({
   initialPhase = 'all',
   initialType = 'all',
-  initialStatus,
+  initialTab,
   initialGuideOpen = false,
   extraOrders = [],
   onBack,
@@ -697,7 +675,7 @@ export function OrderListScreen({
 }: {
   initialPhase?: OrderPhase
   initialType?: OrderType
-  initialStatus?: 'toShip' | 'toVerify'
+  initialTab?: StatusTabKey
   initialGuideOpen?: boolean
   extraOrders?: Order[]
   onBack: () => void
@@ -705,7 +683,8 @@ export function OrderListScreen({
   onRefund: (kind: RefundKind) => void
 }) {
   const [type, setType] = useState<OrderType>(initialType)
-  const [statusKey, setStatusKey] = useState<string>(initialStatus ?? initialPhase)
+  const [statusKey, setStatusKey] = useState<StatusTabKey>(initialTab ?? phaseToTab[initialPhase])
+  const [keyword, setKeyword] = useState('')
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
   const [detailId, setDetailId] = useState<string | null>(null)
   const [cancelTarget, setCancelTarget] = useState<Order | null>(null)
@@ -908,72 +887,50 @@ export function OrderListScreen({
   const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
   const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
 
-  const statusTabs = statusTabsByType[type]
-  const groupPhase = groupPhases.find((p) => p === statusKey)
-  const activeTab: StatusTab = groupPhase
-    ? { key: groupPhase, label: '', match: byPhase(groupPhase) }
-    : (statusTabs.find((t) => t.key === statusKey) ?? allTab)
-  const visible = orders.filter((o) => (type === 'all' || o.type === type) && activeTab.match(o))
-
-  const selectType = (next: OrderType) => {
-    setType(next)
-    setStatusKey('all')
-  }
+  const activeTab = statusTabs.find((t) => t.key === statusKey) ?? statusTabs[0]
+  const trimmedKeyword = keyword.trim()
+  const filtered = orders.filter((o) => (type === 'all' || o.type === type) && matchesKeyword(o, trimmedKeyword))
+  const visible = filtered.filter(activeTab.match)
 
   return (
     <SubPage title="我的订单" titleId="order-list-title" onBack={onBack}>
-      <div className="shrink-0 bg-white px-3 pb-2 pt-1">
-        <div role="tablist" aria-label="采样类型" className="grid grid-cols-3 rounded-xl bg-[#f1f4f9] p-1">
-          {typeTabs.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              role="tab"
-              aria-selected={type === t.key}
-              onClick={() => selectType(t.key)}
-              className={cn(
-                'h-8 rounded-lg text-[13px] transition-colors',
-                type === t.key ? 'bg-white font-semibold text-primary shadow-sm' : 'text-muted-foreground',
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <OrderFilterBar keyword={keyword} onKeywordChange={setKeyword} type={type} onTypeChange={setType} />
 
       <div
         role="tablist"
         aria-label="订单状态"
-        className="flex shrink-0 gap-2 overflow-x-auto px-3 py-2.5 [scrollbar-width:none]"
+        className="flex shrink-0 bg-white px-1"
       >
         {statusTabs.map((t) => {
-          const count = t.key === 'all' ? 0 : orders.filter((o) => (type === 'all' || o.type === type) && t.match(o)).length
-          const active = groupPhase ? t.phase === groupPhase : activeTab.key === t.key
+          const count = t.key === 'all' || t.key === 'done' ? 0 : filtered.filter(t.match).length
+          const active = activeTab.key === t.key
           return (
             <button
               key={t.key}
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => setStatusKey(active && type === 'all' ? 'all' : t.key)}
+              onClick={() => setStatusKey(t.key)}
               className={cn(
-                'flex h-7 shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 text-[12px] transition-colors',
-                active ? 'bg-primary font-medium text-primary-foreground' : 'bg-white text-muted-foreground',
+                'relative flex h-10 min-w-0 flex-1 items-center justify-center gap-0.5 whitespace-nowrap text-[13px] transition-colors',
+                active ? 'font-semibold text-foreground' : 'text-muted-foreground',
               )}
             >
               {t.label}
-              {count > 0 && (
-                <span className={cn('tabular-nums', active ? 'text-primary-foreground/80' : 'text-primary')}>{count}</span>
+              {count > 0 && <span className="text-[11px] tabular-nums text-primary">{count}</span>}
+              {active && (
+                <span aria-hidden="true" className="absolute inset-x-3 bottom-0 h-[3px] rounded-full bg-primary" />
               )}
             </button>
           )
         })}
       </div>
 
-      <ul className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-6 [scrollbar-width:none]">
+      <ul className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]">
         {visible.length === 0 && (
-          <li className="py-16 text-center text-[13px] text-muted-foreground">暂无相关订单</li>
+          <li className="py-16 text-center text-[13px] text-muted-foreground">
+            {trimmedKeyword ? `未找到与「${trimmedKeyword}」相关的订单` : '暂无相关订单'}
+          </li>
         )}
         {visible.map((o) => {
           const TypeIcon = o.type === 'self' ? Home : Building2

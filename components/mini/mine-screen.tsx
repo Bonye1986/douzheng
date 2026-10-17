@@ -8,7 +8,7 @@ import { AuthorizationScreen } from '@/components/mini/authorization-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { CancelOrderScreen, ResampleRefundScreen, ShippedRefundScreen } from '@/components/mini/refund-screen'
 import type { RefundKind } from '@/components/mini/order-list-screen'
-import { OrderListScreen, countOrders, type OrderPhase } from '@/components/mini/order-list-screen'
+import { OrderListScreen, countOrders, type OrderTabKey } from '@/components/mini/order-list-screen'
 import { AfterSalesScreen, pendingAfterSalesCount } from '@/components/mini/after-sales-screen'
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { ReportListScreen, unreadReportCount } from '@/components/mini/report-list-screen'
@@ -28,8 +28,9 @@ import { AccountSettingsScreen, type AccountView } from '@/components/mini/accou
  */
 const iconSrc = (name: string) => `/images/icons/mine-${name}.png`
 
-const orderPhases: { key: Exclude<OrderPhase, 'all' | 'closed'> | 'after'; label: string; icon: string }[] = [
+const orderPhases: { key: Exclude<OrderTabKey, 'all'> | 'after'; label: string; icon: string }[] = [
   { key: 'toPay', label: '待付款', icon: iconSrc('topay') },
+  { key: 'toUse', label: '待使用', icon: iconSrc('guide') },
   { key: 'toSample', label: '待采样', icon: iconSrc('tosample') },
   { key: 'testing', label: '检测中', icon: iconSrc('testing') },
   { key: 'done', label: '已完成', icon: iconSrc('done') },
@@ -126,7 +127,7 @@ export function MineScreen({
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
   const [resampleOpen, setResampleOpen] = useState(initialResampleOpen)
-  const [orderListPhase, setOrderListPhase] = useState<OrderPhase | null>(null)
+  const [orderListPhase, setOrderListPhase] = useState<OrderTabKey | null>(null)
   const [afterSalesOpen, setAfterSalesOpen] = useState(false)
   const [refundKind, setRefundKind] = useState<RefundKind | null>(null)
   const self = initialExaminees[0]
@@ -171,7 +172,7 @@ export function MineScreen({
               onAction={() => setOrderListPhase('all')}
             />
           </div>
-          <ul className="mt-4 grid grid-cols-5 px-1">
+          <ul className="mt-4 grid grid-cols-6 px-0.5">
             {orderPhases.map((p) => {
               const count = p.key === 'after' ? pendingAfterSalesCount : countOrders(p.key)
               return (
@@ -287,7 +288,7 @@ export function MineScreen({
 
       {orderListPhase && (
         <OrderListScreen
-          initialPhase={orderListPhase}
+          initialTab={orderListPhase}
           onBack={() => setOrderListPhase(null)}
           onHandleUnqualified={() => setResampleOpen(true)}
           onRefund={setRefundKind}
