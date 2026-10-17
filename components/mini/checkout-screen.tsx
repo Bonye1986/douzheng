@@ -33,6 +33,7 @@ import {
 } from '@/components/mini/order-list-screen'
 import { CancelOrderScreen, ShippedRefundScreen } from '@/components/mini/refund-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
+import { VerifyCodeSheet } from '@/components/mini/verify-code-sheet'
 import { WechatIcon } from '@/components/mini/wechat-icon'
 import { researchDocs } from '@/components/mini/research-sign-flow'
 
@@ -151,6 +152,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [resentSms, setResentSms] = useState<string[]>([])
   const [orderDetailOpen, setOrderDetailOpen] = useState(false)
   const [orderListOpen, setOrderListOpen] = useState(false)
+  const [verifyCodeOpen, setVerifyCodeOpen] = useState(false)
   const [refundKind, setRefundKind] = useState<RefundKind | null>(null)
   const researchItems: ResearchItem[] = rows.flatMap((r) =>
     (research[r.service.id] ?? []).flatMap((mid) => {
@@ -422,7 +424,27 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             goodsTotal={goodsTotal}
             couponOff={couponOff}
             payable={payable}
+            actions={
+              mode === 'site' ? (
+                <button
+                  type="button"
+                  onClick={() => setVerifyCodeOpen(true)}
+                  className="h-7 rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
+                >
+                  核销码
+                </button>
+              ) : undefined
+            }
             onBack={() => setOrderDetailOpen(false)}
+          />
+        )}
+        {orderDetailOpen && verifyCodeOpen && (
+          <VerifyCodeSheet
+            orderNo={paidInfo?.orderNo ?? '-'}
+            product={byMember.flatMap((g) => g.items.map((s) => s.name)).join('、')}
+            examinees={byMember.map((g) => g.member.name).join('、')}
+            siteName={site?.name}
+            onClose={() => setVerifyCodeOpen(false)}
           />
         )}
         {orderListOpen && (
