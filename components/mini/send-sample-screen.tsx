@@ -16,7 +16,7 @@ export function SendSampleScreen({
   orderNo: string
   examinees: string
   /** 定点采样订单：取件地址固定为采样机构地址，不可更换 */
-  site?: { name: string; address: string }
+  site?: { name: string; address: string; contact?: string; phone?: string }
   onBack: () => void
   onSubmitted: (summary: { address: string }) => void
 }) {
@@ -27,7 +27,11 @@ export function SendSampleScreen({
   const [done, setDone] = useState(false)
   const saved = savedAddresses.find((a) => a.id === addressId)
   const address = site
-    ? { title: site.name, subtitle: '', detail: site.address }
+    ? {
+        title: site.name,
+        subtitle: [site.contact, site.phone].filter(Boolean).join(' '),
+        detail: site.address,
+      }
     : saved
       ? { title: saved.name, subtitle: saved.phone, detail: `${regionText(saved.region)} ${saved.street}` }
       : undefined
@@ -95,6 +99,11 @@ export function SendSampleScreen({
                   {address.title}
                   <span className="rounded bg-[#eef5ff] px-1.5 py-px text-[10px] font-normal text-primary">采样机构</span>
                 </span>
+                {address.subtitle && (
+                  <span className="mt-0.5 block text-[12px] leading-[18px] text-foreground">
+                    联系电话：{address.subtitle}
+                  </span>
+                )}
                 <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">{address.detail}</span>
               </span>
             </div>

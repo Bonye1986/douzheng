@@ -8,7 +8,12 @@ import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { CancelOrderScreen, TestingRefundScreen } from '@/components/mini/refund-screen'
 import { LogisticsScreen } from '@/components/mini/logistics-screen'
 
-const samplingSite = { name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼' }
+const samplingSite = {
+  name: '都正检测中心（徐汇）',
+  address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼',
+  contact: '采样前台',
+  phone: '021-6485 2200',
+}
 import { SendSampleScreen } from '@/components/mini/send-sample-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
@@ -473,7 +478,7 @@ const splitOrders: Order[] = [
       status: '已发货',
       note: '采样盒运输中，预计明日送达',
       refund: 'shipped',
-      action: { label: '查看物流' },
+      action: { label: '查看���流' },
     },
     {
       examinee: '李秀兰',
@@ -486,7 +491,7 @@ const splitOrders: Order[] = [
   ]),
   ...buildSplitOrders('JY20261013517702', 'site', 50, [
     {
-      examinee: '张伟',
+      examinee: '��伟',
       product: { name: '药物基因检测', price: 999 },
       phase: 'toSample',
       status: '待核销',
