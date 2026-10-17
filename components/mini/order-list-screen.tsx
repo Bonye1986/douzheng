@@ -7,6 +7,8 @@ import { SamplingVideoDialog } from '@/components/mini/sampling-video-dialog'
 import { OrderDetailScreen } from '@/components/mini/order-detail-screen'
 import { CancelOrderScreen, TestingRefundScreen } from '@/components/mini/refund-screen'
 import { LogisticsScreen } from '@/components/mini/logistics-screen'
+
+const samplingSite = { name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼' }
 import { SendSampleScreen } from '@/components/mini/send-sample-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
@@ -1079,11 +1081,7 @@ export function OrderListScreen({
         <SendSampleScreen
           orderNo={sendTarget.id}
           examinees={sendTarget.examinees}
-          site={
-            sendTarget.type === 'site'
-              ? { name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼' }
-              : undefined
-          }
+          site={sendTarget.type === 'site' ? samplingSite : undefined}
           onBack={() => setSendTarget(null)}
           onSubmitted={() =>
             setSentNotes((prev) => new Map(prev).set(sendTarget.id, '已提交顺丰上门取件，快递员将上门取样'))
@@ -1094,6 +1092,7 @@ export function OrderListScreen({
         <LogisticsScreen
           direction={logisticsTarget.status === '已发货' ? 'outbound' : 'return'}
           orderNo={logisticsTarget.id}
+          site={logisticsTarget.type === 'site' ? samplingSite : undefined}
           onBack={() => setLogisticsTarget(null)}
         />
       )}

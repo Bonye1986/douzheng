@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Copy, FlaskConical, House, Phone, Truck } from 'lucide-react'
+import { Building2, Check, Copy, FlaskConical, House, Phone, Truck } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
 
@@ -42,17 +42,20 @@ export function LogisticsScreen({
   direction,
   orderNo,
   trackingNo: trackingNoProp,
+  site,
   onBack,
 }: {
   direction: LogisticsDirection
   orderNo: string
   trackingNo?: string
+  site?: { name: string; address: string }
   onBack: () => void
 }) {
   const track = tracks[direction]
   const trackingNo = trackingNoProp ?? track.trackingNo
   const [copied, setCopied] = useState(false)
-  const from = direction === 'outbound' ? lab : home
+  const sender = site ?? home
+  const from = direction === 'outbound' ? lab : sender
   const to = direction === 'outbound' ? home : lab
 
   const copy = async () => {
@@ -100,7 +103,7 @@ export function LogisticsScreen({
           </div>
           <ol className="mt-3 space-y-2.5 border-t border-border pt-3">
             {[
-              { tag: '发', icon: direction === 'outbound' ? FlaskConical : House, ...from },
+              { tag: '发', icon: direction === 'outbound' ? FlaskConical : site ? Building2 : House, ...from },
               { tag: '收', icon: direction === 'outbound' ? House : FlaskConical, ...to },
             ].map((p) => (
               <li key={p.tag} className="flex gap-2.5">
