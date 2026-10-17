@@ -561,16 +561,28 @@ const pendingOrder = {
   status: '待发货',
 }
 
-export function CancelOrderScreen({ onBack, onCancelled }: { onBack: () => void; onCancelled?: () => void }) {
-  return <CancelConfirmDialog paid={pendingOrder.paid} onCancel={onBack} onConfirm={onCancelled ?? onBack} />
+export function CancelOrderScreen({
+  onBack,
+  onCancelled,
+  paid = pendingOrder.paid,
+  unpaid = false,
+}: {
+  onBack: () => void
+  onCancelled?: () => void
+  paid?: number
+  unpaid?: boolean
+}) {
+  return <CancelConfirmDialog paid={paid} unpaid={unpaid} onCancel={onBack} onConfirm={onCancelled ?? onBack} />
 }
 
 function CancelConfirmDialog({
   paid,
+  unpaid,
   onCancel,
   onConfirm,
 }: {
   paid: number
+  unpaid: boolean
   onCancel: () => void
   onConfirm: () => void
 }) {
@@ -593,9 +605,13 @@ function CancelConfirmDialog({
             确定取消该订单吗？
           </h2>
           <div id="cancel-confirm-desc" className="mt-2 space-y-1 text-[13px] leading-relaxed text-muted-foreground">
-            <p>
-              取消后 <span className="font-medium tabular-nums text-[#e0651c]">¥{paid}</span> 将全额原路退回
-            </p>
+            {unpaid ? (
+              <p>该订单尚未支付，取消后订单将关闭</p>
+            ) : (
+              <p>
+                取消后 <span className="font-medium tabular-nums text-[#e0651c]">¥{paid}</span> 将全额原路退回
+              </p>
+            )}
             <p>订单取消后不可恢复，如需检测请重新下单</p>
           </div>
         </div>

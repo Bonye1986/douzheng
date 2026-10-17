@@ -476,7 +476,7 @@ const splitOrders: Order[] = [
       product: { name: '心血管用药基因检测', price: 899 },
       phase: 'toSample',
       status: '已发货',
-      note: '采样盒运输中，预计明日送达',
+      note: '采样盒运输中，预计明日送���',
       refund: 'shipped',
       action: { label: '查看���流' },
     },
@@ -750,6 +750,7 @@ export function OrderListScreen({
     ]
   })
   const withSiteActions = (o: Order): Order => {
+    if (o.phase === 'toPay' && !paidIds.has(o.id)) return o.refund ? o : { ...o, refund: 'cancel' }
     if (o.type !== 'site') return o
     if (o.status === '待核销' && !o.refund) return { ...o, refund: 'cancel' }
     if (o.status === '已寄样' && !o.action) return { ...o, action: { label: '查看物流' } }
@@ -809,6 +810,19 @@ export function OrderListScreen({
             }),
           }
     }
+    if (o.phase === 'toPay' && cancelledIds.has(o.id)) {
+      return {
+        ...o,
+        phase: 'closed',
+        status: '已关闭',
+        note: '用户已取消订单',
+        priceChanged: false,
+        originalAmount: undefined,
+        payRemaining: undefined,
+        refund: undefined,
+        action: undefined,
+      }
+    }
     if (o.phase === 'toPay' && o.payExpiresIn != null) {
       const remaining = o.payExpiresIn - elapsed
       return remaining > 0
@@ -820,6 +834,7 @@ export function OrderListScreen({
             note: '超时未支付，订单已自动关闭',
             priceChanged: false,
             originalAmount: undefined,
+            refund: undefined,
             action: undefined,
           }
     }
@@ -1146,7 +1161,14 @@ export function OrderListScreen({
           onClose={() => setCodeTarget(null)}
         />
       )}
-      {cancelTarget && <CancelOrderScreen onBack={() => setCancelTarget(null)} onCancelled={confirmCancel} />}
+      {cancelTarget && (
+        <CancelOrderScreen
+          unpaid={cancelTarget.phase === 'toPay' && !isPaid(cancelTarget)}
+          paid={parseYuan(cancelTarget.amount)}
+          onBack={() => setCancelTarget(null)}
+          onCancelled={confirmCancel}
+        />
+      )}
     </SubPage>
   )
 }
