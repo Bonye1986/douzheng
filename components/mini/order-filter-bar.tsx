@@ -27,7 +27,7 @@ export function OrderFilterBar({
   const current = typeOptions.find((o) => o.key === type) ?? typeOptions[0]
 
   return (
-    <div className="relative z-10 shrink-0 bg-white px-3 pb-1.5 pt-1">
+    <div className="relative z-40 shrink-0 bg-white px-3 pb-1.5 pt-1">
       <div className="flex items-center gap-2">
         <label className="flex h-9 flex-1 items-center gap-1.5 rounded-full bg-[#f1f4f9] px-3">
           <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
