@@ -66,8 +66,8 @@ type OrderActionHandlers = {
   onShowVerifyCode: (o: Order) => void
 }
 
-/** 自采样用户采样后可直接寄样；定点采样在机构完成采样（待寄样）后才可寄样 */
-const canSendSample = (o: Order) => o.status === '待寄样' || (o.type === 'self' && o.status === '待采样')
+/** 仅自采样由用户寄样；定点采样的采样与寄样均由机构操作 */
+const canSendSample = (o: Order) => o.type === 'self' && (o.status === '待采样' || o.status === '待寄样')
 
 function OrderActions({
   order: o,
@@ -205,7 +205,7 @@ const statusTabs: StatusTab[] = [
   { key: 'toPay', label: '待付款', match: byStatuses('待付款') },
   { key: 'toUse', label: '待使用', match: byStatuses('待发货', '待收货', '待核销') },
   { key: 'toSample', label: '待采样', match: byStatuses('待采样', '待寄样') },
-  { key: 'testing', label: '检测中', match: byStatuses('待收样', '待检测', '检测中') },
+  { key: 'testing', label: '检��中', match: byStatuses('待收样', '待检测', '检测中') },
   { key: 'done', label: '已完成', match: byStatuses('已完成') },
   { key: 'closed', label: '已关闭', match: byStatuses('已关闭') },
 ]
@@ -409,6 +409,7 @@ const siteSeeds: StatusSeed[] = [
     type: 'site',
     phase: 'toSample',
     status: '待采样',
+    refund: 'testing',
     notes: ['已核销，都正检测中心（徐汇） 正在为您采样'],
   },
   {
@@ -416,7 +417,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'toSample',
     status: '待寄样',
     refund: 'testing',
-    notes: ['机构已完成采样，可预约顺丰上门取件寄样'],
+    notes: ['机构已完成采样，将由机构统一寄送至实验室'],
   },
   {
     type: 'site',
@@ -715,7 +716,7 @@ export function OrderListScreen({
           status: '待收样',
           note: sentNote,
           refund: 'testing',
-          action: { label: '查看物流' },
+          action: { label: '查看��流' },
         }
       : o
     if (refundAppliedIds.has(o.id)) {
