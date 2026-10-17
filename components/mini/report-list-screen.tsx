@@ -73,7 +73,7 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
       <ul className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-6 [scrollbar-width:none]">
         {visible.map((r) => (
           <li key={r.id} className="rounded-2xl bg-white p-3.5">
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <FileText className="size-5" aria-hidden="true" />
                 {r.unread && (
@@ -92,21 +92,18 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
                 <p className="mt-0.5 text-[12px] text-muted-foreground">
                   {r.examinee}（{r.relation}） · <span className="tabular-nums">{r.date}</span>
                    出具
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-3 flex items-center justify-end">
-              <button
-                type="button"
-                onClick={() => setDetailId(r.id)}
-                aria-label={`查看${r.examinee}的${r.product}报告`}
-                className="h-7 rounded-full bg-primary px-4 text-[12px] font-medium text-primary-foreground"
-              >
-                查看
-              </button>
-            </div>
-          </li>
+  </p>
+  </div>
+  <button
+  type="button"
+  onClick={() => setDetailId(r.id)}
+  aria-label={`查看${r.examinee}的${r.product}报告`}
+  className="h-7 shrink-0 rounded-full bg-primary px-4 text-[12px] font-medium text-primary-foreground"
+  >
+  查看
+  </button>
+  </div>
+  </li>
         ))}
         <li className="px-2 pt-1 text-center text-[11px] leading-relaxed text-muted-foreground">
           报告结果仅供临床用药参考，调整用药请遵医嘱

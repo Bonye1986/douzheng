@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight, Sparkles } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
@@ -11,7 +11,9 @@ import type { RefundKind } from '@/components/mini/order-list-screen'
 import { OrderListScreen, countOrders, type OrderTabKey } from '@/components/mini/order-list-screen'
 import { AfterSalesScreen, pendingAfterSalesCount } from '@/components/mini/after-sales-screen'
 import { initialExaminees } from '@/components/mini/checkout-data'
-import { ReportListScreen, unreadReportCount } from '@/components/mini/report-list-screen'
+import { ReportListScreen } from '@/components/mini/report-list-screen'
+
+const LATEST_REPORT_ID = 'BG20261008001'
 import { CouponCenterScreen, MyCouponsScreen, usableCouponCount } from '@/components/mini/coupon-screens'
 import { ExamineeManageScreen, type ExamineeView } from '@/components/mini/examinee-manage-screen'
 import { AddressManageScreen, type AddressView } from '@/components/mini/address-manage-screen'
@@ -125,6 +127,7 @@ export function MineScreen({
   const [myCouponsOpen, setMyCouponsOpen] = useState(initialCoupon === 'mine')
   const [couponCenterOpen, setCouponCenterOpen] = useState(initialCoupon === 'center')
   const [reportOpen, setReportOpen] = useState(initialReportOpen)
+  const [reportDetailId, setReportDetailId] = useState<string | undefined>(initialReportDetailId)
   const [authOpen, setAuthOpen] = useState(initialAuthOpen)
   const [resampleOpen, setResampleOpen] = useState(initialResampleOpen)
   const [orderListPhase, setOrderListPhase] = useState<OrderTabKey | null>(null)
@@ -204,8 +207,11 @@ export function MineScreen({
           <SectionHeader
             id="mine-report"
             title="我的报告"
-            action={`全部报告${unreadReportCount ? ` · ${unreadReportCount} 份新` : ''}`}
-            onAction={() => setReportOpen(true)}
+            action="全部报告"
+            onAction={() => {
+              setReportDetailId(undefined)
+              setReportOpen(true)
+            }}
           />
           <div className="mt-3 flex items-center gap-3 rounded-xl bg-brand-soft p-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
@@ -219,10 +225,14 @@ export function MineScreen({
             </div>
             <button
               type="button"
-              className="flex h-7 shrink-0 items-center gap-1 rounded-full bg-primary px-2.5 text-[12px] font-medium text-primary-foreground"
+              onClick={() => {
+                setReportDetailId(LATEST_REPORT_ID)
+                setReportOpen(true)
+              }}
+              aria-label="查看儿童安全用药基因检测报告"
+              className="flex h-7 shrink-0 items-center rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
             >
-              <Sparkles className="size-3.5" aria-hidden="true" />
-              AI 解读
+              查看
             </button>
           </div>
         </section>
@@ -306,7 +316,13 @@ export function MineScreen({
       {refundKind === 'resample' && (
         <ResampleRefundScreen onBack={() => setRefundKind(null)} onContact={() => setServiceOpen(true)} />
       )}
-      {reportOpen && <ReportListScreen onBack={() => setReportOpen(false)} initialDetailId={initialReportDetailId} />}
+      {reportOpen && (
+        <ReportListScreen
+          key={reportDetailId ?? 'list'}
+          onBack={() => setReportOpen(false)}
+          initialDetailId={reportDetailId}
+        />
+      )}
       {authOpen && <AuthorizationScreen initialTab={initialAuthTab} onBack={() => setAuthOpen(false)} />}
       {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
       {myCouponsOpen && (
