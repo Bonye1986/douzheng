@@ -66,7 +66,7 @@ type OrderActionHandlers = {
   onShowVerifyCode: (o: Order) => void
 }
 
-const canSendSample = (o: Order) => o.status === '待采样'
+const canSendSample = (o: Order) => o.type === 'self' && o.status === '待采样'
 
 function OrderActions({
   order: o,
@@ -340,7 +340,7 @@ const featuredOrders: Order[] = [
     product: '心血管用药基因检测',
     examinees: '王建国',
     amount: '¥899',
-    note: '已核销，请在 都正检测中心（徐汇） 完成采样',
+    note: '已核销，都正检测中心（徐汇） 正在为您完成采样并寄样',
   },
   {
     id: 'DZ20261010009',
@@ -477,7 +477,7 @@ const splitOrders: Order[] = [
     },
     {
       examinee: '刘芳',
-      product: { name: '心血管用药基因检测', price: 899 },
+      product: { name: '心血管用��基因检测', price: 899 },
       phase: 'testing',
       status: '已收样',
       note: '平台已签收样本，待实验室扫码确认后开始检测',
@@ -574,7 +574,7 @@ const statusSeeds: StatusSeed[] = [
     type: 'site',
     phase: 'toSample',
     status: '待采样',
-    notes: ['已核销，请在采样点完成采样'],
+    notes: ['已核销，采样机构正在为您完成采样并寄样'],
   },
   {
     type: 'site',
