@@ -189,7 +189,7 @@ function OrderDetailFromList({
 export type OrderPhase = 'all' | 'toPay' | 'toSample' | 'testing' | 'done' | 'closed'
 type OrderType = OrderTypeFilter
 
-type StatusTabKey = 'all' | 'toPay' | 'toUse' | 'toSample' | 'testing' | 'done'
+type StatusTabKey = 'all' | 'toPay' | 'toUse' | 'toSample' | 'testing' | 'done' | 'closed'
 type StatusTab = { key: StatusTabKey; label: string; match: (o: Order) => boolean }
 
 const byStatuses =
@@ -205,6 +205,7 @@ const statusTabs: StatusTab[] = [
   { key: 'toSample', label: '待采样', match: byStatuses('待采样') },
   { key: 'testing', label: '检测中', match: byStatuses('已寄样', '已收样', '检测中') },
   { key: 'done', label: '已完成', match: byStatuses('已完成') },
+  { key: 'closed', label: '已关闭', match: byStatuses('已关闭') },
 ]
 
 const phaseToTab: Record<OrderPhase, StatusTabKey> = {
@@ -213,7 +214,7 @@ const phaseToTab: Record<OrderPhase, StatusTabKey> = {
   toSample: 'toSample',
   testing: 'testing',
   done: 'done',
-  closed: 'all',
+  closed: 'closed',
 }
 
 const matchesKeyword = (o: Order, keyword: string) =>
@@ -478,7 +479,7 @@ const splitOrders: Order[] = [
       product: { name: '心血管用药基因检测', price: 899 },
       phase: 'testing',
       status: '已收样',
-      note: '平台已签收样本，待实验室扫码确认后开始检测',
+      note: '平台已签收样本，待实验室扫码确认后开��检测',
       refund: 'testing',
     },
   ]),
@@ -899,10 +900,10 @@ export function OrderListScreen({
       <div
         role="tablist"
         aria-label="订单状态"
-        className="flex shrink-0 bg-white px-1"
+        className="flex shrink-0 gap-1 overflow-x-auto bg-white px-2 [scrollbar-width:none]"
       >
         {statusTabs.map((t) => {
-          const count = t.key === 'all' || t.key === 'done' ? 0 : filtered.filter(t.match).length
+          const count = t.key === 'all' || t.key === 'done' || t.key === 'closed' ? 0 : filtered.filter(t.match).length
           const active = activeTab.key === t.key
           return (
             <button
@@ -912,7 +913,7 @@ export function OrderListScreen({
               aria-selected={active}
               onClick={() => setStatusKey(t.key)}
               className={cn(
-                'relative flex h-10 min-w-0 flex-1 items-center justify-center gap-0.5 whitespace-nowrap text-[13px] transition-colors',
+                'relative flex h-10 shrink-0 items-center justify-center gap-0.5 whitespace-nowrap px-2.5 text-[13px] transition-colors',
                 active ? 'font-semibold text-foreground' : 'text-muted-foreground',
               )}
             >
