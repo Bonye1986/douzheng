@@ -11,6 +11,7 @@ import { SendSampleScreen } from '@/components/mini/send-sample-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
+import { VerifyCodeSheet } from '@/components/mini/verify-code-sheet'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
@@ -53,6 +54,7 @@ type OrderActionHandlers = {
   onViewLogistics: (o: Order) => void
   onViewReport: (o: Order) => void
   onPay: (o: Order) => void
+  onShowVerifyCode: (o: Order) => void
 }
 
 const canSendSample = (o: Order) => o.type === 'self' && o.status === '待采样'
@@ -68,6 +70,7 @@ function OrderActions({
   onViewLogistics,
   onViewReport,
   onPay,
+  onShowVerifyCode,
 }: { order: Order } & OrderActionHandlers) {
   const sendable = canSendSample(o)
   return (
@@ -94,6 +97,7 @@ function OrderActions({
             else if (o.action?.label === '查看物流') onViewLogistics(o)
             else if (o.action?.label === '查看报告') onViewReport(o)
             else if (o.action?.label === '去支付') onPay(o)
+            else if (o.action?.label === '核销码') onShowVerifyCode(o)
           }}
           className={cn(
             'h-7 rounded-full px-3.5 text-[12px] font-medium',
@@ -709,6 +713,7 @@ export function OrderListScreen({
   const [resampledTo, setResampledTo] = useState<ReadonlyMap<string, string>>(() => new Map())
   const [terminatedIds, setTerminatedIds] = useState<ReadonlySet<string>>(() => new Set())
   const [payTarget, setPayTarget] = useState<Order | null>(null)
+  const [codeTarget, setCodeTarget] = useState<Order | null>(null)
   const [paidIds, setPaidIds] = useState<ReadonlySet<string>>(() => new Set())
   const [startedAt] = useState(() => Date.now())
   const [now, setNow] = useState(startedAt)
@@ -862,6 +867,7 @@ export function OrderListScreen({
     onViewLogistics: setLogisticsTarget,
     onViewReport: setReportTarget,
     onPay: setPayTarget,
+    onShowVerifyCode: setCodeTarget,
   }
   const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
   const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
@@ -1106,6 +1112,15 @@ export function OrderListScreen({
             setPaidIds((prev) => new Set(prev).add(payTarget.id))
             setPayTarget(null)
           }}
+        />
+      )}
+      {codeTarget && (
+        <VerifyCodeSheet
+          orderNo={codeTarget.id}
+          product={codeTarget.product}
+          examinees={codeTarget.examinees}
+          siteName={codeTarget.note.match(/前往\s*(\S+)\s*出示/)?.[1]}
+          onClose={() => setCodeTarget(null)}
         />
       )}
       {cancelTarget && <CancelOrderScreen onBack={() => setCancelTarget(null)} onCancelled={confirmCancel} />}
