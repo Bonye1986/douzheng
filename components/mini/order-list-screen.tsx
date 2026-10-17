@@ -476,9 +476,9 @@ const splitOrders: Order[] = [
       product: { name: '心血管用药基因检测', price: 899 },
       phase: 'toSample',
       status: '已发货',
-      note: '采样盒运输中，预计明日送���',
+      note: '采样盒运输中，预计明日送达',
       refund: 'shipped',
-      action: { label: '查看���流' },
+      action: { label: '查看物流' },
     },
     {
       examinee: '李秀兰',
@@ -491,7 +491,7 @@ const splitOrders: Order[] = [
   ]),
   ...buildSplitOrders('JY20261013517702', 'site', 50, [
     {
-      examinee: '��伟',
+      examinee: '张伟',
       product: { name: '药物基因检测', price: 999 },
       phase: 'toSample',
       status: '待核销',
@@ -519,7 +519,7 @@ const statusSeeds: StatusSeed[] = [
     phase: 'toPay',
     status: '待付款',
     action: { label: '去支付', primary: true },
-    notes: ['请��倒计时结束前完成支付，超时订单将自动关闭'],
+    notes: ['请在倒计时结束前完成支付，超时订单将自动关闭'],
   },
   {
     type: 'self',
@@ -797,7 +797,7 @@ export function OrderListScreen({
         : {
             ...o,
             phase: 'toSample',
-            status: cancelledIds.has(o.id) ? '已关闭' : '��发货',
+            status: cancelledIds.has(o.id) ? '已关闭' : '待发货',
             note: '已支付，实验室将在 24 小时内寄出采样盒',
             priceChanged: false,
             originalAmount: undefined,

@@ -367,7 +367,7 @@ export type IncurredFee = { label: string; desc: string; amount: number }
 
 const resampleFees: IncurredFee[] = [
   { label: '采样盒及耗材（2 次）', desc: '首次采样盒 + 重采样采样盒', amount: KIT_FEE * 2 },
-  { label: '物流费用', desc: '��样盒寄送及样本回寄（2 次）', amount: 60 },
+  { label: '物流费用', desc: '采样盒寄送及样本回寄（2 次）', amount: 60 },
   { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
 ]
 
