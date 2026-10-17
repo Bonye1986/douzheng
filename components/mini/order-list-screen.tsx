@@ -20,6 +20,7 @@ import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
 import { VerifyCodeSheet } from '@/components/mini/verify-code-sheet'
 import { OrderFilterBar, type OrderTypeFilter } from '@/components/mini/order-filter-bar'
+import { OrderEmptyState } from '@/components/mini/order-empty-state'
 import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
@@ -452,7 +453,7 @@ const splitOrders: Order[] = [
       product: { name: '心血管用药基因检测', price: 899 },
       phase: 'toSample',
       status: '已发货',
-      note: '采样盒运输中，预计明日送���',
+      note: '采样盒运输中，预计明日送达',
       refund: 'shipped',
       action: { label: '查看物流' },
     },
@@ -479,7 +480,7 @@ const splitOrders: Order[] = [
       product: { name: '心血管用药基因检测', price: 899 },
       phase: 'testing',
       status: '已收样',
-      note: '平台已签收样本，待实验室扫码确认后开��检测',
+      note: '平台已签收样本，待实验室扫码确认后开始检测',
       refund: 'testing',
     },
   ]),
@@ -671,6 +672,8 @@ export function OrderListScreen({
   initialTab,
   initialGuideOpen = false,
   extraOrders = [],
+  empty = false,
+  onGoShop,
   onBack,
   onRefund,
 }: {
@@ -679,6 +682,8 @@ export function OrderListScreen({
   initialTab?: StatusTabKey
   initialGuideOpen?: boolean
   extraOrders?: Order[]
+  empty?: boolean
+  onGoShop?: () => void
   onBack: () => void
   onHandleUnqualified?: () => void
   onRefund: (kind: RefundKind) => void
@@ -709,7 +714,8 @@ export function OrderListScreen({
     return () => window.clearInterval(timer)
   }, [])
   const elapsed = Math.floor((now - startedAt) / 1000)
-  const resampleOrders: Order[] = allOrders.flatMap((o) => {
+  const baseOrders = empty ? [] : allOrders
+  const resampleOrders: Order[] = baseOrders.flatMap((o) => {
     const newId = resampledTo.get(o.id)
     if (!newId) return []
     return [
@@ -736,7 +742,7 @@ export function OrderListScreen({
     if (o.status === '已寄样' && !o.action) return { ...o, action: { label: '查看物流' } }
     return o
   }
-  const sourceOrders = [...extraOrders, ...resampleOrders, ...allOrders].map(withSiteActions).flatMap((o): Order[] => {
+  const sourceOrders = [...extraOrders, ...resampleOrders, ...baseOrders].map(withSiteActions).flatMap((o): Order[] => {
     const names = o.examinees.split('、')
     if (!paidIds.has(o.id) || names.length < 2) return [o]
     const goods = parseYuan(o.goodsAmount ?? o.originalAmount ?? o.amount)
@@ -893,6 +899,18 @@ export function OrderListScreen({
   const filtered = orders.filter((o) => (type === 'all' || o.type === type) && matchesKeyword(o, trimmedKeyword))
   const visible = filtered.filter(activeTab.match)
 
+  if (orders.length === 0) {
+    return (
+      <SubPage title="我的订单" titleId="order-list-title" onBack={onBack}>
+        <OrderEmptyState variant="none" onGoShop={onGoShop} />
+      </SubPage>
+    )
+  }
+
+  const typeLabel = type === 'self' ? '自采样' : type === 'site' ? '定点采样' : ''
+  const tabLabel = activeTab.key === 'all' ? '' : activeTab.label
+  const filteredLabel = [typeLabel, tabLabel].filter(Boolean).join(' · ')
+
   return (
     <SubPage title="我的订单" titleId="order-list-title" onBack={onBack}>
       <OrderFilterBar keyword={keyword} onKeywordChange={setKeyword} type={type} onTypeChange={setType} />
@@ -929,8 +947,12 @@ export function OrderListScreen({
 
       <ul className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]">
         {visible.length === 0 && (
-          <li className="py-16 text-center text-[13px] text-muted-foreground">
-            {trimmedKeyword ? `未找到与「${trimmedKeyword}」相关的订单` : '暂无相关订单'}
+          <li className="flex">
+            {trimmedKeyword ? (
+              <OrderEmptyState variant="search" keyword={trimmedKeyword} onClearSearch={() => setKeyword('')} />
+            ) : (
+              <OrderEmptyState variant="filtered" label={filteredLabel} />
+            )}
           </li>
         )}
         {visible.map((o) => {

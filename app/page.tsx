@@ -10,6 +10,7 @@ import {
   AfterSalesArtboard,
   CancelOrderArtboard,
   OrderListArtboard,
+  OrderListEmptyArtboard,
   ResampleRefundArtboard,
   ShippedRefundArtboard,
 } from '@/components/mini/order-artboards'
@@ -156,7 +157,7 @@ const screens = [
   {
     id: '27',
     title: '检测人管理 · 删除检测人',
-    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除并弹窗提示原因',
+    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除，弹窗提示原因',
     node: <MineScreen initialExamineeView="delete" />,
   },
   {
@@ -298,6 +299,12 @@ const screens = [
     node: <OrderListArtboard initialGuideOpen />,
   },
   {
+    id: '53',
+    title: '订单列表 · 空状态',
+    desc: '尚无任何订单时展示引导插图与说明，点击去选购检测进入检测列表；有订单但当前状态 / 类型下无数据、或搜索无结果时，列表区展示对应空状态（搜索无结果可一键清除搜索）',
+    node: <OrderListEmptyArtboard />,
+  },
+  {
     id: '49',
     title: '售后 · 取消订单',
     desc: '支付完成且尚未发货的订单可直接取消，选择原因后确认，订单金额原路退回',
@@ -360,7 +367,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'orders',
     title: '我的订单与售后',
     summary: '订单列表与采样指引视频，发货前取消、发货后退款、样本不合格重采样或终止退款',
-    ids: ['47', '48', '49', '50', '51', '19', '52'],
+    ids: ['47', '48', '53', '49', '50', '51', '19', '52'],
   },
   {
     key: 'mine',

@@ -355,7 +355,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 <span className="rounded bg-secondary px-1 text-[10px] font-normal text-[#8a94a6]">自愿</span>
               </h2>
               <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
-                已向以下受检人发送签署短信，受检人点击短信��链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
+                已向以下受检人发送签署短信，受检人点击短信中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
               </p>
               <ul className="mt-2">
                 {researchItems.map((it) => {

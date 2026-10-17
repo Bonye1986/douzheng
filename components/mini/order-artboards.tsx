@@ -36,6 +36,10 @@ export function OrderListArtboard({ initialGuideOpen = false }: { initialGuideOp
   return <OrderListWithRefund initialGuideOpen={initialGuideOpen} />
 }
 
+export function OrderListEmptyArtboard() {
+  return <OrderListScreen empty onBack={noop} onGoShop={noop} onRefund={noop} />
+}
+
 export function CancelOrderArtboard() {
   return (
     <>
