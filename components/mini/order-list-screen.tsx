@@ -1079,6 +1079,11 @@ export function OrderListScreen({
         <SendSampleScreen
           orderNo={sendTarget.id}
           examinees={sendTarget.examinees}
+          site={
+            sendTarget.type === 'site'
+              ? { name: '都正检测中心（徐汇）', address: '上海市徐汇区宜山路 700 号 B1 栋 3 楼' }
+              : undefined
+          }
           onBack={() => setSendTarget(null)}
           onSubmitted={() =>
             setSentNotes((prev) => new Map(prev).set(sendTarget.id, '已提交顺丰上门取件，快递员将上门取样'))
