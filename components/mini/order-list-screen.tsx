@@ -250,7 +250,7 @@ export type Order = {
 const formatCountdown = (seconds: number) =>
   `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
 
-const payCountdowns = [35, 1680, 1260, 840, 420]
+const payCountdowns = [1680, 1260, 840, 420, 35]
 
 export type RefundKind = 'cancel' | 'shipped' | 'resample' | 'testing'
 
@@ -261,7 +261,7 @@ const refundLabels: Record<RefundKind, string> = {
   resample: '终止并退款',
 }
 
-const ORDERS_PER_STATUS = 5
+const ORDERS_PER_STATUS = 1
 
 type SeedVariant = Partial<
   Pick<Order, 'examinees' | 'note' | 'priceChanged' | 'unqualified' | 'resample' | 'action' | 'refund'>
