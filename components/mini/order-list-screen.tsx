@@ -274,6 +274,8 @@ type SeedVariant = Partial<
 type StatusSeed = Pick<Order, 'type' | 'phase' | 'status' | 'refund' | 'action'> & {
   notes: string[]
   variants?: Record<number, SeedVariant>
+  /** Always seeded in addition to the ORDERS_PER_STATUS base orders */
+  extra?: SeedVariant[]
 }
 
 const toPayNote = '请在倒计时结束前完成支付，超时订单将自动关闭'
@@ -295,6 +297,12 @@ const unqualifiedVariant: SeedVariant = {
   action: { label: '去处理', primary: true },
   note: '样本 DNA 浓度不足，已短信通知您：可选择终止订单或同意重采样',
 }
+const resampleTestingVariant: SeedVariant = {
+  resample: true,
+  refund: 'resample',
+  note: '重采样样本已送达实验室，正在重新检测，预计 5 个工作日内出具报告',
+}
+const closedExtras: SeedVariant[] = [{ note: closedNotes[3] }]
 
 /** 自采样：待付款 → 待发货 → 待收货 → 待采样 → 待寄样 → 待收样 → 待检测 → 检测中 → 已完成 / 已关闭 */
 const selfSeeds: StatusSeed[] = [
@@ -304,7 +312,7 @@ const selfSeeds: StatusSeed[] = [
     status: '待付款',
     action: { label: '去支付', primary: true },
     notes: [toPayNote],
-    variants: { 1: priceChangedVariant, 2: { examinees: '张伟、刘芳' } },
+    extra: [priceChangedVariant, { examinees: '张伟、刘芳', note: '多人合并下单，一次支付后按受检人拆分为独立订单' }],
   },
   {
     type: 'self',
@@ -312,10 +320,10 @@ const selfSeeds: StatusSeed[] = [
     status: '待发货',
     refund: 'cancel',
     notes: ['已支付，实验室将在 24 小时内寄出采样盒', '采样盒打包中，预计今日寄出'],
-    variants: {
-      3: { split: true },
-      4: { resample: true, note: '重采样订单，实验室将在 24 小时内寄出新的采样盒' },
-    },
+    extra: [
+      { split: true },
+      { resample: true, note: '重采样订单，实验室将在 24 小时内寄出新的采样盒' },
+    ],
   },
   {
     type: 'self',
@@ -324,7 +332,7 @@ const selfSeeds: StatusSeed[] = [
     refund: 'shipped',
     action: { label: '查看物流' },
     notes: ['采样盒运输中，预计明日送达', '采样盒已到达派送网点，今日派送'],
-    variants: { 3: { split: true } },
+    extra: [{ split: true }],
   },
   {
     type: 'self',
@@ -356,7 +364,7 @@ const selfSeeds: StatusSeed[] = [
     status: '待检测',
     refund: 'testing',
     notes: ['实验室已签收样本，排队等待上机检测'],
-    variants: { 3: { split: true } },
+    extra: [{ split: true }],
   },
   {
     type: 'self',
@@ -364,7 +372,7 @@ const selfSeeds: StatusSeed[] = [
     status: '检测中',
     refund: 'testing',
     notes: ['实验室检测中，预计 5 个工作日内出具报告'],
-    variants: { 4: unqualifiedVariant },
+    extra: [unqualifiedVariant, resampleTestingVariant],
   },
   {
     type: 'self',
@@ -373,7 +381,7 @@ const selfSeeds: StatusSeed[] = [
     action: { label: '查看报告', primary: true },
     notes: ['检测报告已出具，可在线查看'],
   },
-  { type: 'self', phase: 'closed', status: '已关闭', notes: closedNotes },
+  { type: 'self', phase: 'closed', status: '已关闭', notes: closedNotes, extra: closedExtras },
 ]
 
 /** 定点采样：待付款 → 待核销 → 待采样 → 待寄样 → 待收样 → 待检测 → 检测中 → 已完成 / 已关闭 */
@@ -384,7 +392,7 @@ const siteSeeds: StatusSeed[] = [
     status: '待付款',
     action: { label: '去支付', primary: true },
     notes: [toPayNote],
-    variants: { 1: priceChangedVariant, 2: { examinees: '李秀兰、刘芳' } },
+    extra: [priceChangedVariant, { examinees: '李秀兰、刘芳', note: '多人合并下单，一次支付后按受检人拆分为独立订单' }],
   },
   {
     type: 'site',
@@ -392,10 +400,10 @@ const siteSeeds: StatusSeed[] = [
     status: '待核销',
     action: { label: '核销码', primary: true },
     notes: ['请于 10-18 前往 都正检测中心（徐汇） 出示核销码', '请于 10-20 前往 都正检测中心（浦东） 出示核销码'],
-    variants: {
-      3: { split: true },
-      4: { resample: true, note: '重采样订单，请前往 都正检测中心（徐汇） 出示核销码重新采样' },
-    },
+    extra: [
+      { split: true },
+      { resample: true, note: '重采样订单，请前往 都正检测中心（徐汇） 出示核销码重新采样' },
+    ],
   },
   {
     type: 'site',
@@ -417,7 +425,7 @@ const siteSeeds: StatusSeed[] = [
     refund: 'testing',
     action: { label: '查看物流' },
     notes: ['机构已寄出样本，正在运往实验室'],
-    variants: { 3: { split: true } },
+    extra: [{ split: true }],
   },
   {
     type: 'site',
@@ -432,6 +440,7 @@ const siteSeeds: StatusSeed[] = [
     status: '检测中',
     refund: 'testing',
     notes: ['实验室检测中，预计 5 个工作日内出具报告'],
+    extra: [unqualifiedVariant, resampleTestingVariant],
   },
   {
     type: 'site',
@@ -440,7 +449,7 @@ const siteSeeds: StatusSeed[] = [
     action: { label: '查看报告', primary: true },
     notes: ['检测报告已出具，可在线查看'],
   },
-  { type: 'site', phase: 'closed', status: '已关闭', notes: closedNotes },
+  { type: 'site', phase: 'closed', status: '已关闭', notes: closedNotes, extra: closedExtras },
 ]
 
 const seedProducts: { name: string; price: number }[] = [
@@ -463,8 +472,12 @@ function buildSeedOrders(): Order[] {
   for (const seeds of [selfSeeds, siteSeeds]) {
     const splitIndexes: number[] = []
     seeds.forEach((seed, stage) => {
-      for (let i = 0; i < ORDERS_PER_STATUS; i++) {
-        const { split, coupon: variantCoupon, ...variant } = seed.variants?.[i] ?? {}
+      const stageVariants: SeedVariant[] = [
+        ...Array.from({ length: ORDERS_PER_STATUS }, (_, i) => seed.variants?.[i] ?? {}),
+        ...(seed.extra ?? []),
+      ]
+      for (let i = 0; i < stageVariants.length; i++) {
+        const { split, coupon: variantCoupon, ...variant } = stageVariants[i]
         const n = seq++
         const product = seedProducts[(n + stage) % seedProducts.length]
         const examinees = variant.examinees ?? seedExaminees[(n + stage) % seedExaminees.length]
@@ -472,7 +485,7 @@ function buildSeedOrders(): Order[] {
         const finished = seed.phase === 'done' || seed.phase === 'closed'
         const month = finished ? '09' : '10'
         const day = String(finished ? 28 - i * 2 : 16 - stage).padStart(2, '0')
-        const coupon = variantCoupon ?? (seed.phase !== 'toPay' && i === 1 ? 50 : 0)
+        const coupon = variantCoupon ?? 0
         const pricing: Pick<Order, 'amount' | 'goodsAmount' | 'couponShare' | 'originalAmount'> = variant.resample
           ? { amount: '¥0' }
           : variant.priceChanged
