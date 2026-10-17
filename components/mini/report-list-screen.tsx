@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Share2, Sparkles } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { cn } from '@/lib/utils'
@@ -96,29 +96,16 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  className="flex h-7 items-center gap-1 rounded-full border border-[#dfe5ef] px-3 text-[12px] text-foreground"
-                >
-                  <Share2 className="size-3.5" aria-hidden="true" />
-                  分享报告
-                </button>
-                <button
-                  type="button"
-                  className="flex h-7 items-center gap-1 rounded-full border border-primary/40 px-3 text-[12px] font-medium text-primary"
-                >
-                  <Sparkles className="size-3.5" aria-hidden="true" />
-                  AI 解读
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDetailId(r.id)}
-                  className="h-7 rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
-                >
-                  查看报告
-                </button>
-              </div>
+            <div className="mt-3 flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => setDetailId(r.id)}
+                aria-label={`查看${r.examinee}的${r.product}报告`}
+                className="h-7 rounded-full bg-primary px-4 text-[12px] font-medium text-primary-foreground"
+              >
+                查看
+              </button>
+            </div>
           </li>
         ))}
         <li className="px-2 pt-1 text-center text-[11px] leading-relaxed text-muted-foreground">
