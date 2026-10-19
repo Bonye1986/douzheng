@@ -158,8 +158,7 @@ export function HomeFlow({
           kind={knowledgeEntry.kind}
           initialSurveyOpen={knowledgeEntry.survey}
           initialArticleId={knowledgeEntry.articleId}
-          onBack={() => setKnowledgeEntry(null)}
-          onAskAi={(question) => openChat(question)}
+            onBack={() => setKnowledgeEntry(null)}
         />
       )}
 

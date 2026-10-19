@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { BookOpen, CheckCircle2, ChevronRight, ClipboardList, Clock, Eye, Info, Sparkles, Users } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Clock, Eye, Info, Sparkles, Users } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import {
   articleCategories,
@@ -173,24 +173,15 @@ function SurveyEntry({
 }
 
 function KnowledgeDetail({
-  kind,
   article,
   answered,
-  onOpen,
   onOpenSurvey,
-  onAskAi,
 }: {
-  kind: ArticleKind
   article: Article
   answered: boolean
-  onOpen: (id: string) => void
   onOpenSurvey: () => void
-  onAskAi?: (question: string) => void
 }) {
-  const articles = sources[kind].items
   const hasInlineSurvey = article.content.some((b) => b.type === 'survey')
-  const sameCategory = articles.filter((a) => a.id !== article.id && a.category === article.category)
-  const related = (sameCategory.length ? sameCategory : articles.filter((a) => a.id !== article.id)).slice(0, 3)
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -257,38 +248,10 @@ function KnowledgeDetail({
             本文仅供健康科普，不能替代医生诊断与治疗建议。
           </p>
         </article>
-
-        <section aria-labelledby="knowledge-related" className="mt-2.5 bg-white px-4 py-3">
-          <h3 id="knowledge-related" className="text-[14px] font-semibold text-foreground">
-            相关阅读
-          </h3>
-          <ul className="mt-1">
-            {related.map((a) => (
-              <li key={a.id}>
-                <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-center gap-2.5 py-2.5 text-left">
-                  <BookOpen className="size-4 shrink-0 text-primary" aria-hidden="true" />
-                  <span className="flex-1 truncate text-[13px] text-foreground">{a.title}</span>
-                  <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
       </div>
 
-      <div className="flex shrink-0 gap-2.5 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
-        <button
-          type="button"
-          onClick={() => onAskAi?.(article.title)}
-          className={cn(
-            'flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full text-[14px] font-medium',
-            article.survey ? 'border border-primary text-primary' : 'bg-primary text-primary-foreground',
-          )}
-        >
-          <Sparkles className="size-4" aria-hidden="true" />
-          {article.survey ? '问问 AI' : '问问 AI 了解更多'}
-        </button>
-        {article.survey && (
+      {article.survey && (
+        <div className="flex shrink-0 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
           <button
             type="button"
             onClick={onOpenSurvey}
@@ -297,8 +260,8 @@ function KnowledgeDetail({
             <ClipboardList className="size-4" aria-hidden="true" />
             {answered ? '查看问卷结果' : '参与问卷'}
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -308,14 +271,12 @@ export function KnowledgeScreen({
   initialArticleId,
   initialSurveyOpen = false,
   onBack,
-  onAskAi,
 }: {
   kind?: ArticleKind
   initialArticleId?: string
   /** Opens the article's 问卷 directly (design board entry). */
   initialSurveyOpen?: boolean
   onBack: () => void
-  onAskAi?: (question: string) => void
 }) {
   const { items: articles, title } = sources[kind]
   const [articleId, setArticleId] = useState<string | null>(initialArticleId ?? null)
@@ -346,12 +307,9 @@ export function KnowledgeScreen({
         onBack={() => (enteredFromArticle && article.id === initialArticleId ? onBack() : setArticleId(null))}
       >
         <KnowledgeDetail
-          kind={kind}
           article={article}
           answered={Boolean(answers[article.id])}
-          onOpen={setArticleId}
           onOpenSurvey={() => setSurveyOpen(true)}
-          onAskAi={onAskAi}
         />
       </SubPage>
     )

@@ -55,7 +55,7 @@ const screens = [
   {
     id: '09-article',
     title: '知识科普 · 文章详情',
-    desc: '文章正文、要点提示与相关推荐；底部可一键将文章话题带入 AI 咨询，返回回到来源页面',
+    desc: '文章标题、阅读信息、正文与要点提示，文末附科普免责声明；返回回到来源页面',
     node: <HomeFlow initialTab="service" initialKnowledge="a1" />,
   },
   {
@@ -67,7 +67,7 @@ const screens = [
   {
     id: '09-quiz-article',
     title: '互动问答 · 文章详情',
-    desc: '与科普文章详情一致的正文排版，正文中嵌入问卷入口卡片，底部固定「问问 AI」与「参与问卷」按钮',
+    desc: '与科普文章详情一致的正文排版，正文中嵌入问卷入口卡片，底部固定「参与问卷」按钮',
     node: <HomeFlow initialTab="service" initialQuiz="q1" />,
   },
   {
