@@ -442,7 +442,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'testing',
     status: '检测中',
     refund: 'testing',
-    notes: ['实验室检测中，预计 5 个工作日内出具报告'],
+    notes: ['实验室检测中，预��� 5 个工作日内出具报告'],
     extra: [unqualifiedVariant, resampleTestingVariant],
   },
   {
@@ -533,6 +533,9 @@ const allOrders: Order[] = buildSeedOrders()
 
 export type OrderTabKey = StatusTabKey
 
+export type OrderActionKind = 'cancel' | 'pay' | 'code' | 'refund' | 'logistics' | 'send' | 'report'
+export type OrderInitialAction = { kind: OrderActionKind; status: string; type: 'self' | 'site' }
+
 export function countOrders(key: Exclude<StatusTabKey, 'all'>) {
   const tabDef = statusTabs.find((t) => t.key === key)
   return tabDef ? allOrders.filter(tabDef.match).length : 0
@@ -544,6 +547,7 @@ export function OrderListScreen({
   initialTab,
   initialGuideOpen = false,
   initialDetailStatus,
+  initialAction,
   extraOrders = [],
   empty = false,
   onGoShop,
@@ -554,6 +558,8 @@ export function OrderListScreen({
   initialType?: OrderType
   initialTab?: StatusTabKey
   initialGuideOpen?: boolean
+  /** 画板直接打开指定状态首个订单的某个操作 */
+  initialAction?: OrderInitialAction
   /** 画板直接展示该状态的首个订单详情 */
   initialDetailStatus?: string
   extraOrders?: Order[]
@@ -568,19 +574,23 @@ export function OrderListScreen({
   const [keyword, setKeyword] = useState('')
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
   const [detailId, setDetailId] = useState<string | null>(initialDetailStatus ? initialDetailKey : null)
-  const [cancelTarget, setCancelTarget] = useState<Order | null>(null)
+  const initialTarget = (kind: OrderActionKind) =>
+    initialAction?.kind === kind
+      ? (allOrders.find((o) => o.status === initialAction.status && o.type === initialAction.type) ?? null)
+      : null
+  const [cancelTarget, setCancelTarget] = useState<Order | null>(() => initialTarget('cancel'))
   const [cancelledIds, setCancelledIds] = useState<ReadonlySet<string>>(() => new Set())
-  const [sendTarget, setSendTarget] = useState<Order | null>(null)
+  const [sendTarget, setSendTarget] = useState<Order | null>(() => initialTarget('send'))
   const [sentNotes, setSentNotes] = useState<ReadonlyMap<string, string>>(() => new Map())
-  const [logisticsTarget, setLogisticsTarget] = useState<Order | null>(null)
-  const [reportTarget, setReportTarget] = useState<Order | null>(null)
-  const [refundTarget, setRefundTarget] = useState<Order | null>(null)
+  const [logisticsTarget, setLogisticsTarget] = useState<Order | null>(() => initialTarget('logistics'))
+  const [reportTarget, setReportTarget] = useState<Order | null>(() => initialTarget('report'))
+  const [refundTarget, setRefundTarget] = useState<Order | null>(() => initialTarget('refund'))
   const [refundAppliedIds, setRefundAppliedIds] = useState<ReadonlySet<string>>(() => new Set())
   const [resampleTarget, setResampleTarget] = useState<Order | null>(null)
   const [resampledTo, setResampledTo] = useState<ReadonlyMap<string, string>>(() => new Map())
   const [terminatedIds, setTerminatedIds] = useState<ReadonlySet<string>>(() => new Set())
-  const [payTarget, setPayTarget] = useState<Order | null>(null)
-  const [codeTarget, setCodeTarget] = useState<Order | null>(null)
+  const [payTarget, setPayTarget] = useState<Order | null>(() => initialTarget('pay'))
+  const [codeTarget, setCodeTarget] = useState<Order | null>(() => initialTarget('code'))
   const [paidIds, setPaidIds] = useState<ReadonlySet<string>>(() => new Set())
   const [startedAt] = useState(() => Date.now())
   const [now, setNow] = useState(startedAt)
