@@ -26,6 +26,8 @@ import { cn } from '@/lib/utils'
 
 const noSampleCodeStatuses = new Set(['待发货', '待核销'])
 
+const initialDetailKey = '__initial-detail__'
+
 const parseYuan = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0
 
 export const formatYuan = (n: number) => `¥${n.toLocaleString('zh-CN', { maximumFractionDigits: 2 })}`
@@ -205,7 +207,7 @@ const statusTabs: StatusTab[] = [
   { key: 'toPay', label: '待付款', match: byStatuses('待付款') },
   { key: 'toUse', label: '待使用', match: byStatuses('待发货', '待收货', '待核销') },
   { key: 'toSample', label: '待采样', match: byStatuses('待采样', '待寄样') },
-  { key: 'testing', label: '检测中', match: byStatuses('待收样', '待检测', '检测中') },
+  { key: 'testing', label: '检测中', match: byStatuses('���收样', '待检测', '检测中') },
   { key: 'done', label: '已完成', match: byStatuses('已完成') },
   { key: 'closed', label: '已关闭', match: byStatuses('已关闭') },
 ]
@@ -231,7 +233,7 @@ export type Order = {
   examinees: string
   amount: string
   originalAmount?: string
-  /** 拆单后该子订单的商品原价（未扣优惠） */
+  /** 拆���后该子订单的商品原价（未扣优惠） */
   goodsAmount?: string
   /** 合并支付使用优惠券时，按金额比例分摊到该子订单的优惠 */
   couponShare?: string
@@ -541,6 +543,7 @@ export function OrderListScreen({
   initialType = 'all',
   initialTab,
   initialGuideOpen = false,
+  initialDetailStatus,
   extraOrders = [],
   empty = false,
   onGoShop,
@@ -551,6 +554,8 @@ export function OrderListScreen({
   initialType?: OrderType
   initialTab?: StatusTabKey
   initialGuideOpen?: boolean
+  /** 画板直接展示该状态的首个订单详情 */
+  initialDetailStatus?: string
   extraOrders?: Order[]
   empty?: boolean
   onGoShop?: () => void
@@ -562,7 +567,7 @@ export function OrderListScreen({
   const [statusKey, setStatusKey] = useState<StatusTabKey>(initialTab ?? phaseToTab[initialPhase])
   const [keyword, setKeyword] = useState('')
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
-  const [detailId, setDetailId] = useState<string | null>(null)
+  const [detailId, setDetailId] = useState<string | null>(initialDetailStatus ? initialDetailKey : null)
   const [cancelTarget, setCancelTarget] = useState<Order | null>(null)
   const [cancelledIds, setCancelledIds] = useState<ReadonlySet<string>>(() => new Set())
   const [sendTarget, setSendTarget] = useState<Order | null>(null)
@@ -645,7 +650,7 @@ export function OrderListScreen({
             ...(cancelledIds.has(o.id) && {
               phase: 'closed' as const,
               status: '已关闭',
-              note: '用户已取消订单，支付金额已全额原路退回',
+              note: '用户已取消订单，支付金额已全额原路���回',
               refund: undefined,
               action: undefined,
             }),
@@ -761,7 +766,12 @@ export function OrderListScreen({
     onPay: setPayTarget,
     onShowVerifyCode: setCodeTarget,
   }
-  const detailOrder = detailId ? orders.find((o) => o.id === detailId) : undefined
+  const detailOrder =
+    detailId === initialDetailKey
+      ? orders.find((o) => o.status === initialDetailStatus && (initialType === 'all' || o.type === initialType))
+      : detailId
+        ? orders.find((o) => o.id === detailId)
+        : undefined
   const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
 
   const activeTab = statusTabs.find((t) => t.key === statusKey) ?? statusTabs[0]

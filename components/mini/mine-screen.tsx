@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, UserRound } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
@@ -103,8 +103,13 @@ export function MineScreen({
   initialServiceOpen = false,
   initialAccountView = null,
   onOpenTests,
+  loggedIn = true,
+  onRequireLogin,
 }: {
   onOpenTests?: () => void
+  loggedIn?: boolean
+  /** Called with the feature name when a guest taps something that needs login. */
+  onRequireLogin?: (feature: string) => void
   initialAccountView?: AccountView | null
   initialAboutOpen?: boolean
   initialServiceOpen?: boolean
@@ -137,6 +142,11 @@ export function MineScreen({
   const [refundKind, setRefundKind] = useState<RefundKind | null>(null)
   const self = initialExaminees[0]
   const maskedPhone = (self.phone ?? '').replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
+  const guard = (feature: string, action: () => void) => () => {
+    if (loggedIn) action()
+    else onRequireLogin?.(feature)
+  }
+  const publicTools = new Set<string>(['guide', 'about', 'service'])
 
   return (
     <div className="relative flex h-full flex-col bg-[#f4f8fe]">
@@ -152,19 +162,38 @@ export function MineScreen({
       <div className="relative flex-1 overflow-y-auto px-3 pb-24 pt-2 [scrollbar-width:none]">
         {/* 用户信息：头像 / 昵称 / 手机号 */}
         <section aria-label="用户信息">
-          <button
-            type="button"
-            onClick={() => setAccountView('main')}
-            className="flex w-full items-center gap-3 px-1 text-left"
-          >
-            <DefaultAvatar className="size-14 shrink-0 border-2 border-white shadow-sm" />
-            <span className="min-w-0 flex-1">
+          {loggedIn ? (
+            <button
+              type="button"
+              onClick={() => setAccountView('main')}
+              className="flex w-full items-center gap-3 px-1 text-left"
+            >
+              <DefaultAvatar className="size-14 shrink-0 border-2 border-white shadow-sm" />
+              <span className="min-w-0 flex-1">
                 <span className="block text-[18px] font-semibold text-foreground">{DEFAULT_NICKNAME}</span>
                 <span className="mt-0.5 block text-[12px] tabular-nums text-muted-foreground">{maskedPhone}</span>
-            </span>
-            <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-            <span className="sr-only">进入个人资料</span>
-          </button>
+              </span>
+              <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
+              <span className="sr-only">进入个人资料</span>
+            </button>
+          ) : (
+            <div className="flex w-full items-center gap-3 px-1">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-full border-2 border-white bg-[#dbe6f7] shadow-sm">
+                <UserRound className="size-7 text-[#8fa6c8]" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[18px] font-semibold text-foreground">未登录</span>
+                <span className="mt-0.5 block text-[12px] text-muted-foreground">登录后查看订单、报告与优惠券</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => onRequireLogin?.('登录')}
+                className="flex h-8 shrink-0 items-center rounded-full bg-primary px-4 text-[13px] font-medium text-primary-foreground"
+              >
+                登录 / 注册
+              </button>
+            </div>
+          )}
         </section>
 
         {/* 我的订单 */}
@@ -174,17 +203,19 @@ export function MineScreen({
               id="mine-orders"
               title="我的订单"
               action="查看全部"
-              onAction={() => setOrderListPhase('all')}
+              onAction={guard('我的订单', () => setOrderListPhase('all'))}
             />
           </div>
           <ul className="mt-4 grid grid-cols-6 px-0.5">
             {orderPhases.map((p) => {
-              const count = p.key === 'after' ? pendingAfterSalesCount : countOrders(p.key)
+              const count = !loggedIn ? 0 : p.key === 'after' ? pendingAfterSalesCount : countOrders(p.key)
               return (
                 <li key={p.key}>
                   <button
                     type="button"
-                    onClick={() => (p.key === 'after' ? setAfterSalesOpen(true) : setOrderListPhase(p.key))}
+                    onClick={guard('我的订单', () =>
+                      p.key === 'after' ? setAfterSalesOpen(true) : setOrderListPhase(p.key),
+                    )}
                     className="flex w-full flex-col items-center gap-1.5"
                   >
                     <span className="relative">
@@ -210,11 +241,26 @@ export function MineScreen({
             id="mine-report"
             title="我的报告"
             action="全部报告"
-            onAction={() => {
+            onAction={guard('我的报告', () => {
               setReportDetailId(undefined)
               setReportOpen(true)
-            }}
+            })}
           />
+          {!loggedIn ? (
+            <div className="mt-3 flex items-center gap-3 rounded-xl bg-brand-soft p-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+                <MineIcon src={iconSrc('report')} className="size-7 opacity-50" />
+              </span>
+              <p className="min-w-0 flex-1 text-[12px] text-muted-foreground">登录后查看您的基因检测报告</p>
+              <button
+                type="button"
+                onClick={() => onRequireLogin?.('我的报告')}
+                className="flex h-7 shrink-0 items-center rounded-full border border-primary px-3.5 text-[12px] font-medium text-primary"
+              >
+                去登录
+              </button>
+            </div>
+          ) : (
           <div className="mt-3 flex items-center gap-3 rounded-xl bg-brand-soft p-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
               <MineIcon src={iconSrc('report')} className="size-7" />
@@ -237,26 +283,33 @@ export function MineScreen({
               查看
             </button>
           </div>
+          )}
         </section>
 
         {/* 我的优惠券 / 领券中心 */}
         <section aria-label="优惠券" className="mt-2.5 grid grid-cols-2 gap-2.5">
           <button
             type="button"
-            onClick={() => setMyCouponsOpen(true)}
+            onClick={guard('我的优惠券', () => setMyCouponsOpen(true))}
             className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
           >
             <MineIcon src={iconSrc('coupon')} className="size-9 shrink-0" />
             <span>
               <span className="block text-[14px] font-medium text-foreground">我的优惠券</span>
               <span className="block text-[11px] text-muted-foreground">
-                <span className="tabular-nums text-[#e0651c]">{usableCouponCount}</span> 张可用
+                {loggedIn ? (
+                  <>
+                    <span className="tabular-nums text-[#e0651c]">{usableCouponCount}</span> 张可用
+                  </>
+                ) : (
+                  '登录后查看'
+                )}
               </span>
             </span>
           </button>
           <button
             type="button"
-            onClick={() => setCouponCenterOpen(true)}
+            onClick={guard('领券中心', () => setCouponCenterOpen(true))}
             className="flex items-center gap-2.5 rounded-2xl bg-white p-3.5 text-left"
           >
             <MineIcon src={iconSrc('gift')} className="size-9 shrink-0" />
@@ -278,6 +331,10 @@ export function MineScreen({
                 <button
                   type="button"
                   onClick={() => {
+                    if (!loggedIn && !publicTools.has(t.key)) {
+                      onRequireLogin?.(t.label)
+                      return
+                    }
                     if (t.key === 'auth') setAuthOpen(true)
                     if (t.key === 'examinee') setExamineeView('list')
                     if (t.key === 'address') setAddressView('list')

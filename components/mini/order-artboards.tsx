@@ -11,7 +11,15 @@ const noop = () => {}
 
 type RefundKind = Parameters<React.ComponentProps<typeof OrderListScreen>['onRefund']>[0]
 
-function OrderListWithRefund({ initialGuideOpen = false }: { initialGuideOpen?: boolean }) {
+function OrderListWithRefund({
+  initialGuideOpen = false,
+  initialDetailStatus,
+  initialType,
+}: {
+  initialGuideOpen?: boolean
+  initialDetailStatus?: string
+  initialType?: 'all' | 'self' | 'site'
+}) {
   const [refundKind, setRefundKind] = useState<RefundKind | null>(null)
   const [resampleOpen, setResampleOpen] = useState(false)
   const close = () => setRefundKind(null)
@@ -20,6 +28,8 @@ function OrderListWithRefund({ initialGuideOpen = false }: { initialGuideOpen?: 
     <>
       <OrderListScreen
         initialGuideOpen={initialGuideOpen}
+        initialDetailStatus={initialDetailStatus}
+        initialType={initialType}
         onBack={noop}
         onHandleUnqualified={() => setResampleOpen(true)}
         onRefund={setRefundKind}
@@ -34,6 +44,28 @@ function OrderListWithRefund({ initialGuideOpen = false }: { initialGuideOpen?: 
 
 export function OrderListArtboard({ initialGuideOpen = false }: { initialGuideOpen?: boolean }) {
   return <OrderListWithRefund initialGuideOpen={initialGuideOpen} />
+}
+
+export function OrderDetailArtboard() {
+  return <OrderListWithRefund initialType="self" initialDetailStatus="检测中" />
+}
+
+export function AfterSalesDetailArtboard({ caseId = 'DZ20260918002' }: { caseId?: string }) {
+  const [resampleOpen, setResampleOpen] = useState(false)
+  const [refundOpen, setRefundOpen] = useState(false)
+
+  return (
+    <>
+      <AfterSalesScreen
+        initialDetailId={caseId}
+        onBack={noop}
+        onHandleUnqualified={() => setResampleOpen(true)}
+        onTerminateResample={() => setRefundOpen(true)}
+      />
+      {refundOpen && <ResampleRefundScreen onBack={() => setRefundOpen(false)} onContact={noop} />}
+      {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
+    </>
+  )
 }
 
 export function OrderListEmptyArtboard() {

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { AlertTriangle, ArrowRight, Building2, Home } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { AfterSalesDetailScreen } from '@/components/mini/after-sales-detail-screen'
 import { cn } from '@/lib/utils'
 
 type AfterKind = 'pending' | 'refund' | 'resample'
@@ -14,7 +15,7 @@ const kindTabs: { key: 'all' | AfterKind; label: string }[] = [
   { key: 'resample', label: '重采样' },
 ]
 
-type AfterCase = {
+export type AfterCase = {
   id: string
   kind: AfterKind
   type: 'self' | 'site'
@@ -72,16 +73,31 @@ const cases: AfterCase[] = [
 export const pendingAfterSalesCount = cases.filter((c) => c.kind === 'pending').length
 
 export function AfterSalesScreen({
+  initialDetailId,
   onBack,
   onHandleUnqualified,
   onTerminateResample,
 }: {
+  initialDetailId?: string
   onBack: () => void
   onHandleUnqualified: () => void
   onTerminateResample: () => void
 }) {
   const [kind, setKind] = useState<'all' | AfterKind>('all')
+  const [detailId, setDetailId] = useState<string | null>(initialDetailId ?? null)
   const visible = cases.filter((c) => kind === 'all' || c.kind === kind)
+  const detailCase = detailId ? cases.find((c) => c.id === detailId) : undefined
+
+  if (detailCase) {
+    return (
+      <AfterSalesDetailScreen
+        item={detailCase}
+        onBack={() => setDetailId(null)}
+        onHandleUnqualified={onHandleUnqualified}
+        onTerminateResample={onTerminateResample}
+      />
+    )
+  }
 
   return (
     <SubPage title="退款/售后" titleId="after-sales-title" onBack={onBack}>
@@ -114,6 +130,12 @@ export function AfterSalesScreen({
           const TypeIcon = c.type === 'self' ? Home : Building2
           return (
             <li key={c.id} className="rounded-2xl bg-white p-3.5">
+              <button
+                type="button"
+                onClick={() => setDetailId(c.id)}
+                aria-label={`查看售后详情：${c.product}，${c.status}`}
+                className="block w-full text-left"
+              >
               <div className="flex items-center gap-1.5">
                 <TypeIcon className="size-3.5 text-primary" aria-hidden="true" />
                 <span className="text-[12px] tabular-nums text-muted-foreground">{c.id}</span>
@@ -160,6 +182,7 @@ export function AfterSalesScreen({
                   <span className="rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
                 </p>
               )}
+              </button>
 
               {c.action && (
                 <div className="mt-2.5 flex justify-end">

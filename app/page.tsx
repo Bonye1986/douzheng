@@ -8,7 +8,9 @@ import { ConsentReaderArtboard, ExamineeFormArtboard, SiteListArtboard } from '@
 import { MineScreen } from '@/components/mini/mine-screen'
 import {
   AfterSalesArtboard,
+  AfterSalesDetailArtboard,
   CancelOrderArtboard,
+  OrderDetailArtboard,
   OrderListArtboard,
   OrderListEmptyArtboard,
   ResampleRefundArtboard,
@@ -143,6 +145,12 @@ const screens = [
     node: <HomeFlow initialTab="me" />,
   },
   {
+    id: '18-guest',
+    title: '我的 · 未登录',
+    desc: '未登录时展示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及检测人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
+    node: <HomeFlow initialTab="me" loggedIn={false} />,
+  },
+  {
     id: '20',
     title: '我的 · 我的报告',
     desc: '按受检人筛选；已出具报告展示需调整 / 谨慎使用 / 正常使用药物数量，可查看报告、AI 解读、分享报告；检测中报告展示进度（已收样 → 检测中 → 出具报告），重采样订单带标记（可在画板内交互）',
@@ -157,7 +165,7 @@ const screens = [
   {
     id: '22',
     title: '我的 · 我的优惠券',
-    desc: '按可使用 / 已使用 / 已过期分类展示优惠券（面额、门槛、适用范围、有效期），即将过期标签提醒；可使用券点击去使用，顶部入口跳转领券中心；底部��示使用说明（可在画板内交互）',
+    desc: '按可使用 / 已使用 / 已过期分类展示优惠券（面额、门槛、适用范围、有效期），即将过期标签提醒；可使用券点击去使用，顶部入口跳转领券中心；底部展示使用说明（可在画板内交互）',
     node: <MineScreen initialCoupon="mine" />,
   },
   {
@@ -229,7 +237,7 @@ const screens = [
   {
     id: '35',
     title: '我的 · 用药提醒',
-    desc: '顶部概览下一次提醒时间、今日提醒次数与进行中数量；提醒卡片展示药品、用药人、剂量、服用要求、频率与时间点，可开关暂停���信、编辑、删除，最多 20 条（可在画板内交互）',
+    desc: '顶部概览下一次提醒时间、今日提醒次数与进行中数量；提醒卡片展示药品、用药人、剂量、服用要求、频率与时间点，可开关暂停微信、编辑、删除，最多 20 条（可在画板内交互）',
     node: <MineScreen initialReminderView="list" />,
   },
   {
@@ -331,7 +339,7 @@ const screens = [
   {
     id: '53',
     title: '订单列表 · 空状态',
-    desc: '尚无任何订单时展示引导插图与说明，点击去选购检测进入检测列表；有订单但当前状态 / 类型下无数据、或搜索无结果时，列表区展示对应空状态（搜索��结果可一键清除搜索）',
+    desc: '尚无任何订单时展示引导插图与说明，点击去选购检测进入检测列表；有订单但当前状态 / 类型下无数据、或搜索无结果时，列表区展示对应空状态（搜索无结果可一键清除搜索）',
     node: <OrderListEmptyArtboard />,
   },
   {
@@ -351,6 +359,18 @@ const screens = [
     title: '我的 · 退款 / 售后',
     desc: '售后记录列表：取消退款、发货后退款、样本不合格处理，展示处理状态与退款金额，待处理项可直接去处理（可在画板内交互）',
     node: <AfterSalesArtboard />,
+  },
+  {
+    id: '51-detail',
+    title: '售后 · 售后详情',
+    desc: '展示售后状态、处理进度时间轴、退款信息（扣除费用与退款金额）、关联订单与售后编号 / 类型 / 原因 / 申请时间，待处理或重采样订单底部可继续操作（可在画板内交互）',
+    node: <AfterSalesDetailArtboard />,
+  },
+  {
+    id: '47-detail',
+    title: '订单列表 · 订单详情',
+    desc: '展示订单状态与检测进度、检测项目、受检人、实付金额与订单信息（订单编号、样本编码、下单时间等），底部按状态展示操作按钮（可在画板内交互）',
+    node: <OrderDetailArtboard />,
   },
   {
     id: '52',
@@ -396,14 +416,14 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'orders',
     title: '我的订单与售后',
-    summary: '订单列表与采样指引视频，发货前取消、发货后退款、样本不合格重采样或终止退款',
-    ids: ['47', '48', '53', '49', '50', '51', '19', '52'],
+    summary: '订单列表与订单详情、采样指引视频，发货前取消、发货后退款、售后列表与售后详情、样本不合格重采样或终止退款',
+    ids: ['47', '47-detail', '48', '53', '49', '50', '51', '51-detail', '19', '52'],
   },
   {
     key: 'mine',
     title: '我的',
     summary: '个人中心、我的报告与报告详情、我的优惠券与领券中心',
-    ids: ['18', '20', '21', '22', '23'],
+    ids: ['18', '18-guest', '20', '21', '22', '23'],
   },
   {
     key: 'consent',
