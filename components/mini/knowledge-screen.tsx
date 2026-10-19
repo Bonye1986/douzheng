@@ -101,7 +101,7 @@ function KnowledgeList({
       <div
         role="tablist"
         aria-label={`${sources[kind].title}分类`}
-        className="flex shrink-0 gap-1.5 overflow-x-auto bg-white px-3 pb-2.5 pt-1 [scrollbar-width:none]"
+        className="flex shrink-0 gap-1.5 overflow-x-auto items-center bg-white px-3 py-2.5 [scrollbar-width:none]"
       >
         {categories.map((c) => {
           const active = c === category
