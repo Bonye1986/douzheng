@@ -166,7 +166,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
           客服
         </button>
         <div className="flex w-11 flex-col items-center gap-0.5 text-tag text-muted-foreground">
-          <CartButton count={cartCount} onClick={onOpenCart} className="size-6 [&>svg]:size-5" />
+          <CartButton count={cartCount} onClick={onOpenCart} className="size-6 text-foreground active:bg-transparent [&>svg]:size-5" />
           <span aria-hidden="true">购物车</span>
         </div>
         <div className="ml-1 flex h-10 flex-1 overflow-hidden rounded-full">

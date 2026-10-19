@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Check, ChevronLeft, Plus, ShoppingCart } from 'lucide-react'
+import { Check, ChevronLeft, Plus } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
+import { CareBagIcon } from '@/components/mini/tests-screen'
 import {
   getSamplingModes,
   sampleTypeText,
@@ -107,7 +108,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
         ) : (
           <section className="flex flex-col items-center rounded-2xl bg-white px-6 py-10 text-center">
             <span className="flex size-16 items-center justify-center rounded-full bg-secondary">
-              <ShoppingCart className="size-7 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                <CareBagIcon className="size-7 text-primary" />
             </span>
             <p className="mt-3 text-body font-medium text-foreground">购物车还是空的</p>
             <p className="mt-1 text-caption text-muted-foreground">挑选适合你或家人的用药基因检测吧</p>

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import Image from 'next/image'
-import { Plus, Search, ShoppingCart, X } from 'lucide-react'
+import { Plus, Search, X } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { TestDetailScreen } from '@/components/mini/test-detail-screen'
 import { CartScreen, MAX_QTY, type CartItem } from '@/components/mini/cart-screen'
@@ -104,7 +104,7 @@ export function TestsScreen({
                 </button>
               )}
             </label>
-            <CartButton count={cartCount} onClick={openCart} />
+            <CartButton count={cartCount} onClick={openCart} className="size-10 bg-secondary [&>svg]:size-5" />
           </div>
 
           <div
@@ -222,6 +222,25 @@ export function TestsScreen({
   )
 }
 
+export function CareBagIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" />
+      <path d="M5.6 8.5h12.8l-.85 10.1a2 2 0 0 1-2 1.9H8.45a2 2 0 0 1-2-1.9L5.6 8.5Z" fill="currentColor" fillOpacity={0.12} />
+      <path d="M12 12.25v4.5M9.75 14.5h4.5" />
+    </svg>
+  )
+}
+
 export function CartButton({
   count,
   onClick,
@@ -236,11 +255,14 @@ export function CartButton({
       type="button"
       onClick={onClick}
       aria-label={count ? `购物车，已有 ${count} 件` : '购物车'}
-      className={cn('relative flex size-9 shrink-0 items-center justify-center rounded-full text-foreground', className)}
+      className={cn(
+        'relative flex size-9 shrink-0 items-center justify-center rounded-full text-primary transition-colors active:bg-secondary',
+        className,
+      )}
     >
-      <ShoppingCart className="size-6" strokeWidth={1.8} aria-hidden="true" />
+      <CareBagIcon className="size-6" />
       {count > 0 && (
-        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-tag font-medium tabular-nums text-white ring-2 ring-white">
+        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-tag font-medium tabular-nums text-white ring-2 ring-white">
           {count > 99 ? '99+' : count}
         </span>
       )}
