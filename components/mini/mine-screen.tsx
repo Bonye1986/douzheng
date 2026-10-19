@@ -76,7 +76,12 @@ function SectionHeader({
   action: string
   onAction?: () => void
 }) {
-  return <SectionHeading id={id} title={title} action={action} onAction={onAction} />
+  return <SectionHeading id={id} title={title} action={action} onAction={onAction} icon={SECTION_ICONS[id]} />
+}
+
+const SECTION_ICONS: Record<string, string> = {
+  'mine-orders': '/images/icons/sec-orders.png',
+  'mine-report': '/images/icons/sec-reports.png',
 }
 
 export function MineScreen({
@@ -317,7 +322,7 @@ export function MineScreen({
 
         {/* 常用功能 */}
         <nav aria-labelledby="mine-tools" className="mt-2.5 rounded-2xl bg-white p-3.5">
-  <SectionHeading id="mine-tools" title="常用功能" />
+  <SectionHeading id="mine-tools" title="常用功能" icon="/images/icons/sec-tools.png" />
           <ul className="mt-3 grid grid-cols-4 gap-y-4">
             {tools.map((t) => (
               <li key={t.key}>

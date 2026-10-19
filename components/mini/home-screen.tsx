@@ -44,7 +44,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         </button>
 
         <section aria-labelledby="hot-q" className="mt-8">
-          <SectionHeading id="hot-q" title="大家都在问" className="mb-3" />
+          <SectionHeading id="hot-q" title="大家都在问" icon="/images/icons/sec-hot.png" className="mb-3" />
           <ul className="grid grid-cols-2 gap-2.5">
             {presetQuestions.map((item) => (
               <li key={item.id}>

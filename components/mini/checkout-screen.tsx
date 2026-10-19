@@ -704,7 +704,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         {byMember.length > 0 && (
           <section aria-labelledby="member-sum-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
             <h2 id="member-sum-title" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-              <UserRound className="size-4 text-primary" aria-hidden="true" />
+              <img src="/images/icons/mine-examinee.png" alt="" aria-hidden="true" width={22} height={22} className="size-[22px] object-contain" />
               按受检人汇总
             </h2>
             <ul className="mt-2.5 flex flex-col gap-2">

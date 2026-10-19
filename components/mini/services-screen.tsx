@@ -94,7 +94,22 @@ function SectionHeader({
   action?: string
   onAction?: () => void
 }) {
-  return <SectionHeading id={id} title={title} action={action} onAction={onAction} className="mb-3" />
+  return (
+    <SectionHeading
+      id={id}
+      title={title}
+      action={action}
+      onAction={onAction}
+      icon={SECTION_ICONS[id]}
+      className="mb-3"
+    />
+  )
+}
+
+const SECTION_ICONS: Record<string, string> = {
+  'rec-tests': '/images/icons/sec-rec.png',
+  knowledge: '/images/icons/sec-knowledge.png',
+  quiz: '/images/icons/sec-qa.png',
 }
 
 function BannerCarousel() {
