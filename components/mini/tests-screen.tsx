@@ -8,8 +8,6 @@ import { TestDetailScreen } from '@/components/mini/test-detail-screen'
 import { CartScreen, MAX_QTY, type CartItem } from '@/components/mini/cart-screen'
 import { CheckoutScreen, type CheckoutLine } from '@/components/mini/checkout-screen'
 import {
-  getSamplingModes,
-  samplingLabel,
   testCategories,
   testServices,
   type CategoryKey,
@@ -144,18 +142,13 @@ export function TestsScreen({
 
         <div className="flex-1 overflow-y-auto px-4 pb-24 pt-3 [scrollbar-width:none]">
           {list.length ? (
-            <>
-              <p className="mb-2 text-caption text-muted-foreground" aria-live="polite">
-                共 {list.length} 项检测服务
-              </p>
-              <ul className="flex flex-col gap-2.5">
-                {list.map((s) => (
-                  <li key={s.id}>
-                    <ServiceCard service={s} onOpen={() => setDetail(s)} onAdd={() => addToCart(s)} />
-                  </li>
-                ))}
-              </ul>
-            </>
+            <ul className="grid grid-cols-2 gap-2.5">
+              {list.map((s) => (
+                <li key={s.id} className="flex">
+                  <ServiceCard service={s} onOpen={() => setDetail(s)} onAdd={() => addToCart(s)} />
+                </li>
+              ))}
+            </ul>
           ) : (
             <div className="flex flex-col items-center rounded-2xl bg-white px-6 py-12 text-center" aria-live="polite">
               <Search className="size-8 text-[#c3ccdb]" aria-hidden="true" />
@@ -265,42 +258,37 @@ function ServiceCard({
   onAdd: () => void
 }) {
   return (
-    <article className="relative flex gap-3 rounded-2xl bg-white p-3" aria-labelledby={`svc-${service.id}`}>
+    <article
+      className="relative flex w-full flex-col overflow-hidden rounded-2xl bg-white"
+      aria-labelledby={`svc-${service.id}`}
+    >
       <Image
         src={service.image}
         alt=""
-        width={96}
-        height={96}
-        className="size-24 shrink-0 rounded-xl bg-secondary object-cover"
+        width={180}
+        height={180}
+        className="aspect-square w-full bg-secondary object-cover"
       />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <h2 id={`svc-${service.id}`} className="line-clamp-2 text-title font-semibold leading-5 text-foreground">
+      <div className="flex flex-1 flex-col p-2.5">
+        <h2 id={`svc-${service.id}`} className="line-clamp-2 text-body font-semibold leading-5 text-foreground">
           <button type="button" onClick={onOpen} className="text-left after:absolute after:inset-0 after:rounded-2xl">
             {service.name}
           </button>
         </h2>
-        <p className="mt-0.5 truncate text-caption text-muted-foreground">{service.summary}</p>
-        <p className="mt-1 flex flex-wrap gap-1">
-          <span className="rounded bg-success-soft px-1.5 py-px text-tag text-success">
-                {getSamplingModes(service.id).includes('self') ? '支持居家自采' : samplingLabel.site}
-          </span>
-          {service.tags.slice(0, 2).map((tag) => (
-            <span key={tag} className="rounded bg-secondary px-1.5 py-px text-tag text-primary">
-              {tag}
-            </span>
-          ))}
-        </p>
-        <div className="mt-auto flex items-end justify-between pt-1.5">
-          <p className="flex items-baseline gap-1.5">
-            <span className="text-heading font-bold leading-none text-warning">
-              <span className="text-caption">¥</span>
-              {service.price}
-            </span>
-            {service.originalPrice && (
-              <span className="text-caption text-faint line-through">¥{service.originalPrice}</span>
-            )}
-            <span className="text-caption text-muted-foreground">{service.sold}</span>
-          </p>
+        <p className="mt-1 truncate text-caption text-muted-foreground">{service.summary}</p>
+        <div className="mt-auto flex items-end justify-between gap-1 pt-2">
+          <div className="min-w-0">
+            <p className="flex items-baseline gap-1">
+              <span className="text-heading font-bold leading-none text-warning">
+                <span className="text-caption">¥</span>
+                {service.price}
+              </span>
+              {service.originalPrice && (
+                <span className="truncate text-tag text-faint line-through">¥{service.originalPrice}</span>
+              )}
+            </p>
+            <p className="mt-1 text-tag text-muted-foreground">{service.sold}</p>
+          </div>
           <button
             type="button"
             onClick={onAdd}
