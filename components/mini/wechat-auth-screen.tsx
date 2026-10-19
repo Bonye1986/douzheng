@@ -13,7 +13,18 @@ export function WechatAuthScreen({ onAllow, onDeny }: { onAllow?: () => void; on
   const respond = (next: 'allowed' | 'denied') => {
     setResult(next)
     const callback = next === 'allowed' ? onAllow : onDeny
-    if (callback) window.setTimeout(callback, 700)
+    if (callback) window.setTimeout(callback, next === 'denied' ? 0 : 700)
+  }
+
+  if (result === 'denied' && !onDeny) {
+    return (
+      <WelcomeScreen
+        defaultAgreed
+        notice="需授权手机号才能登录，请重新点击授权"
+        noticeDuration={2500}
+        onWechatLogin={() => setResult('')}
+      />
+    )
   }
 
   return (
