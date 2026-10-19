@@ -44,6 +44,18 @@ const cases: AfterCase[] = [
     action: { label: '去处理', primary: true, handle: true },
   },
   {
+    id: 'DZ20261015004',
+    kind: 'refund',
+    type: 'self',
+    status: '已退款',
+    tone: 'muted',
+    product: '药物基因检测',
+    examinee: '张伟',
+    amount: '¥1299',
+    note: '订单在发货前取消，款项已全额原路退回',
+    refund: { label: '全额退款', value: '¥1299' },
+  },
+  {
     id: 'DZ20260918002',
     kind: 'refund',
     type: 'self',

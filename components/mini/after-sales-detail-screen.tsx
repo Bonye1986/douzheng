@@ -36,6 +36,26 @@ const details: Record<string, CaseDetail> = {
     ],
     current: 2,
   },
+  DZ20261015004: {
+    serviceNo: 'SH20261015002',
+    serviceType: '发货前取消订单',
+    applyTime: '2026-10-15 10:22',
+    reason: '已支付未发货，用户主动取消',
+    headline: '退款成功',
+    headlineDesc: '¥1299 已全额原路退回微信支付账户，预计 1-3 个工作日到账',
+    steps: [
+      { label: '取消订单', time: '2026-10-15 10:22', desc: '采样盒尚未发货' },
+      { label: '订单关闭', time: '2026-10-15 10:22' },
+      { label: '退款到账', time: '2026-10-15 10:25', desc: '全额原路退回微信支付' },
+    ],
+    current: 3,
+    refundRows: [
+      ['实付金额', '¥1299'],
+      ['扣除费用', '¥0'],
+      ['退款方式', '原路退回'],
+    ],
+    refundTotal: { label: '退款金额', value: '¥1299' },
+  },
   DZ20260918002: {
     serviceNo: 'SH20260920006',
     serviceType: '发货后申请退款',

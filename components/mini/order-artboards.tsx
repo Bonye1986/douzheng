@@ -91,12 +91,7 @@ export function OrderListEmptyArtboard() {
 }
 
 export function CancelOrderArtboard() {
-  return (
-    <>
-      <OrderListWithRefund />
-      <CancelOrderScreen onBack={noop} />
-    </>
-  )
+  return <AfterSalesDetailArtboard caseId="DZ20261015004" />
 }
 
 export function ShippedRefundArtboard() {
