@@ -45,6 +45,24 @@
   --color-warning-soft: var(--warning-soft);
   --color-wechat: var(--wechat);
   --font-sans: var(--font-noto-sans-sc), 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --text-tag: 10px;
+  --text-tag--line-height: 14px;
+  --text-caption: 12px;
+  --text-caption--line-height: 18px;
+  --text-note: 13px;
+  --text-note--line-height: 20px;
+  --text-body: 14px;
+  --text-body--line-height: 22px;
+  --text-title: 16px;
+  --text-title--line-height: 24px;
+  --text-heading: 18px;
+  --text-heading--line-height: 26px;
+  --text-headline: 22px;
+  --text-headline--line-height: 30px;
+  --text-display: 28px;
+  --text-display--line-height: 36px;
+  --text-hero: 36px;
+  --text-hero--line-height: 44px;
   --shadow-sm: 0 2px 12px rgb(36 64 110 / 0.05), 0 1px 2px rgb(36 64 110 / 0.04);
   --shadow-md: 0 6px 20px rgb(36 64 110 / 0.08);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -203,5 +221,8 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  svg.lucide[stroke-width="2"] {
+    stroke-width: 1.8;
   }
 }

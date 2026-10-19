@@ -89,7 +89,7 @@ export function DrugScanSheet({
         >
           <X className="size-4" aria-hidden="true" />
         </button>
-        <h2 id="drug-scan-title" className="text-[15px] font-semibold">
+        <h2 id="drug-scan-title" className="text-title font-semibold">
           拍照识别药盒
         </h2>
         <span className="size-8" aria-hidden="true" />
@@ -102,7 +102,7 @@ export function DrugScanSheet({
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-2 text-white/60">
             <ScanLine className="size-8" aria-hidden="true" />
-            <p className="text-[12px]">将药盒正面放入框内，确保药名与规格清晰</p>
+            <p className="text-caption">将药盒正面放入框内，确保药名与规格清晰</p>
           </div>
         )}
 
@@ -118,7 +118,7 @@ export function DrugScanSheet({
         </div>
 
         {stage === 'recognizing' && (
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-black/55 py-2 text-[12px]" role="status">
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-black/55 py-2 text-caption" role="status">
             <Zap className="size-3.5 text-primary" aria-hidden="true" />
             正在识别药品名称、规格与用法…
           </div>
@@ -143,7 +143,7 @@ export function DrugScanSheet({
 
       {stage === 'capture' && (
         <div className="mt-auto flex flex-col items-center gap-4 px-6 pb-8">
-          <ul className="w-full space-y-1 text-[11px] leading-relaxed text-white/60">
+          <ul className="w-full space-y-1 text-caption leading-relaxed text-white/60">
             <li>· 光线充足、避免反光，药盒正面朝上</li>
             <li>· 识别结果仅供参考，请以说明书及医嘱为准</li>
           </ul>
@@ -151,7 +151,7 @@ export function DrugScanSheet({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="flex w-16 flex-col items-center gap-1 text-[11px] text-white/80"
+              className="flex w-16 flex-col items-center gap-1 text-caption text-white/80"
             >
               <span className="flex size-10 items-center justify-center rounded-full bg-white/10">
                 <ImageIcon className="size-5" aria-hidden="true" />
@@ -173,15 +173,15 @@ export function DrugScanSheet({
 
       {stage === 'failed' && (
         <div className="mt-auto rounded-t-3xl bg-white px-4 pb-6 pt-5 text-center text-foreground">
-          <p className="text-[15px] font-semibold">未能识别药品信息</p>
-          <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+          <p className="text-title font-semibold">未能识别药品信息</p>
+          <p className="mt-1.5 text-caption leading-relaxed text-muted-foreground">
             照片可能模糊或药名被遮挡，请重新拍摄，或返回手动填写
           </p>
           <div className="mt-4 flex gap-2.5">
-            <button type="button" onClick={onClose} className="h-10 flex-1 rounded-full border border-border text-[14px]">
+            <button type="button" onClick={onClose} className="h-10 flex-1 rounded-full border border-border text-body">
               手动填写
             </button>
-            <button type="button" onClick={retake} className="h-10 flex-1 rounded-full bg-primary text-[14px] font-medium text-primary-foreground">
+            <button type="button" onClick={retake} className="h-10 flex-1 rounded-full bg-primary text-body font-medium text-primary-foreground">
               重新拍摄
             </button>
           </div>
@@ -192,10 +192,10 @@ export function DrugScanSheet({
         <div className="mt-auto flex max-h-[62%] flex-col rounded-t-3xl bg-white text-foreground">
           <div className="flex items-center gap-1.5 px-4 pt-4">
             <CheckCircle2 className="size-4 text-[#16a36a]" aria-hidden="true" />
-            <p className="text-[15px] font-semibold">识别成功</p>
-            <span className="ml-auto text-[11px] text-muted-foreground">填入后可手动修改</span>
+            <p className="text-title font-semibold">识别成功</p>
+            <span className="ml-auto text-caption text-muted-foreground">填入后可手动修改</span>
           </div>
-          <dl className="mt-3 flex-1 space-y-2 overflow-y-auto px-4 text-[12px] [scrollbar-width:none]">
+          <dl className="mt-3 flex-1 space-y-2 overflow-y-auto px-4 text-caption [scrollbar-width:none]">
             {[
               ['药品名称', sampleResult.drug],
               ['规格', sampleResult.spec],
@@ -216,7 +216,7 @@ export function DrugScanSheet({
             <button
               type="button"
               onClick={retake}
-              className="flex h-10 flex-1 items-center justify-center gap-1 rounded-full border border-border text-[14px]"
+              className="flex h-10 flex-1 items-center justify-center gap-1 rounded-full border border-border text-body"
             >
               <RotateCcw className="size-3.5" aria-hidden="true" />
               重拍
@@ -224,7 +224,7 @@ export function DrugScanSheet({
             <button
               type="button"
               onClick={() => onApply(sampleResult)}
-              className="h-10 flex-[2] rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+              className="h-10 flex-[2] rounded-full bg-primary text-body font-medium text-primary-foreground"
             >
               填入表单
             </button>

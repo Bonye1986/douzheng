@@ -29,7 +29,7 @@ export function PhoneFrame({
 export function StatusBar({ tone = 'dark' }: { tone?: Tone }) {
   const color = tone === 'light' ? 'text-white' : 'text-foreground'
   return (
-    <div className={cn('flex h-11 items-center justify-between px-6 text-[13px] font-semibold', color)}>
+    <div className={cn('flex h-11 items-center justify-between px-6 text-note font-semibold', color)}>
       <span>09:41</span>
       <div className="flex items-center gap-1.5" aria-hidden="true">
         <Signal className="size-3.5" />
@@ -82,7 +82,7 @@ export function NavBar({
           <ChevronLeft className="size-5" />
         </button>
       )}
-      {title && <h2 className="text-[16px] font-medium">{title}</h2>}
+      {title && <h2 className="text-title font-medium">{title}</h2>}
       <div
         aria-hidden="true"
         className={cn(

@@ -65,15 +65,15 @@ export function OrderDetailScreen({
     <SubPage title="订单详情" titleId="order-detail-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]">
         <section className="rounded-2xl bg-primary p-4 text-primary-foreground">
-          <p className="flex items-center gap-1.5 text-[17px] font-semibold">
+          <p className="flex items-center gap-1.5 text-heading font-semibold">
             <Clock className="size-4" aria-hidden="true" />
             {status}
           </p>
-          <p className="mt-1 text-[12px] leading-5 text-primary-foreground/85">{statusDesc}</p>
+          <p className="mt-1 text-caption leading-5 text-primary-foreground/85">{statusDesc}</p>
         </section>
 
         <section aria-labelledby="od-sampling" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-sampling" className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+          <h2 id="od-sampling" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
             {isSelf ? (
               <House className="size-4 text-primary" aria-hidden="true" />
             ) : (
@@ -85,11 +85,11 @@ export function OrderDetailScreen({
             <div className="mt-2.5 flex gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div className="min-w-0">
-                <p className="text-[13px] font-medium text-foreground">
+                <p className="text-note font-medium text-foreground">
                   {receiver.name}
                   <span className="ml-2 font-normal tabular-nums text-muted-foreground">{receiver.phone}</span>
                 </p>
-                <p className="mt-0.5 text-[12px] leading-[18px] text-muted-foreground">{receiver.detail}</p>
+                <p className="mt-0.5 text-caption leading-[18px] text-muted-foreground">{receiver.detail}</p>
               </div>
             </div>
           )}
@@ -97,34 +97,34 @@ export function OrderDetailScreen({
             <div className="mt-2.5 flex gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div className="min-w-0">
-                <p className="text-[13px] font-medium text-foreground">{site.name}</p>
-                <p className="mt-0.5 text-[12px] leading-[18px] text-muted-foreground">{site.address}</p>
-                <p className="mt-0.5 text-[12px] text-muted-foreground">{site.time}</p>
+                <p className="text-note font-medium text-foreground">{site.name}</p>
+                <p className="mt-0.5 text-caption leading-[18px] text-muted-foreground">{site.address}</p>
+                <p className="mt-0.5 text-caption text-muted-foreground">{site.time}</p>
               </div>
             </div>
           )}
         </section>
 
         <section aria-labelledby="od-items" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-items" className="text-[14px] font-semibold text-foreground">
+          <h2 id="od-items" className="text-body font-semibold text-foreground">
             检测项目
           </h2>
           <ul className="mt-1">
             {groups.map((g) => (
               <li key={g.id} className="border-b border-border py-2.5 last:border-0">
-                <p className="flex items-center gap-1.5 text-[13px] font-medium text-foreground">
+                <p className="flex items-center gap-1.5 text-note font-medium text-foreground">
                   <UserRound className="size-3.5 text-primary" aria-hidden="true" />
                   {g.name}
                 </p>
                 <ul className="mt-1.5 flex flex-col gap-2">
                   {g.items.map((s) => (
-                    <li key={s.id} className="text-[12px]">
+                    <li key={s.id} className="text-caption">
                       <div className="flex items-center justify-between gap-3">
                         <span className="min-w-0 truncate text-muted-foreground">{s.name}</span>
                         <span className="shrink-0 tabular-nums text-foreground">{yuan(s.price)}</span>
                       </div>
                       {s.sampleType && (
-                        <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                        <p className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">
                           样本类型
                           <span className="rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
                             {s.sampleType}
@@ -137,7 +137,7 @@ export function OrderDetailScreen({
               </li>
             ))}
           </ul>
-          <dl className="mt-1 flex flex-col gap-1.5 border-t border-border pt-3 text-[12px]">
+          <dl className="mt-1 flex flex-col gap-1.5 border-t border-border pt-3 text-caption">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">商品金额</dt>
               <dd className="tabular-nums text-foreground">{yuan(goodsTotal)}</dd>
@@ -167,22 +167,22 @@ export function OrderDetailScreen({
               </div>
             )}
             {couponShared && couponOff > 0 && (
-              <p className="rounded-lg bg-background px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground">
+              <p className="rounded-lg bg-background px-2.5 py-1.5 text-caption leading-4 text-muted-foreground">
                 合并支付使用的优惠券已按各子订单商品金额比例分摊，退款时按本订单实付金额退回
               </p>
             )}
             <div className="flex items-baseline justify-between pt-1">
-              <dt className="text-[13px] text-foreground">{isPaid ? '实付款' : '需付款'}</dt>
-              <dd className="text-[16px] font-semibold tabular-nums text-foreground">{yuan(payable)}</dd>
+              <dt className="text-note text-foreground">{isPaid ? '实付款' : '需付款'}</dt>
+              <dd className="text-title font-semibold tabular-nums text-foreground">{yuan(payable)}</dd>
             </div>
           </dl>
         </section>
 
         <section aria-labelledby="od-info" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-info" className="text-[14px] font-semibold text-foreground">
+          <h2 id="od-info" className="text-body font-semibold text-foreground">
             订单信息
           </h2>
-          <dl className="mt-2 flex flex-col gap-2 text-[12px]">
+          <dl className="mt-2 flex flex-col gap-2 text-caption">
             {[
               ['订单编号', orderNo],
               ...(parentOrderNo ? [['合并单号', parentOrderNo]] : []),

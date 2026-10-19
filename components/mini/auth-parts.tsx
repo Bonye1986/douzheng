@@ -47,7 +47,7 @@ export function Agreement({
     <>
     <div
       className={cn(
-        'flex items-start gap-2 text-[12px] leading-5 transition-transform',
+        'flex items-start gap-2 text-caption leading-5 transition-transform',
         isLight ? 'text-white/70' : 'text-muted-foreground',
         highlight && 'animate-[shake_0.4s_ease-in-out]',
       )}
@@ -111,7 +111,7 @@ export function FieldRow({
 }
 
 export const inputClass =
-  'h-full w-full min-w-0 bg-transparent text-[15px] text-foreground outline-none placeholder:text-faint'
+  'h-full w-full min-w-0 bg-transparent text-title text-foreground outline-none placeholder:text-faint'
 
 export function PrimaryButton({
   children,
@@ -124,7 +124,7 @@ export function PrimaryButton({
       {...props}
       disabled={disabled}
       className={cn(
-        'flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-[16px] font-medium text-white shadow-[0_10px_24px_#3a82e438] transition-all active:scale-[0.98] disabled:bg-[#b5d3f6] disabled:shadow-none',
+        'flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-title font-medium text-white shadow-[0_10px_24px_#3a82e438] transition-all active:scale-[0.98] disabled:bg-[#b5d3f6] disabled:shadow-none',
         className,
       )}
     >

@@ -112,7 +112,7 @@ export function AfterSalesDetailScreen({
     <SubPage title="售后详情" titleId="after-sales-detail-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]">
         <section className={cn('rounded-2xl p-4 text-white', warn ? 'bg-[#e0651c]' : 'bg-primary')}>
-          <p className="flex items-center gap-1.5 text-[17px] font-semibold">
+          <p className="flex items-center gap-1.5 text-heading font-semibold">
             {warn ? (
               <AlertTriangle className="size-4" aria-hidden="true" />
             ) : done ? (
@@ -122,11 +122,11 @@ export function AfterSalesDetailScreen({
             )}
             {d.headline}
           </p>
-          <p className="mt-1 text-[12px] leading-5 text-white/85">{d.headlineDesc}</p>
+          <p className="mt-1 text-caption leading-5 text-white/85">{d.headlineDesc}</p>
         </section>
 
         <section aria-labelledby="asd-progress" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-progress" className="text-[14px] font-semibold text-foreground">
+          <h2 id="asd-progress" className="text-body font-semibold text-foreground">
             处理进度
           </h2>
           <ol className="mt-3">
@@ -151,15 +151,15 @@ export function AfterSalesDetailScreen({
                   <div className="min-w-0 flex-1">
                     <p
                       className={cn(
-                        'text-[13px]',
+                        'text-note',
                         reached ? 'font-medium text-foreground' : active ? 'font-medium text-warning' : 'text-muted-foreground',
                       )}
                     >
                       {s.label}
                       {active && <span className="sr-only">（当前步骤）</span>}
                     </p>
-                    {s.desc && <p className="mt-0.5 text-[11px] text-muted-foreground">{s.desc}</p>}
-                    {s.time && <p className="mt-0.5 text-[11px] tabular-nums text-muted-foreground">{s.time}</p>}
+                    {s.desc && <p className="mt-0.5 text-caption text-muted-foreground">{s.desc}</p>}
+                    {s.time && <p className="mt-0.5 text-caption tabular-nums text-muted-foreground">{s.time}</p>}
                   </div>
                 </li>
               )
@@ -169,10 +169,10 @@ export function AfterSalesDetailScreen({
 
         {d.refundRows && d.refundTotal && (
           <section aria-labelledby="asd-refund" className="mt-2.5 rounded-2xl bg-white p-4">
-            <h2 id="asd-refund" className="text-[14px] font-semibold text-foreground">
+            <h2 id="asd-refund" className="text-body font-semibold text-foreground">
               退款信息
             </h2>
-            <dl className="mt-2 flex flex-col gap-1.5 text-[12px]">
+            <dl className="mt-2 flex flex-col gap-1.5 text-caption">
               {d.refundRows.map(([k, v]) => (
                 <div key={k} className="flex justify-between">
                   <dt className="text-muted-foreground">{k}</dt>
@@ -180,8 +180,8 @@ export function AfterSalesDetailScreen({
                 </div>
               ))}
               <div className="flex items-baseline justify-between border-t border-border pt-2">
-                <dt className="text-[13px] text-foreground">{d.refundTotal.label}</dt>
-                <dd className="text-[16px] font-semibold tabular-nums text-warning">{d.refundTotal.value}</dd>
+                <dt className="text-note text-foreground">{d.refundTotal.label}</dt>
+                <dd className="text-title font-semibold tabular-nums text-warning">{d.refundTotal.value}</dd>
               </div>
             </dl>
           </section>
@@ -189,43 +189,43 @@ export function AfterSalesDetailScreen({
 
         {item.newOrderId && (
           <section aria-labelledby="asd-new" className="mt-2.5 rounded-2xl bg-white p-4">
-            <h2 id="asd-new" className="text-[14px] font-semibold text-foreground">
+            <h2 id="asd-new" className="text-body font-semibold text-foreground">
               重采样订单
             </h2>
-            <p className="mt-2 flex items-center gap-1.5 text-[12px] tabular-nums text-muted-foreground">
+            <p className="mt-2 flex items-center gap-1.5 text-caption tabular-nums text-muted-foreground">
               <span className="line-through">{item.id}</span>
               <ArrowRight className="size-3" aria-hidden="true" />
               <span className="text-foreground">{item.newOrderId}</span>
-              <span className="rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
+              <span className="rounded bg-primary/10 px-1 text-tag font-medium text-primary">重采样</span>
             </p>
-            <p className="mt-2 rounded-lg bg-muted px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 rounded-lg bg-muted px-2.5 py-1.5 text-caption leading-relaxed text-muted-foreground">
               如需终止检测并退款，需联系客服确认，扣除已产生的各类费用后原路退回
             </p>
           </section>
         )}
 
         <section aria-labelledby="asd-order" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-order" className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+          <h2 id="asd-order" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
             <TypeIcon className="size-4 text-primary" aria-hidden="true" />
             关联订单
           </h2>
           <div className="mt-2.5 flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-[13px] font-medium text-foreground">{item.product}</p>
-              <p className="mt-1 flex items-center gap-1 text-[12px] text-muted-foreground">
+              <p className="truncate text-note font-medium text-foreground">{item.product}</p>
+              <p className="mt-1 flex items-center gap-1 text-caption text-muted-foreground">
                 <UserRound className="size-3" aria-hidden="true" />
                 {item.examinee} · {item.type === 'self' ? '居家自采样' : '定点采样'}
               </p>
             </div>
-            <span className="shrink-0 text-[13px] tabular-nums text-foreground">{item.amount}</span>
+            <span className="shrink-0 text-note tabular-nums text-foreground">{item.amount}</span>
           </div>
         </section>
 
         <section aria-labelledby="asd-info" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-info" className="text-[14px] font-semibold text-foreground">
+          <h2 id="asd-info" className="text-body font-semibold text-foreground">
             售后信息
           </h2>
-          <dl className="mt-2 flex flex-col gap-2 text-[12px]">
+          <dl className="mt-2 flex flex-col gap-2 text-caption">
             {[
               ['售后编号', d.serviceNo],
               ['售后类型', d.serviceType],
@@ -251,7 +251,7 @@ export function AfterSalesDetailScreen({
               if (item.action?.terminate) onTerminateResample()
             }}
             className={cn(
-              'h-8 rounded-full px-4 text-[13px] font-medium',
+              'h-8 rounded-full px-4 text-note font-medium',
               item.action.primary ? 'bg-primary text-primary-foreground' : 'border border-border text-foreground',
             )}
           >

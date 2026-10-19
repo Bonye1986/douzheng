@@ -70,24 +70,24 @@ export function LogisticsScreen({
     <SubPage title="物流详情" titleId="logistics-title" onBack={onBack}>
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 pb-6 [scrollbar-width:none]">
         <section className="rounded-2xl bg-primary p-4 text-primary-foreground">
-          <p className="flex items-center gap-1.5 text-[17px] font-semibold">
+          <p className="flex items-center gap-1.5 text-heading font-semibold">
             <Truck className="size-4" aria-hidden="true" />
             {track.label}
           </p>
-          <p className="mt-1 text-[12px] text-primary-foreground/85">{track.eta}</p>
+          <p className="mt-1 text-caption text-primary-foreground/85">{track.eta}</p>
         </section>
 
         <section aria-label="运单信息" className="rounded-2xl bg-white p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[13px] font-medium text-foreground">顺丰速运</p>
-              <p className="mt-0.5 text-[12px] tabular-nums text-muted-foreground">运单号 SF{trackingNo.replace(/^SF/, '')}</p>
+              <p className="text-note font-medium text-foreground">顺丰速运</p>
+              <p className="mt-0.5 text-caption tabular-nums text-muted-foreground">运单号 SF{trackingNo.replace(/^SF/, '')}</p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
                 onClick={copy}
-                className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-[12px] text-foreground"
+                className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-caption text-foreground"
               >
                 {copied ? <Check className="size-3.5 text-primary" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
                 {copied ? '已复制' : '复制'}
@@ -109,15 +109,15 @@ export function LogisticsScreen({
               <li key={p.tag} className="flex gap-2.5">
                 <span
                   className={cn(
-                    'flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-medium',
+                    'flex size-5 shrink-0 items-center justify-center rounded-full text-caption font-medium',
                     p.tag === '发' ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground',
                   )}
                 >
                   {p.tag}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[13px] font-medium text-foreground">{p.name}</p>
-                  <p className="mt-0.5 text-[12px] leading-[18px] text-muted-foreground">{p.address}</p>
+                  <p className="text-note font-medium text-foreground">{p.name}</p>
+                  <p className="mt-0.5 text-caption leading-[18px] text-muted-foreground">{p.address}</p>
                 </div>
               </li>
             ))}
@@ -125,7 +125,7 @@ export function LogisticsScreen({
         </section>
 
         <section aria-labelledby="logistics-track" className="rounded-2xl bg-white p-4">
-          <h2 id="logistics-track" className="text-[14px] font-semibold text-foreground">
+          <h2 id="logistics-track" className="text-body font-semibold text-foreground">
             物流轨迹
           </h2>
           <ol className="mt-3">
@@ -145,12 +145,12 @@ export function LogisticsScreen({
                   </div>
                   <div className="min-w-0 flex-1 pb-4">
                     <p className="flex items-baseline justify-between gap-2">
-                      <span className={cn('text-[13px] font-medium', latest ? 'text-primary' : 'text-foreground')}>
+                      <span className={cn('text-note font-medium', latest ? 'text-primary' : 'text-foreground')}>
                         {e.title}
                       </span>
-                      <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">{e.time}</span>
+                      <span className="shrink-0 text-caption tabular-nums text-muted-foreground">{e.time}</span>
                     </p>
-                    <p className={cn('mt-0.5 text-[12px] leading-[18px]', latest ? 'text-foreground' : 'text-muted-foreground')}>
+                    <p className={cn('mt-0.5 text-caption leading-[18px]', latest ? 'text-foreground' : 'text-muted-foreground')}>
                       {e.desc}
                     </p>
                   </div>
@@ -158,7 +158,7 @@ export function LogisticsScreen({
               )
             })}
           </ol>
-          <p className="border-t border-border pt-3 text-[11px] tabular-nums text-muted-foreground">关联订单 {orderNo}</p>
+          <p className="border-t border-border pt-3 text-caption tabular-nums text-muted-foreground">关联订单 {orderNo}</p>
         </section>
       </div>
     </SubPage>

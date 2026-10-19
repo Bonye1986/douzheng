@@ -59,7 +59,7 @@ export function ServicesScreen({
       <div className="bg-white">
         <StatusBar />
         <header className="relative flex h-11 shrink-0 items-center justify-center">
-          <h1 className="text-[17px] font-semibold text-foreground">服务</h1>
+          <h1 className="text-heading font-semibold text-foreground">服务</h1>
           <Capsule className="absolute right-3" />
         </header>
       </div>
@@ -106,7 +106,7 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-3 flex items-center justify-between">
-      <h2 id={id} className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
+      <h2 id={id} className="flex items-center gap-1.5 text-title font-semibold text-foreground">
         <Icon className="size-4 text-primary" aria-hidden="true" />
         {title}
       </h2>
@@ -115,7 +115,7 @@ function SectionHeader({
           type="button"
           onClick={onAction}
           aria-label={`${title}：${action}`}
-          className="flex items-center text-[12px] text-muted-foreground"
+          className="flex items-center text-caption text-muted-foreground"
         >
           {action}
           <ChevronRight className="size-3.5" aria-hidden="true" />
@@ -160,13 +160,13 @@ function BannerCarousel() {
           >
             <Image src={b.image} alt="" fill sizes="343px" className="object-cover" priority={i === 0} />
             <div className="absolute inset-y-0 left-0 flex flex-col justify-center gap-1 pl-4">
-              <p className={cn('text-[17px] font-bold', b.tone === 'dark' ? 'text-white' : 'text-foreground')}>
+              <p className={cn('text-heading font-bold', b.tone === 'dark' ? 'text-white' : 'text-foreground')}>
                 {b.title}
               </p>
-              <p className={cn('text-[12px]', b.tone === 'dark' ? 'text-white/80' : 'text-muted-foreground')}>
+              <p className={cn('text-caption', b.tone === 'dark' ? 'text-white/80' : 'text-muted-foreground')}>
                 {b.subtitle}
               </p>
-              <span className="mt-1.5 w-fit rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground">
+              <span className="mt-1.5 w-fit rounded-full bg-primary px-3 py-1 text-caption font-medium text-primary-foreground">
                 {b.cta}
               </span>
             </div>
@@ -213,7 +213,7 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
                     className="scale-[1.12] object-cover"
                   />
                 </span>
-                <span className="text-[12px] text-foreground">{label}</span>
+                <span className="text-caption text-foreground">{label}</span>
               </button>
             </li>
           )
@@ -239,26 +239,26 @@ function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTes
                 <Image src="/images/drugene-icon.png" alt="" width={40} height={40} className="size-10 object-contain" />
               </span>
               <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-[14px] font-medium text-foreground">{t.name}</span>
-                <span className="mt-0.5 truncate text-[12px] text-muted-foreground">{t.desc}</span>
+                <span className="truncate text-body font-medium text-foreground">{t.name}</span>
+                <span className="mt-0.5 truncate text-caption text-muted-foreground">{t.desc}</span>
                 <span className="mt-1 flex gap-1">
                   {t.tags.map((tag) => (
-                    <span key={tag} className="rounded bg-secondary px-1.5 py-px text-[10px] text-primary">
+                    <span key={tag} className="rounded bg-secondary px-1.5 py-px text-tag text-primary">
                       {tag}
                     </span>
                   ))}
                 </span>
                 <span className="mt-auto flex items-end justify-between pt-1">
                   <span className="flex items-baseline gap-1">
-                    <span className="text-[16px] font-bold text-warning">
-                      <span className="text-[11px]">¥</span>
+                    <span className="text-title font-bold text-warning">
+                      <span className="text-caption">¥</span>
                       {t.price}
                     </span>
                     {t.originalPrice && (
-                      <span className="text-[11px] text-faint line-through">¥{t.originalPrice}</span>
+                      <span className="text-caption text-faint line-through">¥{t.originalPrice}</span>
                     )}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">{t.sold}</span>
+                  <span className="text-caption text-muted-foreground">{t.sold}</span>
                 </span>
               </span>
             </button>
@@ -296,9 +296,9 @@ function ArticleSection({
   className="flex w-full items-center gap-3 py-3.5 text-left transition-opacity active:opacity-70"
   >
   <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-  <span className="line-clamp-1 text-[15px] font-medium leading-snug text-foreground">{a.title}</span>
-  <span className="line-clamp-1 text-[12px] leading-relaxed text-muted-foreground">{a.summary}</span>
-  <span className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
+  <span className="line-clamp-1 text-title font-medium leading-snug text-foreground">{a.title}</span>
+  <span className="line-clamp-1 text-caption leading-relaxed text-muted-foreground">{a.summary}</span>
+  <span className="flex items-center gap-2.5 text-caption text-muted-foreground">
   <span className="rounded bg-secondary px-1.5 py-0.5 text-primary">{a.category}</span>
   <span className="flex items-center gap-1">
   <Eye className="size-3" aria-hidden="true" />

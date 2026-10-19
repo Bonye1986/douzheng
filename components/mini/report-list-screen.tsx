@@ -60,7 +60,7 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
               aria-selected={active}
               onClick={() => setExaminee(name)}
               className={cn(
-                'h-7 shrink-0 rounded-full px-3.5 text-[12px] transition-colors',
+                'h-7 shrink-0 rounded-full px-3.5 text-caption transition-colors',
                 active ? 'bg-primary font-medium text-primary-foreground' : 'bg-white text-muted-foreground',
               )}
             >
@@ -84,12 +84,12 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <p className="truncate text-[14px] font-medium text-foreground">{r.product}</p>
+                  <p className="truncate text-body font-medium text-foreground">{r.product}</p>
                   {r.resample && (
-                    <span className="shrink-0 rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
+                    <span className="shrink-0 rounded bg-primary/10 px-1 text-tag font-medium text-primary">重采样</span>
                   )}
                 </div>
-                <p className="mt-0.5 text-[12px] text-muted-foreground">
+                <p className="mt-0.5 text-caption text-muted-foreground">
                   {r.examinee}（{r.relation}） · <span className="tabular-nums">{r.date}</span>
                    出具
   </p>
@@ -98,14 +98,14 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
   type="button"
   onClick={() => setDetailId(r.id)}
   aria-label={`查看${r.examinee}的${r.product}报告`}
-  className="h-7 shrink-0 rounded-full bg-primary px-4 text-[12px] font-medium text-primary-foreground"
+  className="h-7 shrink-0 rounded-full bg-primary px-4 text-caption font-medium text-primary-foreground"
   >
   查看
   </button>
   </div>
   </li>
         ))}
-        <li className="px-2 pt-1 text-center text-[11px] leading-relaxed text-muted-foreground">
+        <li className="px-2 pt-1 text-center text-caption leading-relaxed text-muted-foreground">
           报告结果仅供临床用药参考，调整用药请遵医嘱
         </li>
       </ul>

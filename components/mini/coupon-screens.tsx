@@ -62,10 +62,10 @@ function CouponCard({
         )}
       >
         <p className="leading-none">
-          <span className="text-[13px] font-medium">¥</span>
-          <span className="text-[28px] font-bold tabular-nums">{amount}</span>
+          <span className="text-note font-medium">¥</span>
+          <span className="text-display font-bold tabular-nums">{amount}</span>
         </p>
-        <p className="mt-1.5 text-[11px]">{threshold ? `满 ${threshold} 可用` : '无门槛'}</p>
+        <p className="mt-1.5 text-caption">{threshold ? `满 ${threshold} 可用` : '无门槛'}</p>
       </div>
       <span
         className="absolute left-[96px] top-0 h-full border-l border-dashed border-primary/30"
@@ -74,13 +74,13 @@ function CouponCard({
       <div className="flex min-w-0 flex-1 items-center gap-2 p-3">
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-1.5">
-            <span className="truncate text-[14px] font-medium text-foreground">{title}</span>
+            <span className="truncate text-body font-medium text-foreground">{title}</span>
             {tag && (
-              <span className="shrink-0 rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">{tag}</span>
+              <span className="shrink-0 rounded bg-primary/10 px-1 text-tag font-medium text-primary">{tag}</span>
             )}
           </p>
-          <p className="mt-1 truncate text-[11px] text-muted-foreground">{scope}</p>
-          <p className="mt-1 text-[11px] tabular-nums text-muted-foreground">{expire}</p>
+          <p className="mt-1 truncate text-caption text-muted-foreground">{scope}</p>
+          <p className="mt-1 text-caption tabular-nums text-muted-foreground">{expire}</p>
         </div>
         {action}
       </div>
@@ -114,7 +114,7 @@ export function MyCouponsScreen({
               aria-selected={active}
               onClick={() => setTab(t.key)}
               className={cn(
-                'relative py-3 text-[14px]',
+                'relative py-3 text-body',
                 active ? 'font-semibold text-foreground' : 'text-muted-foreground',
               )}
             >
@@ -135,8 +135,8 @@ export function MyCouponsScreen({
           className="flex w-full items-center gap-2 rounded-2xl bg-brand-soft px-3.5 py-3 text-left"
         >
           <Gift className="size-5 text-primary" aria-hidden="true" />
-          <span className="flex-1 text-[13px] text-foreground">领券中心有新券可领</span>
-          <span className="flex items-center text-[12px] text-primary">
+          <span className="flex-1 text-note text-foreground">领券中心有新券可领</span>
+          <span className="flex items-center text-caption text-primary">
             去领券
             <ChevronRight className="size-3.5" aria-hidden="true" />
           </span>
@@ -155,12 +155,12 @@ export function MyCouponsScreen({
                       <button
                         type="button"
                         onClick={onUse}
-                        className="h-7 shrink-0 rounded-full bg-primary px-3 text-[12px] font-medium text-white"
+                        className="h-7 shrink-0 rounded-full bg-primary px-3 text-caption font-medium text-white"
                       >
                         去使用
                       </button>
                     ) : (
-                      <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+                      <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-caption text-muted-foreground">
                         {c.status === 'used' ? '已使用' : '已过期'}
                       </span>
                     )
@@ -172,15 +172,15 @@ export function MyCouponsScreen({
         ) : (
           <div className="flex flex-col items-center py-16 text-muted-foreground">
             <TicketPercent className="size-10" strokeWidth={1.4} aria-hidden="true" />
-            <p className="mt-2 text-[13px]">暂无优惠券</p>
+            <p className="mt-2 text-note">暂无优惠券</p>
           </div>
         )}
 
         <section aria-labelledby="coupon-rules" className="mt-4 rounded-2xl bg-white p-3.5">
-          <h2 id="coupon-rules" className="text-[13px] font-medium text-foreground">
+          <h2 id="coupon-rules" className="text-note font-medium text-foreground">
             使用说明
           </h2>
-          <ul className="mt-2 flex list-disc flex-col gap-1 pl-4 text-[11px] leading-relaxed text-muted-foreground">
+          <ul className="mt-2 flex list-disc flex-col gap-1 pl-4 text-caption leading-relaxed text-muted-foreground">
             <li>下单结算时自动选择最优优惠券，也可手动切换</li>
             <li>每笔订单限用 1 张，不可叠加，不可兑换现金</li>
             <li>订单全额退款后，未过期的优惠券将退回账户</li>
@@ -225,8 +225,8 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
     <SubPage title="领券中心" titleId="coupon-center-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
         <div className="bg-brand-hero px-4 pb-6 pt-5">
-          <p className="text-[20px] font-bold text-primary">基因检测 限时领券</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">先领券再下单，结算时自动抵扣</p>
+          <p className="text-headline font-bold text-primary">基因检测 限时领券</p>
+          <p className="mt-1 text-caption text-muted-foreground">先领券再下单，结算时自动抵扣</p>
         </div>
 
         <ul className="-mt-2 flex flex-col gap-2.5 px-3">
@@ -246,7 +246,7 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
                   action={
                     <div className="flex shrink-0 flex-col items-center gap-1">
                       {isClaimed ? (
-                        <span className="flex h-7 items-center gap-0.5 rounded-full border border-primary px-2.5 text-[12px] text-primary">
+                        <span className="flex h-7 items-center gap-0.5 rounded-full border border-primary px-2.5 text-caption text-primary">
                           <Check className="size-3.5" aria-hidden="true" />
                           已领取
                         </span>
@@ -255,13 +255,13 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
                           type="button"
                           disabled={soldOut}
                           onClick={() => claim(c)}
-                          className="h-7 rounded-full bg-primary px-3 text-[12px] font-medium text-white disabled:bg-muted disabled:text-muted-foreground"
+                          className="h-7 rounded-full bg-primary px-3 text-caption font-medium text-white disabled:bg-muted disabled:text-muted-foreground"
                         >
                           {soldOut ? '已抢光' : '立即领取'}
                         </button>
                       )}
                       {!isClaimed && c.stock > 0 && (
-                        <span className="text-[10px] tabular-nums text-muted-foreground">剩余 {c.stock}%</span>
+                        <span className="text-tag tabular-nums text-muted-foreground">剩余 {c.stock}%</span>
                       )}
                     </div>
                   }
@@ -271,13 +271,13 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
           })}
         </ul>
 
-        <p className="mt-4 text-center text-[11px] text-muted-foreground">领取的优惠券可在「我的 - 我的优惠券」查看</p>
+        <p className="mt-4 text-center text-caption text-muted-foreground">领取的优惠券可在「我的 - 我的优惠券」查看</p>
       </div>
 
       {toast && (
         <div
           role="status"
-          className="pointer-events-none absolute inset-x-0 top-1/2 z-50 mx-auto w-fit max-w-[80%] -translate-y-1/2 rounded-lg bg-foreground/85 px-4 py-2.5 text-center text-[13px] text-white"
+          className="pointer-events-none absolute inset-x-0 top-1/2 z-50 mx-auto w-fit max-w-[80%] -translate-y-1/2 rounded-lg bg-foreground/85 px-4 py-2.5 text-center text-note text-white"
         >
           {toast}
         </div>

@@ -77,10 +77,10 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <h2 id={id} className="text-[15px] font-semibold text-foreground">
+      <h2 id={id} className="text-title font-semibold text-foreground">
         {title}
       </h2>
-      <button type="button" onClick={onAction} className="flex items-center text-[12px] text-muted-foreground">
+      <button type="button" onClick={onAction} className="flex items-center text-caption text-muted-foreground">
         {action}
         <ChevronRight className="size-3.5" aria-hidden="true" />
       </button>
@@ -158,7 +158,7 @@ export function MineScreen({
       <div className="relative">
         <StatusBar />
         <header className="relative flex h-11 shrink-0 items-center justify-center">
-          <h1 className="text-[17px] font-semibold text-foreground">我的</h1>
+          <h1 className="text-heading font-semibold text-foreground">我的</h1>
           <Capsule className="absolute right-3" />
         </header>
       </div>
@@ -174,8 +174,8 @@ export function MineScreen({
             >
               <DefaultAvatar className="size-14 shrink-0 border-2 border-white shadow-sm" />
               <span className="min-w-0 flex-1">
-                <span className="block text-[18px] font-semibold text-foreground">{DEFAULT_NICKNAME}</span>
-                <span className="mt-0.5 block text-[12px] tabular-nums text-muted-foreground">{maskedPhone}</span>
+                <span className="block text-heading font-semibold text-foreground">{DEFAULT_NICKNAME}</span>
+                <span className="mt-0.5 block text-caption tabular-nums text-muted-foreground">{maskedPhone}</span>
               </span>
               <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
               <span className="sr-only">进入个人资料</span>
@@ -186,13 +186,13 @@ export function MineScreen({
                 <UserRound className="size-7 text-[#8fa6c8]" aria-hidden="true" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[18px] font-semibold text-foreground">未登录</span>
-                <span className="mt-0.5 block text-[12px] text-muted-foreground">登录后查看订单、报告与优惠券</span>
+                <span className="block text-heading font-semibold text-foreground">未登录</span>
+                <span className="mt-0.5 block text-caption text-muted-foreground">登录后查看订单、报告与优惠券</span>
               </span>
               <button
                 type="button"
                 onClick={() => onRequireLogin?.('登录')}
-                className="flex h-8 shrink-0 items-center rounded-full bg-primary px-4 text-[13px] font-medium text-primary-foreground"
+                className="flex h-8 shrink-0 items-center rounded-full bg-primary px-4 text-note font-medium text-primary-foreground"
               >
                 登录 / 注册
               </button>
@@ -225,13 +225,13 @@ export function MineScreen({
                     <span className="relative">
                       <MineIcon src={p.icon} />
                       {count > 0 && (
-                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-tag font-medium tabular-nums text-white ring-2 ring-white">
                           {count}
                           <span className="sr-only">笔</span>
                         </span>
                       )}
                     </span>
-                    <span className="whitespace-nowrap text-[12px] text-foreground">{p.label}</span>
+                    <span className="whitespace-nowrap text-caption text-foreground">{p.label}</span>
                   </button>
                 </li>
               )
@@ -255,11 +255,11 @@ export function MineScreen({
               <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
                 <MineIcon src={iconSrc('report')} className="size-7 opacity-50" />
               </span>
-              <p className="min-w-0 flex-1 text-[12px] text-muted-foreground">登录后查看您的基因检测报告</p>
+              <p className="min-w-0 flex-1 text-caption text-muted-foreground">登录后查看您的基因检测报告</p>
               <button
                 type="button"
                 onClick={() => onRequireLogin?.('我的报告')}
-                className="flex h-7 shrink-0 items-center rounded-full border border-primary px-3.5 text-[12px] font-medium text-primary"
+                className="flex h-7 shrink-0 items-center rounded-full border border-primary px-3.5 text-caption font-medium text-primary"
               >
                 去登录
               </button>
@@ -270,8 +270,8 @@ export function MineScreen({
               <MineIcon src={iconSrc('report')} className="size-7" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-medium text-foreground">儿童安全用药基因检测</p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">
+              <p className="truncate text-note font-medium text-foreground">儿童安全用药基因检测</p>
+              <p className="mt-0.5 text-caption text-muted-foreground">
                 李秀兰 · <span className="tabular-nums">2026-10-08</span> 出具
               </p>
             </div>
@@ -282,7 +282,7 @@ export function MineScreen({
                 setReportOpen(true)
               }}
               aria-label="查看儿童安全用药基因检测报告"
-              className="flex h-7 shrink-0 items-center rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
+              className="flex h-7 shrink-0 items-center rounded-full bg-primary px-3.5 text-caption font-medium text-primary-foreground"
             >
               查看
             </button>
@@ -299,8 +299,8 @@ export function MineScreen({
           >
             <MineIcon src={iconSrc('coupon')} className="size-9 shrink-0" />
             <span>
-              <span className="block text-[14px] font-medium text-foreground">我的优惠券</span>
-              <span className="block text-[11px] text-muted-foreground">
+              <span className="block text-body font-medium text-foreground">我的优惠券</span>
+              <span className="block text-caption text-muted-foreground">
                 {loggedIn ? (
                   <>
                     <span className="tabular-nums text-warning">{usableCouponCount}</span> 张可用
@@ -318,15 +318,15 @@ export function MineScreen({
           >
             <MineIcon src={iconSrc('gift')} className="size-9 shrink-0" />
             <span>
-              <span className="block text-[14px] font-medium text-foreground">领券中心</span>
-              <span className="block text-[11px] text-muted-foreground">新人券待领取</span>
+              <span className="block text-body font-medium text-foreground">领券中心</span>
+              <span className="block text-caption text-muted-foreground">新人券待领取</span>
             </span>
           </button>
         </section>
 
         {/* 常用功能 */}
         <nav aria-labelledby="mine-tools" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <h2 id="mine-tools" className="text-[15px] font-semibold text-foreground">
+          <h2 id="mine-tools" className="text-title font-semibold text-foreground">
             常用功能
           </h2>
           <ul className="mt-3 grid grid-cols-4 gap-y-4">
@@ -351,7 +351,7 @@ export function MineScreen({
                   className="flex w-full flex-col items-center gap-1.5"
                 >
                   <MineIcon src={t.icon} />
-                  <span className="text-[12px] text-foreground">{t.label}</span>
+                  <span className="text-caption text-foreground">{t.label}</span>
                 </button>
               </li>
             ))}

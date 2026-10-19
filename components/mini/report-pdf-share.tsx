@@ -31,12 +31,12 @@ function FileCard({ name, size, className }: { name: string; size: string; class
   return (
     <div className={cn('flex items-center gap-3 rounded-xl bg-white p-3', className)}>
       <div className="min-w-0 flex-1">
-        <p className="line-clamp-2 break-all text-[13px] font-medium leading-5 text-foreground">{name}</p>
-        <p className="mt-1 text-[11px] tabular-nums text-muted-foreground">{size}</p>
+        <p className="line-clamp-2 break-all text-note font-medium leading-5 text-foreground">{name}</p>
+        <p className="mt-1 text-caption tabular-nums text-muted-foreground">{size}</p>
       </div>
       <span className="flex size-11 shrink-0 flex-col items-center justify-center rounded-lg bg-[#e5484d] text-white">
         <FileText className="size-5" aria-hidden="true" />
-        <span className="text-[8px] font-semibold leading-none">PDF</span>
+        <span className="text-tag font-semibold leading-none">PDF</span>
       </span>
     </div>
   )
@@ -46,7 +46,7 @@ function Avatar({ chat }: { chat: Chat }) {
   return (
     <span
       aria-hidden="true"
-      className={cn('flex size-10 shrink-0 items-center justify-center rounded-lg text-[15px] font-medium text-white', chat.color)}
+      className={cn('flex size-10 shrink-0 items-center justify-center rounded-lg text-title font-medium text-white', chat.color)}
     >
       {chat.name.slice(0, 1)}
     </span>
@@ -124,7 +124,7 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
           className="relative z-10 rounded-t-3xl bg-[#f7f8fa] px-4 pb-8 pt-4 shadow-[0_-6px_24px_#1e2a3d14] animate-in slide-in-from-bottom duration-300"
         >
           <div className="flex items-center justify-between">
-            <h2 id="pdf-share-title" className="text-[16px] font-semibold text-foreground">
+            <h2 id="pdf-share-title" className="text-title font-semibold text-foreground">
               分享 PDF 报告
             </h2>
             <button
@@ -137,7 +137,7 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
             </button>
           </div>
           <FileCard name={fileName} size={fileSize} className="mt-3" />
-          <p className="mt-2 flex gap-1.5 rounded-xl bg-warning-soft px-3 py-2 text-[11px] leading-relaxed text-[#b4602a]">
+          <p className="mt-2 flex gap-1.5 rounded-xl bg-warning-soft px-3 py-2 text-caption leading-relaxed text-[#b4602a]">
             <ShieldAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
             报告包含受检人基因与健康信息，请仅分享给信任的家人或医生。
           </p>
@@ -151,7 +151,7 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
                   className="flex w-full flex-col items-center gap-2 rounded-xl py-1 transition-opacity active:opacity-60"
                 >
                   <span className="flex size-12 items-center justify-center rounded-full bg-white">{o.icon}</span>
-                  <span className="text-[12px] text-muted-foreground">{o.label}</span>
+                  <span className="text-caption text-muted-foreground">{o.label}</span>
                 </button>
               </li>
             ))}
@@ -170,19 +170,19 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
             <button
               type="button"
               onClick={onClose}
-              className="absolute left-4 text-[15px] text-foreground"
+              className="absolute left-4 text-title text-foreground"
             >
               取消
             </button>
-            <h2 id="pdf-pick-title" className="text-[16px] font-semibold text-foreground">
+            <h2 id="pdf-pick-title" className="text-title font-semibold text-foreground">
               选择一个聊天
             </h2>
           </header>
-          <div className="mx-3 flex h-9 shrink-0 items-center gap-2 rounded-lg bg-white px-3 text-[13px] text-muted-foreground">
+          <div className="mx-3 flex h-9 shrink-0 items-center gap-2 rounded-lg bg-white px-3 text-note text-muted-foreground">
             <Search className="size-4" aria-hidden="true" />
             搜索
           </div>
-          <p className="px-4 pb-1.5 pt-3 text-[12px] text-muted-foreground">最近聊天</p>
+          <p className="px-4 pb-1.5 pt-3 text-caption text-muted-foreground">最近聊天</p>
           <ul className="flex-1 overflow-y-auto bg-white [scrollbar-width:none]">
             {recentChats.map((chat) => (
               <li key={chat.id} className="border-b border-[#f0f0f0] last:border-b-0">
@@ -195,7 +195,7 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-left active:bg-[#f5f5f5]"
                 >
                   <Avatar chat={chat} />
-                  <span className="text-[15px] text-foreground">{chat.name}</span>
+                  <span className="text-title text-foreground">{chat.name}</span>
                 </button>
               </li>
             ))}
@@ -218,12 +218,12 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
             className="relative w-full max-w-[300px] overflow-hidden rounded-2xl bg-white animate-in zoom-in-95 fade-in duration-200"
           >
             <div className="px-5 pb-4 pt-5">
-              <h3 id="pdf-confirm-title" className="text-[15px] font-semibold text-foreground">
+              <h3 id="pdf-confirm-title" className="text-title font-semibold text-foreground">
                 发送给：
               </h3>
               <div className="mt-3 flex items-center gap-2.5">
                 <Avatar chat={target} />
-                <span className="text-[14px] text-foreground">{target.name}</span>
+                <span className="text-body text-foreground">{target.name}</span>
               </div>
               <FileCard name={fileName} size={fileSize} className="mt-3 bg-[#f5f6f8]" />
               <label htmlFor="pdf-message" className="sr-only">
@@ -234,10 +234,10 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="给朋友留言"
-                className="mt-3 h-9 w-full rounded-lg bg-[#f5f6f8] px-3 text-[13px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-[#07c160]/40"
+                className="mt-3 h-9 w-full rounded-lg bg-[#f5f6f8] px-3 text-note text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-[#07c160]/40"
               />
             </div>
-            <div className="flex border-t border-[#eeeeee] text-[16px]">
+            <div className="flex border-t border-[#eeeeee] text-title">
               <button
                 type="button"
                 onClick={() => setStep('pick')}
@@ -261,7 +261,7 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
 
       {(loading || toast) && (
         <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center" role="status">
-          <div className="flex min-w-28 max-w-[70%] flex-col items-center gap-2 rounded-2xl bg-[#1e2a3d]/85 px-5 py-4 text-center text-[13px] text-white">
+          <div className="flex min-w-28 max-w-[70%] flex-col items-center gap-2 rounded-2xl bg-[#1e2a3d]/85 px-5 py-4 text-center text-note text-white">
             {loading ? (
               <LoaderCircle className="size-7 animate-spin" aria-hidden="true" />
             ) : (

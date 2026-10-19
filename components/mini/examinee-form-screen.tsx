@@ -71,13 +71,13 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
     <SubPage title={editing ? '编辑检测人' : '添加受检人'} titleId="examinee-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         {targetName && (
-          <p className="mb-2.5 rounded-xl bg-secondary px-3 py-2 text-[12px] leading-[18px] text-primary">
+          <p className="mb-2.5 rounded-xl bg-secondary px-3 py-2 text-caption leading-[18px] text-primary">
             保存后将自动为该受检人选择「{targetName}」
           </p>
         )}
 
         <section aria-labelledby="relation-title" className="rounded-2xl bg-white p-3.5">
-          <h2 id="relation-title" className="text-[14px] font-semibold text-foreground">
+          <h2 id="relation-title" className="text-body font-semibold text-foreground">
             与本人关系
             <span className="ml-0.5 text-destructive" aria-hidden="true">
               *
@@ -99,7 +99,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
                     clear('relation')
                   }}
                   className={cn(
-                    'h-8 min-w-[56px] rounded-full border px-3.5 text-[13px] transition-colors disabled:opacity-40',
+                    'h-8 min-w-[56px] rounded-full border px-3.5 text-note transition-colors disabled:opacity-40',
                     on ? 'border-primary bg-secondary font-medium text-primary' : 'border-border bg-white text-foreground',
                   )}
                 >
@@ -109,9 +109,9 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
             })}
           </div>
           {editing && initial?.relation === '本人' ? (
-            <p className="mt-2 text-[11px] text-muted-foreground">账号本人的关系不可修改</p>
+            <p className="mt-2 text-caption text-muted-foreground">账号本人的关系不可修改</p>
           ) : (
-            hasSelf && <p className="mt-2 text-[11px] text-muted-foreground">「本人」已存在，每个账号仅可添加一位本人</p>
+            hasSelf && <p className="mt-2 text-caption text-muted-foreground">「本人」已存在，每个账号仅可添加一位本人</p>
           )}
           <FieldError msg={errors.relation} />
         </section>
@@ -126,7 +126,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               }}
               placeholder="请输入真实姓名"
               aria-invalid={!!errors.name}
-              className="min-w-0 flex-1 bg-transparent text-right text-[14px] text-foreground outline-none placeholder:text-faint"
+              className="min-w-0 flex-1 bg-transparent text-right text-body text-foreground outline-none placeholder:text-faint"
             />
           </Row>
           <Row label="性别" required>
@@ -139,7 +139,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
                   aria-checked={gender === g}
                   onClick={() => setGender(g)}
                   className={cn(
-                    'h-7 w-12 rounded-full text-[13px] transition-colors',
+                    'h-7 w-12 rounded-full text-note transition-colors',
                     gender === g ? 'bg-white font-medium text-primary shadow-sm' : 'text-muted-foreground',
                   )}
                 >
@@ -154,7 +154,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               onClick={() => setPickerOpen(true)}
               aria-haspopup="dialog"
               aria-invalid={!!errors.birth}
-              className="flex min-w-0 flex-1 items-center justify-end gap-1 text-[14px]"
+              className="flex min-w-0 flex-1 items-center justify-end gap-1 text-body"
             >
               <span className={cn('tabular-nums', birth ? 'text-foreground' : 'text-faint')}>
                 {birth ? birth.replace(/^(\d+)-(\d+)-(\d+)$/, '$1年$2月$3日') : '请选择出生日期'}
@@ -173,7 +173,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               }}
               placeholder="选填，用于报告通知"
               aria-invalid={!!errors.phone}
-              className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-faint"
+              className="min-w-0 flex-1 bg-transparent text-right text-body tabular-nums text-foreground outline-none placeholder:text-faint"
             />
           </Row>
           {isSelf && (
@@ -186,19 +186,19 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
                 }}
                 placeholder="用于本人实名认证"
                 aria-invalid={!!errors.idCard}
-                className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-faint"
+                className="min-w-0 flex-1 bg-transparent text-right text-body tabular-nums text-foreground outline-none placeholder:text-faint"
               />
             </Row>
           )}
         </section>
 
         {relation && !isSelf && (
-          <p className="mt-2.5 rounded-xl bg-secondary px-3 py-2 text-[12px] leading-[18px] text-primary">
+          <p className="mt-2.5 rounded-xl bg-secondary px-3 py-2 text-caption leading-[18px] text-primary">
             家人无需实名认证，填写姓名、性别和出生日期即可下单检测
           </p>
         )}
 
-        <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
+        <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
           <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
           受检人信息仅用于样本登记与报告归档，加密存储，不会向第三方披露。未成年人需由监护人代为添加。
         </p>
@@ -208,7 +208,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
         <button
           type="button"
           onClick={save}
-          className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
+          className="h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
         >
           {editing ? '保存修改' : '保存受检人'}
         </button>
@@ -246,7 +246,7 @@ function Row({
   return (
     <div className={cn('py-1', !last && 'border-b border-border')}>
       <label className="flex h-11 items-center gap-3">
-        <span className="w-[68px] shrink-0 text-[14px] text-foreground">
+        <span className="w-[68px] shrink-0 text-body text-foreground">
           {label}
           {required && (
             <span className="ml-0.5 text-destructive" aria-hidden="true">
@@ -264,7 +264,7 @@ function Row({
 function FieldError({ msg, align }: { msg?: string; align?: 'right' }) {
   if (!msg) return null
   return (
-    <p role="alert" className={cn('pb-1.5 text-[11px] text-destructive', align === 'right' ? 'text-right' : 'mt-1.5')}>
+    <p role="alert" className={cn('pb-1.5 text-caption text-destructive', align === 'right' ? 'text-right' : 'mt-1.5')}>
       {msg}
     </p>
   )

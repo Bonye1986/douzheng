@@ -95,7 +95,7 @@ export function ChatComposer({
                 ) : (
                   <span className="flex h-14 w-32 items-center gap-2 rounded-xl border border-border bg-[#f6f9fd] px-2.5">
                     <FileText className="size-6 shrink-0 text-destructive" />
-                    <span className="line-clamp-2 text-[11px] leading-4 text-foreground">{a.name}</span>
+                    <span className="line-clamp-2 text-caption leading-4 text-foreground">{a.name}</span>
                   </span>
                 )}
                 <button
@@ -118,7 +118,7 @@ export function ChatComposer({
             aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
             className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
           >
-            {inputMode === 'keyboard' ? <Mic className="size-[22px]" /> : <Keyboard className="size-[22px]" />}
+            {inputMode === 'keyboard' ? <Mic className="size-6" /> : <Keyboard className="size-6" />}
           </button>
 
           {inputMode === 'keyboard' ? (
@@ -142,7 +142,7 @@ export function ChatComposer({
                 }}
                 placeholder="输入想咨询的问题"
                 enterKeyHint="send"
-                className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-faint"
+                className="h-full min-w-0 flex-1 bg-transparent text-body text-foreground outline-none placeholder:text-faint"
               />
             </form>
           ) : (
@@ -171,7 +171,7 @@ export function ChatComposer({
               }}
               onPointerCancel={() => setRecording(null)}
               className={cn(
-                'h-11 min-w-0 flex-1 touch-none select-none rounded-full text-[15px] font-semibold transition-colors disabled:opacity-50',
+                'h-11 min-w-0 flex-1 touch-none select-none rounded-full text-title font-semibold transition-colors disabled:opacity-50',
                 recording ? 'bg-[#dfeafb] text-primary' : 'bg-muted text-foreground',
               )}
             >
@@ -196,7 +196,7 @@ export function ChatComposer({
               aria-label="发送"
               className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
             >
-              <ArrowUp className="size-[18px]" strokeWidth={2.4} />
+              <ArrowUp className="size-4.5" strokeWidth={2.4} />
             </button>
           )}
         </div>
@@ -218,7 +218,7 @@ export function ChatComposer({
             aria-label="上传附件"
             className="relative rounded-t-3xl bg-white px-4 pb-8 pt-5 animate-in slide-in-from-bottom duration-300"
           >
-            <p className="text-center text-[12px] text-muted-foreground">支持上传图片和 PDF 文件，最多 {MAX_ATTACHMENTS} 个</p>
+            <p className="text-center text-caption text-muted-foreground">支持上传图片和 PDF 文件，最多 {MAX_ATTACHMENTS} 个</p>
             <ul className="mt-4 grid grid-cols-3 gap-3">
               {[
                 { label: '拍照', icon: Camera, ref: cameraRef },
@@ -234,7 +234,7 @@ export function ChatComposer({
                     <span className="flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
                       <Icon className="size-6" />
                     </span>
-                    <span className="text-[13px] text-foreground">{label}</span>
+                    <span className="text-note text-foreground">{label}</span>
                   </button>
                 </li>
               ))}
@@ -242,7 +242,7 @@ export function ChatComposer({
             <button
               type="button"
               onClick={() => setSheetOpen(false)}
-              className="mt-4 h-11 w-full rounded-full bg-muted text-[15px] font-medium text-foreground"
+              className="mt-4 h-11 w-full rounded-full bg-muted text-title font-medium text-foreground"
             >
               取消
             </button>
@@ -275,7 +275,7 @@ function RecordingOverlay({ cancel }: { cancel: boolean }) {
             />
           ))}
         </span>
-        <span className="text-[13px]">{cancel ? '松开手指，取消发送' : '正在聆听，上滑取消'}</span>
+        <span className="text-note">{cancel ? '松开手指，取消发送' : '正在聆听，上滑取消'}</span>
       </div>
     </div>
   )

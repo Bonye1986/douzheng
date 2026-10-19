@@ -27,7 +27,7 @@ export function SubPage({ title, titleId, onBack, children }: Props) {
           >
             <ChevronLeft className="size-6" aria-hidden="true" />
           </button>
-          <h1 id={titleId} className="text-[17px] font-semibold text-foreground">
+          <h1 id={titleId} className="text-heading font-semibold text-foreground">
             {title}
           </h1>
           <Capsule className="absolute right-3" />

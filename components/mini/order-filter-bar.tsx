@@ -37,7 +37,7 @@ export function OrderFilterBar({
             value={keyword}
             onChange={(e) => onKeywordChange(e.target.value)}
             placeholder="搜索订单号 / 检测项目 / 受检人"
-            className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
+            className="min-w-0 flex-1 bg-transparent text-note text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
           />
           {keyword && (
             <button
@@ -57,7 +57,7 @@ export function OrderFilterBar({
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
           className={cn(
-            'flex h-9 shrink-0 items-center gap-0.5 rounded-full px-3 text-[13px] transition-colors',
+            'flex h-9 shrink-0 items-center gap-0.5 rounded-full px-3 text-note transition-colors',
             type === 'all' ? 'bg-muted text-foreground' : 'bg-primary/10 font-medium text-primary',
           )}
         >
@@ -90,7 +90,7 @@ export function OrderFilterBar({
                       setMenuOpen(false)
                     }}
                     className={cn(
-                      'flex h-10 w-full items-center justify-between px-3.5 text-[13px] active:bg-muted',
+                      'flex h-10 w-full items-center justify-between px-3.5 text-note active:bg-muted',
                       selected ? 'font-medium text-primary' : 'text-foreground',
                     )}
                   >

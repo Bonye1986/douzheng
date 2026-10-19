@@ -24,24 +24,24 @@ export function LoginRequiredDialog({
         >
           <UserRound className="size-5" />
         </span>
-        <h2 id="login-required-title" className="mt-3 text-[16px] font-semibold text-foreground">
+        <h2 id="login-required-title" className="mt-3 text-title font-semibold text-foreground">
           请先登录
         </h2>
-        <p id="login-required-desc" className="mt-2 text-[13px] leading-5 text-muted-foreground">
+        <p id="login-required-desc" className="mt-2 text-note leading-5 text-muted-foreground">
           {`登录后即可使用「${feature}」，数据将安全保存在你的账号中`}
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2.5">
           <button
             type="button"
             onClick={onCancel}
-            className="h-10 rounded-full bg-muted text-[14px] font-medium text-foreground"
+            className="h-10 rounded-full bg-muted text-body font-medium text-foreground"
           >
             暂不登录
           </button>
           <button
             type="button"
             onClick={onLogin}
-            className="h-10 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+            className="h-10 rounded-full bg-primary text-body font-medium text-primary-foreground"
           >
             去登录
           </button>

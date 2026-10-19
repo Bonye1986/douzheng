@@ -32,16 +32,16 @@ export function OrderEmptyState(props: OrderEmptyStateProps) {
       <span className="flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
         <Icon className="size-11 text-primary" strokeWidth={1.4} />
       </span>
-      <h2 className="mt-5 text-[16px] font-semibold text-foreground">{title}</h2>
-      <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">{desc}</p>
+      <h2 className="mt-5 text-title font-semibold text-foreground">{title}</h2>
+      <p className="mt-1.5 text-note leading-5 text-muted-foreground">{desc}</p>
       {action && (
         <button
           type="button"
           onClick={action.onClick}
           className={
             props.variant === 'none'
-              ? 'mt-6 h-10 rounded-full bg-primary px-8 text-[14px] font-medium text-primary-foreground active:opacity-90'
-              : 'mt-6 h-9 rounded-full border border-primary px-6 text-[13px] font-medium text-primary active:bg-primary/5'
+              ? 'mt-6 h-10 rounded-full bg-primary px-8 text-body font-medium text-primary-foreground active:opacity-90'
+              : 'mt-6 h-9 rounded-full border border-primary px-6 text-note font-medium text-primary active:bg-primary/5'
           }
         >
           {action.label}

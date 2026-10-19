@@ -67,7 +67,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
       ) : (
         <>
           <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
-            <p className="flex items-center justify-between px-1 text-[12px] text-muted-foreground">
+            <p className="flex items-center justify-between px-1 text-caption text-muted-foreground">
               <span>
                 已添加 <span className="tabular-nums text-foreground">{list.length}</span> / {MAX_EXAMINEES} 位
               </span>
@@ -80,7 +80,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                   <div className="flex items-center gap-3">
                     <span
                       className={cn(
-                        'flex size-11 shrink-0 items-center justify-center rounded-full text-[16px] font-semibold',
+                        'flex size-11 shrink-0 items-center justify-center rounded-full text-title font-semibold',
                         m.relation === '本人' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-primary',
                       )}
                       aria-hidden="true"
@@ -89,19 +89,19 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-1.5">
-                        <span className="truncate text-[15px] font-semibold text-foreground">{m.name}</span>
-                        <span className="shrink-0 rounded bg-secondary px-1.5 py-px text-[11px] text-primary">
+                        <span className="truncate text-title font-semibold text-foreground">{m.name}</span>
+                        <span className="shrink-0 rounded bg-secondary px-1.5 py-px text-caption text-primary">
                           {m.relation}
                         </span>
                       </p>
-                      <p className="mt-0.5 text-[12px] text-muted-foreground">
+                      <p className="mt-0.5 text-caption text-muted-foreground">
                         {examineeMeta(m)}
                         {m.birth && <span className="tabular-nums"> · {m.birth}</span>}
                       </p>
                     </div>
                   </div>
 
-                  <dl className="mt-3 grid grid-cols-2 gap-2 rounded-xl bg-muted px-3 py-2 text-[12px]">
+                  <dl className="mt-3 grid grid-cols-2 gap-2 rounded-xl bg-muted px-3 py-2 text-caption">
                     <div className="flex items-center gap-1.5">
                       <dt className="flex items-center gap-1 text-muted-foreground">
                         <Phone className="size-3.5" aria-hidden="true" />
@@ -116,7 +116,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                   </dl>
 
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span className="flex items-center gap-1.5 text-caption text-muted-foreground">
                       {m.relation === '本人' && (
                         <span
                           className={cn(
@@ -133,7 +133,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                       <button
                         type="button"
                         onClick={() => setPendingDelete(m)}
-                        className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-[12px] text-foreground"
+                        className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-caption text-foreground"
                         aria-label={`删除检测人 ${m.name}`}
                       >
                         <Trash2 className="size-3.5" aria-hidden="true" />
@@ -142,7 +142,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                       <button
                         type="button"
                         onClick={() => setForm({ target: m })}
-                        className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-[12px] text-primary"
+                        className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-caption text-primary"
                         aria-label={`编辑检测人 ${m.name}`}
                       >
                         <PencilLine className="size-3.5" aria-hidden="true" />
@@ -154,7 +154,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               ))}
             </ul>
 
-            <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
+            <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
               检测人信息仅用于样本登记与报告归档，加密存储。删除后历史报告仍保留在「我的报告」中。
             </p>
@@ -166,7 +166,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               onClick={openAdd}
               aria-disabled={full}
               className={cn(
-                'flex h-10 w-full items-center justify-center gap-1 rounded-full text-[14px] font-medium',
+                'flex h-10 w-full items-center justify-center gap-1 rounded-full text-body font-medium',
                 full ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
               )}
             >
@@ -195,10 +195,10 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
             >
               {blocked ? <AlertTriangle className="size-5" /> : <Trash2 className="size-5" />}
             </span>
-            <h2 id="delete-examinee-title" className="mt-3 text-[16px] font-semibold text-foreground">
+            <h2 id="delete-examinee-title" className="mt-3 text-title font-semibold text-foreground">
               {blocked ? '暂不可删除' : `删除检测人「${pendingDelete.name}」？`}
             </h2>
-            <p id="delete-examinee-desc" className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
+            <p id="delete-examinee-desc" className="mt-1.5 text-note leading-5 text-muted-foreground">
               {pendingDelete.relation === '本人'
                 ? '「本人」为账号持有人，不可删除，可通过编辑修改信息。'
                 : blocked
@@ -209,7 +209,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               <button
                 type="button"
                 onClick={() => setPendingDelete(null)}
-                className="mt-4 h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+                className="mt-4 h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground"
               >
                 我知道了
               </button>
@@ -218,14 +218,14 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                 <button
                   type="button"
                   onClick={() => setPendingDelete(null)}
-                  className="h-10 flex-1 rounded-full border border-border text-[14px] text-foreground"
+                  className="h-10 flex-1 rounded-full border border-border text-body text-foreground"
                 >
                   取消
                 </button>
                 <button
                   type="button"
                   onClick={confirmDelete}
-                  className="h-10 flex-1 rounded-full bg-destructive text-[14px] font-medium text-white"
+                  className="h-10 flex-1 rounded-full bg-destructive text-body font-medium text-white"
                 >
                   确认删除
                 </button>
@@ -247,7 +247,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
       {toast && (
         <p
           role="status"
-          className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-black/75 px-4 py-2 text-[13px] text-white"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-black/75 px-4 py-2 text-note text-white"
         >
           {toast}
         </p>
@@ -265,14 +265,14 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
           <UserRound className="size-4 text-primary" />
         </span>
       </span>
-      <h2 className="mt-5 text-[16px] font-semibold text-foreground">还没有检测人</h2>
-      <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
+      <h2 className="mt-5 text-title font-semibold text-foreground">还没有检测人</h2>
+      <p className="mt-1.5 text-note leading-5 text-muted-foreground">
         添加本人或家人的信息，下单检测时可直接选择，报告也会按检测人归档。
       </p>
       <button
         type="button"
         onClick={onAdd}
-        className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-[14px] font-medium text-primary-foreground active:opacity-90"
+        className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-body font-medium text-primary-foreground active:opacity-90"
       >
         <Plus className="size-4" aria-hidden="true" />
         添加检测人

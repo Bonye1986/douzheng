@@ -70,8 +70,8 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
           >
             <ChevronLeft className="size-6" aria-hidden="true" />
           </button>
-          <h1 id="cart-title" className="text-[17px] font-semibold text-foreground">
-            购物车{rows.length > 0 && <span className="text-[14px] font-normal text-muted-foreground">（{rows.length}）</span>}
+          <h1 id="cart-title" className="text-heading font-semibold text-foreground">
+            购物车{rows.length > 0 && <span className="text-body font-normal text-muted-foreground">（{rows.length}）</span>}
           </h1>
           <Capsule className="absolute right-3" />
         </div>
@@ -81,12 +81,12 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
         {rows.length > 0 ? (
           <section aria-label="已选检测服务" className="rounded-2xl bg-white">
             <div className="flex items-center justify-between border-b border-border px-3.5 py-2.5">
-              <p className="text-[13px] font-medium text-foreground">检测服务</p>
+              <p className="text-note font-medium text-foreground">检测服务</p>
               <button
                 type="button"
                 onClick={() => setManaging((m) => !m)}
                 aria-pressed={managing}
-                className="text-[13px] text-primary"
+                className="text-note text-primary"
               >
                 {managing ? '完成' : '管理'}
               </button>
@@ -109,12 +109,12 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
             <span className="flex size-16 items-center justify-center rounded-full bg-secondary">
               <ShoppingCart className="size-7 text-primary" strokeWidth={1.6} aria-hidden="true" />
             </span>
-            <p className="mt-3 text-[14px] font-medium text-foreground">购物车还是空的</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">挑选适合你或家人的用药基因检测吧</p>
+            <p className="mt-3 text-body font-medium text-foreground">购物车还是空的</p>
+            <p className="mt-1 text-caption text-muted-foreground">挑选适合你或家人的用药基因检测吧</p>
             <button
               type="button"
               onClick={onBack}
-              className="mt-4 h-8 rounded-full border border-primary px-5 text-[13px] text-primary active:bg-secondary"
+              className="mt-4 h-8 rounded-full border border-primary px-5 text-note text-primary active:bg-secondary"
             >
               去逛逛
             </button>
@@ -123,7 +123,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
 
         {recommends.length > 0 && (
           <section aria-labelledby="cart-recommend" className="mt-4">
-            <h2 id="cart-recommend" className="mb-2 px-1 text-[14px] font-semibold text-foreground">
+            <h2 id="cart-recommend" className="mb-2 px-1 text-body font-semibold text-foreground">
               为你推荐
             </h2>
             <ul className="grid grid-cols-2 gap-2.5">
@@ -131,14 +131,14 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
                 <li key={s.id} className="relative flex flex-col overflow-hidden rounded-2xl bg-white">
                   <Image src={s.image} alt="" width={180} height={120} className="h-[104px] w-full bg-secondary object-cover" />
                   <div className="flex flex-1 flex-col p-2.5">
-                    <h3 className="line-clamp-2 text-[13px] leading-[18px] text-foreground">
+                    <h3 className="line-clamp-2 text-note leading-[18px] text-foreground">
                       <button type="button" onClick={() => onOpenService(s)} className="text-left after:absolute after:inset-0">
                         {s.name}
                       </button>
                     </h3>
                     <div className="mt-auto flex items-center justify-between pt-1.5">
-                      <span className="text-[15px] font-bold text-warning">
-                        <span className="text-[11px]">¥</span>
+                      <span className="text-title font-bold text-warning">
+                        <span className="text-caption">¥</span>
                         {s.price}
                       </span>
                       <button
@@ -165,7 +165,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
             role="checkbox"
             aria-checked={allChecked}
             onClick={toggleAll}
-            className="flex items-center gap-1.5 text-[13px] text-foreground"
+            className="flex items-center gap-1.5 text-note text-foreground"
           >
             <CheckDot checked={allChecked} />
             全选
@@ -176,27 +176,27 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
               type="button"
               onClick={removeChecked}
               disabled={!checkedRows.length}
-              className="ml-auto h-10 rounded-full border border-destructive px-6 text-[14px] font-medium text-destructive disabled:border-border disabled:text-faint"
+              className="ml-auto h-10 rounded-full border border-destructive px-6 text-body font-medium text-destructive disabled:border-border disabled:text-faint"
             >
               删除{checkedRows.length > 0 && `(${checkedRows.length})`}
             </button>
           ) : (
             <>
               <div className="ml-auto text-right">
-                <p className="text-[13px] text-foreground">
+                <p className="text-note text-foreground">
                   合计：
-                  <span className="text-[18px] font-bold tabular-nums text-warning">
-                    <span className="text-[12px]">¥</span>
+                  <span className="text-heading font-bold tabular-nums text-warning">
+                    <span className="text-caption">¥</span>
                     {total.toLocaleString('zh-CN')}
                   </span>
                 </p>
-                {saved > 0 && <p className="text-[11px] text-muted-foreground">已优惠 ¥{saved.toLocaleString('zh-CN')}</p>}
+                {saved > 0 && <p className="text-caption text-muted-foreground">已优惠 ¥{saved.toLocaleString('zh-CN')}</p>}
               </div>
               <button
                 type="button"
                 onClick={() => onCheckout(checkedQty)}
                 disabled={!checkedQty}
-                className="h-10 min-w-[104px] rounded-full bg-primary px-5 text-[14px] font-medium text-primary-foreground active:opacity-90 disabled:bg-[#b9d3f8]"
+                className="h-10 min-w-[104px] rounded-full bg-primary px-5 text-body font-medium text-primary-foreground active:opacity-90 disabled:bg-[#b9d3f8]"
               >
                 结算{checkedQty > 0 && `(${checkedQty})`}
               </button>
@@ -235,23 +235,23 @@ function CartRow({
         <Image src={service.image} alt="" width={76} height={76} className="size-[76px] rounded-xl bg-secondary object-cover" />
       </button>
       <div className="flex min-w-0 flex-1 flex-col self-stretch">
-        <p className="line-clamp-2 text-[13px] font-medium leading-[18px] text-foreground">{service.name}</p>
+        <p className="line-clamp-2 text-note font-medium leading-[18px] text-foreground">{service.name}</p>
         <p className="mt-1 flex">
-          <span className="rounded bg-muted px-1.5 py-px text-[10px] text-muted-foreground">
+          <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
                 {getSamplingModes(service.id).map((m) => samplingLabel[m]).join(' / ')} · {sampleTypeText(service.id, undefined, '/')}
           </span>
         </p>
         <div className="mt-auto flex items-center justify-between pt-1.5">
           <p className="flex items-baseline gap-1">
-            <span className="text-[15px] font-bold text-warning">
-              <span className="text-[11px]">¥</span>
+            <span className="text-title font-bold text-warning">
+              <span className="text-caption">¥</span>
               {service.price}
             </span>
             {service.originalPrice && (
-              <span className="text-[10px] text-faint line-through">¥{service.originalPrice}</span>
+              <span className="text-tag text-faint line-through">¥{service.originalPrice}</span>
             )}
           </p>
-          <span className="text-[13px] tabular-nums text-muted-foreground" aria-label={`共 ${item.qty} 份`}>
+          <span className="text-note tabular-nums text-muted-foreground" aria-label={`共 ${item.qty} 份`}>
             ×{item.qty}
           </span>
         </div>

@@ -95,7 +95,7 @@ function OrderActions({
             else if (o.refund === 'testing') onTestingRefund(o)
             else if (o.refund) onRefund(o.refund)
           }}
-          className="h-7 rounded-full border border-border px-3.5 text-[12px] font-medium text-muted-foreground"
+          className="h-7 rounded-full border border-border px-3.5 text-caption font-medium text-muted-foreground"
         >
           {refundLabels[o.refund]}
         </button>
@@ -112,7 +112,7 @@ function OrderActions({
             else if (o.action?.label === '核销码') onShowVerifyCode(o)
           }}
           className={cn(
-            'h-7 rounded-full px-3.5 text-[12px] font-medium',
+            'h-7 rounded-full px-3.5 text-caption font-medium',
             o.action.primary && !sendable
               ? 'bg-primary text-primary-foreground'
               : 'border border-border text-foreground',
@@ -125,7 +125,7 @@ function OrderActions({
         <button
           type="button"
           onClick={() => onSendSample(o)}
-          className="h-7 rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
+          className="h-7 rounded-full bg-primary px-3.5 text-caption font-medium text-primary-foreground"
         >
           寄样
         </button>
@@ -821,12 +821,12 @@ export function OrderListScreen({
               aria-selected={active}
               onClick={() => setStatusKey(t.key)}
               className={cn(
-                'relative flex h-10 shrink-0 items-center justify-center gap-0.5 whitespace-nowrap px-2.5 text-[13px] transition-colors',
+                'relative flex h-10 shrink-0 items-center justify-center gap-0.5 whitespace-nowrap px-2.5 text-note transition-colors',
                 active ? 'font-semibold text-foreground' : 'text-muted-foreground',
               )}
             >
               {t.label}
-              {count > 0 && <span className="text-[11px] tabular-nums text-primary">{count}</span>}
+              {count > 0 && <span className="text-caption tabular-nums text-primary">{count}</span>}
               {active && (
                 <span aria-hidden="true" className="absolute inset-x-3 bottom-0 h-[3px] rounded-full bg-primary" />
               )}
@@ -851,16 +851,16 @@ export function OrderListScreen({
             <li key={o.id} className="relative rounded-2xl bg-white p-3.5 transition-colors active:bg-muted">
               <div className="flex items-center gap-1.5">
                 <TypeIcon className="size-3.5 text-primary" aria-hidden="true" />
-                <span className="text-[12px] text-muted-foreground">{o.type === 'self' ? '自采样' : '定点采样'}</span>
+                <span className="text-caption text-muted-foreground">{o.type === 'self' ? '自采样' : '定点采样'}</span>
                 {o.resample && (
-                  <span className="rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
+                  <span className="rounded bg-primary/10 px-1 text-tag font-medium text-primary">重采样</span>
                 )}
                 {o.priceChanged && (
-                  <span className="rounded bg-[#ffeadb] px-1 text-[10px] font-medium text-warning">已改价</span>
+                  <span className="rounded bg-[#ffeadb] px-1 text-tag font-medium text-warning">已改价</span>
                 )}
                 <span
                   className={cn(
-                    'ml-auto text-[12px] font-medium',
+                    'ml-auto text-caption font-medium',
                     o.phase === 'closed' || o.phase === 'done'
                       ? 'text-muted-foreground'
                       : o.unqualified || o.phase === 'toPay'
@@ -878,24 +878,24 @@ export function OrderListScreen({
                     type="button"
                     onClick={() => setDetailId(o.id)}
                     aria-label={`查看订单详情：${o.product}，${o.id}`}
-                    className="block max-w-full truncate text-left text-[14px] font-medium text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary"
+                    className="block max-w-full truncate text-left text-body font-medium text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary"
                   >
                     {o.product}
                   </button>
-                  <p className="mt-0.5 text-[12px] text-muted-foreground">受检人：{o.examinees}</p>
+                  <p className="mt-0.5 text-caption text-muted-foreground">受检人：{o.examinees}</p>
                   {o.parentId && (
-                    <p className="mt-0.5 text-[11px] tabular-nums text-muted-foreground">合并支付单 {o.parentId}</p>
+                    <p className="mt-0.5 text-caption tabular-nums text-muted-foreground">合并支付单 {o.parentId}</p>
                   )}
                 </div>
                 <p className="shrink-0 text-right">
-                  <span className="block text-[14px] font-semibold tabular-nums text-foreground">{o.amount}</span>
+                  <span className="block text-body font-semibold tabular-nums text-foreground">{o.amount}</span>
                   {o.originalAmount && (
-                    <span className="block text-[11px] tabular-nums text-muted-foreground line-through">
+                    <span className="block text-caption tabular-nums text-muted-foreground line-through">
                       {o.originalAmount}
                     </span>
                   )}
                   {o.couponShare && (
-                    <span className="block text-[11px] tabular-nums text-destructive">
+                    <span className="block text-caption tabular-nums text-destructive">
                       {o.parentId ? '分摊优惠' : '优惠'} -{o.couponShare}
                     </span>
                   )}
@@ -903,7 +903,7 @@ export function OrderListScreen({
               </div>
 
               {o.payRemaining != null && (
-                <p role="timer" className="mt-2 flex items-center gap-1 text-[12px] text-warning">
+                <p role="timer" className="mt-2 flex items-center gap-1 text-caption text-warning">
                   <Clock className="size-3.5 shrink-0" aria-hidden="true" />
                   剩余支付时间
                   <span className="font-semibold tabular-nums">{formatCountdown(o.payRemaining)}</span>
@@ -913,7 +913,7 @@ export function OrderListScreen({
 
               <p
                 className={cn(
-                  'mt-2 flex items-start gap-1 rounded-lg px-2.5 py-1.5 text-[11px] leading-relaxed',
+                  'mt-2 flex items-start gap-1 rounded-lg px-2.5 py-1.5 text-caption leading-relaxed',
                   o.unqualified ? 'bg-warning-soft text-[#c4581a]' : 'bg-muted text-muted-foreground',
                 )}
               >
@@ -922,7 +922,7 @@ export function OrderListScreen({
               </p>
 
               <div className="mt-2.5 flex items-center justify-between">
-                <span className="text-[11px] tabular-nums text-muted-foreground">{o.id}</span>
+                <span className="text-caption tabular-nums text-muted-foreground">{o.id}</span>
                 <div className="relative z-10 flex items-center gap-2">
                   <OrderActions order={o} {...actionHandlers} />
                 </div>

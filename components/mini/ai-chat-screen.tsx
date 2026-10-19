@@ -309,7 +309,7 @@ export function AiChatScreen({
             <Menu className="size-5" />
           </button>
         </div>
-        <h2 className="text-[16px] font-medium">AI咨询</h2>
+        <h2 className="text-title font-medium">AI咨询</h2>
         <div
           aria-hidden="true"
           className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
@@ -338,10 +338,10 @@ export function AiChatScreen({
               {testee ? <UserRoundCheck className="size-4" /> : <UserRound className="size-4" />}
             </span>
             <span className="min-w-0 flex-1">
-              <strong className="block truncate text-[13px] font-semibold text-foreground">
+              <strong className="block truncate text-note font-semibold text-foreground">
                 {testee ? testeeLabel(testee) : '未选择检测人'}
               </strong>
-              <span className="block truncate text-[11px] text-muted-foreground">
+              <span className="block truncate text-caption text-muted-foreground">
                 {testee ? (testee.reports > 0 ? `${testee.reports}份历史报告` : '暂无历史报告') : '按通用知识回答'}
               </span>
             </span>
@@ -360,7 +360,7 @@ export function AiChatScreen({
                   aria-label={`${s.label}：${s.desc}`}
                   onClick={() => setMode(s.key)}
                   className={cn(
-                    'h-7 rounded-full px-3 text-[12px] font-medium transition-colors',
+                    'h-7 rounded-full px-3 text-caption font-medium transition-colors',
                     selected ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground',
                   )}
                 >
@@ -375,14 +375,14 @@ export function AiChatScreen({
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-3 [scrollbar-width:none]">
         {sharing ? (
-          <p className="py-2 text-center text-[12px] text-muted-foreground">内容由 AI 生成</p>
+          <p className="py-2 text-center text-caption text-muted-foreground">内容由 AI 生成</p>
         ) : (
         <section className="rounded-2xl border border-[#d6e6fb] bg-white/70 p-4">
-          <h3 className="flex items-center gap-1.5 text-[15px] font-bold text-foreground">
+          <h3 className="flex items-center gap-1.5 text-title font-bold text-foreground">
             <ShieldCheck className="size-4 text-primary" />
             药问智能咨询
           </h3>
-          <p className="mt-1.5 text-[12px] leading-5 text-muted-foreground">
+          <p className="mt-1.5 text-caption leading-5 text-muted-foreground">
             回答基于已授权资料和知识来源生成。医疗问题需结合专业人员判断；紧急或严重不适请及时就医。
           </p>
           <ul className="mt-3 flex gap-2">
@@ -392,7 +392,7 @@ export function AiChatScreen({
                   type="button"
                   onClick={() => ask(skill.question)}
                   disabled={isReplying}
-                  className="rounded-full bg-secondary px-3 py-1.5 text-[12px] font-medium text-secondary-foreground transition-colors active:bg-[#d3e6fc] disabled:opacity-50"
+                  className="rounded-full bg-secondary px-3 py-1.5 text-caption font-medium text-secondary-foreground transition-colors active:bg-[#d3e6fc] disabled:opacity-50"
                 >
                   {skill.label}
                 </button>
@@ -405,8 +405,8 @@ export function AiChatScreen({
         <ul className={cn('flex flex-col gap-4', !sharing && 'mt-4')} aria-live="polite">
           {!sharing && (
             <li className="flex gap-2">
-              <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
-              <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
+              <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
+              <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                 {greeting}
               </p>
             </li>
@@ -416,14 +416,14 @@ export function AiChatScreen({
               m.role === 'user' ? (
                 <div className="flex flex-col items-end gap-1.5">
                   {m.attachments && m.attachments.length > 0 && <MessageAttachments items={m.attachments} />}
-                  <p className="max-w-[78%] rounded-2xl rounded-tr-md bg-primary px-3.5 py-2.5 text-left text-[14px] leading-6 text-white">
+                  <p className="max-w-[78%] rounded-2xl rounded-tr-md bg-primary px-3.5 py-2.5 text-left text-body leading-6 text-white">
                     {m.text}
                   </p>
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
-                  <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
+                  <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
+                  <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                     {m.answers ? (
                       <AnswerBody
                         answer={m.answers[mode]}
@@ -470,7 +470,7 @@ export function AiChatScreen({
                 <button
                   type="button"
                   onClick={() => ask(q)}
-                  className="rounded-full border border-[#d6e6fb] bg-white px-3 py-1.5 text-[12px] text-secondary-foreground active:bg-secondary"
+                  className="rounded-full border border-[#d6e6fb] bg-white px-3 py-1.5 text-caption text-secondary-foreground active:bg-secondary"
                 >
                   {q}
                 </button>
@@ -545,8 +545,8 @@ function MessageAttachments({ items }: { items: Attachment[] }) {
           <li key={a.id} className="flex w-44 items-center gap-2 rounded-xl border border-border bg-white px-2.5 py-2">
             <FileText className="size-7 shrink-0 text-destructive" />
             <span className="min-w-0">
-              <span className="block truncate text-[12px] text-foreground">{a.name}</span>
-              <span className="block text-[10px] text-muted-foreground">PDF</span>
+              <span className="block truncate text-caption text-foreground">{a.name}</span>
+              <span className="block text-tag text-muted-foreground">PDF</span>
             </span>
           </li>
         ),
@@ -586,7 +586,7 @@ function TesteeSheet({
       >
         <span aria-hidden="true" className="mx-auto block h-1 w-10 rounded-full bg-[#dbe3ef]" />
         <div className="mt-4 flex items-center justify-between">
-          <h2 id="testee-title" className="text-[18px] font-bold text-foreground">
+          <h2 id="testee-title" className="text-heading font-bold text-foreground">
             选择检测人（可跳过）
           </h2>
           <button
@@ -598,7 +598,7 @@ function TesteeSheet({
             <X className="size-4" />
           </button>
         </div>
-        <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
+        <p className="mt-2 text-note leading-5 text-muted-foreground">
           选择后，AI 可在授权范围内关联该检测人的基本信息和历史检测报告；不选择则按通用知识回答。
         </p>
 
@@ -621,8 +621,8 @@ function TesteeSheet({
                     <UserRound className="size-5" />
                   </span>
                   <span className="flex-1">
-                    <strong className="block text-[15px] font-semibold text-foreground">{testeeLabel(t)}</strong>
-                    <span className="mt-0.5 flex items-center gap-1 text-[12px] text-muted-foreground">
+                    <strong className="block text-title font-semibold text-foreground">{testeeLabel(t)}</strong>
+                    <span className="mt-0.5 flex items-center gap-1 text-caption text-muted-foreground">
                       {t.meta} ·
                       {t.reports > 0 ? (
                         <span className="inline-flex items-center gap-0.5 text-primary">
@@ -648,7 +648,7 @@ function TesteeSheet({
           })}
         </ul>
 
-        <button type="button" onClick={onAdd} className="mt-2.5 w-full py-2 text-[13px] font-medium text-primary">
+        <button type="button" onClick={onAdd} className="mt-2.5 w-full py-2 text-note font-medium text-primary">
           + 添加检测人
         </button>
 
@@ -656,7 +656,7 @@ function TesteeSheet({
           <button
             type="button"
             onClick={() => onConfirm(null)}
-            className="h-11 rounded-full border border-border text-[15px] font-medium text-foreground"
+            className="h-11 rounded-full border border-border text-title font-medium text-foreground"
           >
             不选择检测人
           </button>
@@ -664,7 +664,7 @@ function TesteeSheet({
             type="button"
             disabled={!selected}
             onClick={() => onConfirm(list.find((t) => t.id === selected) ?? null)}
-            className="h-11 rounded-full bg-primary text-[15px] font-semibold text-white disabled:bg-[#cfe2f8]"
+            className="h-11 rounded-full bg-primary text-title font-semibold text-white disabled:bg-[#cfe2f8]"
           >
             确认选择
           </button>
@@ -711,28 +711,28 @@ function AnswerBody({
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span
           className={cn(
-            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold',
+            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold',
             confidenceStyles[answer.confidence],
           )}
         >
           <ShieldCheck className="size-3" aria-hidden />
           {conf.label}
         </span>
-        <span className="text-[11px] leading-4 text-muted-foreground">{conf.hint}</span>
+        <span className="text-caption leading-4 text-muted-foreground">{conf.hint}</span>
       </div>
       <p>{answer.intro}</p>
       <ol className="flex flex-col gap-1.5">
         {answer.points.map((point, i) => (
           <li key={point} className="flex gap-2">
-            <span className="mt-1 flex size-4 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-semibold text-secondary-foreground">
+            <span className="mt-1 flex size-4 shrink-0 items-center justify-center rounded-full bg-secondary text-tag font-semibold text-secondary-foreground">
               {i + 1}
             </span>
-            <span className="text-[13px] leading-[22px]">{point}</span>
+            <span className="text-note leading-[22px]">{point}</span>
           </li>
         ))}
       </ol>
       {answer.tip && (
-        <p className="rounded-xl bg-[#eefaf8] px-3 py-2 text-[12px] leading-5 text-[#2f8f86]">{answer.tip}</p>
+        <p className="rounded-xl bg-[#eefaf8] px-3 py-2 text-caption leading-5 text-[#2f8f86]">{answer.tip}</p>
       )}
       {answer.sources.length > 0 ? (
         <div className="rounded-xl bg-[#f5f8fd]">
@@ -740,7 +740,7 @@ function AnswerBody({
             type="button"
             onClick={() => setSourcesOpen((v) => !v)}
             aria-expanded={sourcesOpen}
-            className="flex w-full items-center gap-1.5 px-3 py-2 text-left text-[12px] font-medium text-secondary-foreground"
+            className="flex w-full items-center gap-1.5 px-3 py-2 text-left text-caption font-medium text-secondary-foreground"
           >
             <BookOpenCheck className="size-3.5 shrink-0" aria-hidden />
             <span className="flex-1">引用来源 · {answer.sources.length}</span>
@@ -749,11 +749,11 @@ function AnswerBody({
           {sourcesOpen && (
             <ol className="flex flex-col gap-2 px-3 pb-2.5">
               {answer.sources.map((s, i) => (
-                <li key={s.title} className="flex gap-2 text-[12px] leading-[18px]">
+                <li key={s.title} className="flex gap-2 text-caption leading-[18px]">
                   <span className="mt-px shrink-0 font-semibold text-primary">[{i + 1}]</span>
                   <span className="min-w-0">
                     <span className="block text-foreground">{s.title}</span>
-                    <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-caption text-muted-foreground">
                       <span className="rounded bg-white px-1.5 py-px text-secondary-foreground">{sourceKindLabel[s.kind]}</span>
                       {s.org}
                       {s.level && <span>· 证据等级 {s.level}</span>}
@@ -765,7 +765,7 @@ function AnswerBody({
           )}
         </div>
       ) : (
-        <p className="rounded-xl bg-[#f5f8fd] px-3 py-2 text-[12px] text-muted-foreground">暂无可引用的权威来源</p>
+        <p className="rounded-xl bg-[#f5f8fd] px-3 py-2 text-caption text-muted-foreground">暂无可引用的权威来源</p>
       )}
       {!hideActions && (
         <AnswerActions
@@ -839,7 +839,7 @@ function AnswerActions({
 
   return (
     <div className="mt-1 flex items-center justify-between gap-2 border-t border-border pt-2">
-      <p className="text-[11px] text-muted-foreground" aria-live="polite">
+      <p className="text-caption text-muted-foreground" aria-live="polite">
         {notice ?? 'AI 生成，仅供参考'}
       </p>
       <div className="flex items-center gap-0.5">

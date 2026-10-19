@@ -80,7 +80,7 @@ export function TestsScreen({
         <div className="shrink-0 bg-white">
           <StatusBar />
           <header className="relative flex h-11 items-center justify-center">
-            <h1 className="text-[17px] font-semibold text-foreground">检测</h1>
+            <h1 className="text-heading font-semibold text-foreground">检测</h1>
             <Capsule className="absolute right-3" />
           </header>
 
@@ -93,7 +93,7 @@ export function TestsScreen({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="搜索检测项目、药物或基因"
-                className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-faint [&::-webkit-search-cancel-button]:hidden"
+                className="min-w-0 flex-1 bg-transparent text-note text-foreground outline-none placeholder:text-faint [&::-webkit-search-cancel-button]:hidden"
               />
               {query && (
                 <button
@@ -124,7 +124,7 @@ export function TestsScreen({
                   aria-selected={active}
                   onClick={() => setCategory(c.key)}
                   className={cn(
-                    'relative shrink-0 pb-2.5 pt-1 text-[14px] transition-colors',
+                    'relative shrink-0 pb-2.5 pt-1 text-body transition-colors',
                     active ? 'font-semibold text-foreground' : 'text-muted-foreground',
                   )}
                 >
@@ -145,7 +145,7 @@ export function TestsScreen({
         <div className="flex-1 overflow-y-auto px-4 pb-24 pt-3 [scrollbar-width:none]">
           {list.length ? (
             <>
-              <p className="mb-2 text-[12px] text-muted-foreground" aria-live="polite">
+              <p className="mb-2 text-caption text-muted-foreground" aria-live="polite">
                 共 {list.length} 项检测服务
               </p>
               <ul className="flex flex-col gap-2.5">
@@ -159,8 +159,8 @@ export function TestsScreen({
           ) : (
             <div className="flex flex-col items-center rounded-2xl bg-white px-6 py-12 text-center" aria-live="polite">
               <Search className="size-8 text-[#c3ccdb]" aria-hidden="true" />
-              <p className="mt-3 text-[14px] text-foreground">没有找到相关检测服务</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">换个关键词，或切换到「全部」分类试试</p>
+              <p className="mt-3 text-body text-foreground">没有找到相关检测服务</p>
+              <p className="mt-1 text-caption text-muted-foreground">换个关键词，或切换到「全部」分类试试</p>
             </div>
           )}
         </div>
@@ -222,7 +222,7 @@ export function TestsScreen({
           role="status"
           className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex justify-center"
         >
-          <span className="rounded-lg bg-[#1f2a3d]/85 px-4 py-2.5 text-[13px] text-white">{toast}</span>
+          <span className="rounded-lg bg-[#1f2a3d]/85 px-4 py-2.5 text-note text-white">{toast}</span>
         </div>
       )}
     </>
@@ -245,9 +245,9 @@ export function CartButton({
       aria-label={count ? `购物车，已有 ${count} 件` : '购物车'}
       className={cn('relative flex size-9 shrink-0 items-center justify-center rounded-full text-foreground', className)}
     >
-      <ShoppingCart className="size-[22px]" strokeWidth={1.8} aria-hidden="true" />
+      <ShoppingCart className="size-6" strokeWidth={1.8} aria-hidden="true" />
       {count > 0 && (
-        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-tag font-medium tabular-nums text-white ring-2 ring-white">
           {count > 99 ? '99+' : count}
         </span>
       )}
@@ -274,32 +274,32 @@ function ServiceCard({
         className="size-24 shrink-0 rounded-xl bg-secondary object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col">
-        <h2 id={`svc-${service.id}`} className="line-clamp-2 text-[14px] font-medium leading-5 text-foreground">
+        <h2 id={`svc-${service.id}`} className="line-clamp-2 text-body font-medium leading-5 text-foreground">
           <button type="button" onClick={onOpen} className="text-left after:absolute after:inset-0 after:rounded-2xl">
             {service.name}
           </button>
         </h2>
-        <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{service.summary}</p>
+        <p className="mt-0.5 truncate text-caption text-muted-foreground">{service.summary}</p>
         <p className="mt-1 flex flex-wrap gap-1">
-          <span className="rounded bg-success-soft px-1.5 py-px text-[10px] text-success">
+          <span className="rounded bg-success-soft px-1.5 py-px text-tag text-success">
                 {getSamplingModes(service.id).includes('self') ? '支持居家自采' : samplingLabel.site}
           </span>
           {service.tags.slice(0, 2).map((tag) => (
-            <span key={tag} className="rounded bg-secondary px-1.5 py-px text-[10px] text-primary">
+            <span key={tag} className="rounded bg-secondary px-1.5 py-px text-tag text-primary">
               {tag}
             </span>
           ))}
         </p>
         <div className="mt-auto flex items-end justify-between pt-1.5">
           <p className="flex items-baseline gap-1.5">
-            <span className="text-[17px] font-bold leading-none text-warning">
-              <span className="text-[11px]">¥</span>
+            <span className="text-heading font-bold leading-none text-warning">
+              <span className="text-caption">¥</span>
               {service.price}
             </span>
             {service.originalPrice && (
-              <span className="text-[11px] text-faint line-through">¥{service.originalPrice}</span>
+              <span className="text-caption text-faint line-through">¥{service.originalPrice}</span>
             )}
-            <span className="text-[11px] text-muted-foreground">{service.sold}</span>
+            <span className="text-caption text-muted-foreground">{service.sold}</span>
           </p>
           <button
             type="button"

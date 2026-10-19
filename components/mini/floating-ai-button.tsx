@@ -96,7 +96,7 @@ export function FloatingAiButton({ onClick }: { onClick: () => void }) {
         dragging ? 'scale-110 cursor-grabbing' : 'cursor-grab transition-[left,top,transform] duration-200 ease-out active:scale-95'
       }`}
     >
-      <Sparkles className="size-[18px]" strokeWidth={2.2} />
+      <Sparkles className="size-4.5" strokeWidth={2.2} />
     </button>
   )
 }

@@ -24,7 +24,7 @@ import { cn } from '@/lib/utils'
 
 function ArticleMeta({ article }: { article: Article }) {
   return (
-    <span className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
+    <span className="flex items-center gap-2.5 text-caption text-muted-foreground">
       <span className="flex items-center gap-0.5">
         <Clock className="size-3" aria-hidden="true" />
         <span className="tabular-nums">{article.minutes}</span> 分钟
@@ -68,7 +68,7 @@ function KnowledgeList({
               aria-selected={active}
               onClick={() => setCategory(c)}
               className={cn(
-                'h-7 shrink-0 rounded-full px-3 text-[12px] transition-colors',
+                'h-7 shrink-0 rounded-full px-3 text-caption transition-colors',
                 active ? 'bg-primary font-medium text-primary-foreground' : 'bg-muted text-foreground',
               )}
             >
@@ -97,19 +97,19 @@ function KnowledgeList({
                     className="size-[88px] shrink-0 rounded-xl bg-secondary object-cover"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="line-clamp-2 text-[14px] font-medium leading-snug text-foreground">{a.title}</span>
-                    <span className="mt-1 line-clamp-2 block text-[12px] leading-relaxed text-muted-foreground">
+                    <span className="line-clamp-2 text-body font-medium leading-snug text-foreground">{a.title}</span>
+                    <span className="mt-1 line-clamp-2 block text-caption leading-relaxed text-muted-foreground">
                       {a.summary}
                     </span>
                     <span className="mt-1.5 flex items-center gap-2">
-                      <span className="rounded bg-muted px-1.5 py-px text-[10px] text-muted-foreground">
+                      <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
                         {a.category}
                       </span>
                       <ArticleMeta article={a} />
                       {a.survey && (
                         <span
                           className={cn(
-                            'ml-auto flex items-center gap-0.5 rounded px-1.5 py-px text-[10px]',
+                            'ml-auto flex items-center gap-0.5 rounded px-1.5 py-px text-tag',
                             answered[a.id] ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning',
                           )}
                         >
@@ -123,7 +123,7 @@ function KnowledgeList({
             ))}
           </ul>
         ) : (
-          <p className="pt-16 text-center text-[13px] text-muted-foreground">该分类暂无文章</p>
+          <p className="pt-16 text-center text-note text-muted-foreground">该分类暂无文章</p>
         )}
       </div>
     </div>
@@ -148,8 +148,8 @@ function SurveyEntry({
         <ClipboardList className="size-5" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[14px] font-semibold text-foreground">{survey.title}</span>
-        <span className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+        <span className="block truncate text-body font-semibold text-foreground">{survey.title}</span>
+        <span className="mt-0.5 flex items-center gap-2 text-caption text-muted-foreground">
           <span>共 {survey.questions.length} 题</span>
           <span className="flex items-center gap-0.5">
             <Users className="size-3" aria-hidden="true" />
@@ -161,7 +161,7 @@ function SurveyEntry({
         type="button"
         onClick={onOpen}
         className={cn(
-          'flex h-8 shrink-0 items-center gap-1 rounded-full px-3 text-[12px] font-medium',
+          'flex h-8 shrink-0 items-center gap-1 rounded-full px-3 text-caption font-medium',
           answered ? 'bg-success-soft text-success' : 'bg-primary text-primary-foreground',
         )}
       >
@@ -185,15 +185,15 @@ function KnowledgeDetail({
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto pb-4 [scrollbar-width:none]">
         <article className="bg-white px-4 pb-5 pt-3">
-          <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] text-primary">{article.category}</span>
-          <h2 className="mt-2 text-[19px] font-semibold leading-snug text-foreground text-balance">{article.title}</h2>
-          <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-muted-foreground">
+          <span className="rounded bg-secondary px-1.5 py-0.5 text-caption text-primary">{article.category}</span>
+          <h2 className="mt-2 text-heading font-semibold leading-snug text-foreground text-balance">{article.title}</h2>
+          <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-caption text-muted-foreground">
             <span>{article.author}</span>
             <span className="tabular-nums">{article.updated}</span>
             <ArticleMeta article={article} />
           </div>
 
-          <p className="mt-3 rounded-xl bg-background p-3 text-[13px] leading-relaxed text-muted-foreground">
+          <p className="mt-3 rounded-xl bg-background p-3 text-note leading-relaxed text-muted-foreground">
             {article.summary}
           </p>
 
@@ -202,14 +202,14 @@ function KnowledgeDetail({
               if (b.type === 'survey') return null
               if (b.type === 'h')
                 return (
-                  <h3 key={i} className="flex items-center gap-1.5 pt-1 text-[15px] font-semibold text-foreground">
+                  <h3 key={i} className="flex items-center gap-1.5 pt-1 text-title font-semibold text-foreground">
                     <span className="h-3.5 w-1 rounded-full bg-primary" aria-hidden="true" />
                     {b.text}
                   </h3>
                 )
               if (b.type === 'p')
                 return (
-                  <p key={i} className="text-[14px] leading-relaxed text-foreground/85">
+                  <p key={i} className="text-body leading-relaxed text-foreground/85">
                     {b.text}
                   </p>
                 )
@@ -217,7 +217,7 @@ function KnowledgeDetail({
                 return (
                   <ul key={i} className="space-y-2">
                     {b.items.map((s, j) => (
-                      <li key={j} className="flex gap-2 text-[14px] leading-relaxed text-foreground/85">
+                      <li key={j} className="flex gap-2 text-body leading-relaxed text-foreground/85">
                         <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
                         <span>{s}</span>
                       </li>
@@ -225,7 +225,7 @@ function KnowledgeDetail({
                   </ul>
                 )
               return (
-                <aside key={i} className="flex gap-2 rounded-xl bg-[#fff7ee] p-3 text-[13px] leading-relaxed text-[#9a5a1e]">
+                <aside key={i} className="flex gap-2 rounded-xl bg-[#fff7ee] p-3 text-note leading-relaxed text-[#9a5a1e]">
                   <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                   <p>{b.text}</p>
                 </aside>
@@ -233,7 +233,7 @@ function KnowledgeDetail({
             })}
           </div>
 
-          <p className="mt-5 text-[11px] leading-relaxed text-muted-foreground">
+          <p className="mt-5 text-caption leading-relaxed text-muted-foreground">
             本文仅供健康科普，不能替代医生诊断与治疗建议。
           </p>
         </article>

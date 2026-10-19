@@ -74,14 +74,14 @@ export function AuthorizationScreen({
               aria-controls={`auth-panel-${t.id}`}
               onClick={() => setTab(t.id)}
               className={cn(
-                'relative flex h-11 flex-1 items-center justify-center gap-1 text-[14px]',
+                'relative flex h-11 flex-1 items-center justify-center gap-1 text-body',
                 on ? 'font-semibold text-foreground' : 'text-muted-foreground',
               )}
             >
               {t.label}
               <span
                 className={cn(
-                  'rounded px-1 text-[10px] font-normal',
+                  'rounded px-1 text-tag font-normal',
                   t.id === 'test' ? 'bg-[#e8f0fd] text-primary' : 'bg-secondary text-muted-foreground',
                 )}
               >
@@ -146,8 +146,8 @@ function ConsentEmptyState({ title, desc, research }: { title: string; desc: str
           <Lock className="size-4 text-primary" />
         </span>
       </span>
-      <h2 className="mt-5 text-[16px] font-semibold text-foreground">{title}</h2>
-      <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">{desc}</p>
+      <h2 className="mt-5 text-title font-semibold text-foreground">{title}</h2>
+      <p className="mt-1.5 text-note leading-5 text-muted-foreground">{desc}</p>
     </div>
   )
 }
@@ -161,7 +161,7 @@ function TestConsentPanel({
 }) {
   return (
     <>
-      <section className="flex items-start gap-2 rounded-2xl bg-[#e8f0fd] px-3.5 py-3 text-[12px] leading-5 text-[#2f5fb3]">
+      <section className="flex items-start gap-2 rounded-2xl bg-[#e8f0fd] px-3.5 py-3 text-caption leading-5 text-[#2f5fb3]">
         <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
         <p>每个订单下单前须阅读并同意《基因检测知情同意书》，签署后作为检测依据存档，不可撤回</p>
       </section>
@@ -171,24 +171,24 @@ function TestConsentPanel({
           <li key={c.orderNo} className="rounded-2xl bg-white p-3.5">
             <div className="flex items-center gap-2">
               <FileCheck2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
-              <p className="min-w-0 flex-1 text-[14px] font-semibold text-foreground">基因检测知情同意书</p>
-              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-success">已签署</span>
+              <p className="min-w-0 flex-1 text-body font-semibold text-foreground">基因检测知情同意书</p>
+              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-caption text-success">已签署</span>
             </div>
-            <dl className="mt-2.5 flex flex-col gap-1.5 text-[12px] leading-[18px]">
+            <dl className="mt-2.5 flex flex-col gap-1.5 text-caption leading-[18px]">
               <Row label="订单号" value={c.orderNo} mono />
               <Row label="检测项目" value={c.serviceIds.map(serviceName).join('、')} />
               <Row label="受检人" value={c.memberIds.map(memberName).join('、')} />
               <Row label="签署时间" value={c.signedAt} mono />
             </dl>
             <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5">
-              <span className="flex items-center gap-1 text-[11px] text-faint">
+              <span className="flex items-center gap-1 text-caption text-faint">
                 <Lock className="size-3" aria-hidden="true" />
                 不可撤回
               </span>
               <button
                 type="button"
                 onClick={() => onView(c.signedAt)}
-                className="h-7 rounded-full border border-border px-3 text-[12px] text-foreground"
+                className="h-7 rounded-full border border-border px-3 text-caption text-foreground"
               >
                 查看同意书
               </button>
@@ -214,21 +214,21 @@ function ResearchPanel({
   return (
     <>
       <section className="rounded-2xl bg-primary p-4 text-primary-foreground">
-        <p className="flex items-center gap-1.5 text-[13px] opacity-90">
+        <p className="flex items-center gap-1.5 text-note opacity-90">
           <ShieldCheck className="size-4" aria-hidden="true" />
           科研样本授权
         </p>
         <div className="mt-1.5 flex items-end gap-4">
-          <p className="text-[22px] font-bold tabular-nums">
+          <p className="text-headline font-bold tabular-nums">
             {signedCount}
-            <span className="ml-1 text-[12px] font-normal opacity-90">已授权</span>
+            <span className="ml-1 text-caption font-normal opacity-90">已授权</span>
           </p>
-          <p className="text-[22px] font-bold tabular-nums">
+          <p className="text-headline font-bold tabular-nums">
             {pendingCount}
-            <span className="ml-1 text-[12px] font-normal opacity-90">待签署</span>
+            <span className="ml-1 text-caption font-normal opacity-90">待签署</span>
           </p>
         </div>
-        <p className="mt-1 text-[11px] leading-4 opacity-80">
+        <p className="mt-1 text-caption leading-4 opacity-80">
           按订单 × 检测项目 × 受检人分别授权；签署与撤销均需通过 e签宝 人脸核验
         </p>
       </section>
@@ -238,10 +238,10 @@ function ResearchPanel({
         const services = [...new Set(items.map((a) => a.serviceId))]
         return (
           <section key={orderNo} aria-label={`订单 ${orderNo}`} className="mt-2.5 rounded-2xl bg-white">
-            <p className="border-b border-border px-3.5 py-2.5 text-[12px] tabular-nums text-muted-foreground">订单号 {orderNo}</p>
+            <p className="border-b border-border px-3.5 py-2.5 text-caption tabular-nums text-muted-foreground">订单号 {orderNo}</p>
             {services.map((sid) => (
               <div key={sid} className="px-3.5 pt-3">
-                <h2 className="text-[13px] font-semibold leading-[18px] text-foreground">{serviceName(sid)}</h2>
+                <h2 className="text-note font-semibold leading-[18px] text-foreground">{serviceName(sid)}</h2>
                 <ul>
                   {items
                     .filter((a) => a.serviceId === sid)
@@ -251,14 +251,14 @@ function ResearchPanel({
                       return (
                         <li key={a.id} className="flex items-center gap-2 border-b border-border py-3 last:border-0">
                           <div className="min-w-0 flex-1">
-                            <p className="flex items-center gap-1.5 text-[13px] text-foreground">
+                            <p className="flex items-center gap-1.5 text-note text-foreground">
                               {member?.name}
-                              <span className="rounded bg-background px-1 text-[10px] text-muted-foreground">{member?.relation}</span>
-                              <span className={cn('rounded px-1.5 py-px text-[10px]', statusStyle[a.status])}>
+                              <span className="rounded bg-background px-1 text-tag text-muted-foreground">{member?.relation}</span>
+                              <span className={cn('rounded px-1.5 py-px text-tag', statusStyle[a.status])}>
                                 {researchStatusLabel[a.status]}
                               </span>
                             </p>
-                            <p className="mt-0.5 text-[11px] tabular-nums text-faint">
+                            <p className="mt-0.5 text-caption tabular-nums text-faint">
                               {a.status === 'unsigned' ? '下单时已勾选 · ' : ''}更新于 {a.updatedAt}
                             </p>
                           </div>
@@ -266,7 +266,7 @@ function ResearchPanel({
                             type="button"
                             onClick={() => onAction(a, signed ? 'withdraw' : 'sign')}
                             className={cn(
-                              'h-7 shrink-0 rounded-full px-3 text-[12px]',
+                              'h-7 shrink-0 rounded-full px-3 text-caption',
                               signed ? 'border border-border text-foreground' : 'bg-primary text-primary-foreground',
                             )}
                           >
@@ -282,7 +282,7 @@ function ResearchPanel({
         )
       })}
 
-      <p className="mt-3 flex items-start gap-1 px-1 text-[11px] leading-4 text-faint">
+      <p className="mt-3 flex items-start gap-1 px-1 text-caption leading-4 text-faint">
         <Info className="mt-px size-3 shrink-0" aria-hidden="true" />
         科研授权为自愿选择，不影响检测服务及报告出具；撤销需签署《科研知情同意撤销书》；未成年受检人由监护人代为签署
       </p>

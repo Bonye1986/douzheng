@@ -29,7 +29,7 @@ export function TabBar({
                 onClick={() => onSelect?.(key)}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'flex w-full flex-col items-center gap-0.5 text-[10px]',
+                  'flex w-full flex-col items-center gap-0.5 text-tag',
                   isActive ? 'font-medium text-primary' : 'text-muted-foreground',
                 )}
               >

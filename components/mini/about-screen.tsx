@@ -88,7 +88,7 @@ const modules: Module[] = [
 
 function SectionTitle({ id, icon: Icon, children }: { id: string; icon: LucideIcon; children: string }) {
   return (
-    <h3 id={id} className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
+    <h3 id={id} className="flex items-center gap-1.5 text-title font-semibold text-foreground">
       <Icon className="size-4 text-primary" aria-hidden="true" />
       {children}
     </h3>
@@ -103,9 +103,9 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
           <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
             <Dna className="size-9" strokeWidth={1.6} aria-hidden="true" />
           </span>
-          <h2 className="mt-3 text-[20px] font-semibold tracking-wide text-foreground">DRUGENE</h2>
-          <p className="mt-1 text-[12px] text-muted-foreground">辅助临床精准用药助手</p>
-          <p className="mt-1 text-[11px] tabular-nums text-muted-foreground">版本 V{APP_VERSION}</p>
+          <h2 className="mt-3 text-headline font-semibold tracking-wide text-foreground">DRUGENE</h2>
+          <p className="mt-1 text-caption text-muted-foreground">辅助临床精准用药助手</p>
+          <p className="mt-1 text-caption tabular-nums text-muted-foreground">版本 V{APP_VERSION}</p>
         </section>
 
         <div className="space-y-2.5 px-3">
@@ -113,7 +113,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
             <SectionTitle id="about-intro" icon={Lightbulb}>
               小程序介绍
             </SectionTitle>
-            <p className="mt-2 text-[13px] leading-relaxed text-foreground/80">
+            <p className="mt-2 text-note leading-relaxed text-foreground/80">
               DRUGENE 是长沙都正医学检验有限责任公司基于药物基因数据开发的集药品、基因、检测服务、剂量智控、健康管理、用药提醒、科技前沿、互动问答等于一体的辅助临床精准用药助手。
             </p>
           </section>
@@ -122,7 +122,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
             <SectionTitle id="about-source" icon={Database}>
               数据来源
             </SectionTitle>
-            <p className="mt-2 text-[13px] leading-relaxed text-foreground/80">
+            <p className="mt-2 text-note leading-relaxed text-foreground/80">
               收录国内外最新临床指南、专家共识、大型临床研究等权威资料中有关基因、药物、疾病以及它们之间的药物基因组学关系的数据，可为人们提供科学、权威、前沿、实用的安全用药知识，辅助临床精准用药。
             </p>
           </section>
@@ -138,14 +138,14 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
                     <m.icon className="size-4" aria-hidden="true" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground">{m.title}</p>
-                    {m.desc && <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{m.desc}</p>}
+                    <p className="text-note font-semibold text-foreground">{m.title}</p>
+                    {m.desc && <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">{m.desc}</p>}
                     {m.children && (
                       <ul className="mt-1.5 space-y-1.5 rounded-lg bg-background p-2.5">
                         {m.children.map((c) => (
                           <li key={c.title} className="flex gap-1.5">
                             <span className="mt-[7px] size-1 shrink-0 rounded-full bg-primary" aria-hidden="true" />
-                            <p className="text-[12px] leading-relaxed text-muted-foreground">
+                            <p className="text-caption leading-relaxed text-muted-foreground">
                               <span className="font-medium text-foreground">{c.title}：</span>
                               {c.desc}
                             </p>
@@ -157,7 +157,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
                 </li>
               ))}
             </ul>
-            <p className="mt-3.5 rounded-lg bg-background px-3 py-2.5 text-[12px] leading-relaxed text-foreground/80">
+            <p className="mt-3.5 rounded-lg bg-background px-3 py-2.5 text-caption leading-relaxed text-foreground/80">
               DRUGENE 会不定期推更新基因、药物数据和逐步完善、增加其他新功能，敬请期待。
             </p>
           </section>
@@ -166,10 +166,10 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
             <SectionTitle id="about-company" icon={Building2}>
               公司简介
             </SectionTitle>
-            <p className="mt-2 text-[13px] leading-relaxed text-foreground/80">
+            <p className="mt-2 text-note leading-relaxed text-foreground/80">
               {COMPANY_NAME}（简称「都正生物」）成立于 2016 年，位于湘江新区，集「产、学、研」于一体，提供临床研究、医药研发信息化、医学检验技术服务，是一家以临床研究为基础、以「数据」沉淀为核心的学术型合同研究组织（Academic CRO）。
             </p>
-            <p className="mt-2 text-[13px] leading-relaxed text-foreground/80">
+            <p className="mt-2 text-note leading-relaxed text-foreground/80">
               公司拥有「药物临床评价技术」国家地方联合工程实验室、「复杂基质样本生物分析」湖南省重点实验室等平台，是国家级专精特新「小巨人」企业、「中国研发 CRO 20 强」。旗下长沙都正医学检验有限责任公司专注药物基因组检测、治疗药物监测（TDM）等精准医学服务。
             </p>
             <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
@@ -179,8 +179,8 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
                 { label: '合作医院', value: '240+' },
               ].map((s) => (
                 <div key={s.label} className="rounded-lg bg-background py-2">
-                  <dt className="text-[11px] text-muted-foreground">{s.label}</dt>
-                  <dd className="mt-0.5 text-[15px] font-semibold tabular-nums text-primary">{s.value}</dd>
+                  <dt className="text-caption text-muted-foreground">{s.label}</dt>
+                  <dd className="mt-0.5 text-title font-semibold tabular-nums text-primary">{s.value}</dd>
                 </div>
               ))}
             </dl>
@@ -192,22 +192,22 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
             </h3>
             <div className="flex items-center gap-3">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-                <Phone className="size-[18px]" aria-hidden="true" />
+                <Phone className="size-4.5" aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] text-muted-foreground">客服联系电话</p>
-                <p className="mt-0.5 text-[15px] font-semibold tabular-nums text-foreground">{SERVICE_PHONE}</p>
+                <p className="text-caption text-muted-foreground">客服联系电话</p>
+                <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">{SERVICE_PHONE}</p>
               </div>
               <a
                 href={`tel:${SERVICE_PHONE.replace(/-/g, '')}`}
-                className="flex h-7 shrink-0 items-center rounded-full bg-primary px-3.5 text-[12px] font-medium text-primary-foreground"
+                className="flex h-7 shrink-0 items-center rounded-full bg-primary px-3.5 text-caption font-medium text-primary-foreground"
               >
                 拨打
               </a>
             </div>
           </section>
 
-          <footer className="flex flex-col items-center gap-1 pt-2 text-center text-[10px] text-muted-foreground">
+          <footer className="flex flex-col items-center gap-1 pt-2 text-center text-tag text-muted-foreground">
             <span className="flex items-center gap-1">
               <Building2 className="size-3" aria-hidden="true" />
               {COMPANY_NAME}

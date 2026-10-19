@@ -167,26 +167,26 @@ export function LegalDocScreen({ kind, onBack }: { kind: LegalDocKind; onBack: (
   return (
     <SubPage title={doc.title} titleId={titleId} onBack={onBack}>
       <article className="flex-1 overflow-y-auto bg-white px-5 pb-10 pt-4 [scrollbar-width:none]">
-        <p className="text-[12px] text-muted-foreground">
+        <p className="text-caption text-muted-foreground">
           更新日期：{doc.updated}
           <span className="mx-1.5" aria-hidden="true">
             ·
           </span>
           生效日期：{doc.effective}
         </p>
-        <p className="mt-3 text-[14px] leading-6 text-foreground">{doc.intro}</p>
+        <p className="mt-3 text-body leading-6 text-foreground">{doc.intro}</p>
         {doc.sections.map((section) => (
           <section key={section.heading} className="mt-5">
-            <h2 className="text-[15px] font-semibold text-foreground">{section.heading}</h2>
+            <h2 className="text-title font-semibold text-foreground">{section.heading}</h2>
             {section.paragraphs.map((p) => (
-              <p key={p} className="mt-2 text-[14px] leading-6 text-foreground/75">
+              <p key={p} className="mt-2 text-body leading-6 text-foreground/75">
                 {p}
               </p>
             ))}
             {section.list && (
               <ul className="mt-1.5 space-y-1">
                 {section.list.map((item) => (
-                  <li key={item} className="flex gap-2 text-[14px] leading-6 text-foreground/75">
+                  <li key={item} className="flex gap-2 text-body leading-6 text-foreground/75">
                     <span className="mt-[11px] size-1 shrink-0 rounded-full bg-primary" aria-hidden="true" />
                     {item}
                   </li>
@@ -195,7 +195,7 @@ export function LegalDocScreen({ kind, onBack }: { kind: LegalDocKind; onBack: (
             )}
           </section>
         ))}
-        <p className="mt-8 text-right text-[12px] text-muted-foreground">都正生物科技有限公司</p>
+        <p className="mt-8 text-right text-caption text-muted-foreground">都正生物科技有限公司</p>
       </article>
     </SubPage>
   )

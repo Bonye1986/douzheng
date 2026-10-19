@@ -58,7 +58,7 @@ function PrimaryButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-primary text-[15px] font-medium text-primary-foreground disabled:opacity-40"
+      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-primary text-title font-medium text-primary-foreground disabled:opacity-40"
     >
       {children}
     </button>
@@ -79,8 +79,8 @@ export function useRefundSuccess(onFinish: () => void) {
           <span className="flex size-10 items-center justify-center rounded-full bg-white/15">
             <Check className="size-5" aria-hidden="true" />
           </span>
-          <p className="mt-2 text-[15px] font-semibold">退款成功</p>
-          <p className="mt-1 text-[12px] leading-relaxed text-white/75">
+          <p className="mt-2 text-title font-semibold">退款成功</p>
+          <p className="mt-1 text-caption leading-relaxed text-white/75">
             <span className="tabular-nums">¥{amount}</span> 将原路退回至微信支付账户
           </p>
         </div>
@@ -93,16 +93,16 @@ function OrderBrief({ no, product, examinee, paid, status }: { no: string; produ
   return (
     <Card>
       <div className="flex items-center justify-between">
-        <span className="text-[12px] tabular-nums text-muted-foreground">订单号 {no}</span>
-        <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] font-medium text-primary">{status}</span>
+        <span className="text-caption tabular-nums text-muted-foreground">订单号 {no}</span>
+        <span className="rounded bg-secondary px-1.5 py-0.5 text-caption font-medium text-primary">{status}</span>
       </div>
       <div className="mt-2.5 flex items-end justify-between">
         <div>
-          <p className="text-[14px] font-medium text-foreground">{product}</p>
-          <p className="mt-0.5 text-[12px] text-muted-foreground">受检人：{examinee}</p>
+          <p className="text-body font-medium text-foreground">{product}</p>
+          <p className="mt-0.5 text-caption text-muted-foreground">受检人：{examinee}</p>
         </div>
-        <p className="text-[12px] text-muted-foreground">
-          实付 <span className="text-[15px] font-semibold tabular-nums text-foreground">¥{paid}</span>
+        <p className="text-caption text-muted-foreground">
+          实付 <span className="text-title font-semibold tabular-nums text-foreground">¥{paid}</span>
         </p>
       </div>
     </Card>
@@ -113,12 +113,12 @@ function AmountRows({ rows }: { rows: { label: string; value: string; strong?: b
   return (
     <dl className="space-y-2">
       {rows.map((r) => (
-        <div key={r.label} className="flex items-center justify-between text-[13px]">
+        <div key={r.label} className="flex items-center justify-between text-note">
           <dt className={r.strong ? 'font-medium text-foreground' : 'text-muted-foreground'}>{r.label}</dt>
           <dd
             className={cn(
               'tabular-nums',
-              r.strong ? 'text-[17px] font-semibold text-warning' : r.minus ? 'text-warning' : 'text-foreground',
+              r.strong ? 'text-heading font-semibold text-warning' : r.minus ? 'text-warning' : 'text-foreground',
             )}
           >
             {r.value}
@@ -181,11 +181,11 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
             <div className="flex gap-2.5 rounded-2xl bg-brand-soft p-3.5">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary">
-                <Truck className="size-[18px]" aria-hidden="true" />
+                <Truck className="size-4.5" aria-hidden="true" />
               </span>
               <div className="min-w-0">
-                <p className="text-[14px] font-semibold text-foreground">采样盒已发出</p>
-                <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+                <p className="text-body font-semibold text-foreground">采样盒已发出</p>
+                <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">
                   {shippedOrder.tracking}，请选择退款方式
                 </p>
               </div>
@@ -194,7 +194,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
             <OrderBrief {...shippedOrder} />
 
             <fieldset className="rounded-2xl bg-white p-3.5">
-              <legend className="float-left mb-3 text-[15px] font-semibold text-foreground">退款方式</legend>
+              <legend className="float-left mb-3 text-title font-semibold text-foreground">退款方式</legend>
               <div className="clear-both space-y-2.5">
                 {options.map((o) => {
                   const active = option === o.key
@@ -218,14 +218,14 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                         <o.icon className="size-[18px]" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="flex items-center gap-1.5 text-[14px] font-medium text-foreground">
+                        <span className="flex items-center gap-1.5 text-body font-medium text-foreground">
                           {o.title}
-                          <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-[10px] text-success">{o.tag}</span>
+                          <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-tag text-success">{o.tag}</span>
                         </span>
-                        <span className="mt-1 block text-[11px] leading-relaxed text-muted-foreground">{o.desc}</span>
-                        <span className="mt-1.5 block text-[12px] text-muted-foreground">
+                        <span className="mt-1 block text-caption leading-relaxed text-muted-foreground">{o.desc}</span>
+                        <span className="mt-1.5 block text-caption text-muted-foreground">
                           预计退款{' '}
-                          <span className="text-[15px] font-semibold tabular-nums text-warning">¥{o.amount}</span>
+                          <span className="text-title font-semibold tabular-nums text-warning">¥{o.amount}</span>
                         </span>
                       </span>
                       <span
@@ -243,7 +243,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
               </div>
             </fieldset>
 
-            <p className="flex gap-1.5 px-1 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="flex gap-1.5 px-1 text-caption leading-relaxed text-muted-foreground">
               <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
               寄回运费由您自行承担；采样盒已拆封或缺损的，仅支持扣除采样盒费用后退款。
             </p>
@@ -261,11 +261,11 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
             <Card>
               <div className="flex items-center justify-between">
-                <h2 className="text-[15px] font-semibold text-foreground">寄回地址</h2>
+                <h2 className="text-title font-semibold text-foreground">寄回地址</h2>
                 <button
                   type="button"
                   onClick={copyAddress}
-                  className="flex items-center gap-1 text-[12px] text-primary"
+                  className="flex items-center gap-1 text-caption text-primary"
                 >
                   {copied ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
                   {copied ? '已复制' : '复制'}
@@ -274,17 +274,17 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
               <div className="mt-2.5 flex gap-2.5">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
                 <div className="min-w-0">
-                  <p className="text-[13px] font-medium text-foreground">
+                  <p className="text-note font-medium text-foreground">
                     {returnAddress.name}{' '}
                     <span className="font-normal tabular-nums text-muted-foreground">{returnAddress.phone}</span>
                   </p>
-                  <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{returnAddress.address}</p>
+                  <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">{returnAddress.address}</p>
                 </div>
               </div>
             </Card>
 
             <Card>
-              <label htmlFor="return-tracking" className="text-[15px] font-semibold text-foreground">
+              <label htmlFor="return-tracking" className="text-title font-semibold text-foreground">
                 回寄快递单号
               </label>
               <input
@@ -292,9 +292,9 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                 value={trackingNo}
                 onChange={(e) => setTrackingNo(e.target.value.replace(/[^\w\s-]/g, '').slice(0, 30))}
                 placeholder="寄出后填写快递单号"
-                className="mt-2 h-10 w-full rounded-xl bg-muted px-3 text-[13px] tabular-nums text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
+                className="mt-2 h-10 w-full rounded-xl bg-muted px-3 text-note tabular-nums text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
               />
-              <ul className="mt-2.5 space-y-1.5 text-[11px] leading-relaxed text-muted-foreground">
+              <ul className="mt-2.5 space-y-1.5 text-caption leading-relaxed text-muted-foreground">
                 <li className="flex gap-1.5">
                   <PackageOpen className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
                   采样盒需保持未拆封、配件齐全
@@ -328,7 +328,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
             <OrderBrief {...shippedOrder} />
             <Card>
-              <h2 className="mb-3 text-[15px] font-semibold text-foreground">退款金额</h2>
+              <h2 className="mb-3 text-title font-semibold text-foreground">退款金额</h2>
               <AmountRows
                 rows={[
                   { label: '实付金额', value: `¥${shippedOrder.paid}` },
@@ -337,7 +337,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                 ]}
               />
             </Card>
-            <p className="flex gap-1.5 px-1 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="flex gap-1.5 px-1 text-caption leading-relaxed text-muted-foreground">
               <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
               采样盒无需寄回，可自行处理。提交后订单关闭，退款原路退回至微信支付账户。
             </p>
@@ -375,15 +375,15 @@ export function IncurredFeeCard({ paid, fees }: { paid: number; fees: IncurredFe
   const total = fees.reduce((s, f) => s + f.amount, 0)
   return (
     <Card>
-      <h2 className="text-[15px] font-semibold text-foreground">已产生费用</h2>
+      <h2 className="text-title font-semibold text-foreground">已产生费用</h2>
       <ul className="mt-2.5 divide-y divide-[#eef2f8]">
         {fees.map((f) => (
           <li key={f.label} className="flex items-start justify-between gap-3 py-2.5 first:pt-0">
             <div className="min-w-0">
-              <p className="text-[13px] text-foreground">{f.label}</p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">{f.desc}</p>
+              <p className="text-note text-foreground">{f.label}</p>
+              <p className="mt-0.5 text-caption text-muted-foreground">{f.desc}</p>
             </div>
-            <span className="shrink-0 text-[13px] tabular-nums text-warning">-¥{f.amount}</span>
+            <span className="shrink-0 text-note tabular-nums text-warning">-¥{f.amount}</span>
           </li>
         ))}
       </ul>
@@ -409,11 +409,11 @@ export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
         <div className="flex gap-2.5 rounded-2xl bg-warn-soft p-3.5">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-warning">
-            <Receipt className="size-[18px]" aria-hidden="true" />
+            <Receipt className="size-4.5" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-warning">需扣除已产生的各类费用</p>
-            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+            <p className="text-body font-semibold text-warning">需扣除已产生的各类费用</p>
+            <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">
               样本已进入重采样流程，终止后实验室停止检测，剩余金额原路退回。
             </p>
           </div>
@@ -425,7 +425,7 @@ export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void
         <button
           type="button"
           onClick={onContact}
-          className="flex w-full items-center justify-center gap-1 py-1 text-[12px] text-primary"
+          className="flex w-full items-center justify-center gap-1 py-1 text-caption text-primary"
         >
           <Headphones className="size-3.5" aria-hidden="true" />
           对费用有疑问？联系客服
@@ -491,11 +491,11 @@ export function TestingRefundScreen({
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
         <div className="flex gap-2.5 rounded-2xl bg-warn-soft p-3.5">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-warning">
-            <Receipt className="size-[18px]" aria-hidden="true" />
+            <Receipt className="size-4.5" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-warning">需扣除已产生的费用</p>
-            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+            <p className="text-body font-semibold text-warning">需扣除已产生的费用</p>
+            <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">
               订单当前为「{order.status}」，确认退款后实验室将停止检测并销毁样本，剩余金额原路退回。
             </p>
           </div>
@@ -504,7 +504,7 @@ export function TestingRefundScreen({
         <OrderBrief {...order} />
 
         <Card>
-          <h2 className="text-[15px] font-semibold text-foreground">退款原因</h2>
+          <h2 className="text-title font-semibold text-foreground">退款原因</h2>
           <div role="radiogroup" aria-label="退款原因" className="mt-2.5 flex flex-wrap gap-2">
             {testingRefundReasons.map((r) => (
               <button
@@ -514,7 +514,7 @@ export function TestingRefundScreen({
                 aria-checked={reason === r}
                 onClick={() => setReason(r)}
                 className={cn(
-                  'h-8 rounded-full border px-3 text-[12px] transition-colors',
+                  'h-8 rounded-full border px-3 text-caption transition-colors',
                   reason === r
                     ? 'border-primary bg-primary/10 font-medium text-primary'
                     : 'border-border text-foreground',
@@ -528,7 +528,7 @@ export function TestingRefundScreen({
 
         <IncurredFeeCard paid={order.paid} fees={fees} />
 
-        <p className="flex gap-1.5 px-1 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="flex gap-1.5 px-1 text-caption leading-relaxed text-muted-foreground">
           <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
           确认后无需等待审核，订单关闭，退款金额原路退回至微信支付账户。
         </p>
@@ -536,7 +536,7 @@ export function TestingRefundScreen({
           <button
             type="button"
             onClick={onContact}
-            className="flex w-full items-center justify-center gap-1 py-1 text-[12px] text-primary"
+            className="flex w-full items-center justify-center gap-1 py-1 text-caption text-primary"
           >
             <Headphones className="size-3.5" aria-hidden="true" />
             对费用有疑问？联系客服
@@ -601,10 +601,10 @@ function CancelConfirmDialog({
         className="w-full overflow-hidden rounded-2xl bg-white motion-safe:animate-in motion-safe:zoom-in-95"
       >
         <div className="px-5 pb-4 pt-5 text-center">
-          <h2 id="cancel-confirm-title" className="text-[16px] font-semibold text-foreground">
+          <h2 id="cancel-confirm-title" className="text-title font-semibold text-foreground">
             确定取消该订单吗？
           </h2>
-          <div id="cancel-confirm-desc" className="mt-2 space-y-1 text-[13px] leading-relaxed text-muted-foreground">
+          <div id="cancel-confirm-desc" className="mt-2 space-y-1 text-note leading-relaxed text-muted-foreground">
             {unpaid ? (
               <p>该订单尚未支付，取消后订单将关闭</p>
             ) : (
@@ -620,14 +620,14 @@ function CancelConfirmDialog({
             type="button"
             autoFocus
             onClick={onCancel}
-            className="h-12 flex-1 text-[15px] text-foreground"
+            className="h-12 flex-1 text-title text-foreground"
           >
             再想想
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="h-12 flex-1 border-l border-border text-[15px] font-medium text-[#e5484d]"
+            className="h-12 flex-1 border-l border-border text-title font-medium text-[#e5484d]"
           >
             确认取消
           </button>

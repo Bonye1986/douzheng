@@ -60,12 +60,12 @@ function Avatar({ from }: { from: 'agent' | 'user' }) {
 function OrderBubble({ order }: { order: OrderCard }) {
   return (
     <div className="w-56 rounded-md bg-white p-3 text-left">
-      <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+      <p className="flex items-center gap-1 text-caption text-muted-foreground">
         <ClipboardList className="size-3.5" aria-hidden="true" />
         订单咨询
       </p>
-      <p className="mt-1.5 text-[14px] font-medium text-foreground">{order.product}</p>
-      <dl className="mt-1.5 space-y-0.5 text-[12px] text-muted-foreground">
+      <p className="mt-1.5 text-body font-medium text-foreground">{order.product}</p>
+      <dl className="mt-1.5 space-y-0.5 text-caption text-muted-foreground">
         <div className="flex justify-between">
           <dt>订单号</dt>
           <dd className="tabular-nums">{order.no}</dd>
@@ -131,7 +131,7 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
             {messages.map((msg) => {
               if (msg.from === 'system') {
                 return (
-                  <li key={msg.id} className="self-center rounded bg-black/5 px-2 py-0.5 text-[11px] text-muted-foreground">
+                  <li key={msg.id} className="self-center rounded bg-black/5 px-2 py-0.5 text-caption text-muted-foreground">
                     {msg.text}
                   </li>
                 )
@@ -141,12 +141,12 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
                 <li key={msg.id} className={`flex items-start gap-2 ${mine ? 'flex-row-reverse' : ''}`}>
                   <Avatar from={msg.from} />
                   <div className={`flex max-w-[72%] flex-col gap-1 ${mine ? 'items-end' : 'items-start'}`}>
-                    {msg.time && <span className="text-[10px] tabular-nums text-muted-foreground">{msg.time}</span>}
+                    {msg.time && <span className="text-tag tabular-nums text-muted-foreground">{msg.time}</span>}
                     {msg.kind === 'order' ? (
                       <OrderBubble order={msg} />
                     ) : (
                       <p
-                        className={`rounded-md px-3 py-2 text-[14px] leading-relaxed ${
+                        className={`rounded-md px-3 py-2 text-body leading-relaxed ${
                           mine ? 'bg-[#95ec69] text-[#111]' : 'bg-white text-foreground'
                         }`}
                       >
@@ -160,7 +160,7 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
             {typing && (
               <li className="flex items-start gap-2">
                 <Avatar from="agent" />
-                <p className="rounded-md bg-white px-3 py-2 text-[13px] text-muted-foreground">对方正在输入…</p>
+                <p className="rounded-md bg-white px-3 py-2 text-note text-muted-foreground">对方正在输入…</p>
               </li>
             )}
           </ul>
@@ -172,15 +172,15 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
               <FileText className="size-5" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] text-foreground">您可能想咨询：{recentOrder.product}</p>
-              <p className="text-[11px] tabular-nums text-muted-foreground">
+              <p className="truncate text-note text-foreground">您可能想咨询：{recentOrder.product}</p>
+              <p className="text-caption tabular-nums text-muted-foreground">
                 {recentOrder.no} · {recentOrder.status}
               </p>
             </div>
             <button
               type="button"
               onClick={sendOrder}
-              className="h-7 shrink-0 rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground"
+              className="h-7 shrink-0 rounded-full bg-primary px-3 text-caption font-medium text-primary-foreground"
             >
               发送订单
             </button>
@@ -206,7 +206,7 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
               role="listitem"
               type="button"
               onClick={() => sendText(q)}
-              className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[12px] text-foreground"
+              className="shrink-0 rounded-full bg-white px-3 py-1.5 text-caption text-foreground"
             >
               {q}
             </button>
@@ -236,13 +236,13 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
                 if (e.key === 'Enter' && (e.nativeEvent.isComposing || e.keyCode === 229)) e.preventDefault()
               }}
               enterKeyHint="send"
-              className="h-9 min-w-0 flex-1 rounded-md bg-white px-3 text-[14px] text-foreground outline-none"
+              className="h-9 min-w-0 flex-1 rounded-md bg-white px-3 text-body text-foreground outline-none"
             />
             <button type="button" aria-label="表情" className="flex size-8 shrink-0 items-center justify-center rounded-full border border-foreground/70 text-foreground">
               <Smile className="size-4" aria-hidden="true" />
             </button>
             {draft.trim() ? (
-              <button type="submit" className="h-8 shrink-0 rounded-md bg-[#07c160] px-3 text-[13px] font-medium text-white">
+              <button type="submit" className="h-8 shrink-0 rounded-md bg-[#07c160] px-3 text-note font-medium text-white">
                 发送
               </button>
             ) : (
@@ -270,7 +270,7 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
                     <span className="flex size-12 items-center justify-center rounded-xl bg-white text-foreground">
                       <item.icon className="size-6" strokeWidth={1.6} aria-hidden="true" />
                     </span>
-                    <span className="text-[11px] text-muted-foreground">{item.label}</span>
+                    <span className="text-caption text-muted-foreground">{item.label}</span>
                   </button>
                 </li>
               ))}

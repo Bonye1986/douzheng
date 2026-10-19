@@ -76,7 +76,7 @@ function PdfPage({ page, children }: { page: number; children: React.ReactNode }
       className="mx-auto flex min-h-[540px] w-full max-w-[420px] flex-col bg-white px-4 pb-3 pt-5 text-[#1f2329] shadow-[0_1px_6px_rgba(20,40,80,0.12)]"
     >
       <div className="flex-1">{children}</div>
-      <p className="mt-4 text-center text-[9px] tabular-nums text-[#9aa3b2]">
+      <p className="mt-4 text-center text-tag tabular-nums text-[#9aa3b2]">
         第 {page} 页 / 共 {TOTAL_PAGES} 页
       </p>
     </article>
@@ -87,7 +87,7 @@ function SectionBar({ id, title }: { id: string; title: string }) {
   return (
     <h2
       id={id}
-      className="mb-2.5 mt-4 rounded-[3px] bg-[linear-gradient(90deg,#a9c6ee_0%,#e4edfa_48%,#fbe4d4_100%)] px-2 py-1 text-[11px] font-semibold text-[#1f2329]"
+      className="mb-2.5 mt-4 rounded-[3px] bg-[linear-gradient(90deg,#a9c6ee_0%,#e4edfa_48%,#fbe4d4_100%)] px-2 py-1 text-caption font-semibold text-[#1f2329]"
     >
       【{title}】
     </h2>
@@ -117,12 +117,12 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
     <SubPage title="报告详情" titleId="report-detail-title" onBack={onBack}>
       <div className="flex-1 space-y-3 overflow-y-auto bg-[#e9ecf1] px-2.5 py-3 [scrollbar-width:none]">
         <PdfPage page={1}>
-          <h1 className="text-center text-[15px] font-bold tracking-wide">{report.product}报告</h1>
-          <p className="mt-1 text-center text-[9px] tabular-nums text-[#7a8494]">报告编号：{report.id}</p>
+          <h1 className="text-center text-title font-bold tracking-wide">{report.product}报告</h1>
+          <p className="mt-1 text-center text-tag tabular-nums text-[#7a8494]">报告编号：{report.id}</p>
 
           <section aria-labelledby="pdf-info">
             <SectionBar id="pdf-info" title="您的信息" />
-            <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10px]">
+            <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-tag">
               <div className="flex gap-1">
                 <dt className="shrink-0">姓名：</dt>
                 <dd>
@@ -157,16 +157,16 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
             <ul className="grid grid-cols-3 border border-[#dfe5ee] text-center">
               {stats.map((s, i) => (
                 <li key={s.label} className={cn('py-2', i > 0 && 'border-l border-[#dfe5ee]')}>
-                  <p className={cn('text-[16px] font-bold tabular-nums', i === 2 ? 'text-warning' : 'text-primary')}>
+                  <p className={cn('text-title font-bold tabular-nums', i === 2 ? 'text-warning' : 'text-primary')}>
                     {s.value}
                   </p>
-                  <p className="text-[9px] text-[#5b6472]">{s.label}</p>
+                  <p className="text-tag text-[#5b6472]">{s.label}</p>
                 </li>
               ))}
             </ul>
 
-            <table className="mt-3 w-full table-fixed text-center text-[10px]">
-              <caption className="mb-1 text-left text-[10px] font-semibold">结果摘要</caption>
+            <table className="mt-3 w-full table-fixed text-center text-tag">
+              <caption className="mb-1 text-left text-tag font-semibold">结果摘要</caption>
               <thead>
                 <tr className="border-y border-faint/60">
                   <th scope="col" className="w-[28%] py-1.5 font-medium">药物名称</th>
@@ -196,7 +196,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
         <PdfPage page={2}>
           <section aria-labelledby="pdf-detail">
             <SectionBar id="pdf-detail" title="检测结果明细 · 心血管疾病用药指导" />
-            <table className="w-full table-fixed text-center text-[9px] leading-snug">
+            <table className="w-full table-fixed text-center text-tag leading-snug">
               <thead>
                 <tr className="border-y border-faint/60">
                   <th scope="col" className="w-[19%] py-1.5 font-medium">药物名称</th>
@@ -214,7 +214,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
                     <td className={cn('py-1.5', adviceColor[r.advice])}>{r.advice}</td>
                     <td className="py-1.5">
                       <span className="italic">{r.gene}</span>
-                      {r.site && <span className="block text-[8px] text-[#7a8494]">{r.site}</span>}
+                      {r.site && <span className="block text-tag text-[#7a8494]">{r.site}</span>}
                     </td>
                     <td className="py-1.5 tabular-nums">{r.level}</td>
                     <td className="break-all py-1.5 text-[#5b6472]">{r.source}</td>
@@ -229,7 +229,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
 
           <section aria-labelledby="pdf-notes">
             <SectionBar id="pdf-notes" title="检测说明" />
-            <ol className="space-y-1.5 text-[9px] leading-relaxed text-[#3a414c]">
+            <ol className="space-y-1.5 text-tag leading-relaxed text-[#3a414c]">
               {notes.map((n, i) => (
                 <li key={n} className="flex gap-1.5">
                   <span className="shrink-0 tabular-nums">{i + 1}.</span>
@@ -239,7 +239,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
             </ol>
           </section>
 
-          <footer className="mt-6 space-y-2 border-t border-border pt-3 text-[9px] text-[#3a414c]">
+          <footer className="mt-6 space-y-2 border-t border-border pt-3 text-tag text-[#3a414c]">
             <div className="flex justify-between gap-2">
               <span>
                 检测人：<Blank>陈立</Blank>
@@ -261,7 +261,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
           type="button"
           onClick={() => setSharing(true)}
           aria-haspopup="dialog"
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-body font-medium text-primary-foreground"
         >
           <Share2 className="size-4" aria-hidden="true" />
           分享报告

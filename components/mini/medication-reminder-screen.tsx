@@ -188,23 +188,23 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
               aria-label="今日提醒概览"
               className="rounded-2xl bg-brand-strong p-4 text-primary-foreground"
             >
-              <p className="flex items-center gap-1.5 text-[12px] opacity-90">
+              <p className="flex items-center gap-1.5 text-caption opacity-90">
                 <MessageSquareText className="size-3.5" aria-hidden="true" />
                 短信提醒 · 发送至 <span className="tabular-nums">{accountPhone}</span> 等
               </p>
               <div className="mt-2 flex items-end justify-between">
                 <div>
-                  <p className="text-[12px] opacity-80">下一次提醒</p>
-                  <p className="text-[28px] font-semibold leading-tight tabular-nums">{nextTime ?? '--:--'}</p>
+                  <p className="text-caption opacity-80">下一次提醒</p>
+                  <p className="text-display font-semibold leading-tight tabular-nums">{nextTime ?? '--:--'}</p>
                 </div>
                 <dl className="flex gap-5 text-right">
                   <div>
-                    <dt className="text-[11px] opacity-80">今日提醒</dt>
-                    <dd className="text-[17px] font-semibold tabular-nums">{todayTimes.length} 次</dd>
+                    <dt className="text-caption opacity-80">今日提醒</dt>
+                    <dd className="text-heading font-semibold tabular-nums">{todayTimes.length} 次</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] opacity-80">进行中</dt>
-                    <dd className="text-[17px] font-semibold tabular-nums">
+                    <dt className="text-caption opacity-80">进行中</dt>
+                    <dd className="text-heading font-semibold tabular-nums">
                       {active.length}/{list.length}
                     </dd>
                   </div>
@@ -223,16 +223,16 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                       )}
                       aria-hidden="true"
                     >
-                      <Pill className="size-[18px]" />
+                      <Pill className="size-4.5" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[15px] font-semibold text-foreground">{r.drug}</span>
-                        <span className="rounded bg-secondary px-1.5 py-px text-[11px] text-primary">
+                        <span className="text-title font-semibold text-foreground">{r.drug}</span>
+                        <span className="rounded bg-secondary px-1.5 py-px text-caption text-primary">
                           {memberName(r.memberId)}
                         </span>
                       </p>
-                      <p className="mt-1 text-[12px] text-muted-foreground">
+                      <p className="mt-1 text-caption text-muted-foreground">
                         每次 {r.dose} {r.unit} · {r.meal} · {scheduleText(r)}
                       </p>
                     </div>
@@ -248,7 +248,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                       <li
                         key={t}
                         className={cn(
-                          'flex h-7 items-center gap-1 rounded-full px-2.5 text-[13px] font-medium tabular-nums',
+                          'flex h-7 items-center gap-1 rounded-full px-2.5 text-note font-medium tabular-nums',
                           r.enabled ? 'bg-background text-foreground' : 'bg-[#f4f6f9] text-muted-foreground',
                         )}
                       >
@@ -259,13 +259,13 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                   </ul>
 
                   {r.geneTip && (
-                    <p className="mt-2 rounded-lg bg-[#f0f7ff] px-2.5 py-1.5 text-[11px] leading-4 text-primary">
+                    <p className="mt-2 rounded-lg bg-[#f0f7ff] px-2.5 py-1.5 text-caption leading-4 text-primary">
                       基因提示：{r.geneTip}
                     </p>
                   )}
 
                   <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-                    <span className="min-w-0 truncate text-[11px] text-muted-foreground">
+                    <span className="min-w-0 truncate text-caption text-muted-foreground">
                       {r.enabled ? (
                         <>
                           {advanceText(r.advance)}短信 · <span className="tabular-nums">{courseText(r)}</span>
@@ -278,7 +278,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                       <button
                         type="button"
                         onClick={() => setPendingDelete(r)}
-                        className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-[12px] text-foreground"
+                        className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-caption text-foreground"
                         aria-label={`删除 ${r.drug} 的提醒`}
                       >
                         <Trash2 className="size-3.5" aria-hidden="true" />
@@ -287,7 +287,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                       <button
                         type="button"
                         onClick={() => setForm({ target: r })}
-                        className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-[12px] text-primary"
+                        className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-caption text-primary"
                         aria-label={`编辑 ${r.drug} 的提醒`}
                       >
                         <PencilLine className="size-3.5" aria-hidden="true" />
@@ -299,7 +299,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
               ))}
             </ul>
 
-            <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
+            <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
               提醒仅作辅助，请遵医嘱用药；短信免费发送，疗程结束后自动停止。
             </p>
@@ -311,7 +311,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
               onClick={openAdd}
               aria-disabled={full}
               className={cn(
-                'flex h-10 w-full items-center justify-center gap-1 rounded-full text-[14px] font-medium',
+                'flex h-10 w-full items-center justify-center gap-1 rounded-full text-body font-medium',
                 full ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
               )}
             >
@@ -337,31 +337,31 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
             >
               <Trash2 className="size-5" />
             </span>
-            <h2 id="delete-reminder-title" className="mt-3 text-[16px] font-semibold text-foreground">
+            <h2 id="delete-reminder-title" className="mt-3 text-title font-semibold text-foreground">
               确定删除该提醒？
             </h2>
-            <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-left text-[12px] leading-[18px] text-foreground">
+            <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-left text-caption leading-[18px] text-foreground">
               {pendingDelete.drug} · {memberName(pendingDelete.memberId)}
               <br />
               <span className="text-muted-foreground">
                 {scheduleText(pendingDelete)} <span className="tabular-nums">{pendingDelete.times.join('、')}</span>
               </span>
             </p>
-            <p id="delete-reminder-desc" className="mt-2 text-[13px] leading-5 text-muted-foreground">
+            <p id="delete-reminder-desc" className="mt-2 text-note leading-5 text-muted-foreground">
               删除后将不再向 <span className="tabular-nums">{pendingDelete.phone}</span> 发送短信，且不可恢复。仅想暂停可关闭开关。
             </p>
             <div className="mt-4 flex gap-2.5">
               <button
                 type="button"
                 onClick={() => setPendingDelete(null)}
-                className="h-10 flex-1 rounded-full border border-border text-[14px] text-foreground"
+                className="h-10 flex-1 rounded-full border border-border text-body text-foreground"
               >
                 取消
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="h-10 flex-1 rounded-full bg-destructive text-[14px] font-medium text-white"
+                className="h-10 flex-1 rounded-full bg-destructive text-body font-medium text-white"
               >
                 确认删除
               </button>
@@ -375,7 +375,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
       {toast && (
         <p
           role="status"
-          className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-lg bg-black/75 px-4 py-2 text-[13px] text-white"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-lg bg-black/75 px-4 py-2 text-note text-white"
         >
           {toast}
         </p>
@@ -390,14 +390,14 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       <span className="flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
         <BellOff className="size-11 text-primary" strokeWidth={1.4} />
       </span>
-      <h2 className="mt-5 text-[16px] font-semibold text-foreground">还没有用药提醒</h2>
-      <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
+      <h2 className="mt-5 text-title font-semibold text-foreground">还没有用药提醒</h2>
+      <p className="mt-1.5 text-note leading-5 text-muted-foreground">
         为自己或家人设置服药时间，到点将通过短信提醒，不错过每一次用药。
       </p>
       <button
         type="button"
         onClick={onAdd}
-        className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-[14px] font-medium text-primary-foreground active:opacity-90"
+        className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-body font-medium text-primary-foreground active:opacity-90"
       >
         <Plus className="size-4" aria-hidden="true" />
         添加用药提醒
@@ -509,7 +509,7 @@ function ReminderFormScreen({
     <SubPage title={editing ? '编辑用药提醒' : '添加用药提醒'} titleId="reminder-form-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         <section aria-labelledby="reminder-drug-title" className="rounded-2xl bg-white p-3.5">
-          <h2 id="reminder-drug-title" className="text-[14px] font-semibold text-foreground">
+          <h2 id="reminder-drug-title" className="text-body font-semibold text-foreground">
             用药信息
           </h2>
 
@@ -522,22 +522,22 @@ function ReminderFormScreen({
               <Camera className="size-4" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[13px] font-medium text-foreground">
+              <span className="block text-note font-medium text-foreground">
                 {scanned.size ? '重新拍照识别' : '拍照识别药盒'}
               </span>
-              <span className="block text-[11px] text-muted-foreground">自动识别药名、剂量与用法，并填入下方</span>
+              <span className="block text-caption text-muted-foreground">自动识别药名、剂量与用法，并填入下方</span>
             </span>
             <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
           </button>
 
           {scanned.size > 0 && (
-            <p role="status" className="mt-2 flex items-start gap-1.5 rounded-lg bg-[#fff8e6] px-2.5 py-2 text-[11px] leading-relaxed text-[#8a5a00]">
+            <p role="status" className="mt-2 flex items-start gap-1.5 rounded-lg bg-[#fff8e6] px-2.5 py-2 text-caption leading-relaxed text-[#8a5a00]">
               <Sparkles className="mt-px size-3.5 shrink-0" aria-hidden="true" />
               已根据药盒照片自动填充，标记「识别」的内容请核对，如有误可直接修改
             </p>
           )}
 
-          <p id="reminder-member-label" className="mt-3 text-[12px] text-muted-foreground">
+          <p id="reminder-member-label" className="mt-3 text-caption text-muted-foreground">
             用药人
           </p>
           <ChipGroup
@@ -548,7 +548,7 @@ function ReminderFormScreen({
           />
 
           <label className="mt-3 block">
-            <span className="flex items-center text-[12px] text-muted-foreground">
+            <span className="flex items-center text-caption text-muted-foreground">
               药品名称
               {scanned.has('drug') && <ScanBadge />}
             </span>
@@ -561,7 +561,7 @@ function ReminderFormScreen({
               }}
               placeholder="请输入药品通用名或商品名"
               aria-invalid={!!errors.drug}
-              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-[14px] text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
+              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-body text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
             />
           </label>
           <FieldError msg={errors.drug} />
@@ -572,7 +572,7 @@ function ReminderFormScreen({
                   key={d}
                   type="button"
                   onClick={() => setDrug(d)}
-                  className="h-6 rounded-full border border-border px-2.5 text-[11px] text-muted-foreground"
+                  className="h-6 rounded-full border border-border px-2.5 text-caption text-muted-foreground"
                 >
                   {d}
                 </button>
@@ -581,7 +581,7 @@ function ReminderFormScreen({
           )}
 
           <div className="mt-3">
-            <span id="reminder-dose-label" className="flex items-center text-[12px] text-muted-foreground">
+            <span id="reminder-dose-label" className="flex items-center text-caption text-muted-foreground">
               单次剂量
               {scanned.has('dose') && <ScanBadge />}
             </span>
@@ -596,7 +596,7 @@ function ReminderFormScreen({
                 }}
                 aria-labelledby="reminder-dose-label"
                 aria-invalid={!!errors.dose}
-                className="h-9 w-20 rounded-xl bg-muted px-3 text-center text-[14px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                className="h-9 w-20 rounded-xl bg-muted px-3 text-center text-body tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
               />
               <ChipGroup
                 labelledBy="reminder-dose-label"
@@ -612,7 +612,7 @@ function ReminderFormScreen({
             <FieldError msg={errors.dose} />
           </div>
 
-          <p id="reminder-meal-label" className="mt-3 flex items-center text-[12px] text-muted-foreground">
+          <p id="reminder-meal-label" className="mt-3 flex items-center text-caption text-muted-foreground">
             服用要求
             {scanned.has('meal') && <ScanBadge />}
           </p>
@@ -628,11 +628,11 @@ function ReminderFormScreen({
         </section>
 
         <section aria-labelledby="reminder-plan-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <h2 id="reminder-plan-title" className="text-[14px] font-semibold text-foreground">
+          <h2 id="reminder-plan-title" className="text-body font-semibold text-foreground">
             服用计划
           </h2>
 
-          <p id="reminder-freq-label" className="mt-3 text-[12px] text-muted-foreground">
+          <p id="reminder-freq-label" className="mt-3 text-caption text-muted-foreground">
             用药频率
           </p>
           <ChipGroup
@@ -660,7 +660,7 @@ function ReminderFormScreen({
                         clear('weekdays')
                       }}
                       className={cn(
-                        'h-8 rounded-lg text-[12px]',
+                        'h-8 rounded-lg text-caption',
                         on ? 'bg-primary font-medium text-primary-foreground' : 'bg-muted text-foreground',
                       )}
                     >
@@ -674,14 +674,14 @@ function ReminderFormScreen({
           )}
 
           <div className="mt-3 flex items-center justify-between">
-            <span className="text-[12px] text-muted-foreground">
+            <span className="text-caption text-muted-foreground">
               服用时间 <span className="tabular-nums">({times.length}/{MAX_TIMES})</span>
             </span>
             <button
               type="button"
               onClick={addTime}
               disabled={times.length >= MAX_TIMES}
-              className="flex items-center gap-0.5 text-[12px] font-medium text-primary disabled:text-muted-foreground"
+              className="flex items-center gap-0.5 text-caption font-medium text-primary disabled:text-muted-foreground"
             >
               <Plus className="size-3.5" aria-hidden="true" />
               添加时间
@@ -695,7 +695,7 @@ function ReminderFormScreen({
                   value={t}
                   onChange={(e) => setTime(i, e.target.value)}
                   aria-label={`第 ${i + 1} 次服用时间`}
-                  className="h-9 w-full rounded-xl bg-secondary px-2 text-center text-[14px] font-medium tabular-nums text-primary outline-none focus:ring-2 focus:ring-primary/30"
+                  className="h-9 w-full rounded-xl bg-secondary px-2 text-center text-body font-medium tabular-nums text-primary outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 {times.length > 1 && (
                   <button
@@ -714,16 +714,16 @@ function ReminderFormScreen({
 
           <div className="mt-3 grid grid-cols-2 gap-2">
             <label className="block">
-              <span className="text-[12px] text-muted-foreground">开始日期</span>
+              <span className="text-caption text-muted-foreground">开始日期</span>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="mt-1.5 h-9 w-full rounded-xl bg-muted px-2.5 text-[13px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                className="mt-1.5 h-9 w-full rounded-xl bg-muted px-2.5 text-note tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
               />
             </label>
             <label className="block">
-              <span className="text-[12px] text-muted-foreground">疗程（天）</span>
+              <span className="text-caption text-muted-foreground">疗程（天）</span>
               <input
                 inputMode="numeric"
                 value={longTerm ? '长期' : days}
@@ -733,13 +733,13 @@ function ReminderFormScreen({
                   clear('days')
                 }}
                 aria-invalid={!!errors.days}
-                className="mt-1.5 h-9 w-full rounded-xl bg-muted px-2.5 text-[13px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30 disabled:text-muted-foreground"
+                className="mt-1.5 h-9 w-full rounded-xl bg-muted px-2.5 text-note tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30 disabled:text-muted-foreground"
               />
             </label>
           </div>
           <FieldError msg={errors.days} />
           <div className="mt-2.5 flex items-center justify-between">
-            <span id="reminder-longterm-label" className="text-[13px] text-foreground">
+            <span id="reminder-longterm-label" className="text-note text-foreground">
               长期服用
             </span>
             <Switch
@@ -754,12 +754,12 @@ function ReminderFormScreen({
         </section>
 
         <section aria-labelledby="reminder-sms-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <h2 id="reminder-sms-title" className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+          <h2 id="reminder-sms-title" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
             <MessageSquareText className="size-4 text-primary" aria-hidden="true" />
             短信通知
           </h2>
           <label className="mt-3 block">
-            <span className="text-[12px] text-muted-foreground">接收手机号</span>
+            <span className="text-caption text-muted-foreground">接收手机号</span>
             <input
               type="tel"
               inputMode="numeric"
@@ -771,11 +771,11 @@ function ReminderFormScreen({
                 clear('phone')
               }}
               aria-invalid={!!errors.phone}
-              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-[14px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-body tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
             />
           </label>
           <FieldError msg={errors.phone} />
-          <p id="reminder-advance-label" className="mt-3 text-[12px] text-muted-foreground">
+          <p id="reminder-advance-label" className="mt-3 text-caption text-muted-foreground">
             发送时间
           </p>
           <ChipGroup
@@ -785,8 +785,8 @@ function ReminderFormScreen({
             onChange={setAdvance}
           />
           <div className="mt-3 rounded-xl bg-muted p-2.5">
-            <p className="text-[11px] text-muted-foreground">短信预览</p>
-            <p className="mt-1 text-[12px] leading-[18px] text-foreground">
+            <p className="text-caption text-muted-foreground">短信预览</p>
+            <p className="mt-1 text-caption leading-[18px] text-foreground">
               【都正生物】{memberName(memberId)}您好，{times[0] ?? '08:00'} 请{meal === '不限' ? '' : meal}服用
               {drug || '药品'} {dose}
               {unit}。{note ? `备注：${note}。` : ''}回 TD 退订
@@ -796,18 +796,18 @@ function ReminderFormScreen({
 
         <section aria-label="备注" className="mt-2.5 rounded-2xl bg-white p-3.5">
           <label className="block">
-            <span className="text-[12px] text-muted-foreground">备注（选填）</span>
+            <span className="text-caption text-muted-foreground">备注（选填）</span>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value.slice(0, 40))}
               rows={2}
               placeholder="如：与其他药物间隔 2 小时"
-              className="mt-1.5 w-full resize-none rounded-xl bg-muted px-3 py-2 text-[13px] leading-5 text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
+              className="mt-1.5 w-full resize-none rounded-xl bg-muted px-3 py-2 text-note leading-5 text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
             />
           </label>
         </section>
 
-        <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
+        <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
           <AlarmClock className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
           提醒仅作辅助，不替代医嘱；如需调整剂量请咨询医生或药师。
         </p>
@@ -817,7 +817,7 @@ function ReminderFormScreen({
         <button
           type="button"
           onClick={save}
-          className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
+          className="h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
         >
           {editing ? '保存修改' : '保存并开启提醒'}
         </button>
@@ -851,7 +851,7 @@ function ChipGroup<T extends string | number>({
           aria-checked={value === i.value}
           onClick={() => onChange(i.value)}
           className={cn(
-            'h-8 rounded-full border px-3 text-[12px] transition-colors',
+            'h-8 rounded-full border px-3 text-caption transition-colors',
             value === i.value ? 'border-primary bg-secondary font-medium text-primary' : 'border-border text-foreground',
           )}
         >
@@ -897,8 +897,8 @@ type ScanField = 'drug' | 'dose' | 'meal' | 'times'
 
 function ScanBadge() {
   return (
-    <span className="ml-1.5 inline-flex h-4 items-center gap-0.5 rounded bg-[#fff1cc] px-1 text-[10px] font-medium text-[#8a5a00]">
-      <Sparkles className="size-2.5" aria-hidden="true" />
+    <span className="ml-1.5 inline-flex h-4 items-center gap-0.5 rounded bg-[#fff1cc] px-1 text-tag font-medium text-[#8a5a00]">
+      <Sparkles className="size-3" aria-hidden="true" />
       识别
     </span>
   )
@@ -907,7 +907,7 @@ function ScanBadge() {
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null
   return (
-    <p role="alert" className="pt-1 text-[11px] text-destructive">
+    <p role="alert" className="pt-1 text-caption text-destructive">
       {msg}
     </p>
   )

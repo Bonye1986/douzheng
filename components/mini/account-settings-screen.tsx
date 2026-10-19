@@ -36,8 +36,8 @@ function Row({
   return (
     <li>
       <button type="button" onClick={onClick} className="flex min-h-12 w-full items-center gap-2 px-3.5 py-3 text-left">
-        <span className={cn('flex-1 text-[14px]', danger ? 'text-destructive' : 'text-foreground')}>{label}</span>
-        {value && <span className="text-[13px] text-muted-foreground">{value}</span>}
+        <span className={cn('flex-1 text-body', danger ? 'text-destructive' : 'text-foreground')}>{label}</span>
+        {value && <span className="text-note text-muted-foreground">{value}</span>}
         <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
       </button>
     </li>
@@ -47,7 +47,7 @@ function Row({
 function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <section className="mt-2.5" aria-label={title}>
-      {title && <h2 className="px-1.5 pb-1.5 text-[12px] text-muted-foreground">{title}</h2>}
+      {title && <h2 className="px-1.5 pb-1.5 text-caption text-muted-foreground">{title}</h2>}
       <ul className="divide-y divide-[#eef1f6] rounded-2xl bg-white">{children}</ul>
     </section>
   )
@@ -79,7 +79,7 @@ function CodeInput({
   const [seconds, start] = useCountdown()
   return (
     <div className="flex items-center gap-2 px-3.5 py-3">
-      <label htmlFor={id} className="w-16 shrink-0 text-[14px] text-foreground">
+      <label htmlFor={id} className="w-16 shrink-0 text-body text-foreground">
         验证码
       </label>
       <input
@@ -89,7 +89,7 @@ function CodeInput({
         value={code}
         onChange={(e) => onCode(e.target.value.replace(/\D/g, ''))}
         placeholder="6 位短信验证码"
-        className="min-w-0 flex-1 bg-transparent text-[14px] tabular-nums outline-none placeholder:text-muted-foreground/70"
+        className="min-w-0 flex-1 bg-transparent text-body tabular-nums outline-none placeholder:text-muted-foreground/70"
       />
       <button
         type="button"
@@ -98,7 +98,7 @@ function CodeInput({
           start()
           onSent?.()
         }}
-        className="shrink-0 text-[13px] font-medium text-primary disabled:text-muted-foreground"
+        className="shrink-0 text-note font-medium text-primary disabled:text-muted-foreground"
       >
         {seconds > 0 ? <span className="tabular-nums">{seconds}s 后重发</span> : '获取验证码'}
       </button>
@@ -138,24 +138,24 @@ function ConfirmDialog({
         >
           {icon}
         </span>
-        <h2 id={`${id}-title`} className="mt-3 text-[16px] font-semibold text-foreground">
+        <h2 id={`${id}-title`} className="mt-3 text-title font-semibold text-foreground">
           {title}
         </h2>
-        <p id={`${id}-desc`} className="mt-2 text-[13px] leading-5 text-muted-foreground">
+        <p id={`${id}-desc`} className="mt-2 text-note leading-5 text-muted-foreground">
           {desc}
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2.5">
           <button
             type="button"
             onClick={onCancel}
-            className="h-10 rounded-full bg-muted text-[14px] font-medium text-foreground"
+            className="h-10 rounded-full bg-muted text-body font-medium text-foreground"
           >
             取消
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="h-10 rounded-full bg-destructive text-[14px] font-medium text-white"
+            className="h-10 rounded-full bg-destructive text-body font-medium text-white"
           >
             {confirm}
           </button>
@@ -182,7 +182,7 @@ function AvatarSheet({ onClose, onPick }: { onClose: () => void; onPick: (msg: s
               <button
                 type="button"
                 onClick={() => onPick('头像已更新')}
-                className="h-13 w-full text-center text-[15px] text-foreground active:bg-muted"
+                className="h-13 w-full text-center text-title text-foreground active:bg-muted"
               >
                 {o}
               </button>
@@ -192,7 +192,7 @@ function AvatarSheet({ onClose, onPick }: { onClose: () => void; onPick: (msg: s
         <button
           type="button"
           onClick={onClose}
-          className="mt-2 h-13 w-full bg-white text-center text-[15px] text-muted-foreground active:bg-muted"
+          className="mt-2 h-13 w-full bg-white text-center text-title text-muted-foreground active:bg-muted"
         >
           取消
         </button>
@@ -207,7 +207,7 @@ function Toast({ message }: { message: string }) {
       role="status"
       className="pointer-events-none absolute inset-x-0 top-1/2 z-50 flex justify-center px-10 motion-safe:animate-in motion-safe:fade-in"
     >
-      <span className="flex items-center gap-1.5 rounded-xl bg-black/75 px-4 py-2.5 text-[13px] text-white">
+      <span className="flex items-center gap-1.5 rounded-xl bg-black/75 px-4 py-2.5 text-note text-white">
         <CheckCircle2 className="size-4" aria-hidden="true" />
         {message}
       </span>
@@ -246,7 +246,7 @@ function MainView({
       <Card title="个人资料">
         <li>
           <button type="button" onClick={onAvatar} className="flex w-full items-center gap-2 px-3.5 py-3 text-left">
-            <span className="flex-1 text-[14px] text-foreground">头像</span>
+            <span className="flex-1 text-body text-foreground">头像</span>
                 <span className="relative flex size-11 items-center justify-center">
                   <DefaultAvatar className="size-11" />
               <span className="absolute -bottom-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-white text-primary shadow-sm">
@@ -282,7 +282,7 @@ function MainView({
       <button
         type="button"
         onClick={onLogout}
-        className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-white text-[15px] font-medium text-destructive"
+        className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-white text-title font-medium text-destructive"
       >
         <LogOut className="size-4" aria-hidden="true" />
         退出登录
@@ -300,14 +300,14 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
-      <ol className="flex items-center gap-2 px-1 text-[12px]" aria-label="更换步骤">
+      <ol className="flex items-center gap-2 px-1 text-caption" aria-label="更换步骤">
         {['验证原手机号', '绑定新手机号'].map((s, i) => {
           const active = (step === 'verify' ? 0 : 1) >= i
           return (
             <li key={s} className="flex flex-1 items-center gap-1.5" aria-current={active ? 'step' : undefined}>
               <span
                 className={cn(
-                  'flex size-5 items-center justify-center rounded-full text-[11px] font-medium tabular-nums',
+                  'flex size-5 items-center justify-center rounded-full text-caption font-medium tabular-nums',
                   active ? 'bg-primary text-primary-foreground' : 'bg-[#e3e8f0] text-muted-foreground',
                 )}
               >
@@ -324,11 +324,11 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
         <span className="flex size-12 items-center justify-center rounded-full bg-[#e8f1ff] text-primary">
           <Smartphone className="size-6" aria-hidden="true" />
         </span>
-        <p className="mt-2 text-[13px] text-muted-foreground">
+        <p className="mt-2 text-note text-muted-foreground">
           {step === 'verify' ? '当前绑定手机号' : '请输入要绑定的新手机号'}
         </p>
         {step === 'verify' && (
-          <p className="mt-0.5 text-[20px] font-semibold tabular-nums text-foreground">{maskPhone(phone)}</p>
+          <p className="mt-0.5 text-headline font-semibold tabular-nums text-foreground">{maskPhone(phone)}</p>
         )}
       </div>
 
@@ -338,7 +338,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
         ) : (
           <>
             <div className="flex items-center gap-2 px-3.5 py-3">
-              <label htmlFor="new-phone" className="w-16 shrink-0 text-[14px] text-foreground">
+              <label htmlFor="new-phone" className="w-16 shrink-0 text-body text-foreground">
                 新手机号
               </label>
               <input
@@ -348,7 +348,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, ''))}
                 placeholder="请输入 11 位手机号"
-                className="min-w-0 flex-1 bg-transparent text-[14px] tabular-nums outline-none placeholder:text-muted-foreground/70"
+                className="min-w-0 flex-1 bg-transparent text-body tabular-nums outline-none placeholder:text-muted-foreground/70"
               />
             </div>
             <CodeInput id="new-code" code={newCode} onCode={setNewCode} canSend={phoneValid} />
@@ -356,10 +356,10 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
         )}
       </div>
       {step === 'bind' && newPhone.length === 11 && newPhone === phone && (
-        <p className="mt-1.5 px-1.5 text-[11px] text-destructive">新手机号不能与当前手机号相同</p>
+        <p className="mt-1.5 px-1.5 text-caption text-destructive">新手机号不能与当前手机号相同</p>
       )}
 
-      <ul className="mt-3 space-y-1 px-1.5 text-[11px] leading-4 text-muted-foreground">
+      <ul className="mt-3 space-y-1 px-1.5 text-caption leading-4 text-muted-foreground">
         <li>· 更换后，登录账号、短信通知（用药提醒、报告出具等）将使用新手机号</li>
         <li>· 检测人信息中填写的手机号不会自动变更，可在检测人管理中修改</li>
         <li>· 原手机号无法接收验证码？请联系客服人工处理</li>
@@ -369,7 +369,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
         type="button"
         disabled={step === 'verify' ? oldCode.length !== 6 : !phoneValid || newCode.length !== 6}
         onClick={() => (step === 'verify' ? setStep('bind') : onDone(newPhone))}
-        className="mt-auto h-11 w-full shrink-0 rounded-full bg-primary text-[15px] font-medium text-primary-foreground disabled:opacity-40"
+        className="mt-auto h-11 w-full shrink-0 rounded-full bg-primary text-title font-medium text-primary-foreground disabled:opacity-40"
       >
         {step === 'verify' ? '下一步' : '确认更换'}
       </button>
@@ -394,41 +394,41 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
       <div className="flex items-start gap-2.5 rounded-2xl bg-warning-soft p-3.5">
         <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden="true" />
         <div>
-          <p className="text-[14px] font-semibold text-[#8a5410]">注销账号是不可恢复的操作</p>
-          <p className="mt-0.5 text-[12px] leading-[18px] text-[#8a5410]/80">
+          <p className="text-body font-semibold text-[#8a5410]">注销账号是不可恢复的操作</p>
+          <p className="mt-0.5 text-caption leading-[18px] text-[#8a5410]/80">
             提交后进入 7 天冷静期，期间重新登录即可撤销注销申请。
           </p>
         </div>
       </div>
 
       <section aria-labelledby="deactivate-notice" className="mt-2.5 rounded-2xl bg-white p-3.5">
-        <h2 id="deactivate-notice" className="text-[14px] font-semibold text-foreground">
+        <h2 id="deactivate-notice" className="text-body font-semibold text-foreground">
           注销后你将失去
         </h2>
         <ul className="mt-2 space-y-2">
           {deactivateNotices.map((n, i) => (
-            <li key={n} className="flex gap-2 text-[12px] leading-[18px] text-muted-foreground">
-              <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] tabular-nums text-foreground">
+            <li key={n} className="flex gap-2 text-caption leading-[18px] text-muted-foreground">
+              <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-muted text-tag tabular-nums text-foreground">
                 {i + 1}
               </span>
               {n}
             </li>
           ))}
         </ul>
-        <p className="mt-3 flex items-center gap-1.5 rounded-xl bg-[#eefaf3] px-3 py-2 text-[12px] text-[#1f8a55]">
+        <p className="mt-3 flex items-center gap-1.5 rounded-xl bg-[#eefaf3] px-3 py-2 text-caption text-[#1f8a55]">
           <ShieldCheck className="size-4 shrink-0" aria-hidden="true" />
           已检测：当前无进行中的订单，可以注销
         </p>
       </section>
 
       <section aria-label="身份验证" className="mt-2.5 rounded-2xl bg-white">
-        <p className="px-3.5 pt-3 text-[12px] text-muted-foreground">
+        <p className="px-3.5 pt-3 text-caption text-muted-foreground">
           验证码将发送至 <span className="tabular-nums text-foreground">{maskPhone(phone)}</span>
         </p>
         <CodeInput id="deactivate-code" code={code} onCode={setCode} canSend />
       </section>
 
-      <label className="mt-3 flex items-start gap-2 px-1.5 text-[12px] leading-[18px] text-muted-foreground">
+      <label className="mt-3 flex items-start gap-2 px-1.5 text-caption leading-[18px] text-muted-foreground">
         <input
           type="checkbox"
           checked={agreed}
@@ -444,7 +444,7 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
         type="button"
         disabled={!agreed || code.length !== 6}
         onClick={() => setConfirming(true)}
-        className="mt-auto h-11 w-full shrink-0 rounded-full bg-destructive text-[15px] font-medium text-white disabled:opacity-40"
+        className="mt-auto h-11 w-full shrink-0 rounded-full bg-destructive text-title font-medium text-white disabled:opacity-40"
       >
         申请注销
       </button>
@@ -487,7 +487,7 @@ function BottomSheet({
         onClick={(e) => e.stopPropagation()}
         className="rounded-t-2xl bg-white px-4 pb-6 pt-4 motion-safe:animate-in motion-safe:slide-in-from-bottom"
       >
-        <h2 id={`${id}-title`} className="text-center text-[16px] font-semibold text-foreground">
+        <h2 id={`${id}-title`} className="text-center text-title font-semibold text-foreground">
           {title}
         </h2>
         {children}
@@ -502,7 +502,7 @@ function SaveButton({ disabled, onClick }: { disabled: boolean; onClick: () => v
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="mt-4 h-11 w-full rounded-full bg-primary text-[15px] font-medium text-primary-foreground disabled:opacity-40"
+      className="mt-4 h-11 w-full rounded-full bg-primary text-title font-medium text-primary-foreground disabled:opacity-40"
     >
       保存
     </button>
@@ -556,13 +556,13 @@ function TextSheet({
           maxLength={config.maxLength}
           placeholder={config.placeholder}
           onChange={(e) => setDraft(e.target.value)}
-          className="h-11 min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground/70"
+          className="h-11 min-w-0 flex-1 bg-transparent text-body outline-none placeholder:text-muted-foreground/70"
         />
-        <span className="text-[11px] tabular-nums text-muted-foreground">
+        <span className="text-caption tabular-nums text-muted-foreground">
           {draft.length}/{config.maxLength}
         </span>
       </div>
-      <p className="mt-1.5 text-[11px] text-muted-foreground">{config.hint}</p>
+      <p className="mt-1.5 text-caption text-muted-foreground">{config.hint}</p>
       <SaveButton disabled={!trimmed || trimmed === value} onClick={() => onSave(trimmed)} />
     </BottomSheet>
   )
@@ -587,7 +587,7 @@ function GenderSheet({
               role="radio"
               aria-checked={value === g}
               onClick={() => onSave(g)}
-              className="flex h-12 w-full items-center justify-between px-1 text-[15px] text-foreground"
+              className="flex h-12 w-full items-center justify-between px-1 text-title text-foreground"
             >
               {genderLabel[g]}
               {value === g && <Check className="size-4.5 text-primary" aria-hidden="true" />}
@@ -614,9 +614,9 @@ function BirthSheet({ value, onSave, onClose }: { value: string; onSave: (v: str
         min="1900-01-01"
         max={today}
         onChange={(e) => setDraft(e.target.value)}
-        className="mt-4 h-11 w-full rounded-xl bg-[#f4f6fa] px-3 text-[14px] tabular-nums outline-none"
+        className="mt-4 h-11 w-full rounded-xl bg-[#f4f6fa] px-3 text-body tabular-nums outline-none"
       />
-      <p className="mt-1.5 text-[11px] text-muted-foreground">用于计算年龄及剂量相关指标，请如实填写</p>
+      <p className="mt-1.5 text-caption text-muted-foreground">用于计算年龄及剂量相关指标，请如实填写</p>
       <SaveButton disabled={!draft || draft === value || draft > today} onClick={() => onSave(draft)} />
     </BottomSheet>
   )

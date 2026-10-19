@@ -60,7 +60,7 @@ export function DesignBoard({ sections, header }: { sections: BoardSection[]; he
             >
               <ChevronLeft className="size-4" aria-hidden="true" />
             </button>
-            <p className="min-w-0 truncate text-center text-[14px] font-medium text-foreground">
+            <p className="min-w-0 truncate text-center text-body font-medium text-foreground">
               {activeScreen ? (
                 <>
                   <span className="mr-1.5 font-bold text-primary">{activeScreen.id}</span>
@@ -86,7 +86,7 @@ export function DesignBoard({ sections, header }: { sections: BoardSection[]; he
               {activeScreen ? activeScreen.node : <DemoApp skipLogin={skipLogin} />}
             </Fragment>
           </PhoneFrame>
-          <p className="text-[12px] text-muted-foreground">可在手机内直接点击操作，切换页面后会重置为初始状态</p>
+          <p className="text-caption text-muted-foreground">可在手机内直接点击操作，切换页面后会重置为初始状态</p>
         </section>
 
         <aside
@@ -139,7 +139,7 @@ function PageNav({
         onClick={() => onSelect(FULL_DEMO)}
         aria-current={activeId === FULL_DEMO ? 'page' : undefined}
         className={cn(
-          'flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[14px] font-medium transition-colors',
+          'flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-body font-medium transition-colors',
           activeId === FULL_DEMO ? 'bg-primary text-primary-foreground' : 'bg-secondary text-primary hover:bg-secondary/70',
         )}
       >
@@ -152,7 +152,7 @@ function PageNav({
           <section key={section.key} aria-labelledby={`nav-${section.key}`}>
             <h2
               id={`nav-${section.key}`}
-              className="flex items-center justify-between px-3 pb-1 text-[12px] font-bold text-muted-foreground"
+              className="flex items-center justify-between px-3 pb-1 text-caption font-bold text-muted-foreground"
             >
               {section.title}
               <span className="font-medium">{section.screens.length}</span>
@@ -168,11 +168,11 @@ function PageNav({
                       onClick={() => onSelect(screen.id)}
                       aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'flex w-full items-baseline gap-2 rounded-lg px-3 py-2 text-left text-[13px] transition-colors',
+                        'flex w-full items-baseline gap-2 rounded-lg px-3 py-2 text-left text-note transition-colors',
                         active ? 'bg-secondary font-medium text-primary' : 'text-foreground hover:bg-muted',
                       )}
                     >
-                      <span className={cn('shrink-0 tabular-nums text-[12px]', active ? 'text-primary' : 'text-muted-foreground')}>
+                      <span className={cn('shrink-0 tabular-nums text-caption', active ? 'text-primary' : 'text-muted-foreground')}>
                         {screen.id}
                       </span>
                       <span className="text-pretty">{screen.title}</span>
@@ -192,16 +192,16 @@ function DemoNote({ sections, onRestart }: { sections: BoardSection[]; onRestart
   return (
     <div className="flex flex-col gap-6 p-5">
       <div>
-        <p className="text-[13px] font-bold text-primary">完整体验</p>
-        <h2 className="mt-0.5 text-[18px] font-bold text-foreground">完整流程演示</h2>
-        <p className="mt-2 text-pretty text-[13px] leading-5 text-muted-foreground">
+        <p className="text-note font-bold text-primary">完整体验</p>
+        <h2 className="mt-0.5 text-heading font-bold text-foreground">完整流程演示</h2>
+        <p className="mt-2 text-pretty text-note leading-5 text-muted-foreground">
           从登录开始，所有页面、弹层与跳转均可在手机中直接点击操作，与真实小程序流程一致。也可在左侧目录直接打开任一页面。
         </p>
         <div className="mt-4 flex gap-2">
           <button
             type="button"
             onClick={() => onRestart(false)}
-            className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[13px] font-medium text-primary-foreground"
+            className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-note font-medium text-primary-foreground"
           >
             <RotateCcw className="size-3.5" aria-hidden="true" />
             从登录开始
@@ -209,7 +209,7 @@ function DemoNote({ sections, onRestart }: { sections: BoardSection[]; onRestart
           <button
             type="button"
             onClick={() => onRestart(true)}
-            className="h-9 flex-1 rounded-full border border-primary text-[13px] font-medium text-primary"
+            className="h-9 flex-1 rounded-full border border-primary text-note font-medium text-primary"
           >
             跳过登录进入首页
           </button>
@@ -220,12 +220,12 @@ function DemoNote({ sections, onRestart }: { sections: BoardSection[]; onRestart
         <ol className="flex flex-col gap-3">
           {sections.map((section, index) => (
             <li key={section.key} className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-[12px] font-bold text-primary">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-caption font-bold text-primary">
                 {index + 1}
               </span>
               <div>
-                <p className="text-[14px] font-medium text-foreground">{section.title}</p>
-                <p className="mt-0.5 text-pretty text-[12px] leading-[18px] text-muted-foreground">{section.summary}</p>
+                <p className="text-body font-medium text-foreground">{section.title}</p>
+                <p className="mt-0.5 text-pretty text-caption leading-[18px] text-muted-foreground">{section.summary}</p>
               </div>
             </li>
           ))}
@@ -251,16 +251,16 @@ function ScreenNote({
   return (
     <div className="flex flex-col">
       <div className="border-b border-border px-5 py-4">
-        <p className="text-[13px] font-bold text-primary">
+        <p className="text-note font-bold text-primary">
           页面 {screen.id}
           {sectionTitle && <span className="font-medium text-muted-foreground"> · {sectionTitle}</span>}
         </p>
-        <h2 className="mt-0.5 text-pretty text-[18px] font-bold text-foreground">{screen.title}</h2>
+        <h2 className="mt-0.5 text-pretty text-heading font-bold text-foreground">{screen.title}</h2>
       </div>
 
       <div className="flex flex-col gap-6 px-5 py-5">
         <NoteBlock title="页面概述">
-          <p className="text-pretty text-[14px] leading-6 text-muted-foreground">{screen.desc}</p>
+          <p className="text-pretty text-body leading-6 text-muted-foreground">{screen.desc}</p>
         </NoteBlock>
         {note && (
           <>
@@ -273,7 +273,7 @@ function ScreenNote({
             <NoteBlock title="页面跳转">
               <ul className="flex flex-wrap gap-2">
                 {note.links.map((link) => (
-                  <li key={link} className="rounded-lg bg-secondary px-3 py-1.5 text-[13px] text-primary">
+                  <li key={link} className="rounded-lg bg-secondary px-3 py-1.5 text-note text-primary">
                     {renumber(link)}
                   </li>
                 ))}
@@ -289,7 +289,7 @@ function ScreenNote({
 function NoteBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section>
-      <h3 className="mb-2.5 flex items-center gap-2 text-[15px] font-bold text-foreground">
+      <h3 className="mb-2.5 flex items-center gap-2 text-title font-bold text-foreground">
         <span className="h-3.5 w-1 rounded-full bg-primary" aria-hidden="true" />
         {title}
       </h3>
@@ -302,9 +302,9 @@ function NoteList({ items, numbered = false }: { items: string[]; numbered?: boo
   return (
     <ul className="flex flex-col gap-2">
       {items.map((item, index) => (
-        <li key={item} className="flex gap-2.5 text-[14px] leading-6 text-foreground">
+        <li key={item} className="flex gap-2.5 text-body leading-6 text-foreground">
           {numbered ? (
-            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary">
+            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-secondary text-caption font-bold text-primary">
               {index + 1}
             </span>
           ) : (

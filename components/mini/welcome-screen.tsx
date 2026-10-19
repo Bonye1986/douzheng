@@ -65,12 +65,12 @@ export function WelcomeScreen({
             <BrandLogo />
           </div>
 
-          <h1 className="text-balance text-[30px] font-bold leading-[1.3]">
+          <h1 className="text-balance text-display font-bold leading-[1.3]">
             看懂基因，
             <br />
             <span className="text-primary">更好地了解用药</span>
           </h1>
-          <p className="mt-3 text-[14px] leading-6 text-muted-foreground">
+          <p className="mt-3 text-body leading-6 text-muted-foreground">
             登录后即可预约检测、查询报告、获取个体化用药参考
           </p>
 
@@ -78,7 +78,7 @@ export function WelcomeScreen({
             {highlights.map(({ icon: Icon, label }) => (
               <li
                 key={label}
-                className="flex items-center gap-1.5 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-[12px] text-secondary-foreground backdrop-blur"
+                className="flex items-center gap-1.5 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-caption text-secondary-foreground backdrop-blur"
               >
                 <Icon className="size-3.5 text-accent" aria-hidden="true" />
                 {label}
@@ -90,19 +90,19 @@ export function WelcomeScreen({
             <button
               type="button"
               onClick={guard(onWechatLogin)}
-              className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-[16px] font-medium text-primary-foreground shadow-[0_10px_24px_#3a82e438] transition-transform active:scale-[0.98]"
+              className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-title font-medium text-primary-foreground shadow-[0_10px_24px_#3a82e438] transition-transform active:scale-[0.98]"
             >
-              <Smartphone className="size-[18px]" aria-hidden="true" />
+              <Smartphone className="size-4.5" aria-hidden="true" />
               微信手机号快捷登录
             </button>
             <button
               type="button"
               onClick={onCancel}
-              className="flex h-12 items-center justify-center rounded-full border border-border bg-white text-[16px] font-medium text-muted-foreground transition-colors active:bg-secondary"
+              className="flex h-12 items-center justify-center rounded-full border border-border bg-white text-title font-medium text-muted-foreground transition-colors active:bg-secondary"
             >
               暂不登录
             </button>
-            <p className="text-center text-[12px] text-muted-foreground">未注册的手机号授权后将自动创建账号</p>
+            <p className="text-center text-caption text-muted-foreground">未注册的手机号授权后将自动创建账号</p>
           </div>
 
           {notice && noticeVisible && (
@@ -111,7 +111,7 @@ export function WelcomeScreen({
               className="pointer-events-none absolute inset-x-0 top-[42%] mx-auto flex w-fit max-w-[260px] flex-col items-center gap-2 rounded-xl bg-[#2a3a52]/80 px-5 py-4 text-center backdrop-blur"
             >
               <CircleAlert className="size-7 text-white" aria-hidden="true" />
-              <p className="text-[14px] leading-5 text-white">{notice}</p>
+              <p className="text-body leading-5 text-white">{notice}</p>
             </div>
           )}
 
@@ -120,7 +120,7 @@ export function WelcomeScreen({
   <p
   role="alert"
   aria-hidden={!(warn && !agreed)}
-  className={`mt-2 h-4 pl-6 text-[12px] leading-4 text-destructive ${
+  className={`mt-2 h-4 pl-6 text-caption leading-4 text-destructive ${
   warn && !agreed ? "visible" : "invisible"
   }`}
   >

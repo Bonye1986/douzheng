@@ -185,7 +185,7 @@ function formatViews(n: number) {
 
 function ArticleMeta({ article }: { article: Article }) {
   return (
-    <span className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
+    <span className="flex items-center gap-2.5 text-caption text-muted-foreground">
       <span className="flex items-center gap-0.5">
         <Clock className="size-3" aria-hidden="true" />
         <span className="tabular-nums">{article.minutes}</span> 分钟
@@ -224,7 +224,7 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="搜索采样、报告、授权等问题"
-            className="min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
+            className="min-w-0 flex-1 bg-transparent text-note outline-none placeholder:text-muted-foreground"
           />
           {keyword && (
             <button type="button" onClick={() => setKeyword('')} aria-label="清空搜索" className="text-muted-foreground">
@@ -242,7 +242,7 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
                 role="tab"
                 aria-selected={active}
                 onClick={() => setCategory(c.key)}
-                className={`h-7 shrink-0 rounded-full px-3 text-[12px] ${
+                className={`h-7 shrink-0 rounded-full px-3 text-caption ${
                   active ? 'bg-primary font-medium text-primary-foreground' : 'bg-muted text-foreground'
                 }`}
               >
@@ -262,13 +262,13 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
           >
             <div className="relative aspect-[16/8] w-full bg-secondary">
               <Image src={featured.cover!} alt="" fill sizes="360px" className="object-cover" />
-              <span className="absolute left-2.5 top-2.5 rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+              <span className="absolute left-2.5 top-2.5 rounded-full bg-primary px-2 py-0.5 text-tag font-medium text-primary-foreground">
                 新手必读
               </span>
             </div>
             <div className="p-3">
-              <h2 className="text-[15px] font-semibold text-foreground">{featured.title}</h2>
-              <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">{featured.summary}</p>
+              <h2 className="text-title font-semibold text-foreground">{featured.title}</h2>
+              <p className="mt-1 line-clamp-2 text-caption leading-relaxed text-muted-foreground">{featured.summary}</p>
               <div className="mt-2">
                 <ArticleMeta article={featured} />
               </div>
@@ -285,12 +285,12 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
                     <a.icon className="size-5" aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-medium text-foreground">{a.title}</span>
-                    <span className="mt-0.5 line-clamp-2 block text-[12px] leading-relaxed text-muted-foreground">
+                    <span className="block truncate text-body font-medium text-foreground">{a.title}</span>
+                    <span className="mt-0.5 line-clamp-2 block text-caption leading-relaxed text-muted-foreground">
                       {a.summary}
                     </span>
                     <span className="mt-1.5 flex items-center gap-2">
-                      <span className="rounded bg-muted px-1.5 py-px text-[10px] text-muted-foreground">
+                      <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
                         {categoryLabel[a.category]}
                       </span>
                       <ArticleMeta article={a} />
@@ -306,19 +306,19 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
               <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
                 <BookOpen className="size-7" aria-hidden="true" />
               </span>
-              <p className="mt-3 text-[14px] font-medium text-foreground">没有找到相关指南</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">换个关键词试试，或直接联系客服</p>
+              <p className="mt-3 text-body font-medium text-foreground">没有找到相关指南</p>
+              <p className="mt-1 text-caption text-muted-foreground">换个关键词试试，或直接联系客服</p>
             </div>
           )
         )}
 
         <div className="mt-2.5 flex items-center gap-3 rounded-2xl bg-white p-3">
           <Headphones className="size-5 shrink-0 text-primary" aria-hidden="true" />
-          <p className="flex-1 text-[12px] text-muted-foreground">没有找到答案？</p>
+          <p className="flex-1 text-caption text-muted-foreground">没有找到答案？</p>
           <button
             type="button"
             onClick={onContact}
-            className="h-7 rounded-full border border-primary px-3 text-[12px] text-primary"
+            className="h-7 rounded-full border border-primary px-3 text-caption text-primary"
           >
             联系客服
           </button>
@@ -347,9 +347,9 @@ function GuideDetail({
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto pb-4 [scrollbar-width:none]">
         <article className="bg-white px-4 pb-5 pt-3">
-          <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] text-primary">{categoryLabel[article.category]}</span>
-          <h2 className="mt-2 text-[19px] font-semibold leading-snug text-foreground text-balance">{article.title}</h2>
-          <div className="mt-2 flex items-center gap-2.5 text-[11px] text-muted-foreground">
+          <span className="rounded bg-secondary px-1.5 py-0.5 text-caption text-primary">{categoryLabel[article.category]}</span>
+          <h2 className="mt-2 text-heading font-semibold leading-snug text-foreground text-balance">{article.title}</h2>
+          <div className="mt-2 flex items-center gap-2.5 text-caption text-muted-foreground">
             <span>
               更新于 <span className="tabular-nums">{article.updated}</span>
             </span>
@@ -366,14 +366,14 @@ function GuideDetail({
             {article.content.map((b, i) => {
               if (b.type === 'h')
                 return (
-                  <h3 key={i} className="flex items-center gap-1.5 pt-1 text-[15px] font-semibold text-foreground">
+                  <h3 key={i} className="flex items-center gap-1.5 pt-1 text-title font-semibold text-foreground">
                     <span className="h-3.5 w-1 rounded-full bg-primary" aria-hidden="true" />
                     {b.text}
                   </h3>
                 )
               if (b.type === 'p')
                 return (
-                  <p key={i} className="text-[14px] leading-relaxed text-foreground/85">
+                  <p key={i} className="text-body leading-relaxed text-foreground/85">
                     {b.text}
                   </p>
                 )
@@ -381,8 +381,8 @@ function GuideDetail({
                 return (
                   <ol key={i} className="space-y-2">
                     {b.items.map((s, j) => (
-                      <li key={j} className="flex gap-2.5 text-[14px] leading-relaxed text-foreground/85">
-                        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-medium tabular-nums text-primary-foreground">
+                      <li key={j} className="flex gap-2.5 text-body leading-relaxed text-foreground/85">
+                        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-caption font-medium tabular-nums text-primary-foreground">
                           {j + 1}
                         </span>
                         <span>{s}</span>
@@ -391,7 +391,7 @@ function GuideDetail({
                   </ol>
                 )
               return (
-                <aside key={i} className="flex gap-2 rounded-xl bg-[#fff7ee] p-3 text-[13px] leading-relaxed text-[#9a5a1e]">
+                <aside key={i} className="flex gap-2 rounded-xl bg-[#fff7ee] p-3 text-note leading-relaxed text-[#9a5a1e]">
                   <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                   <p>{b.text}</p>
                 </aside>
@@ -400,7 +400,7 @@ function GuideDetail({
           </div>
 
           <section aria-label="文章反馈" className="mt-6 border-t border-border pt-4 text-center">
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-note text-muted-foreground">
               {feedback ? '感谢反馈，我们会持续优化内容' : '这篇指南对你有帮助吗？'}
             </p>
             <div className="mt-2.5 flex justify-center gap-3">
@@ -417,7 +417,7 @@ function GuideDetail({
                     type="button"
                     aria-pressed={active}
                     onClick={() => setFeedback(active ? null : f.key)}
-                    className={`flex h-8 items-center gap-1.5 rounded-full border px-4 text-[12px] ${
+                    className={`flex h-8 items-center gap-1.5 rounded-full border px-4 text-caption ${
                       active ? 'border-primary bg-secondary text-primary' : 'border-[#e3e8f0] text-foreground'
                     }`}
                   >
@@ -431,7 +431,7 @@ function GuideDetail({
         </article>
 
         <section aria-labelledby="guide-related" className="mt-2.5 bg-white px-4 py-3">
-          <h3 id="guide-related" className="text-[14px] font-semibold text-foreground">
+          <h3 id="guide-related" className="text-body font-semibold text-foreground">
             相关指南
           </h3>
           <ul className="mt-1">
@@ -439,7 +439,7 @@ function GuideDetail({
               <li key={a.id}>
                 <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-center gap-2.5 py-2.5 text-left">
                   <a.icon className="size-4 shrink-0 text-primary" aria-hidden="true" />
-                  <span className="flex-1 truncate text-[13px] text-foreground">{a.title}</span>
+                  <span className="flex-1 truncate text-note text-foreground">{a.title}</span>
                   <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
                 </button>
               </li>
@@ -452,7 +452,7 @@ function GuideDetail({
         <button
           type="button"
           onClick={onContact}
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary text-[14px] text-primary"
+          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary text-body text-primary"
         >
           <Headphones className="size-4" aria-hidden="true" />
           联系客服
@@ -460,7 +460,7 @@ function GuideDetail({
         <button
           type="button"
           onClick={() => onAskAi?.(article.title)}
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-body font-medium text-primary-foreground"
         >
           <Sparkles className="size-4" aria-hidden="true" />
           问问 AI

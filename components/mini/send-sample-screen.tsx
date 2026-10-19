@@ -43,11 +43,11 @@ export function SendSampleScreen({
           <span className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
             <CircleCheck className="size-9" aria-hidden="true" />
           </span>
-          <h2 className="mt-4 text-[18px] font-semibold text-foreground">提交成功</h2>
-          <p className="mt-1.5 text-center text-[13px] leading-5 text-muted-foreground">
+          <h2 className="mt-4 text-heading font-semibold text-foreground">提交成功</h2>
+          <p className="mt-1.5 text-center text-note leading-5 text-muted-foreground">
             顺丰快递员将尽快上门取件，请提前封装好样本
           </p>
-          <dl className="mt-6 w-full space-y-2.5 rounded-2xl bg-white p-4 text-[13px]">
+          <dl className="mt-6 w-full space-y-2.5 rounded-2xl bg-white p-4 text-note">
             {[
               ['订单编号', orderNo],
               ['受检人', examinees],
@@ -66,7 +66,7 @@ export function SendSampleScreen({
           <button
             type="button"
             onClick={onBack}
-            className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
+            className="h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
           >
             返回订单
           </button>
@@ -80,31 +80,31 @@ export function SendSampleScreen({
       <div className="flex-1 space-y-2.5 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         <section className="flex items-center gap-3 rounded-2xl bg-primary/10 p-3.5">
           <Truck className="size-5 shrink-0 text-primary" aria-hidden="true" />
-          <p className="text-[12px] leading-[18px] text-foreground">
+          <p className="text-caption leading-[18px] text-foreground">
             提交后顺丰快递员将上门取走样本，并直接送往实验室，全程免运费。
           </p>
         </section>
 
         <section aria-labelledby="pickup-address-label" className="rounded-2xl bg-white p-3.5">
-          <h2 id="pickup-address-label" className="text-[14px] font-semibold text-foreground">
+          <h2 id="pickup-address-label" className="text-body font-semibold text-foreground">
             取件地址
           </h2>
           {site && address ? (
             <div className="mt-2.5 flex w-full items-center gap-3">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-                <MapPin className="size-[18px]" aria-hidden="true" />
+                <MapPin className="size-4.5" aria-hidden="true" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-1.5 text-[14px] font-medium text-foreground">
+                <span className="flex items-center gap-1.5 text-body font-medium text-foreground">
                   {address.title}
-                  <span className="rounded bg-secondary px-1.5 py-px text-[10px] font-normal text-primary">采样机构</span>
+                  <span className="rounded bg-secondary px-1.5 py-px text-tag font-normal text-primary">采样机构</span>
                 </span>
                 {address.subtitle && (
-                  <span className="mt-0.5 block text-[12px] leading-[18px] text-foreground">
+                  <span className="mt-0.5 block text-caption leading-[18px] text-foreground">
                     联系电话：{address.subtitle}
                   </span>
                 )}
-                <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">{address.detail}</span>
+                <span className="mt-0.5 block text-caption leading-[18px] text-muted-foreground">{address.detail}</span>
               </span>
             </div>
           ) : (
@@ -115,35 +115,35 @@ export function SendSampleScreen({
               aria-label={address ? `取件地址：${address.detail}，点击更换` : '选择取件地址'}
             >
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-                <MapPin className="size-[18px]" aria-hidden="true" />
+                <MapPin className="size-4.5" aria-hidden="true" />
               </span>
               {address ? (
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] font-medium text-foreground">
+                  <span className="block text-body font-medium text-foreground">
                     {address.title}
                     <span className="ml-2 font-normal tabular-nums text-muted-foreground">{address.subtitle}</span>
                   </span>
-                  <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">{address.detail}</span>
+                  <span className="mt-0.5 block text-caption leading-[18px] text-muted-foreground">{address.detail}</span>
                 </span>
               ) : (
-                <span className="flex-1 text-[14px] text-muted-foreground">请从地址管理中选择取件地址</span>
+                <span className="flex-1 text-body text-muted-foreground">请从地址管理中选择取件地址</span>
               )}
               <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
             </button>
           )}
           {site && (
-            <p className="mt-2 text-[12px] leading-[18px] text-muted-foreground">
+            <p className="mt-2 text-caption leading-[18px] text-muted-foreground">
               定点采样订单由快递员到采样机构取件，无需选择地址
             </p>
           )}
         </section>
 
         <section className="rounded-2xl bg-white p-3.5">
-          <h2 className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+          <h2 className="flex items-center gap-1.5 text-body font-semibold text-foreground">
             <PackageCheck className="size-4 text-primary" aria-hidden="true" />
             寄样前请确认
           </h2>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-[12px] leading-[18px] text-muted-foreground">
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-caption leading-[18px] text-muted-foreground">
             <li>样本管已拧紧并贴好受检人标签</li>
             <li>样本放入密封袋后装回采样盒</li>
             <li>采样后 72 小时内寄出，避免高温暴晒</li>
@@ -160,7 +160,7 @@ export function SendSampleScreen({
             onSubmitted({ address: address.detail })
             setDone(true)
           }}
-          className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90 disabled:bg-muted disabled:text-muted-foreground"
+          className="h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90 disabled:bg-muted disabled:text-muted-foreground"
         >
           提交
         </button>
@@ -176,7 +176,7 @@ export function SendSampleScreen({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-4 py-3">
-              <h2 id="pick-address-title" className="text-[15px] font-semibold text-foreground">
+              <h2 id="pick-address-title" className="text-title font-semibold text-foreground">
                 选择取件地址
               </h2>
               <button type="button" onClick={() => setPicking(false)} aria-label="关闭">
@@ -203,16 +203,16 @@ export function SendSampleScreen({
                     >
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-1.5">
-                          <span className="text-[14px] font-medium text-foreground">{a.name}</span>
-                          <span className="text-[12px] tabular-nums text-muted-foreground">{a.phone}</span>
+                          <span className="text-body font-medium text-foreground">{a.name}</span>
+                          <span className="text-caption tabular-nums text-muted-foreground">{a.phone}</span>
                           {a.isDefault && (
-                            <span className="rounded bg-primary px-1.5 py-px text-[10px] text-primary-foreground">默认</span>
+                            <span className="rounded bg-primary px-1.5 py-px text-tag text-primary-foreground">默认</span>
                           )}
                           {a.tag && (
-                            <span className="rounded bg-secondary px-1.5 py-px text-[10px] text-primary">{a.tag}</span>
+                            <span className="rounded bg-secondary px-1.5 py-px text-tag text-primary">{a.tag}</span>
                           )}
                         </span>
-                        <span className="mt-1 block text-[12px] leading-[18px] text-muted-foreground">
+                        <span className="mt-1 block text-caption leading-[18px] text-muted-foreground">
                           {regionText(a.region)} {a.street}
                         </span>
                       </span>

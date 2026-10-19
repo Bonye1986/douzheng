@@ -39,11 +39,11 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           className="mt-8 flex h-14 w-full items-center gap-3 rounded-2xl border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" />
-          <span className="min-w-0 flex-1 truncate text-[15px] text-faint">输入您的用药或基因问题</span>
+          <span className="min-w-0 flex-1 truncate text-title text-faint">输入您的用药或基因问题</span>
         </button>
 
         <section aria-labelledby="hot-q" className="mt-8">
-          <h2 id="hot-q" className="mb-3 flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+          <h2 id="hot-q" className="mb-3 flex items-center gap-1.5 text-body font-semibold text-foreground">
             <MessageCircleQuestion className="size-4 text-primary" />
             大家都在问
           </h2>
@@ -55,7 +55,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
                   onClick={() => onOpenChat?.(item.question)}
                   className="flex w-full items-center gap-3 rounded-xl bg-white/80 px-4 py-3 text-left transition-colors active:bg-white"
                 >
-                  <span className="min-w-0 flex-1 truncate text-[14px] text-foreground">{item.question}</span>
+                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
                   <ChevronRight className="size-4 shrink-0 text-faint" />
                 </button>
               </li>

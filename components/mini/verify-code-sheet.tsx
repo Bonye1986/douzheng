@@ -45,17 +45,17 @@ export function VerifyCodeSheet({ orderNo, product, examinees, siteName, onClose
         >
           <X className="size-4" aria-hidden="true" />
         </button>
-        <h2 id="verify-code-title" className="text-[16px] font-semibold text-foreground">
+        <h2 id="verify-code-title" className="text-title font-semibold text-foreground">
           核销码
         </h2>
-        <p className="mt-1 text-[12px] text-muted-foreground">请向采样机构工作人员出示</p>
+        <p className="mt-1 text-caption text-muted-foreground">请向采样机构工作人员出示</p>
 
         <div className="mx-auto mt-4 w-fit rounded-xl border border-[#e6ebf3] p-3">
           <QRCodeSVG value={`DZVERIFY:${orderNo}:${code.replace(/\s/g, '')}`} size={168} level="M" />
         </div>
-        <p className="mt-3 font-mono text-[20px] font-semibold tracking-widest tabular-nums text-foreground">{code}</p>
+        <p className="mt-3 font-mono text-headline font-semibold tracking-widest tabular-nums text-foreground">{code}</p>
 
-        <dl className="mt-4 space-y-1.5 rounded-xl bg-muted px-3 py-2.5 text-left text-[12px]">
+        <dl className="mt-4 space-y-1.5 rounded-xl bg-muted px-3 py-2.5 text-left text-caption">
           <div className="flex justify-between gap-3">
             <dt className="text-muted-foreground">检测项目</dt>
             <dd className="truncate text-foreground">{product}</dd>
@@ -70,12 +70,12 @@ export function VerifyCodeSheet({ orderNo, product, examinees, siteName, onClose
           </div>
         </dl>
         {siteName && (
-          <p className="mt-3 flex items-center justify-center gap-1 text-[12px] text-muted-foreground">
+          <p className="mt-3 flex items-center justify-center gap-1 text-caption text-muted-foreground">
             <MapPin className="size-3.5 text-primary" aria-hidden="true" />
             {siteName}
           </p>
         )}
-        <p className="mt-2 text-[11px] text-muted-foreground">核销码有效期 30 天，请勿截图转发他人</p>
+        <p className="mt-2 text-caption text-muted-foreground">核销码有效期 30 天，请勿截图转发他人</p>
       </div>
     </div>
   )

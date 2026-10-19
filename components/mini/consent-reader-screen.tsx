@@ -95,24 +95,24 @@ export function ConsentReaderScreen({ onAgree, onBack, readOnly = false, signedA
     <SubPage title="基因检测知情同意书" titleId="consent-title" onBack={onBack}>
       <div ref={scrollRef} onScroll={checkBottom} className="min-h-0 flex-1 overflow-y-auto bg-white px-5 pb-6 pt-4">
         {readOnly ? (
-          <p className="flex items-center gap-1.5 rounded-xl bg-[#e6f7ef] px-3 py-2 text-[12px] leading-5 text-success">
+          <p className="flex items-center gap-1.5 rounded-xl bg-[#e6f7ef] px-3 py-2 text-caption leading-5 text-success">
             <CircleCheck className="size-3.5 shrink-0" aria-hidden="true" />
             已于 {signedAt} 签署，本同意书作为检测依据存档
           </p>
         ) : (
-          <p className="rounded-xl bg-[#eef4ff] px-3 py-2 text-[12px] leading-5 text-primary">
+          <p className="rounded-xl bg-[#eef4ff] px-3 py-2 text-caption leading-5 text-primary">
             请您仔细阅读以下内容，阅读满 {MIN_READ_SECONDS} 秒并滑动至底部后方可确认同意。
           </p>
         )}
-        <h2 className="mt-4 text-center text-[16px] font-semibold text-foreground">药物基因检测知情同意书</h2>
-        <p className="mt-1 text-center text-[11px] text-muted-foreground">版本号 V2.3 · 2026 年 9 月更新</p>
+        <h2 className="mt-4 text-center text-title font-semibold text-foreground">药物基因检测知情同意书</h2>
+        <p className="mt-1 text-center text-caption text-muted-foreground">版本号 V2.3 · 2026 年 9 月更新</p>
 
         <div className="mt-4 flex flex-col gap-4">
           {sections.map((s) => (
             <section key={s.title}>
-              <h3 className="text-[14px] font-semibold text-foreground">{s.title}</h3>
+              <h3 className="text-body font-semibold text-foreground">{s.title}</h3>
               {s.body.map((p) => (
-                <p key={p} className="mt-1.5 text-[13px] leading-6 text-[#4a5468]">
+                <p key={p} className="mt-1.5 text-note leading-6 text-[#4a5468]">
                   {p}
                 </p>
               ))}
@@ -120,12 +120,12 @@ export function ConsentReaderScreen({ onAgree, onBack, readOnly = false, signedA
           ))}
         </div>
 
-        <p className="mt-6 text-center text-[11px] text-faint">— 已到底部 —</p>
+        <p className="mt-6 text-center text-caption text-faint">— 已到底部 —</p>
       </div>
 
       {!readOnly && (
       <div className="shrink-0 border-t border-border bg-white px-4 pb-6 pt-2.5">
-        <div className="mb-2 flex items-center justify-center gap-4 text-[11px]">
+        <div className="mb-2 flex items-center justify-center gap-4 text-caption">
           <span className={cn('flex items-center gap-1', timeDone ? 'text-success' : 'text-muted-foreground')}>
             {timeDone ? <CircleCheck className="size-3.5" aria-hidden="true" /> : <Clock className="size-3.5" aria-hidden="true" />}
             阅读满 {MIN_READ_SECONDS} 秒
@@ -141,7 +141,7 @@ export function ConsentReaderScreen({ onAgree, onBack, readOnly = false, signedA
           onClick={onAgree}
           aria-live="polite"
           className={cn(
-            'h-11 w-full rounded-full text-[15px] font-semibold transition-colors',
+            'h-11 w-full rounded-full text-title font-semibold transition-colors',
             canAgree ? 'bg-primary text-primary-foreground' : 'bg-[#e3e8f1] text-faint',
           )}
         >

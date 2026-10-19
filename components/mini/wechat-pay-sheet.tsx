@@ -70,23 +70,23 @@ export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检�
               <X className="size-5" aria-hidden="true" />
             </button>
           )}
-          <h2 id="wxpay-title" className="text-[15px] font-medium text-[#1a1a1a]">
+          <h2 id="wxpay-title" className="text-title font-medium text-[#1a1a1a]">
             {step === 'password' ? '请输入支付密码' : '微信支付'}
           </h2>
         </div>
 
         {(step === 'confirm' || step === 'password') && (
           <div className="px-6 pb-5 pt-5 text-center">
-            <p className="text-[13px] text-[#666]">{merchant}</p>
+            <p className="text-note text-[#666]">{merchant}</p>
             <p className="mt-1.5 font-semibold tabular-nums text-[#1a1a1a]">
-              <span className="text-[22px]">¥</span>
-              <span className="text-[36px] leading-none">{amountText}</span>
+              <span className="text-headline">¥</span>
+              <span className="text-hero leading-none">{amountText}</span>
             </p>
-            <div className="mt-5 flex items-center justify-between border-t border-[#f0f0f0] pt-3.5 text-[13px]">
+            <div className="mt-5 flex items-center justify-between border-t border-[#f0f0f0] pt-3.5 text-note">
               <span className="text-[#888]">支付方式</span>
               <span className="flex items-center gap-1.5 text-[#1a1a1a]">
                 <span className="flex size-4 items-center justify-center rounded bg-[#07c160]">
-                  <WechatIcon className="size-2.5 text-white" />
+                  <WechatIcon className="size-3 text-white" />
                 </span>
                 零钱
                 <ChevronRight className="size-3.5 text-[#bbb]" aria-hidden="true" />
@@ -100,7 +100,7 @@ export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检�
             <button
               type="button"
               onClick={() => setStep('password')}
-              className="h-11 w-full rounded-lg bg-[#07c160] text-[16px] font-medium text-white active:bg-[#06ad56]"
+              className="h-11 w-full rounded-lg bg-[#07c160] text-title font-medium text-white active:bg-[#06ad56]"
             >
               确认支付
             </button>
@@ -118,7 +118,7 @@ export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检�
                 ))}
               </div>
             </div>
-            <p className="pb-3 text-center text-[11px] text-[#a0a0a0]">演示环境，输入任意 6 位数字即可</p>
+            <p className="pb-3 text-center text-caption text-[#a0a0a0]">演示环境，输入任意 6 位数字即可</p>
             <div className="grid grid-cols-3 gap-px bg-[#e6e6e6] pb-6">
               {keys.map((k, i) =>
                 k === '' ? (
@@ -130,7 +130,7 @@ export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检�
                     onClick={() => press(k)}
                     aria-label={k === 'del' ? '删除' : k}
                     className={cn(
-                      'flex h-[52px] items-center justify-center text-[22px] text-[#1a1a1a]',
+                      'flex h-[52px] items-center justify-center text-headline text-[#1a1a1a]',
                       k === 'del' ? 'bg-[#d2d5db] active:bg-white' : 'bg-white active:bg-[#d2d5db]',
                     )}
                   >
@@ -151,8 +151,8 @@ export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检�
                 <Check className="size-7 text-white" strokeWidth={3} aria-hidden="true" />
               </span>
             )}
-            <p className="mt-4 text-[15px] text-[#1a1a1a]">{step === 'processing' ? '正在支付…' : '支付成功'}</p>
-            <p className="mt-1 text-[13px] tabular-nums text-[#888]">¥{amountText}</p>
+            <p className="mt-4 text-title text-[#1a1a1a]">{step === 'processing' ? '正在支付…' : '支付成功'}</p>
+            <p className="mt-1 text-note tabular-nums text-[#888]">¥{amountText}</p>
           </div>
         )}
       </div>

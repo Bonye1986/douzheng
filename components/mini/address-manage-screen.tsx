@@ -131,7 +131,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
       ) : (
         <>
           <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
-            <p className="flex items-center justify-between px-1 text-[12px] text-muted-foreground">
+            <p className="flex items-center justify-between px-1 text-caption text-muted-foreground">
               <span>
                 已保存 <span className="tabular-nums text-foreground">{list.length}</span> / {MAX_ADDRESSES} 个
               </span>
@@ -149,23 +149,23 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
                       )}
                       aria-hidden="true"
                     >
-                      <MapPin className="size-[18px]" />
+                      <MapPin className="size-4.5" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[15px] font-semibold text-foreground">{a.name}</span>
-                        <span className="text-[13px] tabular-nums text-muted-foreground">{a.phone}</span>
+                        <span className="text-title font-semibold text-foreground">{a.name}</span>
+                        <span className="text-note tabular-nums text-muted-foreground">{a.phone}</span>
                       </p>
                       <p className="mt-1 flex flex-wrap items-center gap-1">
                         {a.isDefault && (
-                          <span className="rounded bg-primary px-1.5 py-px text-[11px] text-primary-foreground">默认</span>
+                          <span className="rounded bg-primary px-1.5 py-px text-caption text-primary-foreground">默认</span>
                         )}
                         {a.tag && (
-                          <span className="rounded bg-secondary px-1.5 py-px text-[11px] text-primary">{a.tag}</span>
+                          <span className="rounded bg-secondary px-1.5 py-px text-caption text-primary">{a.tag}</span>
                         )}
-                        <span className="text-[12px] text-muted-foreground">{regionText(a.region)}</span>
+                        <span className="text-caption text-muted-foreground">{regionText(a.region)}</span>
                       </p>
-                      <p className="mt-1 text-[13px] leading-5 text-foreground">{a.street}</p>
+                      <p className="mt-1 text-note leading-5 text-foreground">{a.street}</p>
                     </div>
                   </div>
 
@@ -175,7 +175,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
                       role="radio"
                       aria-checked={a.isDefault}
                       onClick={() => !a.isDefault && setDefault(a.id)}
-                      className="flex items-center gap-1.5 text-[12px]"
+                      className="flex items-center gap-1.5 text-caption"
                     >
                       <span
                         className={cn(
@@ -194,7 +194,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
                       <button
                         type="button"
                         onClick={() => setPendingDelete(a)}
-                        className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-[12px] text-foreground"
+                        className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-caption text-foreground"
                         aria-label={`删除 ${a.name} 的地址`}
                       >
                         <Trash2 className="size-3.5" aria-hidden="true" />
@@ -203,7 +203,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
                       <button
                         type="button"
                         onClick={() => setForm({ target: a })}
-                        className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-[12px] text-primary"
+                        className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-caption text-primary"
                         aria-label={`编辑 ${a.name} 的地址`}
                       >
                         <PencilLine className="size-3.5" aria-hidden="true" />
@@ -215,7 +215,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
               ))}
             </ul>
 
-            <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
+            <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
               地址仅用于自采样订单的采样盒邮寄，修改或删除不影响已发货的订单。
             </p>
@@ -227,7 +227,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
               onClick={openAdd}
               aria-disabled={full}
               className={cn(
-                'flex h-10 w-full items-center justify-center gap-1 rounded-full text-[14px] font-medium',
+                'flex h-10 w-full items-center justify-center gap-1 rounded-full text-body font-medium',
                 full ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
               )}
             >
@@ -256,11 +256,11 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
             >
               {blocked ? <AlertTriangle className="size-5" /> : <Trash2 className="size-5" />}
             </span>
-            <h2 id="delete-address-title" className="mt-3 text-[16px] font-semibold text-foreground">
+            <h2 id="delete-address-title" className="mt-3 text-title font-semibold text-foreground">
               {blocked ? '暂不可删除' : '确定删除该地址？'}
             </h2>
             {!blocked && (
-              <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-left text-[12px] leading-[18px] text-foreground">
+              <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-left text-caption leading-[18px] text-foreground">
                 {pendingDelete.name} <span className="tabular-nums">{pendingDelete.phone}</span>
                 <br />
                 <span className="text-muted-foreground">
@@ -268,7 +268,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
                 </span>
               </p>
             )}
-            <p id="delete-address-desc" className="mt-2 text-[13px] leading-5 text-muted-foreground">
+            <p id="delete-address-desc" className="mt-2 text-note leading-5 text-muted-foreground">
               {blocked
                 ? '该地址有待发货的采样盒订单，请在订单发货后再删除。'
                 : pendingDelete.isDefault
@@ -279,7 +279,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
               <button
                 type="button"
                 onClick={() => setPendingDelete(null)}
-                className="mt-4 h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+                className="mt-4 h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground"
               >
                 我知道了
               </button>
@@ -288,14 +288,14 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
                 <button
                   type="button"
                   onClick={() => setPendingDelete(null)}
-                  className="h-10 flex-1 rounded-full border border-border text-[14px] text-foreground"
+                  className="h-10 flex-1 rounded-full border border-border text-body text-foreground"
                 >
                   取消
                 </button>
                 <button
                   type="button"
                   onClick={confirmDelete}
-                  className="h-10 flex-1 rounded-full bg-destructive text-[14px] font-medium text-white"
+                  className="h-10 flex-1 rounded-full bg-destructive text-body font-medium text-white"
                 >
                   确认删除
                 </button>
@@ -317,7 +317,7 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
       {toast && (
         <p
           role="status"
-          className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-black/75 px-4 py-2 text-[13px] text-white"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-black/75 px-4 py-2 text-note text-white"
         >
           {toast}
         </p>
@@ -332,14 +332,14 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       <span className="flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
         <MapPinned className="size-11 text-primary" strokeWidth={1.4} />
       </span>
-      <h2 className="mt-5 text-[16px] font-semibold text-foreground">还没有收货地址</h2>
-      <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
+      <h2 className="mt-5 text-title font-semibold text-foreground">还没有收货地址</h2>
+      <p className="mt-1.5 text-note leading-5 text-muted-foreground">
         添加常用地址，选择自采样检测时采样盒将寄送到该地址。
       </p>
       <button
         type="button"
         onClick={onAdd}
-        className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-[14px] font-medium text-primary-foreground active:opacity-90"
+        className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-body font-medium text-primary-foreground active:opacity-90"
       >
         <Plus className="size-4" aria-hidden="true" />
         新增收货地址
@@ -406,7 +406,7 @@ function AddressFormScreen({
               }}
               placeholder="请输入收货人姓名"
               aria-invalid={!!errors.name}
-              className="min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-faint"
+              className="min-w-0 flex-1 bg-transparent text-body text-foreground outline-none placeholder:text-faint"
             />
           </Row>
           <Row label="手机号" error={errors.phone}>
@@ -421,7 +421,7 @@ function AddressFormScreen({
               }}
               placeholder="用于快递员联系"
               aria-invalid={!!errors.phone}
-              className="min-w-0 flex-1 bg-transparent text-[14px] tabular-nums text-foreground outline-none placeholder:text-faint"
+              className="min-w-0 flex-1 bg-transparent text-body tabular-nums text-foreground outline-none placeholder:text-faint"
             />
           </Row>
           <div className="border-b border-border py-1">
@@ -431,8 +431,8 @@ function AddressFormScreen({
               aria-invalid={!!errors.region}
               className="flex h-11 w-full items-center gap-3 text-left"
             >
-              <span className="w-[68px] shrink-0 text-[14px] text-foreground">所在地区</span>
-              <span className={cn('min-w-0 flex-1 truncate text-[14px]', region ? 'text-foreground' : 'text-faint')}>
+              <span className="w-[68px] shrink-0 text-body text-foreground">所在地区</span>
+              <span className={cn('min-w-0 flex-1 truncate text-body', region ? 'text-foreground' : 'text-faint')}>
                 {region ? region.join(' ') : '省 / 市 / 区'}
               </span>
               <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -441,7 +441,7 @@ function AddressFormScreen({
           </div>
           <div className="py-2.5">
             <label className="flex gap-3">
-              <span className="w-[68px] shrink-0 pt-0.5 text-[14px] text-foreground">详细地址</span>
+              <span className="w-[68px] shrink-0 pt-0.5 text-body text-foreground">详细地址</span>
               <textarea
                 value={street}
                 onChange={(e) => {
@@ -451,7 +451,7 @@ function AddressFormScreen({
                 rows={2}
                 placeholder="街道、楼牌号、单元室等"
                 aria-invalid={!!errors.street}
-                className="min-w-0 flex-1 resize-none bg-transparent text-[14px] leading-5 text-foreground outline-none placeholder:text-faint"
+                className="min-w-0 flex-1 resize-none bg-transparent text-body leading-5 text-foreground outline-none placeholder:text-faint"
               />
             </label>
             <FieldError msg={errors.street} />
@@ -460,7 +460,7 @@ function AddressFormScreen({
 
         <section aria-label="地址设置" className="mt-2.5 rounded-2xl bg-white px-3.5">
           <div className="flex h-12 items-center gap-3 border-b border-border">
-            <span id="address-tag-label" className="w-[68px] shrink-0 text-[14px] text-foreground">
+            <span id="address-tag-label" className="w-[68px] shrink-0 text-body text-foreground">
               标签
             </span>
             <div role="radiogroup" aria-labelledby="address-tag-label" className="flex gap-2">
@@ -472,7 +472,7 @@ function AddressFormScreen({
                   aria-checked={tag === t}
                   onClick={() => setTag(tag === t ? undefined : t)}
                   className={cn(
-                    'h-7 rounded-full border px-3 text-[12px] transition-colors',
+                    'h-7 rounded-full border px-3 text-caption transition-colors',
                     tag === t ? 'border-primary bg-secondary font-medium text-primary' : 'border-border text-foreground',
                   )}
                 >
@@ -483,10 +483,10 @@ function AddressFormScreen({
           </div>
           <div className="flex h-14 items-center justify-between">
             <span>
-              <span id="address-default-label" className="block text-[14px] text-foreground">
+              <span id="address-default-label" className="block text-body text-foreground">
                 设为默认地址
               </span>
-              <span className="block text-[11px] text-muted-foreground">
+              <span className="block text-caption text-muted-foreground">
                 {forceDefault ? '首个地址将自动设为默认' : '下单时优先使用该地址'}
               </span>
             </span>
@@ -512,7 +512,7 @@ function AddressFormScreen({
           </div>
         </section>
 
-        <p className="mt-3 flex items-start gap-1.5 px-1 text-[11px] leading-[18px] text-muted-foreground">
+        <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
           <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
           采样盒需本人签收，请确保收货人与手机号真实有效。
         </p>
@@ -522,7 +522,7 @@ function AddressFormScreen({
         <button
           type="button"
           onClick={save}
-          className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90"
+          className="h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
         >
           {editing ? '保存修改' : '保存地址'}
         </button>
@@ -583,13 +583,13 @@ function RegionPicker({
           <button type="button" onClick={onClose} aria-label="关闭" className="text-muted-foreground">
             <X className="size-5" aria-hidden="true" />
           </button>
-          <h2 id="region-picker-title" className="text-[15px] font-semibold text-foreground">
+          <h2 id="region-picker-title" className="text-title font-semibold text-foreground">
             选择所在地区
           </h2>
           <button
             type="button"
             onClick={() => onConfirm([province, city, district])}
-            className="text-[14px] font-medium text-primary"
+            className="text-body font-medium text-primary"
           >
             确定
           </button>
@@ -623,7 +623,7 @@ function Column({
             type="button"
             onClick={() => onPick(i)}
             className={cn(
-              'h-10 w-full px-2 text-center text-[14px]',
+              'h-10 w-full px-2 text-center text-body',
               i === value ? 'bg-secondary font-medium text-primary' : 'text-foreground',
             )}
           >
@@ -639,7 +639,7 @@ function Row({ label, error, children }: { label: string; error?: string; childr
   return (
     <div className="border-b border-border py-1">
       <label className="flex h-11 items-center gap-3">
-        <span className="w-[68px] shrink-0 text-[14px] text-foreground">{label}</span>
+        <span className="w-[68px] shrink-0 text-body text-foreground">{label}</span>
         {children}
       </label>
       <FieldError msg={error} />
@@ -650,7 +650,7 @@ function Row({ label, error, children }: { label: string; error?: string; childr
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null
   return (
-    <p role="alert" className="pb-1.5 pl-[80px] text-[11px] text-destructive">
+    <p role="alert" className="pb-1.5 pl-[80px] text-caption text-destructive">
       {msg}
     </p>
   )

@@ -54,16 +54,16 @@ export function DatePickerSheet({
       />
       <div className="relative rounded-t-2xl bg-white pb-6 motion-safe:animate-in motion-safe:slide-in-from-bottom">
         <div className="flex h-12 items-center justify-between border-b border-border px-2">
-          <button type="button" onClick={onCancel} className="h-9 px-3 text-[14px] text-muted-foreground">
+          <button type="button" onClick={onCancel} className="h-9 px-3 text-body text-muted-foreground">
             取消
           </button>
-          <h2 id="date-picker-title" className="text-[15px] font-semibold text-foreground">
+          <h2 id="date-picker-title" className="text-title font-semibold text-foreground">
             {title}
           </h2>
           <button
             type="button"
             onClick={() => onConfirm(`${year}-${pad2(m)}-${pad2(d)}`)}
-            className="h-9 px-3 text-[14px] font-medium text-primary"
+            className="h-9 px-3 text-body font-medium text-primary"
           >
             确定
           </button>
@@ -157,7 +157,7 @@ function WheelColumn({
           aria-selected={v === value}
           onClick={() => onChange(v)}
           className={cn(
-            'flex snap-center items-center justify-center text-[16px] tabular-nums transition-colors',
+            'flex snap-center items-center justify-center text-title tabular-nums transition-colors',
             v === value ? 'font-semibold text-foreground' : 'text-faint',
           )}
           style={{ height: ITEM_H }}

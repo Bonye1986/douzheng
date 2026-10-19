@@ -558,11 +558,11 @@ export default function Page() {
         <div className="flex items-center gap-4">
           <BrandMark size="lg" />
           <div>
-            <p className="text-[13px] font-medium text-primary">都正生物 · 药问基因用户端小程序</p>
-            <h1 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">UI设计</h1>
+            <p className="text-note font-medium text-primary">都正生物 · 药问基因用户端小程序</p>
+            <h1 className="mt-1 text-headline font-bold text-foreground md:text-display">UI设计</h1>
           </div>
         </div>
-        <dl className="flex gap-6 text-[13px] text-muted-foreground">
+        <dl className="flex gap-6 text-note text-muted-foreground">
           <div>
             <dt>画板尺寸</dt>
             <dd className="font-medium text-foreground">375 × 812</dd>

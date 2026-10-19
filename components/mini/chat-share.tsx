@@ -39,12 +39,12 @@ export function ShareHeader({
         role="checkbox"
         aria-checked={allSelected}
         onClick={onToggleAll}
-        className="absolute left-3 flex items-center gap-2 rounded-lg py-1 pr-2 text-[14px] text-muted-foreground"
+        className="absolute left-3 flex items-center gap-2 rounded-lg py-1 pr-2 text-body text-muted-foreground"
       >
         <ShareCheckbox checked={allSelected} />
         全选
       </button>
-      <h2 className="text-[16px] font-semibold" aria-live="polite">
+      <h2 className="text-title font-semibold" aria-live="polite">
         已选中 {rounds} 轮对话
       </h2>
       <div
@@ -176,7 +176,7 @@ export function ShareSheetBase({
         className="relative z-10 shrink-0 rounded-t-3xl bg-[#f7f8fa] px-4 pb-8 pt-4 shadow-[0_-6px_24px_#1e2a3d14] animate-in slide-in-from-bottom duration-300"
       >
         <div className="flex items-center justify-between">
-          <h2 id="share-sheet-title" className="text-[16px] font-semibold text-foreground">
+          <h2 id="share-sheet-title" className="text-title font-semibold text-foreground">
             分享到
           </h2>
           <button
@@ -202,7 +202,7 @@ export function ShareSheetBase({
                 )}
               >
                 <span className="flex size-12 items-center justify-center rounded-full bg-white">{o.icon}</span>
-                <span className="text-[12px] text-muted-foreground">{o.label}</span>
+                <span className="text-caption text-muted-foreground">{o.label}</span>
               </button>
             </li>
           ))}
@@ -211,7 +211,7 @@ export function ShareSheetBase({
 
       {(loading || toast) && (
         <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center" role="status">
-          <div className="flex min-w-28 flex-col items-center gap-2 rounded-2xl bg-[#1e2a3d]/85 px-5 py-4 text-[13px] text-white">
+          <div className="flex min-w-28 flex-col items-center gap-2 rounded-2xl bg-[#1e2a3d]/85 px-5 py-4 text-note text-white">
             {loading ? (
               <>
                 <LoaderCircle className="size-7 animate-spin" aria-hidden="true" />
@@ -243,7 +243,7 @@ export function ShareSheetBase({
               <button
                 type="button"
                 onClick={() => setOverlay(null)}
-                className="h-10 flex-1 rounded-full bg-white/90 text-[14px] text-foreground"
+                className="h-10 flex-1 rounded-full bg-white/90 text-body text-foreground"
               >
                 关闭
               </button>
@@ -253,7 +253,7 @@ export function ShareSheetBase({
                   setOverlay(null)
                   flash('已保存到相册')
                 }}
-                className="h-10 flex-1 rounded-full bg-primary text-[14px] font-medium text-white"
+                className="h-10 flex-1 rounded-full bg-primary text-body font-medium text-white"
               >
                 保存图片
               </button>
@@ -268,12 +268,12 @@ export function ShareSheetBase({
 export function QrCard({ url, title, hint, footnote }: { url: string; title: string; hint: string; footnote: string }) {
   return (
     <div className="flex flex-col items-center rounded-2xl bg-white px-6 py-7 text-center">
-      <strong className="text-[16px] font-semibold text-foreground">{title}</strong>
-      <p className="mt-1 text-[12px] text-muted-foreground">{hint}</p>
+      <strong className="text-title font-semibold text-foreground">{title}</strong>
+      <p className="mt-1 text-caption text-muted-foreground">{hint}</p>
       <div className="mt-5 rounded-xl border border-border p-3">
         <QRCodeSVG value={url} size={168} fgColor="#1e2a3d" />
       </div>
-      <p className="mt-4 text-[11px] text-muted-foreground">{footnote}</p>
+      <p className="mt-4 text-caption text-muted-foreground">{footnote}</p>
     </div>
   )
 }
@@ -282,15 +282,15 @@ function PosterCard({ items, url }: { items: ShareItem[]; url: string }) {
   return (
     <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl bg-[#f3f7fd]">
       <div className="bg-primary px-4 py-3 text-white">
-        <strong className="block text-[15px] font-semibold">药问基因 · AI 咨询</strong>
-        <span className="text-[11px] text-white/80">内容由 AI 生成，仅供参考</span>
+        <strong className="block text-title font-semibold">药问基因 · AI 咨询</strong>
+        <span className="text-caption text-white/80">内容由 AI 生成，仅供参考</span>
       </div>
       <ul className="flex max-h-[46vh] flex-col gap-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
         {items.map((item) => (
           <li
             key={item.id}
             className={cn(
-              'whitespace-pre-line rounded-xl px-3 py-2 text-[12px] leading-5',
+              'whitespace-pre-line rounded-xl px-3 py-2 text-caption leading-5',
               item.role === 'user' ? 'ml-8 bg-primary text-white' : 'mr-4 bg-white text-foreground',
             )}
           >
@@ -300,7 +300,7 @@ function PosterCard({ items, url }: { items: ShareItem[]; url: string }) {
       </ul>
       <div className="flex items-center gap-3 border-t border-[#dbe5f3] bg-white px-4 py-3">
         <QRCodeSVG value={url} size={44} fgColor="#1e2a3d" />
-        <span className="text-[11px] leading-4 text-muted-foreground">长按识别二维码<br />查看完整对话</span>
+        <span className="text-caption leading-4 text-muted-foreground">长按识别二维码<br />查看完整对话</span>
       </div>
     </div>
   )

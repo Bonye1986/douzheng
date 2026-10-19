@@ -28,7 +28,7 @@ export function SamplingVideoDialog({ onClose }: { onClose: () => void }) {
       <div className="relative w-full overflow-hidden rounded-2xl bg-white motion-safe:animate-in motion-safe:zoom-in-95">
         <div className="flex items-center gap-2 px-4 py-3">
           <PlayCircle className="size-4 shrink-0 text-primary" aria-hidden="true" />
-          <h2 id="sampling-video-title" className="flex-1 truncate text-[15px] font-semibold text-foreground">
+          <h2 id="sampling-video-title" className="flex-1 truncate text-title font-semibold text-foreground">
             {video.title}
           </h2>
           <button
@@ -43,7 +43,7 @@ export function SamplingVideoDialog({ onClose }: { onClose: () => void }) {
 
         <div className="aspect-video bg-black">
           {failed ? (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-[12px] text-white/70">
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-caption text-white/70">
               <VideoOff className="size-6" aria-hidden="true" />
               视频加载失败，请检查网络后重试
               <button
@@ -72,14 +72,14 @@ export function SamplingVideoDialog({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="px-4 pb-4 pt-3">
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-caption text-muted-foreground">
             {duration && `时长 ${duration} · `}更新于 {video.updatedAt}
           </p>
-          <h3 className="mt-3 text-[13px] font-medium text-foreground">操作要点</h3>
+          <h3 className="mt-3 text-note font-medium text-foreground">操作要点</h3>
           <ol className="mt-1.5 space-y-1.5">
             {video.tips.map((tip, i) => (
-              <li key={tip} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
-                <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-medium tabular-nums text-primary">
+              <li key={tip} className="flex gap-2 text-caption leading-relaxed text-muted-foreground">
+                <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-tag font-medium tabular-nums text-primary">
                   {i + 1}
                 </span>
                 {tip}
@@ -89,7 +89,7 @@ export function SamplingVideoDialog({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={onClose}
-            className="mt-4 h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+            className="mt-4 h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground"
           >
             我知道了
           </button>

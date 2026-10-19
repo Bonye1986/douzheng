@@ -125,12 +125,12 @@ export function AfterSalesScreen({
               aria-selected={active}
               onClick={() => setKind(t.key)}
               className={cn(
-                'relative flex h-10 items-center gap-0.5 text-[14px] transition-colors',
+                'relative flex h-10 items-center gap-0.5 text-body transition-colors',
                 active ? 'font-semibold text-foreground' : 'text-muted-foreground',
               )}
             >
               {t.label}
-              {count > 0 && <span className="text-[11px] tabular-nums text-primary">{count}</span>}
+              {count > 0 && <span className="text-caption tabular-nums text-primary">{count}</span>}
               {active && <span className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-primary" aria-hidden="true" />}
             </button>
           )
@@ -150,10 +150,10 @@ export function AfterSalesScreen({
               >
               <div className="flex items-center gap-1.5">
                 <TypeIcon className="size-3.5 text-primary" aria-hidden="true" />
-                <span className="text-[12px] tabular-nums text-muted-foreground">{c.id}</span>
+                <span className="text-caption tabular-nums text-muted-foreground">{c.id}</span>
                 <span
                   className={cn(
-                    'ml-auto text-[12px] font-medium',
+                    'ml-auto text-caption font-medium',
                     c.tone === 'warn' ? 'text-warning' : c.tone === 'primary' ? 'text-primary' : 'text-muted-foreground',
                   )}
                 >
@@ -163,22 +163,22 @@ export function AfterSalesScreen({
 
               <div className="mt-2.5 flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-[14px] font-medium text-foreground">{c.product}</p>
-                  <p className="mt-0.5 text-[12px] text-muted-foreground">
+                  <p className="truncate text-body font-medium text-foreground">{c.product}</p>
+                  <p className="mt-0.5 text-caption text-muted-foreground">
                     受检人：{c.examinee} · 实付 <span className="tabular-nums">{c.amount}</span>
                   </p>
                 </div>
                 {c.refund && (
                   <p className="shrink-0 text-right">
-                    <span className="block text-[11px] text-muted-foreground">{c.refund.label}</span>
-                    <span className="block text-[14px] font-semibold tabular-nums text-warning">{c.refund.value}</span>
+                    <span className="block text-caption text-muted-foreground">{c.refund.label}</span>
+                    <span className="block text-body font-semibold tabular-nums text-warning">{c.refund.value}</span>
                   </p>
                 )}
               </div>
 
               <p
                 className={cn(
-                  'mt-2 flex items-start gap-1 rounded-lg px-2.5 py-1.5 text-[11px] leading-relaxed',
+                  'mt-2 flex items-start gap-1 rounded-lg px-2.5 py-1.5 text-caption leading-relaxed',
                   c.kind === 'pending' ? 'bg-warning-soft text-[#c4581a]' : 'bg-muted text-muted-foreground',
                 )}
               >
@@ -187,11 +187,11 @@ export function AfterSalesScreen({
               </p>
 
               {c.newOrderId && (
-                <p className="mt-2 flex items-center gap-1.5 text-[11px] tabular-nums text-muted-foreground">
+                <p className="mt-2 flex items-center gap-1.5 text-caption tabular-nums text-muted-foreground">
                   <span className="line-through">{c.id}</span>
                   <ArrowRight className="size-3" aria-hidden="true" />
                   <span className="text-foreground">{c.newOrderId}</span>
-                  <span className="rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
+                  <span className="rounded bg-primary/10 px-1 text-tag font-medium text-primary">重采样</span>
                 </p>
               )}
               </button>
@@ -205,7 +205,7 @@ export function AfterSalesScreen({
                       if (c.action?.terminate) onTerminateResample()
                     }}
                     className={cn(
-                      'h-7 rounded-full px-3.5 text-[12px] font-medium',
+                      'h-7 rounded-full px-3.5 text-caption font-medium',
                       c.action.primary ? 'bg-primary text-primary-foreground' : 'border border-border text-foreground',
                     )}
                   >
