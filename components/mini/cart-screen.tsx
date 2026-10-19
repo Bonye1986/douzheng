@@ -36,12 +36,8 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
 
   const checkedRows = rows.filter((r) => r.item.checked)
   const allChecked = rows.length > 0 && checkedRows.length === rows.length
-  const checkedQty = checkedRows.reduce((n, r) => n + r.item.qty, 0)
-  const total = checkedRows.reduce((n, r) => n + r.service.price * r.item.qty, 0)
-  const saved = checkedRows.reduce(
-    (n, r) => n + ((r.service.originalPrice ?? r.service.price) - r.service.price) * r.item.qty,
-    0,
-  )
+  const checkedQty = checkedRows.length
+  const total = checkedRows.reduce((n, r) => n + r.service.price, 0)
 
   const update = (id: string, patch: Partial<CartItem>) =>
     onChange(items.map((i) => (i.id === id ? { ...i, ...patch } : i)))
@@ -191,7 +187,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
                     {total.toLocaleString('zh-CN')}
                   </span>
                 </p>
-                {saved > 0 && <p className="text-caption text-muted-foreground">已优惠 ¥{saved.toLocaleString('zh-CN')}</p>}
+                <p className="text-caption text-muted-foreground">最终金额按检测人数计算</p>
               </div>
               <button
                 type="button"
@@ -242,20 +238,16 @@ function CartRow({
                 {getSamplingModes(service.id).map((m) => samplingLabel[m]).join(' / ')} · {sampleTypeText(service.id, undefined, '/')}
           </span>
         </p>
-        <div className="mt-auto flex items-center justify-between pt-1.5">
-          <p className="flex items-baseline gap-1">
-            <span className="text-title font-bold text-warning">
-              <span className="text-caption">¥</span>
-              {service.price}
-            </span>
-            {service.originalPrice && (
-              <span className="text-tag text-faint line-through">¥{service.originalPrice}</span>
-            )}
-          </p>
-          <span className="text-note tabular-nums text-muted-foreground" aria-label={`共 ${item.qty} 份`}>
-            ×{item.qty}
+        <p className="mt-auto flex items-baseline gap-1 pt-1.5">
+          <span className="text-title font-bold text-warning">
+            <span className="text-caption">¥</span>
+            {service.price}
           </span>
-        </div>
+          {service.originalPrice && (
+            <span className="text-tag text-faint line-through">¥{service.originalPrice}</span>
+          )}
+          <span className="text-tag text-muted-foreground">/人</span>
+        </p>
       </div>
     </div>
   )
