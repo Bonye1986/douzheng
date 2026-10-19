@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { ChevronRight, ClipboardList, Eye } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
@@ -12,7 +11,9 @@ import {
   type Article,
   type ServiceCategoryId,
 } from '@/components/mini/services-data'
-import { getSamplingModes, samplingLabel, testServices } from '@/components/mini/tests-data'
+import { testServices } from '@/components/mini/tests-data'
+import { ServiceCard } from '@/components/mini/tests-screen'
+import { ArticleRow } from '@/components/mini/knowledge-screen'
 import { cn } from '@/lib/utils'
 import { SectionHeading } from '@/components/mini/section-heading'
 
@@ -194,55 +195,19 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
   )
 }
 
-const RECOMMENDED_COUNT = 3
+const RECOMMENDED_COUNT = 4
 
 function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTest' | 'onViewAllTests'>) {
   const items = testServices.slice(0, RECOMMENDED_COUNT)
   return (
-    <section aria-labelledby="rec-tests" className="rounded-2xl bg-white p-4">
-      <SectionHeader id="rec-tests" title="推荐检查" action="全部" onAction={onViewAllTests} />
-      <ul className="flex flex-col divide-y divide-border">
+    <section aria-labelledby="rec-tests">
+      <div className="px-1">
+        <SectionHeader id="rec-tests" title="推荐检查" action="全部" onAction={onViewAllTests} />
+      </div>
+      <ul className="grid grid-cols-2 gap-2.5">
         {items.map((t) => (
-          <li key={t.id} className="py-3 first:pt-0 last:pb-0">
-            <button
-              type="button"
-              onClick={() => onOpenTest?.(t.id)}
-              className="flex w-full gap-3 text-left transition-opacity active:opacity-70"
-            >
-              <Image
-                src={t.image}
-                alt=""
-                width={80}
-                height={80}
-                className="size-20 shrink-0 rounded-xl bg-secondary object-cover"
-              />
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-body font-medium text-foreground">{t.name}</span>
-                <span className="mt-0.5 truncate text-caption text-muted-foreground">{t.summary}</span>
-                <span className="mt-1 flex gap-1">
-                  <span className="rounded bg-success-soft px-1.5 py-px text-tag text-success">
-                    {getSamplingModes(t.id).includes('self') ? '支持居家自采' : samplingLabel.site}
-                  </span>
-                  {t.tags.slice(0, 1).map((tag) => (
-                    <span key={tag} className="rounded bg-secondary px-1.5 py-px text-tag text-primary">
-                      {tag}
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-auto flex items-end justify-between pt-1">
-                  <span className="flex items-baseline gap-1">
-                    <span className="text-title font-bold text-warning">
-                      <span className="text-caption">¥</span>
-                      {t.price}
-                    </span>
-                    {t.originalPrice && (
-                      <span className="text-caption text-faint line-through">¥{t.originalPrice}</span>
-                    )}
-                  </span>
-                  <span className="text-caption text-muted-foreground">{t.sold}</span>
-                </span>
-              </span>
-            </button>
+          <li key={t.id} className="flex">
+            <ServiceCard service={t} onOpen={() => onOpenTest?.(t.id)} />
           </li>
         ))}
       </ul>
@@ -264,38 +229,17 @@ function ArticleSection({
   onViewAll?: () => void
 }) {
   return (
-    <section aria-labelledby={id} className="rounded-2xl bg-white p-4">
-      <SectionHeader id={id} title={title} action="更多" onAction={onViewAll} />
-  <ul className="-mb-1 divide-y divide-border/70">
-  {items.slice(0, 3).map((a) => (
-  <li key={a.id}>
-  <button
-  type="button"
-  onClick={() => onOpenArticle?.(a.id)}
-  className="flex w-full items-center gap-3 py-3.5 text-left transition-opacity active:opacity-70"
-  >
-  <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-  <span className="line-clamp-1 text-title font-medium leading-snug text-foreground">{a.title}</span>
-  <span className="line-clamp-1 text-caption leading-relaxed text-muted-foreground">{a.summary}</span>
-  <span className="flex items-center gap-2.5 text-caption text-muted-foreground">
-  <span className="rounded bg-secondary px-1.5 py-0.5 text-primary">{a.category}</span>
-  <span className="flex items-center gap-1">
-  <Eye className="size-3" aria-hidden="true" />
-  {a.reads}
-  </span>
-  {a.survey && (
-  <span className="flex items-center gap-0.5 rounded bg-warning-soft px-1.5 py-0.5 text-warning">
-  <ClipboardList className="size-3" aria-hidden="true" />
-  含问卷
-  </span>
-  )}
-  </span>
-  </span>
-  <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" aria-hidden="true" />
-  </button>
-  </li>
-  ))}
-  </ul>
+    <section aria-labelledby={id}>
+      <div className="px-1">
+        <SectionHeader id={id} title={title} action="更多" onAction={onViewAll} />
+      </div>
+      <ul className="overflow-hidden rounded-2xl bg-white">
+        {items.slice(0, 3).map((a, i) => (
+          <li key={a.id} className={i > 0 ? 'border-t border-border' : ''}>
+            <ArticleRow article={a} onOpen={() => onOpenArticle?.(a.id)} />
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }

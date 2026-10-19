@@ -248,14 +248,14 @@ export function CartButton({
   )
 }
 
-function ServiceCard({
+export function ServiceCard({
   service,
   onOpen,
   onAdd,
 }: {
   service: TestService
   onOpen: () => void
-  onAdd: () => void
+  onAdd?: () => void
 }) {
   return (
     <article
@@ -289,14 +289,16 @@ function ServiceCard({
             </p>
             <p className="mt-1 text-tag text-muted-foreground">{service.sold}</p>
           </div>
-          <button
-            type="button"
-            onClick={onAdd}
-            aria-label={`将${service.name}加入购物车`}
-            className="relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground active:scale-95"
-          >
-            <Plus className="size-4" strokeWidth={2.4} aria-hidden="true" />
-          </button>
+          {onAdd && (
+            <button
+              type="button"
+              onClick={onAdd}
+              aria-label={`将${service.name}加入购物车`}
+              className="relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground active:scale-95"
+            >
+              <Plus className="size-4" strokeWidth={2.4} aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
     </article>

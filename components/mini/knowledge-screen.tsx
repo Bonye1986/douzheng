@@ -38,6 +38,51 @@ function ArticleMeta({ article }: { article: Article }) {
   )
 }
 
+export function ArticleRow({
+  article: a,
+  answered = false,
+  onOpen,
+}: {
+  article: Article
+  answered?: boolean
+  onOpen?: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="flex w-full items-start gap-3 p-3 text-left transition-opacity active:opacity-70"
+    >
+      <Image
+        src={a.cover}
+        alt=""
+        width={88}
+        height={88}
+        sizes="88px"
+        className="size-[88px] shrink-0 rounded-xl bg-secondary object-cover"
+      />
+      <span className="min-w-0 flex-1">
+        <span className="line-clamp-2 text-body font-medium leading-snug text-foreground">{a.title}</span>
+        <span className="mt-1 line-clamp-2 block text-caption leading-relaxed text-muted-foreground">{a.summary}</span>
+        <span className="mt-1.5 flex items-center gap-2">
+          <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">{a.category}</span>
+          <ArticleMeta article={a} />
+          {a.survey && (
+            <span
+              className={cn(
+                'ml-auto flex items-center gap-0.5 rounded px-1.5 py-px text-tag',
+                answered ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning',
+              )}
+            >
+              {answered ? '已参与' : '含问卷'}
+            </span>
+          )}
+        </span>
+      </span>
+    </button>
+  )
+}
+
 function KnowledgeList({
   kind,
   onOpen,
@@ -83,42 +128,7 @@ function KnowledgeList({
           <ul className="overflow-hidden rounded-2xl bg-white" aria-label={listLabel}>
             {filtered.map((a, i) => (
               <li key={a.id} className={i > 0 ? 'border-t border-border' : ''}>
-                <button
-                  type="button"
-                  onClick={() => onOpen(a.id)}
-                  className="flex w-full items-start gap-3 p-3 text-left transition-opacity active:opacity-70"
-                >
-                  <Image
-                    src={a.cover}
-                    alt=""
-                    width={88}
-                    height={88}
-                    sizes="88px"
-                    className="size-[88px] shrink-0 rounded-xl bg-secondary object-cover"
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span className="line-clamp-2 text-body font-medium leading-snug text-foreground">{a.title}</span>
-                    <span className="mt-1 line-clamp-2 block text-caption leading-relaxed text-muted-foreground">
-                      {a.summary}
-                    </span>
-                    <span className="mt-1.5 flex items-center gap-2">
-                      <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
-                        {a.category}
-                      </span>
-                      <ArticleMeta article={a} />
-                      {a.survey && (
-                        <span
-                          className={cn(
-                            'ml-auto flex items-center gap-0.5 rounded px-1.5 py-px text-tag',
-                            answered[a.id] ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning',
-                          )}
-                        >
-                          {answered[a.id] ? '已参与' : '含问卷'}
-                        </span>
-                      )}
-                    </span>
-                  </span>
-                </button>
+                <ArticleRow article={a} answered={!!answered[a.id]} onOpen={() => onOpen(a.id)} />
               </li>
             ))}
           </ul>
