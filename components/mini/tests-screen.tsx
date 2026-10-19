@@ -104,7 +104,7 @@ export function TestsScreen({
                 </button>
               )}
             </label>
-            <CartButton count={cartCount} onClick={openCart} className="size-10 bg-secondary [&>svg]:size-5" />
+            <CartButton count={cartCount} onClick={openCart} className="size-10 [&>img]:size-9" />
           </div>
 
           <div
@@ -224,20 +224,13 @@ export function TestsScreen({
 
 export function CareBagIcon({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/images/icons/cart.png"
+      alt=""
       aria-hidden="true"
-    >
-      <path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" />
-      <path d="M5.6 8.5h12.8l-.85 10.1a2 2 0 0 1-2 1.9H8.45a2 2 0 0 1-2-1.9L5.6 8.5Z" fill="currentColor" fillOpacity={0.12} />
-      <path d="M12 12.25v4.5M9.75 14.5h4.5" />
-    </svg>
+      className={cn('object-contain mix-blend-multiply', className)}
+    />
   )
 }
 
