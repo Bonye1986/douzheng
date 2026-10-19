@@ -47,20 +47,30 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             <MessageCircleQuestion className="size-4 text-primary" />
             大家都在问
           </h2>
-          <ul className="flex flex-col gap-2">
-            {presetQuestions.map((item) => (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  onClick={() => onOpenChat?.(item.question)}
-                  className="flex w-full items-center gap-3 rounded-xl bg-white/80 px-4 py-3 text-left transition-colors active:bg-white"
-                >
-                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
-                  <ChevronRight className="size-4 shrink-0 text-faint" />
-                </button>
-              </li>
-            ))}
-          </ul>
+  <ul className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border/60 bg-white shadow-[0_4px_16px_#3a82e40f]">
+  {presetQuestions.map((item, index) => (
+  <li key={item.id}>
+  <button
+  type="button"
+  onClick={() => onOpenChat?.(item.question)}
+  className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-brand-page"
+  >
+  <span
+  aria-hidden="true"
+  className={
+  index < 3
+  ? 'flex size-5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-caption font-semibold tabular-nums text-primary'
+  : 'flex size-5 shrink-0 items-center justify-center rounded-md bg-muted text-caption font-semibold tabular-nums text-faint'
+  }
+  >
+  {index + 1}
+  </span>
+  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
+  <ChevronRight className="size-4 shrink-0 text-faint" />
+  </button>
+  </li>
+  ))}
+  </ul>
         </section>
       </div>
     </div>

@@ -13,9 +13,10 @@ export type Source = {
   org: string
   kind: SourceKind
   level?: string
+  confidence: Confidence
 }
 
-export type AiAnswer = Answer & { sources: Source[]; confidence: Confidence }
+export type AiAnswer = Answer & { sources: Source[] }
 
 export type Testee = {
   id: string
@@ -51,17 +52,18 @@ const reportSource: Source = {
   title: '王建国《心血管用药基因检测报告》',
   org: '都正生物 · 2026-06-12',
   kind: 'report',
+  confidence: 'high',
 }
 
 const sourceLib = {
-  cpicClopidogrel: { title: 'CPIC CYP2C19 与氯吡格雷用药指南', org: 'CPIC · 2022', kind: 'guideline', level: '1A' },
-  cpicStatin: { title: 'CPIC SLCO1B1 / ABCG2 / CYP2C9 与他汀用药指南', org: 'CPIC · 2022', kind: 'guideline', level: '1A' },
-  cpicWarfarin: { title: 'CPIC CYP2C9 / VKORC1 与华法林剂量指南', org: 'CPIC · 2017', kind: 'guideline', level: '1A' },
-  nhcGuide: { title: '药物代谢酶和药物作用靶点基因检测技术指南（试行）', org: '国家卫生计生委 · 2015', kind: 'guideline' },
-  pharmgkb: { title: 'PharmGKB 临床注释数据库', org: 'PharmGKB', kind: 'database' },
-  dpwg: { title: 'DPWG 药物基因组学推荐', org: 'KNMP DPWG', kind: 'guideline' },
-  clopidogrelLabel: { title: '硫酸氢氯吡格雷片说明书', org: '药品说明书', kind: 'label' },
-  drugLabel: { title: '相关药品说明书', org: '药品说明书', kind: 'label' },
+  cpicClopidogrel: { title: 'CPIC CYP2C19 与氯吡格雷用药指南', org: 'CPIC · 2022', kind: 'guideline', level: '1A', confidence: 'high' },
+  cpicStatin: { title: 'CPIC SLCO1B1 / ABCG2 / CYP2C9 与他汀用药指南', org: 'CPIC · 2022', kind: 'guideline', level: '1A', confidence: 'high' },
+  cpicWarfarin: { title: 'CPIC CYP2C9 / VKORC1 与华法林剂量指南', org: 'CPIC · 2017', kind: 'guideline', level: '1A', confidence: 'high' },
+  nhcGuide: { title: '药物代谢酶和药物作用靶点基因检测技术指南（试行）', org: '国家卫生计生委 · 2015', kind: 'guideline', confidence: 'high' },
+  pharmgkb: { title: 'PharmGKB 临床注释数据库', org: 'PharmGKB', kind: 'database', confidence: 'medium' },
+  dpwg: { title: 'DPWG 药物基因组学推荐', org: 'KNMP DPWG', kind: 'guideline', confidence: 'high' },
+  clopidogrelLabel: { title: '硫酸氢氯吡格雷片说明书', org: '药品说明书', kind: 'label', confidence: 'medium' },
+  drugLabel: { title: '相关药品说明书', org: '药品说明书', kind: 'label', confidence: 'medium' },
 } satisfies Record<string, Source>
 
 type AnswerSet = {
@@ -145,10 +147,10 @@ const answers: Record<string, AnswerSet> = {
   },
 }
 
-export const confidenceMeta: Record<Confidence, { label: string; hint: string }> = {
-  high: { label: '可信度高', hint: '有权威指南支持，并结合了检测人的报告' },
-  medium: { label: '可信度中', hint: '基于通用指南与说明书，未结合个人检测结果' },
-  low: { label: '可信度低', hint: '未检索到可靠来源，请以医生意见为准' },
+export const confidenceMeta: Record<Confidence, { label: string }> = {
+  high: { label: '可信度高' },
+  medium: { label: '可信度中' },
+  low: { label: '可信度低' },
 }
 
 export function getAnswer(question: string, mode: Mode, hasTestee: boolean): AiAnswer {
@@ -156,18 +158,18 @@ export function getAnswer(question: string, mode: Mode, hasTestee: boolean): AiA
   const set = answers[question] ?? answers[key]
   if (set) {
     if (set.usesReport && !hasTestee) {
-      return { ...(set.needsTestee ?? set[mode]), sources: set.sources, confidence: 'medium' }
+      return { ...(set.needsTestee ?? set[mode]), sources: set.sources }
     }
     if (set.usesReport) {
-      return { ...set[mode], sources: [reportSource, ...set.sources], confidence: 'high' }
+      return { ...set[mode], sources: [reportSource, ...set.sources] }
     }
-    return { ...set[mode], sources: set.sources, confidence: 'medium' }
+    return { ...set[mode], sources: set.sources }
   }
   const preset = presetQuestions.find((p) => p.question === question)?.answer
   if (preset) {
-    return { ...preset, sources: [sourceLib.dpwg, sourceLib.pharmgkb, sourceLib.drugLabel], confidence: 'medium' }
+    return { ...preset, sources: [sourceLib.dpwg, sourceLib.pharmgkb, sourceLib.drugLabel] }
   }
-  return { ...fallbackAnswer, sources: [], confidence: 'low' }
+  return { ...fallbackAnswer, sources: [] }
 }
 
 export function answerToText(answer: AiAnswer) {

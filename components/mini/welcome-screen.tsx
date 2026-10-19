@@ -102,8 +102,7 @@ export function WelcomeScreen({
             >
               暂不登录
             </button>
-            <p className="text-center text-caption text-muted-foreground">未注册的手机号授权后将自动创建账号</p>
-          </div>
+                    </div>
 
           {notice && noticeVisible && (
             <div

@@ -705,21 +705,8 @@ function AnswerBody({
   onShare: () => void
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false)
-  const conf = confidenceMeta[answer.confidence]
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span
-          className={cn(
-            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold',
-            confidenceStyles[answer.confidence],
-          )}
-        >
-          <ShieldCheck className="size-3" aria-hidden />
-          {conf.label}
-        </span>
-        <span className="text-caption leading-4 text-muted-foreground">{conf.hint}</span>
-      </div>
       <p>{answer.intro}</p>
       <ol className="flex flex-col gap-1.5">
         {answer.points.map((point, i) => (
@@ -754,6 +741,15 @@ function AnswerBody({
                   <span className="min-w-0">
                     <span className="block text-foreground">{s.title}</span>
                     <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-caption text-muted-foreground">
+                      <span
+                        className={cn(
+                          'inline-flex items-center gap-0.5 rounded px-1.5 py-px font-medium',
+                          confidenceStyles[s.confidence],
+                        )}
+                      >
+                        <ShieldCheck className="size-3" aria-hidden />
+                        {confidenceMeta[s.confidence].label}
+                      </span>
                       <span className="rounded bg-white px-1.5 py-px text-secondary-foreground">{sourceKindLabel[s.kind]}</span>
                       {s.org}
                       {s.level && <span>· 证据等级 {s.level}</span>}
