@@ -92,7 +92,7 @@ export function FloatingAiButton({ onClick }: { onClick: () => void }) {
       onPointerCancel={handlePointerUp}
       aria-label="打开 AI 咨询（可拖动调整位置）"
       style={position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined}
-      className={`absolute bottom-[92px] right-3 z-20 flex size-11 touch-none select-none items-center justify-center rounded-full bg-brand-strong text-white shadow-[0_6px_14px_#3b8beb40] ring-2 ring-white/90 ${
+      className={`absolute bottom-[92px] right-3 z-20 flex size-11 touch-none select-none items-center justify-center rounded-full bg-brand-strong text-white shadow-[0_6px_14px_#3a82e440] ring-2 ring-white/90 ${
         dragging ? 'scale-110 cursor-grabbing' : 'cursor-grab transition-[left,top,transform] duration-200 ease-out active:scale-95'
       }`}
     >

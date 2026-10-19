@@ -219,7 +219,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                     <span
                       className={cn(
                         'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full',
-                        r.enabled ? 'bg-[#eef5ff] text-primary' : 'bg-[#eef1f5] text-muted-foreground',
+                        r.enabled ? 'bg-secondary text-primary' : 'bg-[#eef1f5] text-muted-foreground',
                       )}
                       aria-hidden="true"
                     >
@@ -228,7 +228,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                     <div className="min-w-0 flex-1">
                       <p className="flex flex-wrap items-center gap-1.5">
                         <span className="text-[15px] font-semibold text-foreground">{r.drug}</span>
-                        <span className="rounded bg-[#eef5ff] px-1.5 py-px text-[11px] text-primary">
+                        <span className="rounded bg-secondary px-1.5 py-px text-[11px] text-primary">
                           {memberName(r.memberId)}
                         </span>
                       </p>
@@ -249,7 +249,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                         key={t}
                         className={cn(
                           'flex h-7 items-center gap-1 rounded-full px-2.5 text-[13px] font-medium tabular-nums',
-                          r.enabled ? 'bg-[#f4f8fe] text-foreground' : 'bg-[#f4f6f9] text-muted-foreground',
+                          r.enabled ? 'bg-background text-foreground' : 'bg-[#f4f6f9] text-muted-foreground',
                         )}
                       >
                         <Clock className="size-3.5 text-primary" aria-hidden="true" />
@@ -312,7 +312,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
               aria-disabled={full}
               className={cn(
                 'flex h-10 w-full items-center justify-center gap-1 rounded-full text-[14px] font-medium',
-                full ? 'bg-[#e6ebf3] text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
+                full ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
               )}
             >
               <Plus className="size-4" aria-hidden="true" />
@@ -332,7 +332,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
             className="w-full rounded-2xl bg-white px-5 pb-4 pt-5 text-center motion-safe:animate-in motion-safe:zoom-in-95"
           >
             <span
-              className="mx-auto flex size-11 items-center justify-center rounded-full bg-[#fdecea] text-[#e5603a]"
+              className="mx-auto flex size-11 items-center justify-center rounded-full bg-destructive-soft text-destructive"
               aria-hidden="true"
             >
               <Trash2 className="size-5" />
@@ -340,7 +340,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
             <h2 id="delete-reminder-title" className="mt-3 text-[16px] font-semibold text-foreground">
               确定删除该提醒？
             </h2>
-            <p className="mt-2 rounded-xl bg-[#f6f8fc] px-3 py-2 text-left text-[12px] leading-[18px] text-foreground">
+            <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-left text-[12px] leading-[18px] text-foreground">
               {pendingDelete.drug} · {memberName(pendingDelete.memberId)}
               <br />
               <span className="text-muted-foreground">
@@ -361,7 +361,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="h-10 flex-1 rounded-full bg-[#e5603a] text-[14px] font-medium text-white"
+                className="h-10 flex-1 rounded-full bg-destructive text-[14px] font-medium text-white"
               >
                 确认删除
               </button>
@@ -387,7 +387,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
 function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
     <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
-      <span className="flex size-24 items-center justify-center rounded-full bg-[#e3eeff]" aria-hidden="true">
+      <span className="flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
         <BellOff className="size-11 text-primary" strokeWidth={1.4} />
       </span>
       <h2 className="mt-5 text-[16px] font-semibold text-foreground">还没有用药提醒</h2>
@@ -561,7 +561,7 @@ function ReminderFormScreen({
               }}
               placeholder="请输入药品通用名或商品名"
               aria-invalid={!!errors.drug}
-              className="mt-1.5 h-10 w-full rounded-xl bg-[#f6f8fc] px-3 text-[14px] text-foreground outline-none placeholder:text-[#a9b3c6] focus:ring-2 focus:ring-primary/30"
+              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-[14px] text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
             />
           </label>
           <FieldError msg={errors.drug} />
@@ -596,7 +596,7 @@ function ReminderFormScreen({
                 }}
                 aria-labelledby="reminder-dose-label"
                 aria-invalid={!!errors.dose}
-                className="h-9 w-20 rounded-xl bg-[#f6f8fc] px-3 text-center text-[14px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                className="h-9 w-20 rounded-xl bg-muted px-3 text-center text-[14px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
               />
               <ChipGroup
                 labelledBy="reminder-dose-label"
@@ -661,7 +661,7 @@ function ReminderFormScreen({
                       }}
                       className={cn(
                         'h-8 rounded-lg text-[12px]',
-                        on ? 'bg-primary font-medium text-primary-foreground' : 'bg-[#f6f8fc] text-foreground',
+                        on ? 'bg-primary font-medium text-primary-foreground' : 'bg-muted text-foreground',
                       )}
                     >
                       {n}
@@ -695,7 +695,7 @@ function ReminderFormScreen({
                   value={t}
                   onChange={(e) => setTime(i, e.target.value)}
                   aria-label={`第 ${i + 1} 次服用时间`}
-                  className="h-9 w-full rounded-xl bg-[#eef5ff] px-2 text-center text-[14px] font-medium tabular-nums text-primary outline-none focus:ring-2 focus:ring-primary/30"
+                  className="h-9 w-full rounded-xl bg-secondary px-2 text-center text-[14px] font-medium tabular-nums text-primary outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 {times.length > 1 && (
                   <button
@@ -719,7 +719,7 @@ function ReminderFormScreen({
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="mt-1.5 h-9 w-full rounded-xl bg-[#f6f8fc] px-2.5 text-[13px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                className="mt-1.5 h-9 w-full rounded-xl bg-muted px-2.5 text-[13px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
               />
             </label>
             <label className="block">
@@ -733,7 +733,7 @@ function ReminderFormScreen({
                   clear('days')
                 }}
                 aria-invalid={!!errors.days}
-                className="mt-1.5 h-9 w-full rounded-xl bg-[#f6f8fc] px-2.5 text-[13px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30 disabled:text-muted-foreground"
+                className="mt-1.5 h-9 w-full rounded-xl bg-muted px-2.5 text-[13px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30 disabled:text-muted-foreground"
               />
             </label>
           </div>
@@ -771,7 +771,7 @@ function ReminderFormScreen({
                 clear('phone')
               }}
               aria-invalid={!!errors.phone}
-              className="mt-1.5 h-10 w-full rounded-xl bg-[#f6f8fc] px-3 text-[14px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-[14px] tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
             />
           </label>
           <FieldError msg={errors.phone} />
@@ -784,7 +784,7 @@ function ReminderFormScreen({
             value={advance}
             onChange={setAdvance}
           />
-          <div className="mt-3 rounded-xl bg-[#f6f8fc] p-2.5">
+          <div className="mt-3 rounded-xl bg-muted p-2.5">
             <p className="text-[11px] text-muted-foreground">短信预览</p>
             <p className="mt-1 text-[12px] leading-[18px] text-foreground">
               【都正生物】{memberName(memberId)}您好，{times[0] ?? '08:00'} 请{meal === '不限' ? '' : meal}服用
@@ -802,7 +802,7 @@ function ReminderFormScreen({
               onChange={(e) => setNote(e.target.value.slice(0, 40))}
               rows={2}
               placeholder="如：与其他药物间隔 2 小时"
-              className="mt-1.5 w-full resize-none rounded-xl bg-[#f6f8fc] px-3 py-2 text-[13px] leading-5 text-foreground outline-none placeholder:text-[#a9b3c6] focus:ring-2 focus:ring-primary/30"
+              className="mt-1.5 w-full resize-none rounded-xl bg-muted px-3 py-2 text-[13px] leading-5 text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
             />
           </label>
         </section>
@@ -852,7 +852,7 @@ function ChipGroup<T extends string | number>({
           onClick={() => onChange(i.value)}
           className={cn(
             'h-8 rounded-full border px-3 text-[12px] transition-colors',
-            value === i.value ? 'border-primary bg-[#eef5ff] font-medium text-primary' : 'border-border text-foreground',
+            value === i.value ? 'border-primary bg-secondary font-medium text-primary' : 'border-border text-foreground',
           )}
         >
           {i.label}
@@ -907,7 +907,7 @@ function ScanBadge() {
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null
   return (
-    <p role="alert" className="pt-1 text-[11px] text-[#e5603a]">
+    <p role="alert" className="pt-1 text-[11px] text-destructive">
       {msg}
     </p>
   )

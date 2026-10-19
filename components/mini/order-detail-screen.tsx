@@ -154,7 +154,7 @@ export function OrderDetailScreen({
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">客服改价</dt>
-                  <dd className="tabular-nums text-[#e5603a]">
+                  <dd className="tabular-nums text-destructive">
                     {priceAdjust.after <= priceAdjust.before ? '-' : '+'}
                     {yuan(Math.abs(priceAdjust.before - priceAdjust.after))}
                   </dd>
@@ -163,11 +163,11 @@ export function OrderDetailScreen({
             ) : (
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">{couponShared ? '优惠券（分摊）' : '优惠券'}</dt>
-                <dd className="tabular-nums text-[#e5603a]">{couponOff > 0 ? `-${yuan(couponOff)}` : '未使用'}</dd>
+                <dd className="tabular-nums text-destructive">{couponOff > 0 ? `-${yuan(couponOff)}` : '未使用'}</dd>
               </div>
             )}
             {couponShared && couponOff > 0 && (
-              <p className="rounded-lg bg-[#f4f8fe] px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground">
+              <p className="rounded-lg bg-background px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground">
                 合并支付使用的优惠券已按各子订单商品金额比例分摊，退款时按本订单实付金额退回
               </p>
             )}

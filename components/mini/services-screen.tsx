@@ -55,7 +55,7 @@ export function ServicesScreen({
   }, [initialSection])
 
   return (
-    <div className="flex h-full flex-col bg-[#f4f8fe]">
+    <div className="flex h-full flex-col bg-background">
       <div className="bg-white">
         <StatusBar />
         <header className="relative flex h-11 shrink-0 items-center justify-center">
@@ -243,19 +243,19 @@ function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTes
                 <span className="mt-0.5 truncate text-[12px] text-muted-foreground">{t.desc}</span>
                 <span className="mt-1 flex gap-1">
                   {t.tags.map((tag) => (
-                    <span key={tag} className="rounded bg-[#e8f1fe] px-1.5 py-px text-[10px] text-primary">
+                    <span key={tag} className="rounded bg-secondary px-1.5 py-px text-[10px] text-primary">
                       {tag}
                     </span>
                   ))}
                 </span>
                 <span className="mt-auto flex items-end justify-between pt-1">
                   <span className="flex items-baseline gap-1">
-                    <span className="text-[16px] font-bold text-[#e0651c]">
+                    <span className="text-[16px] font-bold text-warning">
                       <span className="text-[11px]">¥</span>
                       {t.price}
                     </span>
                     {t.originalPrice && (
-                      <span className="text-[11px] text-[#b8c2d6] line-through">¥{t.originalPrice}</span>
+                      <span className="text-[11px] text-faint line-through">¥{t.originalPrice}</span>
                     )}
                   </span>
                   <span className="text-[11px] text-muted-foreground">{t.sold}</span>
@@ -305,7 +305,7 @@ function ArticleSection({
   {a.reads}
   </span>
   {a.survey && (
-  <span className="flex items-center gap-0.5 rounded bg-[#fff1e6] px-1.5 py-0.5 text-[#e0651c]">
+  <span className="flex items-center gap-0.5 rounded bg-warning-soft px-1.5 py-0.5 text-warning">
   <ClipboardList className="size-3" aria-hidden="true" />
   含问卷
   </span>

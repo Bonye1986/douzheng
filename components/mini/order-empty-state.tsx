@@ -29,7 +29,7 @@ export function OrderEmptyState(props: OrderEmptyStateProps) {
 
   return (
     <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
-      <span className="flex size-24 items-center justify-center rounded-full bg-[#e3eeff]" aria-hidden="true">
+      <span className="flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
         <Icon className="size-11 text-primary" strokeWidth={1.4} />
       </span>
       <h2 className="mt-5 text-[16px] font-semibold text-foreground">{title}</h2>

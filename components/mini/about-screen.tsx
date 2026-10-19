@@ -134,14 +134,14 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
             <ul className="mt-3 space-y-3.5">
               {modules.map((m) => (
                 <li key={m.title} className="flex gap-3">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#eef5ff] text-primary">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
                     <m.icon className="size-4" aria-hidden="true" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-semibold text-foreground">{m.title}</p>
                     {m.desc && <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{m.desc}</p>}
                     {m.children && (
-                      <ul className="mt-1.5 space-y-1.5 rounded-lg bg-[#f4f8fe] p-2.5">
+                      <ul className="mt-1.5 space-y-1.5 rounded-lg bg-background p-2.5">
                         {m.children.map((c) => (
                           <li key={c.title} className="flex gap-1.5">
                             <span className="mt-[7px] size-1 shrink-0 rounded-full bg-primary" aria-hidden="true" />
@@ -157,7 +157,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
                 </li>
               ))}
             </ul>
-            <p className="mt-3.5 rounded-lg bg-[#f4f8fe] px-3 py-2.5 text-[12px] leading-relaxed text-foreground/80">
+            <p className="mt-3.5 rounded-lg bg-background px-3 py-2.5 text-[12px] leading-relaxed text-foreground/80">
               DRUGENE 会不定期推更新基因、药物数据和逐步完善、增加其他新功能，敬请期待。
             </p>
           </section>
@@ -178,7 +178,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
                 { label: '外聘专家', value: '67' },
                 { label: '合作医院', value: '240+' },
               ].map((s) => (
-                <div key={s.label} className="rounded-lg bg-[#f4f8fe] py-2">
+                <div key={s.label} className="rounded-lg bg-background py-2">
                   <dt className="text-[11px] text-muted-foreground">{s.label}</dt>
                   <dd className="mt-0.5 text-[15px] font-semibold tabular-nums text-primary">{s.value}</dd>
                 </div>
@@ -191,7 +191,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
               客服联系电话
             </h3>
             <div className="flex items-center gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#eef5ff] text-primary">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                 <Phone className="size-[18px]" aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">

@@ -72,7 +72,7 @@ export function DatePickerSheet({
         <div className="relative flex px-4 pt-2" style={{ height: VISIBLE * ITEM_H + 8 }}>
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-4 rounded-lg bg-[#f2f5fa]"
+            className="pointer-events-none absolute inset-x-4 rounded-lg bg-muted"
             style={{ top: 8 + PAD, height: ITEM_H }}
           />
           <WheelColumn label="年" items={years} value={year} onChange={setYear} format={(v) => `${v}年`} />
@@ -158,7 +158,7 @@ function WheelColumn({
           onClick={() => onChange(v)}
           className={cn(
             'flex snap-center items-center justify-center text-[16px] tabular-nums transition-colors',
-            v === value ? 'font-semibold text-foreground' : 'text-[#a9b3c6]',
+            v === value ? 'font-semibold text-foreground' : 'text-faint',
           )}
           style={{ height: ITEM_H }}
         >

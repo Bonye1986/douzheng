@@ -76,7 +76,7 @@ export function TestsScreen({
 
   return (
     <>
-      <div className="flex h-full flex-col bg-[#f4f8fe]" inert={!!detail || cartOpen || !!checkout}>
+      <div className="flex h-full flex-col bg-background" inert={!!detail || cartOpen || !!checkout}>
         <div className="shrink-0 bg-white">
           <StatusBar />
           <header className="relative flex h-11 items-center justify-center">
@@ -85,7 +85,7 @@ export function TestsScreen({
           </header>
 
           <div className="flex items-center gap-2 px-4 pb-2.5 pt-1">
-            <label className="flex h-9 flex-1 items-center gap-2 rounded-full bg-[#f2f5fa] px-3.5">
+            <label className="flex h-9 flex-1 items-center gap-2 rounded-full bg-muted px-3.5">
               <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span className="sr-only">搜索检测服务</span>
               <input
@@ -93,7 +93,7 @@ export function TestsScreen({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="搜索检测项目、药物或基因"
-                className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-[#a9b3c6] [&::-webkit-search-cancel-button]:hidden"
+                className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-faint [&::-webkit-search-cancel-button]:hidden"
               />
               {query && (
                 <button
@@ -247,7 +247,7 @@ export function CartButton({
     >
       <ShoppingCart className="size-[22px]" strokeWidth={1.8} aria-hidden="true" />
       {count > 0 && (
-        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e5603a] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+        <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
           {count > 99 ? '99+' : count}
         </span>
       )}
@@ -271,7 +271,7 @@ function ServiceCard({
         alt=""
         width={96}
         height={96}
-        className="size-24 shrink-0 rounded-xl bg-[#eef4fd] object-cover"
+        className="size-24 shrink-0 rounded-xl bg-secondary object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <h2 id={`svc-${service.id}`} className="line-clamp-2 text-[14px] font-medium leading-5 text-foreground">
@@ -281,23 +281,23 @@ function ServiceCard({
         </h2>
         <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{service.summary}</p>
         <p className="mt-1 flex flex-wrap gap-1">
-          <span className="rounded bg-[#e9f8f1] px-1.5 py-px text-[10px] text-[#1f9d6b]">
+          <span className="rounded bg-success-soft px-1.5 py-px text-[10px] text-success">
                 {getSamplingModes(service.id).includes('self') ? '支持居家自采' : samplingLabel.site}
           </span>
           {service.tags.slice(0, 2).map((tag) => (
-            <span key={tag} className="rounded bg-[#e8f1fe] px-1.5 py-px text-[10px] text-primary">
+            <span key={tag} className="rounded bg-secondary px-1.5 py-px text-[10px] text-primary">
               {tag}
             </span>
           ))}
         </p>
         <div className="mt-auto flex items-end justify-between pt-1.5">
           <p className="flex items-baseline gap-1.5">
-            <span className="text-[17px] font-bold leading-none text-[#e0651c]">
+            <span className="text-[17px] font-bold leading-none text-warning">
               <span className="text-[11px]">¥</span>
               {service.price}
             </span>
             {service.originalPrice && (
-              <span className="text-[11px] text-[#b8c2d6] line-through">¥{service.originalPrice}</span>
+              <span className="text-[11px] text-faint line-through">¥{service.originalPrice}</span>
             )}
             <span className="text-[11px] text-muted-foreground">{service.sold}</span>
           </p>

@@ -90,21 +90,21 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
                 <span
                   className={cn(
                     'flex size-4 shrink-0 items-center justify-center rounded-full text-[10px] tabular-nums',
-                    done || i === cur ? 'bg-primary text-primary-foreground' : 'bg-secondary text-[#8a94a6]',
+                    done || i === cur ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground',
                   )}
                 >
                   {i + 1}
                 </span>
-                <span className={cn(i <= cur ? 'text-foreground' : 'text-[#a9b3c6]')}>{label}</span>
+                <span className={cn(i <= cur ? 'text-foreground' : 'text-faint')}>{label}</span>
                 {i < 2 && <span aria-hidden="true" className={cn('h-px flex-1', i < cur ? 'bg-primary' : 'bg-border')} />}
               </li>
             )
           })}
         </ol>
 
-        <div className="mx-4 mt-3 rounded-xl bg-[#f4f8fe] px-3 py-2 text-[12px] leading-5 text-muted-foreground">
+        <div className="mx-4 mt-3 rounded-xl bg-background px-3 py-2 text-[12px] leading-5 text-muted-foreground">
           受检人 <span className="font-medium text-foreground">{memberName}</span> · {serviceName}
-          <span className="block text-[11px] tabular-nums text-[#a9b3c6]">订单号 {orderNo}</span>
+          <span className="block text-[11px] tabular-nums text-faint">订单号 {orderNo}</span>
         </div>
 
         {step === 'read' && (
@@ -117,7 +117,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
                 </p>
               ))}
             </div>
-            <p className="mx-4 mt-2.5 text-[11px] leading-4 text-[#a9b3c6]">
+            <p className="mx-4 mt-2.5 text-[11px] leading-4 text-faint">
               {'为确保本人意愿，签署需通过 e签宝 人脸核验，核验信息仅用于本次电子签名'}
             </p>
             <div className="flex gap-2.5 px-4 pb-8 pt-3">
@@ -133,7 +133,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
                 onClick={() => setStep('face')}
                 className={cn(
                   'h-10 flex-[1.4] rounded-full text-[14px] font-medium text-white',
-                  isSign ? 'bg-primary' : 'bg-[#e5603a]',
+                  isSign ? 'bg-primary' : 'bg-destructive',
                 )}
               >
                 {isSign ? '同意并去人脸核验' : '确认撤销并去核验'}
@@ -144,7 +144,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
 
         {(step === 'face' || step === 'verifying') && (
           <div className="flex flex-col items-center px-4 pb-8 pt-5">
-            <div className="relative flex size-36 items-center justify-center rounded-full bg-[#f4f8fe]">
+            <div className="relative flex size-36 items-center justify-center rounded-full bg-background">
               <span
                 aria-hidden="true"
                 className={cn(
@@ -169,13 +169,13 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
               {step === 'verifying' && <Loader2 className="size-4 motion-safe:animate-spin" aria-hidden="true" />}
               {step === 'verifying' ? '核验中' : '开始人脸核验'}
             </button>
-            <p className="mt-2.5 text-[10px] text-[#a9b3c6]">由 e签宝 提供实名认证与电子签名服务</p>
+            <p className="mt-2.5 text-[10px] text-faint">由 e签宝 提供实名认证与电子签名服务</p>
           </div>
         )}
 
         {step === 'success' && (
           <div className="flex flex-col items-center px-4 pb-8 pt-5 text-center">
-            <CircleCheck className="size-14 text-[#1f9d6b]" strokeWidth={1.6} aria-hidden="true" />
+            <CircleCheck className="size-14 text-success" strokeWidth={1.6} aria-hidden="true" />
             <p className="mt-3 text-[15px] font-semibold text-foreground">{isSign ? '签署成功' : '撤销成功'}</p>
             <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
               {isSign

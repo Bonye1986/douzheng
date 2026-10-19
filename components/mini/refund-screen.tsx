@@ -41,7 +41,7 @@ function Card({ children, className }: { children: React.ReactNode; className?: 
 }
 
 function BottomBar({ children }: { children: React.ReactNode }) {
-  return <div className="shrink-0 border-t border-[#eef2f8] bg-white px-4 pb-6 pt-2.5">{children}</div>
+  return <div className="shrink-0 border-t border-border bg-white px-4 pb-6 pt-2.5">{children}</div>
 }
 
 function PrimaryButton({
@@ -94,7 +94,7 @@ function OrderBrief({ no, product, examinee, paid, status }: { no: string; produ
     <Card>
       <div className="flex items-center justify-between">
         <span className="text-[12px] tabular-nums text-muted-foreground">订单号 {no}</span>
-        <span className="rounded bg-[#eef5ff] px-1.5 py-0.5 text-[11px] font-medium text-primary">{status}</span>
+        <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] font-medium text-primary">{status}</span>
       </div>
       <div className="mt-2.5 flex items-end justify-between">
         <div>
@@ -118,7 +118,7 @@ function AmountRows({ rows }: { rows: { label: string; value: string; strong?: b
           <dd
             className={cn(
               'tabular-nums',
-              r.strong ? 'text-[17px] font-semibold text-[#e0651c]' : r.minus ? 'text-[#e0651c]' : 'text-foreground',
+              r.strong ? 'text-[17px] font-semibold text-warning' : r.minus ? 'text-warning' : 'text-foreground',
             )}
           >
             {r.value}
@@ -203,7 +203,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                       key={o.key}
                       className={cn(
                         'flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors',
-                        active ? 'border-primary bg-[#f3f8ff]' : 'border-[#e6ecf4]',
+                        active ? 'border-primary bg-[#f3f8ff]' : 'border-border',
                       )}
                     >
                       <input
@@ -214,18 +214,18 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                         onChange={() => setOption(o.key)}
                         className="sr-only"
                       />
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eef5ff] text-primary">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
                         <o.icon className="size-[18px]" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-1.5 text-[14px] font-medium text-foreground">
                           {o.title}
-                          <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-[10px] text-[#1f8a4c]">{o.tag}</span>
+                          <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-[10px] text-success">{o.tag}</span>
                         </span>
                         <span className="mt-1 block text-[11px] leading-relaxed text-muted-foreground">{o.desc}</span>
                         <span className="mt-1.5 block text-[12px] text-muted-foreground">
                           预计退款{' '}
-                          <span className="text-[15px] font-semibold tabular-nums text-[#e0651c]">¥{o.amount}</span>
+                          <span className="text-[15px] font-semibold tabular-nums text-warning">¥{o.amount}</span>
                         </span>
                       </span>
                       <span
@@ -292,7 +292,7 @@ export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
                 value={trackingNo}
                 onChange={(e) => setTrackingNo(e.target.value.replace(/[^\w\s-]/g, '').slice(0, 30))}
                 placeholder="寄出后填写快递单号"
-                className="mt-2 h-10 w-full rounded-xl bg-[#f6f8fc] px-3 text-[13px] tabular-nums text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
+                className="mt-2 h-10 w-full rounded-xl bg-muted px-3 text-[13px] tabular-nums text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
               />
               <ul className="mt-2.5 space-y-1.5 text-[11px] leading-relaxed text-muted-foreground">
                 <li className="flex gap-1.5">
@@ -383,7 +383,7 @@ export function IncurredFeeCard({ paid, fees }: { paid: number; fees: IncurredFe
               <p className="text-[13px] text-foreground">{f.label}</p>
               <p className="mt-0.5 text-[11px] text-muted-foreground">{f.desc}</p>
             </div>
-            <span className="shrink-0 text-[13px] tabular-nums text-[#e0651c]">-¥{f.amount}</span>
+            <span className="shrink-0 text-[13px] tabular-nums text-warning">-¥{f.amount}</span>
           </li>
         ))}
       </ul>
@@ -408,11 +408,11 @@ export function ResampleRefundScreen({ onBack, onContact }: { onBack: () => void
     <SubPage title="终止订单并退款" titleId="resample-refund-title" onBack={onBack}>
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
         <div className="flex gap-2.5 rounded-2xl bg-warn-soft p-3.5">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#e0651c]">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-warning">
             <Receipt className="size-[18px]" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-[#c2541a]">需扣除已产生的各类费用</p>
+            <p className="text-[14px] font-semibold text-warning">需扣除已产生的各类费用</p>
             <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
               样本已进入重采样流程，终止后实验室停止检测，剩余金额原路退回。
             </p>
@@ -490,11 +490,11 @@ export function TestingRefundScreen({
     <SubPage title="申请退款" titleId="testing-refund-title" onBack={onBack}>
       <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
         <div className="flex gap-2.5 rounded-2xl bg-warn-soft p-3.5">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#e0651c]">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-warning">
             <Receipt className="size-[18px]" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-[14px] font-semibold text-[#c2541a]">需扣除已产生的费用</p>
+            <p className="text-[14px] font-semibold text-warning">需扣除已产生的费用</p>
             <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
               订单当前为「{order.status}」，确认退款后实验室将停止检测并销毁样本，剩余金额原路退回。
             </p>
@@ -517,7 +517,7 @@ export function TestingRefundScreen({
                   'h-8 rounded-full border px-3 text-[12px] transition-colors',
                   reason === r
                     ? 'border-primary bg-primary/10 font-medium text-primary'
-                    : 'border-[#dfe5ef] text-foreground',
+                    : 'border-border text-foreground',
                 )}
               >
                 {r}
@@ -609,13 +609,13 @@ function CancelConfirmDialog({
               <p>该订单尚未支付，取消后订单将关闭</p>
             ) : (
               <p>
-                取消后 <span className="font-medium tabular-nums text-[#e0651c]">¥{paid}</span> 将全额原路退回
+                取消后 <span className="font-medium tabular-nums text-warning">¥{paid}</span> 将全额原路退回
               </p>
             )}
             <p>订单取消后不可恢复，如需检测请重新下单</p>
           </div>
         </div>
-        <div className="flex border-t border-[#eef2f8]">
+        <div className="flex border-t border-border">
           <button
             type="button"
             autoFocus
@@ -627,7 +627,7 @@ function CancelConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className="h-12 flex-1 border-l border-[#eef2f8] text-[15px] font-medium text-[#e5484d]"
+            className="h-12 flex-1 border-l border-border text-[15px] font-medium text-[#e5484d]"
           >
             确认取消
           </button>

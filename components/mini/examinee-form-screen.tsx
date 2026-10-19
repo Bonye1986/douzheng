@@ -71,7 +71,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
     <SubPage title={editing ? '编辑检测人' : '添加受检人'} titleId="examinee-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         {targetName && (
-          <p className="mb-2.5 rounded-xl bg-[#eef5ff] px-3 py-2 text-[12px] leading-[18px] text-primary">
+          <p className="mb-2.5 rounded-xl bg-secondary px-3 py-2 text-[12px] leading-[18px] text-primary">
             保存后将自动为该受检人选择「{targetName}」
           </p>
         )}
@@ -79,7 +79,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
         <section aria-labelledby="relation-title" className="rounded-2xl bg-white p-3.5">
           <h2 id="relation-title" className="text-[14px] font-semibold text-foreground">
             与本人关系
-            <span className="ml-0.5 text-[#e5603a]" aria-hidden="true">
+            <span className="ml-0.5 text-destructive" aria-hidden="true">
               *
             </span>
           </h2>
@@ -100,7 +100,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
                   }}
                   className={cn(
                     'h-8 min-w-[56px] rounded-full border px-3.5 text-[13px] transition-colors disabled:opacity-40',
-                    on ? 'border-primary bg-[#eef5ff] font-medium text-primary' : 'border-border bg-white text-foreground',
+                    on ? 'border-primary bg-secondary font-medium text-primary' : 'border-border bg-white text-foreground',
                   )}
                 >
                   {r}
@@ -126,11 +126,11 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               }}
               placeholder="请输入真实姓名"
               aria-invalid={!!errors.name}
-              className="min-w-0 flex-1 bg-transparent text-right text-[14px] text-foreground outline-none placeholder:text-[#a9b3c6]"
+              className="min-w-0 flex-1 bg-transparent text-right text-[14px] text-foreground outline-none placeholder:text-faint"
             />
           </Row>
           <Row label="性别" required>
-            <div role="radiogroup" aria-label="性别" className="ml-auto flex rounded-full bg-[#f2f5fa] p-0.5">
+            <div role="radiogroup" aria-label="性别" className="ml-auto flex rounded-full bg-muted p-0.5">
               {(['male', 'female'] as const).map((g) => (
                 <button
                   key={g}
@@ -156,10 +156,10 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               aria-invalid={!!errors.birth}
               className="flex min-w-0 flex-1 items-center justify-end gap-1 text-[14px]"
             >
-              <span className={cn('tabular-nums', birth ? 'text-foreground' : 'text-[#a9b3c6]')}>
+              <span className={cn('tabular-nums', birth ? 'text-foreground' : 'text-faint')}>
                 {birth ? birth.replace(/^(\d+)-(\d+)-(\d+)$/, '$1年$2月$3日') : '请选择出生日期'}
               </span>
-              <ChevronRight className="size-4 shrink-0 text-[#a9b3c6]" aria-hidden="true" />
+              <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
             </button>
           </Row>
           <Row label="手机号" error={errors.phone} last={!isSelf}>
@@ -173,7 +173,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               }}
               placeholder="选填，用于报告通知"
               aria-invalid={!!errors.phone}
-              className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-[#a9b3c6]"
+              className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-faint"
             />
           </Row>
           {isSelf && (
@@ -186,14 +186,14 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
                 }}
                 placeholder="用于本人实名认证"
                 aria-invalid={!!errors.idCard}
-                className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-[#a9b3c6]"
+                className="min-w-0 flex-1 bg-transparent text-right text-[14px] tabular-nums text-foreground outline-none placeholder:text-faint"
               />
             </Row>
           )}
         </section>
 
         {relation && !isSelf && (
-          <p className="mt-2.5 rounded-xl bg-[#eef5ff] px-3 py-2 text-[12px] leading-[18px] text-primary">
+          <p className="mt-2.5 rounded-xl bg-secondary px-3 py-2 text-[12px] leading-[18px] text-primary">
             家人无需实名认证，填写姓名、性别和出生日期即可下单检测
           </p>
         )}
@@ -249,7 +249,7 @@ function Row({
         <span className="w-[68px] shrink-0 text-[14px] text-foreground">
           {label}
           {required && (
-            <span className="ml-0.5 text-[#e5603a]" aria-hidden="true">
+            <span className="ml-0.5 text-destructive" aria-hidden="true">
               *
             </span>
           )}
@@ -264,7 +264,7 @@ function Row({
 function FieldError({ msg, align }: { msg?: string; align?: 'right' }) {
   if (!msg) return null
   return (
-    <p role="alert" className={cn('pb-1.5 text-[11px] text-[#e5603a]', align === 'right' ? 'text-right' : 'mt-1.5')}>
+    <p role="alert" className={cn('pb-1.5 text-[11px] text-destructive', align === 'right' ? 'text-right' : 'mt-1.5')}>
       {msg}
     </p>
   )

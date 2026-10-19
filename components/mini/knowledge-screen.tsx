@@ -69,7 +69,7 @@ function KnowledgeList({
               onClick={() => setCategory(c)}
               className={cn(
                 'h-7 shrink-0 rounded-full px-3 text-[12px] transition-colors',
-                active ? 'bg-primary font-medium text-primary-foreground' : 'bg-[#f2f5fa] text-foreground',
+                active ? 'bg-primary font-medium text-primary-foreground' : 'bg-muted text-foreground',
               )}
             >
               {c}
@@ -82,7 +82,7 @@ function KnowledgeList({
         {filtered.length > 0 ? (
           <ul className="overflow-hidden rounded-2xl bg-white" aria-label={listLabel}>
             {filtered.map((a, i) => (
-              <li key={a.id} className={i > 0 ? 'border-t border-[#eef1f6]' : ''}>
+              <li key={a.id} className={i > 0 ? 'border-t border-border' : ''}>
                 <button
                   type="button"
                   onClick={() => onOpen(a.id)}
@@ -102,7 +102,7 @@ function KnowledgeList({
                       {a.summary}
                     </span>
                     <span className="mt-1.5 flex items-center gap-2">
-                      <span className="rounded bg-[#f2f5fa] px-1.5 py-px text-[10px] text-muted-foreground">
+                      <span className="rounded bg-muted px-1.5 py-px text-[10px] text-muted-foreground">
                         {a.category}
                       </span>
                       <ArticleMeta article={a} />
@@ -110,7 +110,7 @@ function KnowledgeList({
                         <span
                           className={cn(
                             'ml-auto flex items-center gap-0.5 rounded px-1.5 py-px text-[10px]',
-                            answered[a.id] ? 'bg-[#e9f8f1] text-[#1f9d6b]' : 'bg-[#fff1e6] text-[#e0651c]',
+                            answered[a.id] ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning',
                           )}
                         >
                           {answered[a.id] ? '已参与' : '含问卷'}
@@ -162,7 +162,7 @@ function SurveyEntry({
         onClick={onOpen}
         className={cn(
           'flex h-8 shrink-0 items-center gap-1 rounded-full px-3 text-[12px] font-medium',
-          answered ? 'bg-[#e9f8f1] text-[#1f9d6b]' : 'bg-primary text-primary-foreground',
+          answered ? 'bg-success-soft text-success' : 'bg-primary text-primary-foreground',
         )}
       >
         {answered && <CheckCircle2 className="size-3.5" aria-hidden="true" />}
@@ -193,7 +193,7 @@ function KnowledgeDetail({
             <ArticleMeta article={article} />
           </div>
 
-          <p className="mt-3 rounded-xl bg-[#f4f8fe] p-3 text-[13px] leading-relaxed text-muted-foreground">
+          <p className="mt-3 rounded-xl bg-background p-3 text-[13px] leading-relaxed text-muted-foreground">
             {article.summary}
           </p>
 
@@ -240,7 +240,7 @@ function KnowledgeDetail({
       </div>
 
       {article.survey && (
-        <div className="shrink-0 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
+        <div className="shrink-0 border-t border-border bg-white px-3 pb-6 pt-2.5">
           <SurveyEntry survey={article.survey} answered={answered} onOpen={onOpenSurvey} />
         </div>
       )}

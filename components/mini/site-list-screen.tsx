@@ -26,7 +26,7 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
   return (
     <SubPage title="定点采样机构" titleId="site-list-title" onBack={onBack}>
       <div className="shrink-0 bg-white px-3 pb-2.5">
-        <label className="flex h-9 items-center gap-2 rounded-full bg-[#f2f5fa] px-3">
+        <label className="flex h-9 items-center gap-2 rounded-full bg-muted px-3">
           <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <span className="sr-only">搜索采样机构</span>
           <input
@@ -34,7 +34,7 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="搜索机构名称、区域或地址"
-            className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-[#a9b3c6] [&::-webkit-search-cancel-button]:hidden"
+            className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-faint [&::-webkit-search-cancel-button]:hidden"
           />
           {keyword && (
             <button type="button" onClick={() => setKeyword('')} aria-label="清除搜索" className="text-muted-foreground">
@@ -79,7 +79,7 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
                         aria-hidden="true"
                         className={cn(
                           'flex size-9 shrink-0 items-center justify-center rounded-xl',
-                          s.type === 'hospital' ? 'bg-[#e8f1fe] text-primary' : 'bg-[#e9f8f1] text-[#1f9d6b]',
+                          s.type === 'hospital' ? 'bg-secondary text-primary' : 'bg-success-soft text-success',
                         )}
                       >
                         <TypeIcon className="size-[18px]" />
@@ -87,13 +87,13 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
                       <span className="min-w-0 flex-1">
                         <span className="block pr-14 text-[14px] font-medium leading-5 text-foreground">{s.name}</span>
                         <span className="mt-1 flex flex-wrap items-center gap-1">
-                          <span className="rounded bg-[#f2f5fa] px-1.5 py-px text-[10px] text-muted-foreground">
+                          <span className="rounded bg-muted px-1.5 py-px text-[10px] text-muted-foreground">
                             {siteTypeLabel[s.type]}
                           </span>
                           <span
                             className={cn(
                               'rounded px-1.5 py-px text-[10px]',
-                              s.todayAvailable ? 'bg-[#e9f8f1] text-[#1f9d6b]' : 'bg-[#fff7ec] text-[#c27a1a]',
+                              s.todayAvailable ? 'bg-success-soft text-success' : 'bg-[#fff7ec] text-[#c27a1a]',
                             )}
                           >
                             {s.todayAvailable ? '今日可采' : '明日起可约'}

@@ -127,7 +127,12 @@ export function HomeFlow({
             initialCheckout={initialCheckout}
           />
         ) : tab === 'me' ? (
-          <MineScreen onOpenTests={() => openTests()} loggedIn={loggedIn} onRequireLogin={setLoginPrompt} />
+          <MineScreen
+            onOpenTests={() => openTests()}
+            loggedIn={loggedIn}
+            onRequireLogin={setLoginPrompt}
+            onOpenChat={openChat}
+          />
         ) : (
           <TabPlaceholderScreen tab={tab} />
         )}

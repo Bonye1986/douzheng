@@ -101,13 +101,13 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
     {
       key: 'save',
       label: '保存到手机',
-      icon: <Download className="size-6 text-[#5b6b82]" />,
+      icon: <Download className="size-6 text-muted-foreground" />,
       onClick: () => generate('正在生成 PDF 报告...', () => flash('PDF 已保存到手机')),
     },
     {
       key: 'link',
       label: '复制下载链接',
-      icon: <Link2 className="size-6 text-[#5b6b82]" />,
+      icon: <Link2 className="size-6 text-muted-foreground" />,
       onClick: async () => flash((await copyText(downloadUrl)) ? '下载链接已复制，7 天内有效' : '复制失败，请重试'),
     },
   ]
@@ -137,7 +137,7 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
             </button>
           </div>
           <FileCard name={fileName} size={fileSize} className="mt-3" />
-          <p className="mt-2 flex gap-1.5 rounded-xl bg-[#fdf3e8] px-3 py-2 text-[11px] leading-relaxed text-[#b4602a]">
+          <p className="mt-2 flex gap-1.5 rounded-xl bg-warning-soft px-3 py-2 text-[11px] leading-relaxed text-[#b4602a]">
             <ShieldAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
             报告包含受检人基因与健康信息，请仅分享给信任的家人或医生。
           </p>

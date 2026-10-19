@@ -36,7 +36,7 @@ function Row({
   return (
     <li>
       <button type="button" onClick={onClick} className="flex min-h-12 w-full items-center gap-2 px-3.5 py-3 text-left">
-        <span className={cn('flex-1 text-[14px]', danger ? 'text-[#e5603a]' : 'text-foreground')}>{label}</span>
+        <span className={cn('flex-1 text-[14px]', danger ? 'text-destructive' : 'text-foreground')}>{label}</span>
         {value && <span className="text-[13px] text-muted-foreground">{value}</span>}
         <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
       </button>
@@ -133,7 +133,7 @@ function ConfirmDialog({
         className="w-full rounded-2xl bg-white px-5 pb-4 pt-5 text-center motion-safe:animate-in motion-safe:zoom-in-95"
       >
         <span
-          className="mx-auto flex size-11 items-center justify-center rounded-full bg-[#fdecea] text-[#e5603a]"
+          className="mx-auto flex size-11 items-center justify-center rounded-full bg-destructive-soft text-destructive"
           aria-hidden="true"
         >
           {icon}
@@ -148,18 +148,54 @@ function ConfirmDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="h-10 rounded-full bg-[#f1f4f9] text-[14px] font-medium text-foreground"
+            className="h-10 rounded-full bg-muted text-[14px] font-medium text-foreground"
           >
             取消
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="h-10 rounded-full bg-[#e5603a] text-[14px] font-medium text-white"
+            className="h-10 rounded-full bg-destructive text-[14px] font-medium text-white"
           >
             {confirm}
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function AvatarSheet({ onClose, onPick }: { onClose: () => void; onPick: (msg: string) => void }) {
+  const options = ['使用微信头像', '拍照', '从手机相册选择']
+  return (
+    <div className="absolute inset-0 z-40 flex flex-col justify-end">
+      <button type="button" aria-label="关闭" onClick={onClose} className="absolute inset-0 bg-black/40" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="更换头像"
+        className="relative overflow-hidden rounded-t-2xl bg-background pb-6 motion-safe:animate-in motion-safe:slide-in-from-bottom"
+      >
+        <ul className="divide-y divide-border bg-white">
+          {options.map((o) => (
+            <li key={o}>
+              <button
+                type="button"
+                onClick={() => onPick('头像已更新')}
+                className="h-13 w-full text-center text-[15px] text-foreground active:bg-muted"
+              >
+                {o}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-2 h-13 w-full bg-white text-center text-[15px] text-muted-foreground active:bg-muted"
+        >
+          取消
+        </button>
       </div>
     </div>
   )
@@ -194,7 +230,9 @@ function MainView({
   onPhone,
   onDeactivate,
   onLogout,
+  onAvatar,
 }: {
+  onAvatar: () => void
   profile: Profile
   phone: string
   onEdit: (field: ProfileField) => void
@@ -207,7 +245,7 @@ function MainView({
     <div className="flex-1 overflow-y-auto px-3 pb-8 pt-1 [scrollbar-width:none]">
       <Card title="个人资料">
         <li>
-          <button type="button" className="flex w-full items-center gap-2 px-3.5 py-3 text-left">
+          <button type="button" onClick={onAvatar} className="flex w-full items-center gap-2 px-3.5 py-3 text-left">
             <span className="flex-1 text-[14px] text-foreground">头像</span>
                 <span className="relative flex size-11 items-center justify-center">
                   <DefaultAvatar className="size-11" />
@@ -244,7 +282,7 @@ function MainView({
       <button
         type="button"
         onClick={onLogout}
-        className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-white text-[15px] font-medium text-[#e5603a]"
+        className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-white text-[15px] font-medium text-destructive"
       >
         <LogOut className="size-4" aria-hidden="true" />
         退出登录
@@ -318,7 +356,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
         )}
       </div>
       {step === 'bind' && newPhone.length === 11 && newPhone === phone && (
-        <p className="mt-1.5 px-1.5 text-[11px] text-[#e5603a]">新手机号不能与当前手机号相同</p>
+        <p className="mt-1.5 px-1.5 text-[11px] text-destructive">新手机号不能与当前手机号相同</p>
       )}
 
       <ul className="mt-3 space-y-1 px-1.5 text-[11px] leading-4 text-muted-foreground">
@@ -353,8 +391,8 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
-      <div className="flex items-start gap-2.5 rounded-2xl bg-[#fff4e5] p-3.5">
-        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-[#c27a12]" aria-hidden="true" />
+      <div className="flex items-start gap-2.5 rounded-2xl bg-warning-soft p-3.5">
+        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden="true" />
         <div>
           <p className="text-[14px] font-semibold text-[#8a5410]">注销账号是不可恢复的操作</p>
           <p className="mt-0.5 text-[12px] leading-[18px] text-[#8a5410]/80">
@@ -370,7 +408,7 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
         <ul className="mt-2 space-y-2">
           {deactivateNotices.map((n, i) => (
             <li key={n} className="flex gap-2 text-[12px] leading-[18px] text-muted-foreground">
-              <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-[#f1f4f9] text-[10px] tabular-nums text-foreground">
+              <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] tabular-nums text-foreground">
                 {i + 1}
               </span>
               {n}
@@ -406,7 +444,7 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
         type="button"
         disabled={!agreed || code.length !== 6}
         onClick={() => setConfirming(true)}
-        className="mt-auto h-11 w-full shrink-0 rounded-full bg-[#e5603a] text-[15px] font-medium text-white disabled:opacity-40"
+        className="mt-auto h-11 w-full shrink-0 rounded-full bg-destructive text-[15px] font-medium text-white disabled:opacity-40"
       >
         申请注销
       </button>
@@ -608,6 +646,7 @@ export function AccountSettingsScreen({
     setToast('已保存')
   }
   const [logoutOpen, setLogoutOpen] = useState(false)
+  const [avatarOpen, setAvatarOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
   useEffect(() => {
@@ -632,6 +671,16 @@ export function AccountSettingsScreen({
           onPhone={() => setView('phone')}
           onDeactivate={() => setView('deactivate')}
           onLogout={() => setLogoutOpen(true)}
+          onAvatar={() => setAvatarOpen(true)}
+        />
+      )}
+      {avatarOpen && (
+        <AvatarSheet
+          onClose={() => setAvatarOpen(false)}
+          onPick={(msg) => {
+            setAvatarOpen(false)
+            setToast(msg)
+          }}
         />
       )}
       {view === 'phone' && (

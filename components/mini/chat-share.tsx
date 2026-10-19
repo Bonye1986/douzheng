@@ -148,7 +148,7 @@ export function ShareSheetBase({
     {
       key: 'link',
       label: '复制链接',
-      icon: <Link2 className="size-6 text-[#5b6b82]" />,
+      icon: <Link2 className="size-6 text-muted-foreground" />,
       onClick: async () => {
         if (empty) return flash('请至少选择一条内容')
         flash((await copyToClipboard(shareUrl)) ? '链接已复制' : '复制失败')
@@ -157,13 +157,13 @@ export function ShareSheetBase({
     {
       key: 'qrcode',
       label: '二维码',
-      icon: <QrCode className="size-6 text-[#5b6b82]" />,
+      icon: <QrCode className="size-6 text-muted-foreground" />,
       onClick: () => withLoading(() => setOverlay('qrcode')),
     },
     {
       key: 'poster',
       label: '生成图片',
-      icon: <ImageIcon className="size-6 text-[#5b6b82]" />,
+      icon: <ImageIcon className="size-6 text-muted-foreground" />,
       onClick: () => withLoading(() => setOverlay('poster')),
     },
   ]

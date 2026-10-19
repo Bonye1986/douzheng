@@ -81,7 +81,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                     <span
                       className={cn(
                         'flex size-11 shrink-0 items-center justify-center rounded-full text-[16px] font-semibold',
-                        m.relation === '本人' ? 'bg-primary text-primary-foreground' : 'bg-[#eef5ff] text-primary',
+                        m.relation === '本人' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-primary',
                       )}
                       aria-hidden="true"
                     >
@@ -90,7 +90,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-1.5">
                         <span className="truncate text-[15px] font-semibold text-foreground">{m.name}</span>
-                        <span className="shrink-0 rounded bg-[#eef5ff] px-1.5 py-px text-[11px] text-primary">
+                        <span className="shrink-0 rounded bg-secondary px-1.5 py-px text-[11px] text-primary">
                           {m.relation}
                         </span>
                       </p>
@@ -101,7 +101,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                     </div>
                   </div>
 
-                  <dl className="mt-3 grid grid-cols-2 gap-2 rounded-xl bg-[#f6f8fc] px-3 py-2 text-[12px]">
+                  <dl className="mt-3 grid grid-cols-2 gap-2 rounded-xl bg-muted px-3 py-2 text-[12px]">
                     <div className="flex items-center gap-1.5">
                       <dt className="flex items-center gap-1 text-muted-foreground">
                         <Phone className="size-3.5" aria-hidden="true" />
@@ -121,7 +121,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                         <span
                           className={cn(
                             'rounded px-1.5 py-px',
-                            m.idCard ? 'bg-[#e8f7ef] text-[#1f9d55]' : 'bg-[#fff1eb] text-[#e5603a]',
+                            m.idCard ? 'bg-[#e8f7ef] text-[#1f9d55]' : 'bg-[#fff1eb] text-destructive',
                           )}
                         >
                           {m.idCard ? '已实名' : '未实名'}
@@ -167,7 +167,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               aria-disabled={full}
               className={cn(
                 'flex h-10 w-full items-center justify-center gap-1 rounded-full text-[14px] font-medium',
-                full ? 'bg-[#e6ebf3] text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
+                full ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
               )}
             >
               <Plus className="size-4" aria-hidden="true" />
@@ -189,7 +189,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
             <span
               className={cn(
                 'mx-auto flex size-11 items-center justify-center rounded-full',
-                blocked ? 'bg-[#fff4e5] text-[#c27a12]' : 'bg-[#fdecea] text-[#e5603a]',
+                blocked ? 'bg-warning-soft text-warning' : 'bg-destructive-soft text-destructive',
               )}
               aria-hidden="true"
             >
@@ -225,7 +225,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                 <button
                   type="button"
                   onClick={confirmDelete}
-                  className="h-10 flex-1 rounded-full bg-[#e5603a] text-[14px] font-medium text-white"
+                  className="h-10 flex-1 rounded-full bg-destructive text-[14px] font-medium text-white"
                 >
                   确认删除
                 </button>
@@ -259,7 +259,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
 function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
     <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
-      <span className="relative flex size-24 items-center justify-center rounded-full bg-[#e3eeff]" aria-hidden="true">
+      <span className="relative flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
         <Users className="size-11 text-primary" strokeWidth={1.4} />
         <span className="absolute bottom-1 right-1 flex size-7 items-center justify-center rounded-full bg-white shadow-sm">
           <UserRound className="size-4 text-primary" />

@@ -29,7 +29,7 @@ export function OrderFilterBar({
   return (
     <div className={cn('relative shrink-0 bg-white px-3 pb-1.5 pt-1', menuOpen && 'z-40')}>
       <div className="flex items-center gap-2">
-        <label className="flex h-9 flex-1 items-center gap-1.5 rounded-full bg-[#f1f4f9] px-3">
+        <label className="flex h-9 flex-1 items-center gap-1.5 rounded-full bg-muted px-3">
           <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <span className="sr-only">搜索订单</span>
           <input
@@ -58,7 +58,7 @@ export function OrderFilterBar({
           onClick={() => setMenuOpen((v) => !v)}
           className={cn(
             'flex h-9 shrink-0 items-center gap-0.5 rounded-full px-3 text-[13px] transition-colors',
-            type === 'all' ? 'bg-[#f1f4f9] text-foreground' : 'bg-primary/10 font-medium text-primary',
+            type === 'all' ? 'bg-muted text-foreground' : 'bg-primary/10 font-medium text-primary',
           )}
         >
           {current.label}
@@ -90,7 +90,7 @@ export function OrderFilterBar({
                       setMenuOpen(false)
                     }}
                     className={cn(
-                      'flex h-10 w-full items-center justify-between px-3.5 text-[13px] active:bg-[#f6f8fc]',
+                      'flex h-10 w-full items-center justify-between px-3.5 text-[13px] active:bg-muted',
                       selected ? 'font-medium text-primary' : 'text-foreground',
                     )}
                   >

@@ -90,7 +90,7 @@ export function WelcomeScreen({
             <button
               type="button"
               onClick={guard(onWechatLogin)}
-              className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-[16px] font-medium text-primary-foreground shadow-[0_10px_24px_#3b8beb38] transition-transform active:scale-[0.98]"
+              className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-[16px] font-medium text-primary-foreground shadow-[0_10px_24px_#3a82e438] transition-transform active:scale-[0.98]"
             >
               <Smartphone className="size-[18px]" aria-hidden="true" />
               微信手机号快捷登录

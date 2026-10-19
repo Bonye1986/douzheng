@@ -264,7 +264,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
       <Shell title="订单结果" onBack={onDone}>
         <div className="flex-1 overflow-y-auto px-3 pt-2.5 [scrollbar-width:none]">
           <section className="flex flex-col items-center rounded-2xl bg-white px-6 pb-6 pt-8 text-center">
-            <CircleCheck className="size-14 text-[#1f9d6b]" strokeWidth={1.6} aria-hidden="true" />
+            <CircleCheck className="size-14 text-success" strokeWidth={1.6} aria-hidden="true" />
             <p className="mt-3 text-[17px] font-semibold text-foreground">支付成功</p>
             <p className="mt-1 text-[24px] font-bold tabular-nums text-foreground">
               <span className="text-[15px]">¥</span>
@@ -277,7 +277,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               <button
                 type="button"
                 onClick={onDone}
-                className="h-10 flex-1 rounded-full border border-border text-[14px] text-foreground active:bg-[#f2f5fa]"
+                className="h-10 flex-1 rounded-full border border-border text-[14px] text-foreground active:bg-muted"
               >
                 返回检测
               </button>
@@ -310,7 +310,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </dl>
             {isSplit ? (
               <div className="mt-3 border-t border-border pt-3">
-                <p className="rounded-lg bg-[#f4f8fe] px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground">
+                <p className="rounded-lg bg-background px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground">
                   本次合并支付已按检测人及检测项目拆分为 {splitOrders.length} 个订单，可在订单列表分别查看
                 </p>
                 <ul className="mt-2 flex flex-col gap-2">
@@ -327,7 +327,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                           {formatYuan(Math.round((o.service.price - couponShares[i]) * 100) / 100)}
                         </span>
                         {couponShares[i] > 0 && (
-                          <span className="block text-[11px] text-[#e5603a]">
+                          <span className="block text-[11px] text-destructive">
                             分摊优惠 -{formatYuan(couponShares[i])}
                           </span>
                         )}
@@ -352,7 +352,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             <section aria-labelledby="research-sign" className="mt-2.5 rounded-2xl bg-white p-4">
               <h2 id="research-sign" className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
                 科研知情同意书
-                <span className="rounded bg-secondary px-1 text-[10px] font-normal text-[#8a94a6]">自愿</span>
+                <span className="rounded bg-secondary px-1 text-[10px] font-normal text-muted-foreground">自愿</span>
               </h2>
               <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
                 已向以下受检人发送签署短信，受检人点击短信中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
@@ -366,7 +366,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                       <div className="min-w-0 flex-1">
                         <p className="flex items-center gap-1.5 text-[13px] text-foreground">
                           {it.memberName}
-                          <span className="rounded bg-[#fff4e5] px-1 py-px text-[10px] text-[#d97706]">待受检人签署</span>
+                          <span className="rounded bg-warning-soft px-1 py-px text-[10px] text-[#d97706]">待受检人签署</span>
                         </p>
                         <p className="truncate text-[11px] text-muted-foreground">{it.serviceName} · 短信已发送</p>
                       </div>
@@ -374,7 +374,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                         type="button"
                         disabled={resent}
                         onClick={() => setResentSms((s) => [...s, it.key])}
-                        className="h-7 shrink-0 rounded-full border border-primary px-3 text-[12px] text-primary disabled:border-border disabled:text-[#8a94a6]"
+                        className="h-7 shrink-0 rounded-full border border-primary px-3 text-[12px] text-primary disabled:border-border disabled:text-muted-foreground"
                       >
                         {resent ? '已重新发送' : '重新发送'}
                       </button>
@@ -395,7 +395,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 : ['按预约时间前往采样点', '出示订单码完成采样', '7 个工作日左右出具报告']
               ).map((step, i) => (
                 <li key={step} className="flex items-start gap-2.5 text-[13px] leading-5 text-foreground">
-                  <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-[#e8f1fe] text-[10px] font-semibold text-primary">
+                  <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-semibold text-primary">
                     {i + 1}
                   </span>
                   {step}
@@ -481,7 +481,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                   onClick={() => changeMode(key)}
                   className={cn(
                     'relative flex flex-col items-start rounded-xl border px-3 py-2.5 text-left transition-colors',
-                    on ? 'border-primary bg-[#eef5ff]' : 'border-border bg-white',
+                    on ? 'border-primary bg-secondary' : 'border-border bg-white',
                   )}
                 >
                   <span className={cn('flex items-center gap-1.5 text-[13px] font-medium', on ? 'text-primary' : 'text-foreground')}>
@@ -523,9 +523,9 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                     </span>
                     <span className="mt-0.5 block text-[12px] leading-[18px] text-muted-foreground">{address.detail}</span>
                   </span>
-                  <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" aria-hidden="true" />
+                  <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
                 </button>
-                <p className="mt-2.5 rounded-lg bg-[#f4f8fe] px-2.5 py-1.5 text-[11px] text-muted-foreground">
+                <p className="mt-2.5 rounded-lg bg-background px-2.5 py-1.5 text-[11px] text-muted-foreground">
                   顺丰包邮寄送 · 采样后可预约免费上门取件
                 </p>
               </>
@@ -540,7 +540,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                   onClick={() => setSheet('site')}
                   className={cn(
                     'mt-2 flex w-full items-center gap-2 rounded-lg text-left',
-                    sampleWarn && !site && 'bg-[#fff1ec] p-2',
+                    sampleWarn && !site && 'bg-destructive-soft p-2',
                   )}
                 >
                   {site ? (
@@ -554,10 +554,10 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                   ) : (
                     <span className="flex-1 text-[13px] text-muted-foreground">请选择就近的采样机构</span>
                   )}
-                  <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" aria-hidden="true" />
+                  <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
                 </button>
                 {sampleWarn && !site && (
-                  <p role="alert" className="mt-1 text-[11px] text-[#e5603a]">
+                  <p role="alert" className="mt-1 text-[11px] text-destructive">
                     请选择定点采样机构
                   </p>
                 )}
@@ -588,7 +588,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                       alt=""
                       width={56}
                       height={56}
-                      className="size-14 shrink-0 rounded-xl bg-[#eef4fd] object-cover"
+                      className="size-14 shrink-0 rounded-xl bg-secondary object-cover"
                     />
                     <div className="flex min-w-0 flex-1 flex-col">
                       <p className="line-clamp-1 text-[13px] font-medium leading-[18px] text-foreground">{service.name}</p>
@@ -605,7 +605,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                   <div
                     role="group"
                     aria-label={`${service.name}的受检人`}
-                    className={cn('mt-2.5 flex flex-wrap gap-1.5 rounded-xl p-0.5', missing && 'bg-[#fff1ec]')}
+                    className={cn('mt-2.5 flex flex-wrap gap-1.5 rounded-xl p-0.5', missing && 'bg-destructive-soft')}
                   >
                     {examinees.map((e) => {
                       const on = selected.includes(e.id)
@@ -618,7 +618,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                           onClick={() => toggleAssign(service.id, e.id)}
                           className={cn(
                             'flex h-7 items-center gap-1 rounded-full border px-2.5 text-[12px] transition-colors',
-                            on ? 'border-primary bg-[#eef5ff] text-primary' : 'border-border bg-white text-muted-foreground',
+                            on ? 'border-primary bg-secondary text-primary' : 'border-border bg-white text-muted-foreground',
                           )}
                         >
                           {on ? (
@@ -633,15 +633,15 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                     })}
                   </div>
                   {missing && (
-                    <p role="alert" className="mt-1 text-[11px] text-[#e5603a]">
+                    <p role="alert" className="mt-1 text-[11px] text-destructive">
                       请至少选择一位受检人
                     </p>
                   )}
                   {selected.length > 0 && (
-                    <div className="mt-2.5 rounded-xl bg-[#f4f8fe] px-3 py-2.5">
+                    <div className="mt-2.5 rounded-xl bg-background px-3 py-2.5">
                       <p className="flex items-center gap-1 text-[12px] text-foreground">
                         科研授权
-                        <span className="rounded bg-white px-1 py-px text-[10px] text-[#8a94a6]">可选</span>
+                        <span className="rounded bg-white px-1 py-px text-[10px] text-muted-foreground">可选</span>
                         <button
                           type="button"
                           onClick={() => setResearchDocOpen(true)}
@@ -669,7 +669,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                                     aria-hidden="true"
                                     className={cn(
                                       'flex size-4 shrink-0 items-center justify-center rounded border',
-                                      on ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb] bg-white',
+                                      on ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60 bg-white',
                                     )}
                                   >
                                     {on && <Check className="size-2.5" strokeWidth={3} />}
@@ -682,7 +682,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                             )
                           })}
                       </ul>
-                      <p className="mt-2 text-[10px] leading-4 text-[#8a94a6]">
+                      <p className="mt-2 text-[10px] leading-4 text-muted-foreground">
                         选填，不影响检测；勾选后将发送短信给受检人，受检人通过短信内链接完成人脸认证与签署，可随时在「我的 → 授权与同意书」撤回
                       </p>
                     </div>
@@ -709,7 +709,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             </h2>
             <ul className="mt-2.5 flex flex-col gap-2">
               {byMember.map(({ member, items }) => (
-                <li key={member.id} className="rounded-xl bg-[#f4f8fe] px-3 py-2.5">
+                <li key={member.id} className="rounded-xl bg-background px-3 py-2.5">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[13px] font-medium text-foreground">{member.name}</span>
                     <span className="rounded bg-white px-1 text-[10px] text-muted-foreground">{member.relation}</span>
@@ -731,12 +731,12 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             onClick={() => setCouponOpen(true)}
             className="flex h-12 w-full items-center gap-2 text-left"
           >
-            <Ticket className="size-4 text-[#e0651c]" aria-hidden="true" />
+            <Ticket className="size-4 text-warning" aria-hidden="true" />
             <span className="text-[13px] text-foreground">优惠券</span>
-            <span className={cn('ml-auto text-[13px]', coupon ? 'font-medium text-[#e0651c]' : 'text-muted-foreground')}>
+            <span className={cn('ml-auto text-[13px]', coupon ? 'font-medium text-warning' : 'text-muted-foreground')}>
               {coupon ? `-¥${coupon.amount}` : usable.length ? `${usable.length} 张可用` : '暂无可用'}
             </span>
-            <ChevronRight className="size-4 text-[#b8c2d6]" aria-hidden="true" />
+            <ChevronRight className="size-4 text-faint" aria-hidden="true" />
           </button>
         </section>
 
@@ -795,7 +795,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                     aria-hidden="true"
                     className={cn(
                       'flex size-[18px] shrink-0 items-center justify-center rounded-full border',
-                      active ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb] bg-white',
+                      active ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60 bg-white',
                     )}
                   >
                     {active && <Check className="size-3" strokeWidth={3} />}
@@ -806,7 +806,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           </div>
         </section>
 
-        <div className={cn('mt-3 flex items-start gap-2 rounded-xl px-1.5 py-1 transition-colors', warn && !agreed && 'bg-[#fff1ec]')}>
+        <div className={cn('mt-3 flex items-start gap-2 rounded-xl px-1.5 py-1 transition-colors', warn && !agreed && 'bg-destructive-soft')}>
           <button
             type="button"
             role="checkbox"
@@ -823,7 +823,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
               aria-hidden="true"
               className={cn(
                 'flex size-4 items-center justify-center rounded-full border',
-                agreed ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb] bg-white',
+                agreed ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60 bg-white',
               )}
             >
               {agreed && <Check className="size-2.5" strokeWidth={3} />}
@@ -837,12 +837,12 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           </p>
         </div>
         {warn && !agreed && (
-          <p role="alert" className="mt-1 px-1.5 text-[11px] text-[#e5603a]">
+          <p role="alert" className="mt-1 px-1.5 text-[11px] text-destructive">
             请先点击阅读知情同意书（满 8 秒并滑动至底部）后同意
           </p>
         )}
 
-        <p className="mt-3 flex items-center justify-center gap-1 text-[11px] text-[#a9b3c6]">
+        <p className="mt-3 flex items-center justify-center gap-1 text-[11px] text-faint">
           <ShieldCheck className="size-3.5" aria-hidden="true" />
           样本与基因数据加密存储，仅用于本次检测
         </p>
@@ -852,7 +852,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         <div className="min-w-0">
           <p className="text-[13px] text-foreground">
             实付
-            <span className="ml-1 text-[20px] font-bold tabular-nums text-[#e0651c]">
+            <span className="ml-1 text-[20px] font-bold tabular-nums text-warning">
               <span className="text-[13px]">¥</span>
               {payable.toLocaleString('zh-CN')}
             </span>
@@ -897,7 +897,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 {a.name}
                 <span className="ml-2 font-normal tabular-nums text-muted-foreground">{a.phone}</span>
                 {a.tag && (
-                  <span className="ml-1.5 rounded bg-[#eef5ff] px-1 text-[10px] font-normal text-primary">{a.tag}</span>
+                  <span className="ml-1.5 rounded bg-secondary px-1 text-[10px] font-normal text-primary">{a.tag}</span>
                 )}
               </>
             ),
@@ -957,7 +957,7 @@ function Shell({ title, onBack, children }: { title: string; onBack: () => void;
       role="dialog"
       aria-modal="true"
       aria-labelledby="checkout-title"
-      className="absolute inset-0 z-20 flex flex-col bg-[#f4f8fe] motion-safe:animate-in motion-safe:slide-in-from-right"
+      className="absolute inset-0 z-20 flex flex-col bg-background motion-safe:animate-in motion-safe:slide-in-from-right"
     >
       <div className="shrink-0 bg-white">
         <StatusBar />
@@ -1004,7 +1004,7 @@ function SampleTypePicker({
     return (
       <p
         role={warn ? 'alert' : undefined}
-        className={cn('mt-2.5 rounded-lg px-2.5 py-1.5 text-[11px]', warn ? 'bg-[#fff1ec] text-[#e5603a]' : 'bg-[#fff7ec] text-[#c27a1a]')}
+        className={cn('mt-2.5 rounded-lg px-2.5 py-1.5 text-[11px]', warn ? 'bg-destructive-soft text-destructive' : 'bg-[#fff7ec] text-[#c27a1a]')}
       >
         该项目需采集{all.map((t) => t.label).join(' / ')}，仅支持{samplingLabel.site}
       </p>
@@ -1016,13 +1016,13 @@ function SampleTypePicker({
   return (
     <div className={cn('mt-2.5 rounded-xl border p-3 transition-colors', warn && !current ? 'border-[#f3b6a3] bg-[#fff7f4]' : 'border-border')}>
       <p className="flex items-center gap-1.5">
-        <span className="flex size-5 items-center justify-center rounded-md bg-[#eef5ff] text-primary" aria-hidden="true">
+        <span className="flex size-5 items-center justify-center rounded-md bg-secondary text-primary" aria-hidden="true">
           <FlaskConical className="size-3" />
         </span>
         <span id={labelId} className="text-[12px] font-medium text-foreground">
           样本类型
         </span>
-        <span className="ml-auto text-[10px] text-[#8a94a6]">
+        <span className="ml-auto text-[10px] text-muted-foreground">
           {opts.length > 1 ? `${opts.length} 种可选` : `${samplingLabel[mode]}仅支持此类型`}
         </span>
       </p>
@@ -1043,7 +1043,7 @@ function SampleTypePicker({
               onClick={() => onChange(o.id)}
               className={cn(
                 'relative flex flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 text-left transition-colors',
-                on ? 'border-primary bg-[#eef5ff]' : 'border-transparent bg-[#f5f7fb]',
+                on ? 'border-primary bg-secondary' : 'border-transparent bg-[#f5f7fb]',
               )}
             >
               <span className={cn('text-[13px] font-medium', on ? 'text-primary' : 'text-foreground')}>{o.label}</span>
@@ -1061,7 +1061,7 @@ function SampleTypePicker({
         })}
       </div>
       {warn && !current && (
-        <p role="alert" className="mt-1.5 text-[11px] text-[#e5603a]">
+        <p role="alert" className="mt-1.5 text-[11px] text-destructive">
           请选择样本类型
         </p>
       )}
@@ -1099,7 +1099,7 @@ function ResearchDocSheet({ onClose }: { onClose: () => void }) {
               {p}
             </p>
           ))}
-          <p className="flex items-start gap-1.5 rounded-lg bg-[#f4f8fe] px-3 py-2 text-[11px] leading-[18px] text-muted-foreground">
+          <p className="flex items-start gap-1.5 rounded-lg bg-background px-3 py-2 text-[11px] leading-[18px] text-muted-foreground">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
             此处仅供预览。勾选同意后，需在支付完成后通过 e签宝 人脸核验完成正式签署。
           </p>
@@ -1142,7 +1142,7 @@ function PickerSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="picker-title"
-        className="relative max-h-[75%] overflow-y-auto rounded-t-2xl bg-[#f4f8fe] pb-6 [scrollbar-width:none] motion-safe:animate-in motion-safe:slide-in-from-bottom"
+        className="relative max-h-[75%] overflow-y-auto rounded-t-2xl bg-background pb-6 [scrollbar-width:none] motion-safe:animate-in motion-safe:slide-in-from-bottom"
       >
         <div className="relative flex h-12 items-center justify-center">
           <h2 id="picker-title" className="text-[15px] font-semibold text-foreground">
@@ -1187,7 +1187,7 @@ function PickerSheet({
                     aria-hidden="true"
                     className={cn(
                       'flex size-[18px] shrink-0 items-center justify-center rounded-full border',
-                      active ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb]',
+                      active ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60',
                     )}
                   >
                     {active && <Check className="size-3" strokeWidth={3} />}
@@ -1213,7 +1213,7 @@ function PriceRow({ label, value, accent }: { label: string; value: string; acce
   return (
     <div className="flex items-center justify-between">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className={cn('tabular-nums', accent ? 'text-[#e0651c]' : 'text-foreground')}>{value}</dd>
+      <dd className={cn('tabular-nums', accent ? 'text-warning' : 'text-foreground')}>{value}</dd>
     </div>
   )
 }
@@ -1236,7 +1236,7 @@ function CouponSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="coupon-title"
-        className="relative rounded-t-2xl bg-[#f4f8fe] pb-6 motion-safe:animate-in motion-safe:slide-in-from-bottom"
+        className="relative rounded-t-2xl bg-background pb-6 motion-safe:animate-in motion-safe:slide-in-from-bottom"
       >
         <div className="relative flex h-12 items-center justify-center">
           <h2 id="coupon-title" className="text-[15px] font-semibold text-foreground">
@@ -1265,7 +1265,7 @@ function CouponSheet({
                   onClick={() => onSelect(c.id)}
                   className="flex w-full overflow-hidden rounded-xl bg-white text-left disabled:opacity-50"
                 >
-                  <span className="flex w-[88px] shrink-0 flex-col items-center justify-center bg-[#fff4ec] py-3 text-[#e0651c]">
+                  <span className="flex w-[88px] shrink-0 flex-col items-center justify-center bg-warning-soft py-3 text-warning">
                     <span className="text-[20px] font-bold leading-none">
                       <span className="text-[12px]">¥</span>
                       {c.amount}
@@ -1283,7 +1283,7 @@ function CouponSheet({
                       aria-hidden="true"
                       className={cn(
                         'flex size-[18px] shrink-0 items-center justify-center rounded-full border',
-                        active ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c3ccdb]',
+                        active ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60',
                       )}
                     >
                       {active && <Check className="size-3" strokeWidth={3} />}

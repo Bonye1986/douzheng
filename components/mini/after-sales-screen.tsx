@@ -154,7 +154,7 @@ export function AfterSalesScreen({
                 <span
                   className={cn(
                     'ml-auto text-[12px] font-medium',
-                    c.tone === 'warn' ? 'text-[#e0651c]' : c.tone === 'primary' ? 'text-primary' : 'text-muted-foreground',
+                    c.tone === 'warn' ? 'text-warning' : c.tone === 'primary' ? 'text-primary' : 'text-muted-foreground',
                   )}
                 >
                   {c.status}
@@ -171,7 +171,7 @@ export function AfterSalesScreen({
                 {c.refund && (
                   <p className="shrink-0 text-right">
                     <span className="block text-[11px] text-muted-foreground">{c.refund.label}</span>
-                    <span className="block text-[14px] font-semibold tabular-nums text-[#e0651c]">{c.refund.value}</span>
+                    <span className="block text-[14px] font-semibold tabular-nums text-warning">{c.refund.value}</span>
                   </p>
                 )}
               </div>
@@ -179,7 +179,7 @@ export function AfterSalesScreen({
               <p
                 className={cn(
                   'mt-2 flex items-start gap-1 rounded-lg px-2.5 py-1.5 text-[11px] leading-relaxed',
-                  c.kind === 'pending' ? 'bg-[#fff4ec] text-[#c4581a]' : 'bg-[#f6f8fc] text-muted-foreground',
+                  c.kind === 'pending' ? 'bg-warning-soft text-[#c4581a]' : 'bg-muted text-muted-foreground',
                 )}
               >
                 {c.kind === 'pending' && <AlertTriangle className="mt-0.5 size-3 shrink-0" aria-hidden="true" />}
@@ -206,7 +206,7 @@ export function AfterSalesScreen({
                     }}
                     className={cn(
                       'h-7 rounded-full px-3.5 text-[12px] font-medium',
-                      c.action.primary ? 'bg-primary text-primary-foreground' : 'border border-[#dfe5ef] text-foreground',
+                      c.action.primary ? 'bg-primary text-primary-foreground' : 'border border-border text-foreground',
                     )}
                   >
                     {c.action.label}

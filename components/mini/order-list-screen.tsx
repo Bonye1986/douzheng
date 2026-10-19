@@ -95,7 +95,7 @@ function OrderActions({
             else if (o.refund === 'testing') onTestingRefund(o)
             else if (o.refund) onRefund(o.refund)
           }}
-          className="h-7 rounded-full border border-[#dfe5ef] px-3.5 text-[12px] font-medium text-muted-foreground"
+          className="h-7 rounded-full border border-border px-3.5 text-[12px] font-medium text-muted-foreground"
         >
           {refundLabels[o.refund]}
         </button>
@@ -115,7 +115,7 @@ function OrderActions({
             'h-7 rounded-full px-3.5 text-[12px] font-medium',
             o.action.primary && !sendable
               ? 'bg-primary text-primary-foreground'
-              : 'border border-[#dfe5ef] text-foreground',
+              : 'border border-border text-foreground',
           )}
         >
           {o.action.label}
@@ -207,7 +207,7 @@ const statusTabs: StatusTab[] = [
   { key: 'toPay', label: '待付款', match: byStatuses('待付款') },
   { key: 'toUse', label: '待使用', match: byStatuses('待发货', '待收货', '待核销') },
   { key: 'toSample', label: '待采样', match: byStatuses('待采样', '待寄样') },
-  { key: 'testing', label: '检测中', match: byStatuses('���收样', '待检测', '检测中') },
+  { key: 'testing', label: '检测中', match: byStatuses('待收样', '待检测', '检测中') },
   { key: 'done', label: '已完成', match: byStatuses('已完成') },
   { key: 'closed', label: '已关闭', match: byStatuses('已关闭') },
 ]
@@ -233,7 +233,7 @@ export type Order = {
   examinees: string
   amount: string
   originalAmount?: string
-  /** 拆���后该子订单的商品原价（未扣优惠） */
+  /** 拆单后该子订单的商品原价（未扣优惠） */
   goodsAmount?: string
   /** 合并支付使用优惠券时，按金额比例分摊到该子订单的优惠 */
   couponShare?: string
@@ -442,7 +442,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'testing',
     status: '检测中',
     refund: 'testing',
-    notes: ['实验室检测中，预��� 5 个工作日内出具报告'],
+    notes: ['实验室检测中，预计 5 个工作日内出具报告'],
     extra: [unqualifiedVariant, resampleTestingVariant],
   },
   {
@@ -660,7 +660,7 @@ export function OrderListScreen({
             ...(cancelledIds.has(o.id) && {
               phase: 'closed' as const,
               status: '已关闭',
-              note: '用户已取消订单，支付金额已全额原路���回',
+              note: '用户已取消订单，支付金额已全额原路退回',
               refund: undefined,
               action: undefined,
             }),
@@ -848,7 +848,7 @@ export function OrderListScreen({
         {visible.map((o) => {
           const TypeIcon = o.type === 'self' ? Home : Building2
           return (
-            <li key={o.id} className="relative rounded-2xl bg-white p-3.5 transition-colors active:bg-[#f6f8fc]">
+            <li key={o.id} className="relative rounded-2xl bg-white p-3.5 transition-colors active:bg-muted">
               <div className="flex items-center gap-1.5">
                 <TypeIcon className="size-3.5 text-primary" aria-hidden="true" />
                 <span className="text-[12px] text-muted-foreground">{o.type === 'self' ? '自采样' : '定点采样'}</span>
@@ -856,7 +856,7 @@ export function OrderListScreen({
                   <span className="rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
                 )}
                 {o.priceChanged && (
-                  <span className="rounded bg-[#ffeadb] px-1 text-[10px] font-medium text-[#e0651c]">已改价</span>
+                  <span className="rounded bg-[#ffeadb] px-1 text-[10px] font-medium text-warning">已改价</span>
                 )}
                 <span
                   className={cn(
@@ -864,7 +864,7 @@ export function OrderListScreen({
                     o.phase === 'closed' || o.phase === 'done'
                       ? 'text-muted-foreground'
                       : o.unqualified || o.phase === 'toPay'
-                        ? 'text-[#e0651c]'
+                        ? 'text-warning'
                         : 'text-primary',
                   )}
                 >
@@ -895,7 +895,7 @@ export function OrderListScreen({
                     </span>
                   )}
                   {o.couponShare && (
-                    <span className="block text-[11px] tabular-nums text-[#e5603a]">
+                    <span className="block text-[11px] tabular-nums text-destructive">
                       {o.parentId ? '分摊优惠' : '优惠'} -{o.couponShare}
                     </span>
                   )}
@@ -903,7 +903,7 @@ export function OrderListScreen({
               </div>
 
               {o.payRemaining != null && (
-                <p role="timer" className="mt-2 flex items-center gap-1 text-[12px] text-[#e0651c]">
+                <p role="timer" className="mt-2 flex items-center gap-1 text-[12px] text-warning">
                   <Clock className="size-3.5 shrink-0" aria-hidden="true" />
                   剩余支付时间
                   <span className="font-semibold tabular-nums">{formatCountdown(o.payRemaining)}</span>
@@ -914,7 +914,7 @@ export function OrderListScreen({
               <p
                 className={cn(
                   'mt-2 flex items-start gap-1 rounded-lg px-2.5 py-1.5 text-[11px] leading-relaxed',
-                  o.unqualified ? 'bg-[#fff4ec] text-[#c4581a]' : 'bg-[#f6f8fc] text-muted-foreground',
+                  o.unqualified ? 'bg-warning-soft text-[#c4581a]' : 'bg-muted text-muted-foreground',
                 )}
               >
                 {o.unqualified && <AlertTriangle className="mt-0.5 size-3 shrink-0" aria-hidden="true" />}

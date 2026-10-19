@@ -94,7 +94,7 @@ export function ChatComposer({
                   <img src={a.url} alt={a.name} className="size-14 rounded-xl border border-border object-cover" />
                 ) : (
                   <span className="flex h-14 w-32 items-center gap-2 rounded-xl border border-border bg-[#f6f9fd] px-2.5">
-                    <FileText className="size-6 shrink-0 text-[#e5603a]" />
+                    <FileText className="size-6 shrink-0 text-destructive" />
                     <span className="line-clamp-2 text-[11px] leading-4 text-foreground">{a.name}</span>
                   </span>
                 )}
@@ -127,7 +127,7 @@ export function ChatComposer({
                 e.preventDefault()
                 send(draft)
               }}
-              className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-[#f1f5fb] px-4 focus-within:ring-1 focus-within:ring-primary"
+              className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-muted px-4 focus-within:ring-1 focus-within:ring-primary"
             >
               <label htmlFor="ai-ask" className="sr-only">
                 输入想咨询的问题
@@ -142,7 +142,7 @@ export function ChatComposer({
                 }}
                 placeholder="输入想咨询的问题"
                 enterKeyHint="send"
-                className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-[#a3adc2]"
+                className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-faint"
               />
             </form>
           ) : (
@@ -172,7 +172,7 @@ export function ChatComposer({
               onPointerCancel={() => setRecording(null)}
               className={cn(
                 'h-11 min-w-0 flex-1 touch-none select-none rounded-full text-[15px] font-semibold transition-colors disabled:opacity-50',
-                recording ? 'bg-[#dfeafb] text-primary' : 'bg-[#f1f5fb] text-foreground',
+                recording ? 'bg-[#dfeafb] text-primary' : 'bg-muted text-foreground',
               )}
             >
               {recording ? '松开 发送' : '按住 说话'}
@@ -242,7 +242,7 @@ export function ChatComposer({
             <button
               type="button"
               onClick={() => setSheetOpen(false)}
-              className="mt-4 h-11 w-full rounded-full bg-[#f1f5fb] text-[15px] font-medium text-foreground"
+              className="mt-4 h-11 w-full rounded-full bg-muted text-[15px] font-medium text-foreground"
             >
               取消
             </button>
@@ -263,7 +263,7 @@ function RecordingOverlay({ cancel }: { cancel: boolean }) {
       <div
         className={cn(
           'flex w-44 flex-col items-center gap-3 rounded-3xl px-4 py-5 text-white shadow-lg transition-colors',
-          cancel ? 'bg-[#e5603a]' : 'bg-[#1e2a3d]/85',
+          cancel ? 'bg-destructive' : 'bg-[#1e2a3d]/85',
         )}
       >
         <span className="flex h-8 items-end gap-1" aria-hidden="true">

@@ -106,7 +106,9 @@ export function MineScreen({
   onOpenTests,
   loggedIn = true,
   onRequireLogin,
+  onOpenChat,
 }: {
+  onOpenChat?: (question?: string) => void
   onOpenTests?: () => void
   loggedIn?: boolean
   /** Called with the feature name when a guest taps something that needs login. */
@@ -151,7 +153,7 @@ export function MineScreen({
   const publicTools = new Set<string>(['guide', 'about', 'service'])
 
   return (
-    <div className="relative flex h-full flex-col bg-[#f4f8fe]">
+    <div className="relative flex h-full flex-col bg-background">
       <div className="absolute inset-x-0 top-0 h-64 bg-brand-hero" aria-hidden="true" />
       <div className="relative">
         <StatusBar />
@@ -223,7 +225,7 @@ export function MineScreen({
                     <span className="relative">
                       <MineIcon src={p.icon} />
                       {count > 0 && (
-                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e5603a] px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
+                        <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium tabular-nums text-white ring-2 ring-white">
                           {count}
                           <span className="sr-only">笔</span>
                         </span>
@@ -301,7 +303,7 @@ export function MineScreen({
               <span className="block text-[11px] text-muted-foreground">
                 {loggedIn ? (
                   <>
-                    <span className="tabular-nums text-[#e0651c]">{usableCouponCount}</span> 张可用
+                    <span className="tabular-nums text-warning">{usableCouponCount}</span> 张可用
                   </>
                 ) : (
                   '登录后查看'
@@ -403,7 +405,12 @@ export function MineScreen({
         <MedicationReminderScreen initialView={reminderView} onBack={() => setReminderView(null)} />
       )}
       {guideView && (
-        <GuideScreen initialView={guideView} onBack={() => setGuideView(null)} onContact={() => setServiceOpen(true)} />
+        <GuideScreen
+          initialView={guideView}
+          onBack={() => setGuideView(null)}
+          onContact={() => setServiceOpen(true)}
+          onAskAi={onOpenChat ? (title) => onOpenChat(`关于「${title}」，我还有一些疑问`) : undefined}
+        />
       )}
       {aboutOpen && <AboutScreen onBack={() => setAboutOpen(false)} />}
       {serviceOpen && <CustomerServiceScreen onBack={() => setServiceOpen(false)} />}

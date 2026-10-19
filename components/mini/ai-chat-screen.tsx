@@ -323,7 +323,7 @@ export function AiChatScreen({
 
       {!sharing && (
       <div className="shrink-0 px-4 pb-3 pt-2">
-        <div className="flex items-center rounded-2xl bg-white py-1.5 pl-1.5 pr-2 shadow-[0_4px_14px_#3b8beb0d]">
+        <div className="flex items-center rounded-2xl bg-white py-1.5 pl-1.5 pr-2 shadow-[0_4px_14px_#3a82e40d]">
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
@@ -345,10 +345,10 @@ export function AiChatScreen({
                 {testee ? (testee.reports > 0 ? `${testee.reports}份历史报告` : '暂无历史报告') : '按通用知识回答'}
               </span>
             </span>
-            <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" />
+            <ChevronRight className="size-4 shrink-0 text-faint" />
           </button>
           <span aria-hidden="true" className="mx-2 h-7 w-px shrink-0 bg-border" />
-          <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-[#f1f5fb] p-0.5">
+          <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-muted p-0.5">
             {answerStyles.map((s) => {
               const selected = s.key === mode
               return (
@@ -406,7 +406,7 @@ export function AiChatScreen({
           {!sharing && (
             <li className="flex gap-2">
               <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
-              <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
+              <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                 {greeting}
               </p>
             </li>
@@ -423,7 +423,7 @@ export function AiChatScreen({
               ) : (
                 <div className="flex gap-2">
                   <BrandMark className="size-8 shrink-0 rounded-lg text-sm shadow-none" />
-                  <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3b8beb0d]">
+                  <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-[14px] leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                     {m.answers ? (
                       <AnswerBody
                         answer={m.answers[mode]}
@@ -543,7 +543,7 @@ function MessageAttachments({ items }: { items: Attachment[] }) {
           </li>
         ) : (
           <li key={a.id} className="flex w-44 items-center gap-2 rounded-xl border border-border bg-white px-2.5 py-2">
-            <FileText className="size-7 shrink-0 text-[#e5603a]" />
+            <FileText className="size-7 shrink-0 text-destructive" />
             <span className="min-w-0">
               <span className="block truncate text-[12px] text-foreground">{a.name}</span>
               <span className="block text-[10px] text-muted-foreground">PDF</span>
@@ -593,7 +593,7 @@ function TesteeSheet({
             type="button"
             aria-label="关闭"
             onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-[#f1f5fb] text-muted-foreground"
+            className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground"
           >
             <X className="size-4" />
           </button>

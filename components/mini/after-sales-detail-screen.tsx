@@ -152,7 +152,7 @@ export function AfterSalesDetailScreen({
                     <p
                       className={cn(
                         'text-[13px]',
-                        reached ? 'font-medium text-foreground' : active ? 'font-medium text-[#e0651c]' : 'text-muted-foreground',
+                        reached ? 'font-medium text-foreground' : active ? 'font-medium text-warning' : 'text-muted-foreground',
                       )}
                     >
                       {s.label}
@@ -176,12 +176,12 @@ export function AfterSalesDetailScreen({
               {d.refundRows.map(([k, v]) => (
                 <div key={k} className="flex justify-between">
                   <dt className="text-muted-foreground">{k}</dt>
-                  <dd className={cn('tabular-nums', v.startsWith('-') ? 'text-[#e5603a]' : 'text-foreground')}>{v}</dd>
+                  <dd className={cn('tabular-nums', v.startsWith('-') ? 'text-destructive' : 'text-foreground')}>{v}</dd>
                 </div>
               ))}
               <div className="flex items-baseline justify-between border-t border-border pt-2">
                 <dt className="text-[13px] text-foreground">{d.refundTotal.label}</dt>
-                <dd className="text-[16px] font-semibold tabular-nums text-[#e0651c]">{d.refundTotal.value}</dd>
+                <dd className="text-[16px] font-semibold tabular-nums text-warning">{d.refundTotal.value}</dd>
               </div>
             </dl>
           </section>
@@ -198,7 +198,7 @@ export function AfterSalesDetailScreen({
               <span className="text-foreground">{item.newOrderId}</span>
               <span className="rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">重采样</span>
             </p>
-            <p className="mt-2 rounded-lg bg-[#f6f8fc] px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 rounded-lg bg-muted px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
               如需终止检测并退款，需联系客服确认，扣除已产生的各类费用后原路退回
             </p>
           </section>
@@ -252,7 +252,7 @@ export function AfterSalesDetailScreen({
             }}
             className={cn(
               'h-8 rounded-full px-4 text-[13px] font-medium',
-              item.action.primary ? 'bg-primary text-primary-foreground' : 'border border-[#dfe5ef] text-foreground',
+              item.action.primary ? 'bg-primary text-primary-foreground' : 'border border-border text-foreground',
             )}
           >
             {item.action.label}

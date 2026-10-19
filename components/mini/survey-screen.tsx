@@ -104,7 +104,7 @@ function SurveyResult({ survey, answers }: { survey: Survey; answers: SurveyAnsw
   return (
     <div className="flex-1 overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
       <div className="flex flex-col items-center rounded-2xl bg-white px-4 py-6 text-center" aria-live="polite">
-        <CheckCircle2 className="size-12 text-[#1f9d6b]" aria-hidden="true" />
+        <CheckCircle2 className="size-12 text-success" aria-hidden="true" />
         <p className="mt-2 text-[17px] font-semibold text-foreground">提交成功，感谢参与</p>
         <p className="mt-1 text-[12px] text-muted-foreground">
           您是第 <span className="tabular-nums text-primary">{survey.participants}</span> 位参与者
@@ -217,7 +217,7 @@ export function SurveyScreen({
             </div>
           </div>
 
-          <div className="shrink-0 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
+          <div className="shrink-0 border-t border-border bg-white px-3 pb-6 pt-2.5">
             <button
               type="button"
               disabled={remaining > 0}

@@ -51,21 +51,21 @@ export function ChatHistoryDrawer({
             type="button"
             aria-label="关闭"
             onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-[#f1f5fb] text-muted-foreground"
+            className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground"
           >
             <X className="size-4" />
           </button>
         </div>
 
         <div className="mt-4 px-4">
-          <label className="flex h-10 items-center gap-2 rounded-full bg-[#f1f5fb] px-3.5 focus-within:ring-1 focus-within:ring-primary">
+          <label className="flex h-10 items-center gap-2 rounded-full bg-muted px-3.5 focus-within:ring-1 focus-within:ring-primary">
             <Search className="size-4 text-muted-foreground" />
             <span className="sr-only">搜索历史对话</span>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="搜索历史对话"
-              className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-[#a3adc2]"
+              className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-faint"
             />
             {query && (
               <button type="button" aria-label="清空搜索" onClick={() => setQuery('')}>
@@ -127,7 +127,7 @@ export function ChatHistoryDrawer({
                   <div
                     className={cn(
                       'flex items-center gap-1 rounded-xl pr-1 transition-colors',
-                      active ? 'bg-secondary' : 'active:bg-[#f1f5fb]',
+                      active ? 'bg-secondary' : 'active:bg-muted',
                     )}
                   >
                     <button
@@ -174,7 +174,7 @@ export function ChatHistoryDrawer({
                         setEditText(s.title)
                         setEditingId(s.id)
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2.5 text-[14px] text-foreground active:bg-[#f1f5fb]"
+                      className="flex w-full items-center gap-2 px-3 py-2.5 text-[14px] text-foreground active:bg-muted"
                     >
                       <PencilLine className="size-4" />
                       修改名称
@@ -186,7 +186,7 @@ export function ChatHistoryDrawer({
                         setMenuId(null)
                         setConfirmId(s.id)
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2.5 text-[14px] text-[#e5603a] active:bg-[#fdecea]"
+                      className="flex w-full items-center gap-2 px-3 py-2.5 text-[14px] text-destructive active:bg-destructive-soft"
                     >
                       <Trash2 className="size-4" />
                       删除会话
@@ -219,7 +219,7 @@ export function ChatHistoryDrawer({
                     onDelete(confirmId)
                     setConfirmId(null)
                   }}
-                  className="h-10 rounded-full bg-[#e5603a] text-[14px] font-semibold text-white"
+                  className="h-10 rounded-full bg-destructive text-[14px] font-semibold text-white"
                 >
                   删除
                 </button>

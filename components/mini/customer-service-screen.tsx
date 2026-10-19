@@ -168,7 +168,7 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
 
         {orderTipOpen && (
           <div className="mx-3 mb-2 flex items-center gap-2.5 rounded-lg bg-white p-2.5">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[#eef5ff] text-primary">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
               <FileText className="size-5" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">

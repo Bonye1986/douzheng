@@ -14,9 +14,9 @@ export function SubPage({ title, titleId, onBack, children }: Props) {
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="absolute inset-0 z-30 flex flex-col bg-[#f4f8fe] motion-safe:animate-in motion-safe:slide-in-from-right"
+      className="absolute inset-0 z-30 flex flex-col bg-background motion-safe:animate-in motion-safe:slide-in-from-right"
     >
-      <div className="shrink-0 bg-white">
+      <div className="shrink-0 border-b border-border/70 bg-white">
         <StatusBar />
         <div className="relative flex h-11 items-center justify-center px-3">
           <button

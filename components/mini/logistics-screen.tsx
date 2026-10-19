@@ -87,7 +87,7 @@ export function LogisticsScreen({
               <button
                 type="button"
                 onClick={copy}
-                className="flex h-7 items-center gap-1 rounded-full border border-[#dfe5ef] px-3 text-[12px] text-foreground"
+                className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-[12px] text-foreground"
               >
                 {copied ? <Check className="size-3.5 text-primary" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
                 {copied ? '已复制' : '复制'}
@@ -95,7 +95,7 @@ export function LogisticsScreen({
               <a
                 href="tel:95338"
                 aria-label="拨打顺丰客服 95338"
-                className="flex size-7 items-center justify-center rounded-full border border-[#dfe5ef] text-foreground"
+                className="flex size-7 items-center justify-center rounded-full border border-border text-foreground"
               >
                 <Phone className="size-3.5" aria-hidden="true" />
               </a>
@@ -110,7 +110,7 @@ export function LogisticsScreen({
                 <span
                   className={cn(
                     'flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-medium',
-                    p.tag === '发' ? 'bg-[#f1f4f9] text-muted-foreground' : 'bg-primary text-primary-foreground',
+                    p.tag === '发' ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground',
                   )}
                 >
                   {p.tag}

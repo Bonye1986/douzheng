@@ -36,10 +36,10 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-8 flex h-14 w-full items-center gap-3 rounded-2xl border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3b8beb1a] transition-transform active:scale-[0.99]"
+          className="mt-8 flex h-14 w-full items-center gap-3 rounded-2xl border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" />
-          <span className="min-w-0 flex-1 truncate text-[15px] text-[#a3adc2]">输入您的用药或基因问题</span>
+          <span className="min-w-0 flex-1 truncate text-[15px] text-faint">输入您的用药或基因问题</span>
         </button>
 
         <section aria-labelledby="hot-q" className="mt-8">
@@ -56,7 +56,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
                   className="flex w-full items-center gap-3 rounded-xl bg-white/80 px-4 py-3 text-left transition-colors active:bg-white"
                 >
                   <span className="min-w-0 flex-1 truncate text-[14px] text-foreground">{item.question}</span>
-                  <ChevronRight className="size-4 shrink-0 text-[#b8c2d6]" />
+                  <ChevronRight className="size-4 shrink-0 text-faint" />
                 </button>
               </li>
             ))}

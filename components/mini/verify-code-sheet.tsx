@@ -55,7 +55,7 @@ export function VerifyCodeSheet({ orderNo, product, examinees, siteName, onClose
         </div>
         <p className="mt-3 font-mono text-[20px] font-semibold tracking-widest tabular-nums text-foreground">{code}</p>
 
-        <dl className="mt-4 space-y-1.5 rounded-xl bg-[#f6f8fc] px-3 py-2.5 text-left text-[12px]">
+        <dl className="mt-4 space-y-1.5 rounded-xl bg-muted px-3 py-2.5 text-left text-[12px]">
           <div className="flex justify-between gap-3">
             <dt className="text-muted-foreground">检测项目</dt>
             <dd className="truncate text-foreground">{product}</dd>

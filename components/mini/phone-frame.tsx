@@ -17,7 +17,7 @@ export function PhoneFrame({
       role="region"
       aria-label={label}
       className={cn(
-        'relative h-[812px] w-[375px] box-content shrink-0 overflow-hidden rounded-[44px] border-[6px] border-[#2a3a52] bg-background shadow-[0_22px_60px_#3b8beb2e]',
+        'relative h-[812px] w-[375px] box-content shrink-0 overflow-hidden rounded-[44px] border-[6px] border-[#2a3a52] bg-background shadow-[0_22px_60px_#3a82e42e]',
         className,
       )}
     >

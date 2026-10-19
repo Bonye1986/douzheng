@@ -140,7 +140,7 @@ function PageNav({
         aria-current={activeId === FULL_DEMO ? 'page' : undefined}
         className={cn(
           'flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[14px] font-medium transition-colors',
-          activeId === FULL_DEMO ? 'bg-primary text-primary-foreground' : 'bg-accent text-primary hover:bg-accent/70',
+          activeId === FULL_DEMO ? 'bg-primary text-primary-foreground' : 'bg-secondary text-primary hover:bg-secondary/70',
         )}
       >
         <PlayCircle className="size-4 shrink-0" aria-hidden="true" />
@@ -169,7 +169,7 @@ function PageNav({
                       aria-current={active ? 'page' : undefined}
                       className={cn(
                         'flex w-full items-baseline gap-2 rounded-lg px-3 py-2 text-left text-[13px] transition-colors',
-                        active ? 'bg-accent font-medium text-primary' : 'text-foreground hover:bg-muted',
+                        active ? 'bg-secondary font-medium text-primary' : 'text-foreground hover:bg-muted',
                       )}
                     >
                       <span className={cn('shrink-0 tabular-nums text-[12px]', active ? 'text-primary' : 'text-muted-foreground')}>
@@ -220,7 +220,7 @@ function DemoNote({ sections, onRestart }: { sections: BoardSection[]; onRestart
         <ol className="flex flex-col gap-3">
           {sections.map((section, index) => (
             <li key={section.key} className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent text-[12px] font-bold text-primary">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-[12px] font-bold text-primary">
                 {index + 1}
               </span>
               <div>
@@ -273,7 +273,7 @@ function ScreenNote({
             <NoteBlock title="页面跳转">
               <ul className="flex flex-wrap gap-2">
                 {note.links.map((link) => (
-                  <li key={link} className="rounded-lg bg-accent px-3 py-1.5 text-[13px] text-primary">
+                  <li key={link} className="rounded-lg bg-secondary px-3 py-1.5 text-[13px] text-primary">
                     {renumber(link)}
                   </li>
                 ))}
@@ -304,7 +304,7 @@ function NoteList({ items, numbered = false }: { items: string[]; numbered?: boo
       {items.map((item, index) => (
         <li key={item} className="flex gap-2.5 text-[14px] leading-6 text-foreground">
           {numbered ? (
-            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-primary">
+            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary">
               {index + 1}
             </span>
           ) : (

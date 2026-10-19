@@ -34,7 +34,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
       role="dialog"
       aria-modal="true"
       aria-labelledby="detail-title"
-      className="absolute inset-0 z-10 flex flex-col bg-[#f4f8fe] motion-safe:animate-in motion-safe:slide-in-from-right"
+      className="absolute inset-0 z-10 flex flex-col bg-background motion-safe:animate-in motion-safe:slide-in-from-right"
     >
       <div className="shrink-0 bg-white">
         <StatusBar />
@@ -59,18 +59,18 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
           width={375}
           height={280}
           priority
-          className="h-[280px] w-full bg-[#eef4fd] object-cover"
+          className="h-[280px] w-full bg-secondary object-cover"
         />
 
         <div className="relative -mt-4 flex flex-col gap-2.5 px-3">
           <section aria-label="基本信息" className="rounded-2xl bg-white p-4">
             <p className="flex items-baseline gap-2">
-              <span className="text-[24px] font-bold leading-none text-[#e0651c]">
+              <span className="text-[24px] font-bold leading-none text-warning">
                 <span className="text-[14px]">¥</span>
                 {service.price}
               </span>
               {service.originalPrice && (
-                <span className="text-[12px] text-[#b8c2d6] line-through">¥{service.originalPrice}</span>
+                <span className="text-[12px] text-faint line-through">¥{service.originalPrice}</span>
               )}
             </p>
             <h1 id="detail-title" className="mt-2.5 text-pretty text-[17px] font-semibold leading-6 text-foreground">
@@ -85,7 +85,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
               </p>
               <dl className="mt-2 flex flex-col gap-2">
                 {samplingOptions.map(({ mode, label, samples }) => (
-                  <div key={mode} className="flex items-start gap-2.5 rounded-xl bg-[#f4f8fe] px-3 py-2.5">
+                  <div key={mode} className="flex items-start gap-2.5 rounded-xl bg-background px-3 py-2.5">
                     <dt className="shrink-0 rounded-md bg-white px-1.5 py-0.5 text-[12px] font-medium leading-[18px] text-primary">
                       {label}
                     </dt>
@@ -107,7 +107,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
             </h3>
             <ul className="mt-2 flex flex-wrap gap-1.5">
               {service.genes.map((g) => (
-                <li key={g} className="rounded-md bg-[#f2f5fa] px-2 py-1 font-mono text-[11px] text-foreground">
+                <li key={g} className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] text-foreground">
                   {g}
                 </li>
               ))}
@@ -129,7 +129,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
                 <li key={step} className="flex flex-1 flex-col items-center gap-1.5">
                   <span className="relative flex w-full justify-center">
                     {i > 0 && <span className="absolute right-1/2 top-1/2 h-px w-full bg-[#cfe0fb]" aria-hidden="true" />}
-                    <span className="relative flex size-6 items-center justify-center rounded-full bg-[#e8f1fe] text-[12px] font-semibold text-primary">
+                    <span className="relative flex size-6 items-center justify-center rounded-full bg-secondary text-[12px] font-semibold text-primary">
                       {i + 1}
                     </span>
                   </span>
@@ -148,8 +148,8 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
               ))}
             </ul>
 
-            <p className="mt-4 flex items-start gap-1.5 rounded-lg bg-[#f4f8fe] p-2.5 text-[11px] leading-4 text-muted-foreground">
-              <ShieldCheck className="size-3.5 shrink-0 text-[#1f9d6b]" aria-hidden="true" />
+            <p className="mt-4 flex items-start gap-1.5 rounded-lg bg-background p-2.5 text-[11px] leading-4 text-muted-foreground">
+              <ShieldCheck className="size-3.5 shrink-0 text-success" aria-hidden="true" />
               样本仅用于本次检测，数据加密存储；报告结果仅供临床用药参考，不作为诊断依据。
             </p>
           </section>
@@ -173,7 +173,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
           <button
             type="button"
             onClick={onAddToCart}
-            className="flex-1 bg-[#e8f1fe] text-[14px] font-medium text-primary active:bg-[#d8e7fd]"
+            className="flex-1 bg-secondary text-[14px] font-medium text-primary active:bg-[#d8e7fd]"
           >
             加入购物车
           </button>

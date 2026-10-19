@@ -19,7 +19,7 @@ export function LoginRequiredDialog({
         className="w-full rounded-2xl bg-white px-5 pb-4 pt-5 text-center motion-safe:animate-in motion-safe:zoom-in-95"
       >
         <span
-          className="mx-auto flex size-11 items-center justify-center rounded-full bg-[#e8f1fe] text-primary"
+          className="mx-auto flex size-11 items-center justify-center rounded-full bg-secondary text-primary"
           aria-hidden="true"
         >
           <UserRound className="size-5" />
@@ -34,7 +34,7 @@ export function LoginRequiredDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="h-10 rounded-full bg-[#f1f4f9] text-[14px] font-medium text-foreground"
+            className="h-10 rounded-full bg-muted text-[14px] font-medium text-foreground"
           >
             暂不登录
           </button>

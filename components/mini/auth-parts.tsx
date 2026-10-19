@@ -111,7 +111,7 @@ export function FieldRow({
 }
 
 export const inputClass =
-  'h-full w-full min-w-0 bg-transparent text-[15px] text-foreground outline-none placeholder:text-[#a3adc2]'
+  'h-full w-full min-w-0 bg-transparent text-[15px] text-foreground outline-none placeholder:text-faint'
 
 export function PrimaryButton({
   children,
@@ -124,7 +124,7 @@ export function PrimaryButton({
       {...props}
       disabled={disabled}
       className={cn(
-        'flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-[16px] font-medium text-white shadow-[0_10px_24px_#3b8beb38] transition-all active:scale-[0.98] disabled:bg-[#b5d3f6] disabled:shadow-none',
+        'flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-[16px] font-medium text-white shadow-[0_10px_24px_#3a82e438] transition-all active:scale-[0.98] disabled:bg-[#b5d3f6] disabled:shadow-none',
         className,
       )}
     >

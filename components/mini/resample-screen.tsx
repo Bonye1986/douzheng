@@ -58,7 +58,7 @@ function OrderBrief({
         <span
           className={cn(
             'rounded px-1.5 py-0.5 text-[11px] font-medium',
-            tone === 'warn' ? 'bg-[#fff1e6] text-[#e0651c]' : 'bg-[#eef1f5] text-muted-foreground',
+            tone === 'warn' ? 'bg-warning-soft text-warning' : 'bg-[#eef1f5] text-muted-foreground',
           )}
         >
           {status}
@@ -81,7 +81,7 @@ function OrderBrief({
 
 function BottomBar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="shrink-0 border-t border-[#eef2f8] bg-white px-4 pb-6 pt-2.5">{children}</div>
+    <div className="shrink-0 border-t border-border bg-white px-4 pb-6 pt-2.5">{children}</div>
   )
 }
 
@@ -150,7 +150,7 @@ export function ResampleScreen({
         <>
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
             <div className="rounded-2xl bg-warn-soft p-3.5">
-              <p className="flex items-center gap-1.5 text-[15px] font-semibold text-[#c2541a]">
+              <p className="flex items-center gap-1.5 text-[15px] font-semibold text-warning">
                 <AlertTriangle className="size-4" aria-hidden="true" />
                 样本检测不合格
               </p>
@@ -192,7 +192,7 @@ export function ResampleScreen({
                       key={o.key}
                       className={cn(
                         'flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors',
-                        active ? 'border-primary bg-[#f3f8ff]' : 'border-[#e6ecf4]',
+                        active ? 'border-primary bg-[#f3f8ff]' : 'border-border',
                       )}
                     >
                       <input
@@ -203,14 +203,14 @@ export function ResampleScreen({
                         onChange={() => setChoice(o.key)}
                         className="sr-only"
                       />
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eef5ff] text-primary">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
                         <o.icon className="size-[18px]" aria-hidden="true" />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-1.5 text-[14px] font-medium text-foreground">
                           {o.title}
                           {'tag' in o && (
-                            <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-[10px] text-[#1f8a4c]">{o.tag}</span>
+                            <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-[10px] text-success">{o.tag}</span>
                           )}
                         </span>
                         <span className="mt-1 block text-[11px] leading-relaxed text-muted-foreground">{o.desc}</span>
@@ -253,7 +253,7 @@ export function ResampleScreen({
                   系统自动生成一笔新的{order.mode === '定点采样' ? '待核销' : '待发货'}订单，标记为「重采样」，无需再次支付
                 </li>
                 <li className="flex gap-2">
-                  <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-[#1f8a4c]" aria-hidden="true" />
+                  <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-success" aria-hidden="true" />
                   新订单沿用原受检人、检测项目及已签署的知情同意书
                 </li>
               </ul>
@@ -305,7 +305,7 @@ export function ResampleScreen({
                       'cursor-pointer rounded-full border px-3 py-1.5 text-[12px] transition-colors',
                       refundReason === r
                         ? 'border-primary bg-[#f3f8ff] font-medium text-primary'
-                        : 'border-[#e6ecf4] text-foreground',
+                        : 'border-border text-foreground',
                     )}
                   >
                     <input
@@ -332,7 +332,7 @@ export function ResampleScreen({
                 onChange={(e) => setRefundNote(e.target.value.slice(0, 200))}
                 rows={3}
                 placeholder="请描述退款原因，便于客服审核"
-                className="mt-2 w-full resize-none rounded-xl bg-[#f6f8fc] p-2.5 text-[13px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
+                className="mt-2 w-full resize-none rounded-xl bg-muted p-2.5 text-[13px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
               />
               <p className="text-right text-[11px] tabular-nums text-muted-foreground">{refundNote.length}/200</p>
             </div>
@@ -357,7 +357,7 @@ export function ResampleScreen({
         <>
           <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
             <div className="rounded-2xl bg-white p-4 text-center">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#eef5ff] text-primary">
+              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-secondary text-primary">
                 <RotateCcw className="size-6" aria-hidden="true" />
               </span>
               <p className="mt-2.5 text-[16px] font-semibold text-foreground">已为您生成重采样订单</p>
@@ -371,10 +371,10 @@ export function ResampleScreen({
             <div className="rounded-2xl border border-primary/30 bg-white p-3.5">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <span className="rounded bg-[#fff1e6] px-1.5 py-0.5 text-[10px] font-medium text-[#e0651c]">重采样</span>
+                  <span className="rounded bg-warning-soft px-1.5 py-0.5 text-[10px] font-medium text-warning">重采样</span>
                   <span className="text-[12px] tabular-nums text-muted-foreground">订单号 {newOrderNo}</span>
                 </span>
-                <span className="rounded bg-[#eef5ff] px-1.5 py-0.5 text-[11px] font-medium text-primary">
+                <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] font-medium text-primary">
                   {order.mode === '定点采样' ? '待核销' : '待发货'}
                 </span>
               </div>
@@ -389,7 +389,7 @@ export function ResampleScreen({
                   已付款 <span className="text-[15px] font-semibold tabular-nums text-foreground">¥0</span>
                 </p>
               </div>
-              <p className="mt-2 border-t border-[#eef2f8] pt-2 text-[11px] text-muted-foreground">
+              <p className="mt-2 border-t border-border pt-2 text-[11px] text-muted-foreground">
                 关联原订单 <span className="tabular-nums">{order.no}</span>
               </p>
             </div>

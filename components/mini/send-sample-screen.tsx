@@ -91,13 +91,13 @@ export function SendSampleScreen({
           </h2>
           {site && address ? (
             <div className="mt-2.5 flex w-full items-center gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eef5ff] text-primary">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
                 <MapPin className="size-[18px]" aria-hidden="true" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-1.5 text-[14px] font-medium text-foreground">
                   {address.title}
-                  <span className="rounded bg-[#eef5ff] px-1.5 py-px text-[10px] font-normal text-primary">采样机构</span>
+                  <span className="rounded bg-secondary px-1.5 py-px text-[10px] font-normal text-primary">采样机构</span>
                 </span>
                 {address.subtitle && (
                   <span className="mt-0.5 block text-[12px] leading-[18px] text-foreground">
@@ -114,7 +114,7 @@ export function SendSampleScreen({
               className="mt-2.5 flex w-full items-center gap-3 text-left"
               aria-label={address ? `取件地址：${address.detail}，点击更换` : '选择取件地址'}
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eef5ff] text-primary">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
                 <MapPin className="size-[18px]" aria-hidden="true" />
               </span>
               {address ? (
@@ -160,7 +160,7 @@ export function SendSampleScreen({
             onSubmitted({ address: address.detail })
             setDone(true)
           }}
-          className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90 disabled:bg-[#e6ebf3] disabled:text-muted-foreground"
+          className="h-10 w-full rounded-full bg-primary text-[14px] font-medium text-primary-foreground active:opacity-90 disabled:bg-muted disabled:text-muted-foreground"
         >
           提交
         </button>
@@ -198,7 +198,7 @@ export function SendSampleScreen({
                       }}
                       className={cn(
                         'flex w-full items-start gap-3 rounded-xl border p-3 text-left',
-                        selected ? 'border-primary bg-primary/5' : 'border-[#dfe5ef]',
+                        selected ? 'border-primary bg-primary/5' : 'border-border',
                       )}
                     >
                       <span className="min-w-0 flex-1">
@@ -209,7 +209,7 @@ export function SendSampleScreen({
                             <span className="rounded bg-primary px-1.5 py-px text-[10px] text-primary-foreground">默认</span>
                           )}
                           {a.tag && (
-                            <span className="rounded bg-[#eef5ff] px-1.5 py-px text-[10px] text-primary">{a.tag}</span>
+                            <span className="rounded bg-secondary px-1.5 py-px text-[10px] text-primary">{a.tag}</span>
                           )}
                         </span>
                         <span className="mt-1 block text-[12px] leading-[18px] text-muted-foreground">

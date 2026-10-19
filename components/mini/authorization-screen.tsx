@@ -19,9 +19,9 @@ import { cn } from '@/lib/utils'
 type Tab = 'test' | 'research'
 
 const statusStyle: Record<ResearchStatus, string> = {
-  signed: 'bg-[#e6f7ef] text-[#1f9d6b]',
-  withdrawn: 'bg-secondary text-[#8a94a6]',
-  unsigned: 'bg-[#fff4e8] text-[#e0651c]',
+  signed: 'bg-[#e6f7ef] text-success',
+  withdrawn: 'bg-secondary text-muted-foreground',
+  unsigned: 'bg-warning-soft text-warning',
 }
 
 const memberName = (id: string) => initialExaminees.find((m) => m.id === id)?.name ?? ''
@@ -82,7 +82,7 @@ export function AuthorizationScreen({
               <span
                 className={cn(
                   'rounded px-1 text-[10px] font-normal',
-                  t.id === 'test' ? 'bg-[#e8f0fd] text-primary' : 'bg-secondary text-[#8a94a6]',
+                  t.id === 'test' ? 'bg-[#e8f0fd] text-primary' : 'bg-secondary text-muted-foreground',
                 )}
               >
                 {t.tag}
@@ -140,7 +140,7 @@ function ConsentEmptyState({ title, desc, research }: { title: string; desc: str
   const Icon = research ? ShieldCheck : FileCheck2
   return (
     <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
-      <span className="relative flex size-24 items-center justify-center rounded-full bg-[#e3eeff]" aria-hidden="true">
+      <span className="relative flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
         <Icon className="size-11 text-primary" strokeWidth={1.4} />
         <span className="absolute bottom-1 right-1 flex size-7 items-center justify-center rounded-full bg-white shadow-sm">
           <Lock className="size-4 text-primary" />
@@ -172,7 +172,7 @@ function TestConsentPanel({
             <div className="flex items-center gap-2">
               <FileCheck2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
               <p className="min-w-0 flex-1 text-[14px] font-semibold text-foreground">基因检测知情同意书</p>
-              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-[#1f9d6b]">已签署</span>
+              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-[11px] text-success">已签署</span>
             </div>
             <dl className="mt-2.5 flex flex-col gap-1.5 text-[12px] leading-[18px]">
               <Row label="订单号" value={c.orderNo} mono />
@@ -181,7 +181,7 @@ function TestConsentPanel({
               <Row label="签署时间" value={c.signedAt} mono />
             </dl>
             <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5">
-              <span className="flex items-center gap-1 text-[11px] text-[#a9b3c6]">
+              <span className="flex items-center gap-1 text-[11px] text-faint">
                 <Lock className="size-3" aria-hidden="true" />
                 不可撤回
               </span>
@@ -253,12 +253,12 @@ function ResearchPanel({
                           <div className="min-w-0 flex-1">
                             <p className="flex items-center gap-1.5 text-[13px] text-foreground">
                               {member?.name}
-                              <span className="rounded bg-[#f4f8fe] px-1 text-[10px] text-muted-foreground">{member?.relation}</span>
+                              <span className="rounded bg-background px-1 text-[10px] text-muted-foreground">{member?.relation}</span>
                               <span className={cn('rounded px-1.5 py-px text-[10px]', statusStyle[a.status])}>
                                 {researchStatusLabel[a.status]}
                               </span>
                             </p>
-                            <p className="mt-0.5 text-[11px] tabular-nums text-[#a9b3c6]">
+                            <p className="mt-0.5 text-[11px] tabular-nums text-faint">
                               {a.status === 'unsigned' ? '下单时已勾选 · ' : ''}更新于 {a.updatedAt}
                             </p>
                           </div>
@@ -282,7 +282,7 @@ function ResearchPanel({
         )
       })}
 
-      <p className="mt-3 flex items-start gap-1 px-1 text-[11px] leading-4 text-[#a9b3c6]">
+      <p className="mt-3 flex items-start gap-1 px-1 text-[11px] leading-4 text-faint">
         <Info className="mt-px size-3 shrink-0" aria-hidden="true" />
         科研授权为自愿选择，不影响检测服务及报告出具；撤销需签署《科研知情同意撤销书》；未成年受检人由监护人代为签署
       </p>

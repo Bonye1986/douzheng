@@ -37,8 +37,16 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
   --color-navy: var(--navy);
+  --color-faint: var(--faint);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
   --color-wechat: var(--wechat);
   --font-sans: var(--font-noto-sans-sc), 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --shadow-sm: 0 2px 12px rgb(36 64 110 / 0.05), 0 1px 2px rgb(36 64 110 / 0.04);
+  --shadow-md: 0 6px 20px rgb(36 64 110 / 0.08);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -50,24 +58,30 @@
 
 :root {
   color-scheme: light;
-  --background: #f4f8fe;
-  --foreground: #2a3a52;
+  --background: #f5f8fc;
+  --foreground: #24324a;
   --card: #ffffff;
-  --card-foreground: #2a3a52;
+  --card-foreground: #24324a;
   --popover: #ffffff;
-  --popover-foreground: #2a3a52;
-  --primary: #3b8beb;
+  --popover-foreground: #24324a;
+  --primary: #3a82e4;
   --primary-foreground: #ffffff;
-  --secondary: #eaf3ff;
-  --secondary-foreground: #2f6fbf;
-  --muted: #f5f8fc;
-  --muted-foreground: #74839a;
-  --accent: #5cc6d6;
+  --secondary: #ecf3fd;
+  --secondary-foreground: #2c68b8;
+  --muted: #f3f6fa;
+  --muted-foreground: #6f7d93;
+  --faint: #a7b1c2;
+  --accent: #4fb8c9;
   --accent-foreground: #ffffff;
-  --destructive: #e5603a;
-  --border: #e3ecf7;
-  --input: #e3ecf7;
-  --ring: #3b8beb;
+  --destructive: #e0573f;
+  --destructive-soft: #fdeeea;
+  --success: #239a72;
+  --success-soft: #e8f6f0;
+  --warning: #d9772b;
+  --warning-soft: #fdf3e8;
+  --border: #e6edf6;
+  --input: #e6edf6;
+  --ring: #3a82e4;
   --navy: #eef5ff;
   --wechat: #07c160;
   --chart-1: oklch(0.87 0 0);
@@ -75,7 +89,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.75rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -177,7 +191,7 @@
   background-image: linear-gradient(135deg, #e6f1fe 0%, #d6e7ff 100%);
 }
 @utility bg-brand-strong {
-  background-image: linear-gradient(135deg, #5aa2f5 0%, #3b8beb 100%);
+  background-image: linear-gradient(135deg, #5aa2f5 0%, #3a82e4 100%);
 }
 @utility bg-warn-soft {
   background-image: linear-gradient(135deg, #fff4ea 0%, #ffffff 100%);

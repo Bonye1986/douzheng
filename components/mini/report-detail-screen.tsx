@@ -63,7 +63,7 @@ const notes = [
 
 const adviceColor: Record<Advice, string> = {
   降低剂量: 'text-primary',
-  增加剂量: 'text-[#e0651c]',
+  增加剂量: 'text-warning',
   更换药物: 'text-[#d9542c]',
 }
 
@@ -157,7 +157,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
             <ul className="grid grid-cols-3 border border-[#dfe5ee] text-center">
               {stats.map((s, i) => (
                 <li key={s.label} className={cn('py-2', i > 0 && 'border-l border-[#dfe5ee]')}>
-                  <p className={cn('text-[16px] font-bold tabular-nums', i === 2 ? 'text-[#e0651c]' : 'text-primary')}>
+                  <p className={cn('text-[16px] font-bold tabular-nums', i === 2 ? 'text-warning' : 'text-primary')}>
                     {s.value}
                   </p>
                   <p className="text-[9px] text-[#5b6472]">{s.label}</p>
@@ -168,14 +168,14 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
             <table className="mt-3 w-full table-fixed text-center text-[10px]">
               <caption className="mb-1 text-left text-[10px] font-semibold">结果摘要</caption>
               <thead>
-                <tr className="border-y border-[#cfd7e3]">
+                <tr className="border-y border-faint/60">
                   <th scope="col" className="w-[28%] py-1.5 font-medium">药物名称</th>
                   <th scope="col" className="py-1.5 font-medium">警惕不良反应</th>
                   <th scope="col" className="py-1.5 font-medium">警惕疗效不足</th>
                   <th scope="col" className="w-[24%] py-1.5 font-medium">用药建议</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#eef1f6] border-b border-[#cfd7e3]">
+              <tbody className="divide-y divide-[#eef1f6] border-b border-faint/60">
                 {summaryRows.map((r) => (
                   <tr key={r.drug}>
                     <th scope="row" className="py-1.5 font-normal">{r.drug}</th>
@@ -198,7 +198,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
             <SectionBar id="pdf-detail" title="检测结果明细 · 心血管疾病用药指导" />
             <table className="w-full table-fixed text-center text-[9px] leading-snug">
               <thead>
-                <tr className="border-y border-[#cfd7e3]">
+                <tr className="border-y border-faint/60">
                   <th scope="col" className="w-[19%] py-1.5 font-medium">药物名称</th>
                   <th scope="col" className="w-[17%] py-1.5 font-medium">用药建议</th>
                   <th scope="col" className="w-[23%] py-1.5 font-medium">基因 / 位点</th>
@@ -207,7 +207,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
                   <th scope="col" className="w-[13%] py-1.5 font-medium">基因型</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#eef1f6] border-b border-[#cfd7e3]">
+              <tbody className="divide-y divide-[#eef1f6] border-b border-faint/60">
                 {detailRows.map((r) => (
                   <tr key={`${r.drug}-${r.gene}`}>
                     <th scope="row" className="py-1.5 font-normal">{r.drug}</th>
@@ -239,7 +239,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
             </ol>
           </section>
 
-          <footer className="mt-6 space-y-2 border-t border-[#eef1f6] pt-3 text-[9px] text-[#3a414c]">
+          <footer className="mt-6 space-y-2 border-t border-border pt-3 text-[9px] text-[#3a414c]">
             <div className="flex justify-between gap-2">
               <span>
                 检测人：<Blank>陈立</Blank>
@@ -256,7 +256,7 @@ export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; 
         </PdfPage>
       </div>
 
-      <div className="flex shrink-0 items-center border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
+      <div className="flex shrink-0 items-center border-t border-border bg-white px-3 pb-6 pt-2.5">
         <button
           type="button"
           onClick={() => setSharing(true)}

@@ -95,7 +95,7 @@ export function ConsentReaderScreen({ onAgree, onBack, readOnly = false, signedA
     <SubPage title="基因检测知情同意书" titleId="consent-title" onBack={onBack}>
       <div ref={scrollRef} onScroll={checkBottom} className="min-h-0 flex-1 overflow-y-auto bg-white px-5 pb-6 pt-4">
         {readOnly ? (
-          <p className="flex items-center gap-1.5 rounded-xl bg-[#e6f7ef] px-3 py-2 text-[12px] leading-5 text-[#1f9d6b]">
+          <p className="flex items-center gap-1.5 rounded-xl bg-[#e6f7ef] px-3 py-2 text-[12px] leading-5 text-success">
             <CircleCheck className="size-3.5 shrink-0" aria-hidden="true" />
             已于 {signedAt} 签署，本同意书作为检测依据存档
           </p>
@@ -120,17 +120,17 @@ export function ConsentReaderScreen({ onAgree, onBack, readOnly = false, signedA
           ))}
         </div>
 
-        <p className="mt-6 text-center text-[11px] text-[#a9b3c6]">— 已到底部 —</p>
+        <p className="mt-6 text-center text-[11px] text-faint">— 已到底部 —</p>
       </div>
 
       {!readOnly && (
       <div className="shrink-0 border-t border-border bg-white px-4 pb-6 pt-2.5">
         <div className="mb-2 flex items-center justify-center gap-4 text-[11px]">
-          <span className={cn('flex items-center gap-1', timeDone ? 'text-[#1f9d6b]' : 'text-muted-foreground')}>
+          <span className={cn('flex items-center gap-1', timeDone ? 'text-success' : 'text-muted-foreground')}>
             {timeDone ? <CircleCheck className="size-3.5" aria-hidden="true" /> : <Clock className="size-3.5" aria-hidden="true" />}
             阅读满 {MIN_READ_SECONDS} 秒
           </span>
-          <span className={cn('flex items-center gap-1', reachedBottom ? 'text-[#1f9d6b]' : 'text-muted-foreground')}>
+          <span className={cn('flex items-center gap-1', reachedBottom ? 'text-success' : 'text-muted-foreground')}>
             <CircleCheck className="size-3.5" aria-hidden="true" />
             滑动至底部
           </span>
@@ -142,7 +142,7 @@ export function ConsentReaderScreen({ onAgree, onBack, readOnly = false, signedA
           aria-live="polite"
           className={cn(
             'h-11 w-full rounded-full text-[15px] font-semibold transition-colors',
-            canAgree ? 'bg-primary text-primary-foreground' : 'bg-[#e3e8f1] text-[#a9b3c6]',
+            canAgree ? 'bg-primary text-primary-foreground' : 'bg-[#e3e8f1] text-faint',
           )}
         >
           {buttonLabel}
