@@ -30,6 +30,7 @@ type Props = {
   onViewAllTests?: () => void
   onOpenArticle?: (id: string) => void
   onViewAllArticles?: () => void
+  initialSection?: 'quiz'
 }
 
 export function ServicesScreen({
@@ -39,7 +40,16 @@ export function ServicesScreen({
   onViewAllTests,
   onOpenArticle,
   onViewAllArticles,
+  initialSection,
 }: Props) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const container = scrollRef.current
+    const target = initialSection && container?.querySelector<HTMLElement>(`[aria-labelledby="${initialSection}"]`)
+    if (container && target) container.scrollTop = target.offsetTop - 12
+  }, [initialSection])
+
   return (
     <div className="flex h-full flex-col bg-[#f4f8fe]">
       <div className="bg-white">
@@ -50,7 +60,7 @@ export function ServicesScreen({
         </header>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
+      <div ref={scrollRef} className="relative flex-1 overflow-y-auto pb-24 [scrollbar-width:none]">
         <div className="flex flex-col gap-3 px-4 pt-3">
           <BannerCarousel />
           <CategoryGrid onCategory={onCategory} />

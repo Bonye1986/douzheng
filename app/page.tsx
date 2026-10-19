@@ -47,6 +47,24 @@ const screens = [
     node: <HomeFlow initialTab="service" />,
   },
   {
+    id: '09-knowledge',
+    title: '服务 · 知识科普',
+    desc: '科普文章列表：按分类筛选（基因与用药、检测常识等），展示封面、标题、阅读时长与阅读量；点击文章进入详情（可在画板内交互）',
+    node: <HomeFlow initialTab="service" initialKnowledge="list" />,
+  },
+  {
+    id: '09-article',
+    title: '知识科普 · 文章详情',
+    desc: '文章正文、要点提示与相关推荐；底部可一键将文章话题带入 AI 咨询，返回回到来源页面',
+    node: <HomeFlow initialTab="service" initialKnowledge="a1" />,
+  },
+  {
+    id: '09-quiz',
+    title: '服务 · 互动问答',
+    desc: '按主题切换题目，选择答案后即时判断对错并展示解析；可进入下一题，或将题目带入 AI 咨询深入了解（可在画板内交互）',
+    node: <HomeFlow initialTab="service" initialServiceSection="quiz" />,
+  },
+  {
     id: '10',
     title: '检测',
     desc: '检测服务列表：顶部搜索栏（支持项目 / 药物 / 基因关键词）与购物车，分类筛选；点击服务进入详情，「+」快速加购（可在画板内交互）',
@@ -199,7 +217,7 @@ const screens = [
   {
     id: '35',
     title: '我的 · 用药提醒',
-    desc: '顶部概览下一次提醒时间、今日提醒次数与进行中数量；提醒卡片展示药品、用药人、剂量、服用要求、频率与时间点，可开关暂停短信、编辑、删除，最多 20 条（可在画板内交互）',
+    desc: '顶部概览下一次提醒时间、今日提醒次数与进行中数量；提醒卡片展示药品、用药人、剂量、服用要求、频率与时间点，可开关暂停���信、编辑、删除，最多 20 条（可在画板内交互）',
     node: <MineScreen initialReminderView="list" />,
   },
   {
@@ -301,7 +319,7 @@ const screens = [
   {
     id: '53',
     title: '订单列表 · 空状态',
-    desc: '尚无任何订单时展示引导插图与说明，点击去选购检测进入检测列表；有订单但当前状态 / 类型下无数据、或搜索无结果时，列表区展示对应空状态（搜索无结果可一键清除搜索）',
+    desc: '尚无任何订单时展示引导插图与说明，点击去选购检测进入检测列表；有订单但当前状态 / 类型下无数据、或搜索无结果时，列表区展示对应空状态（搜索��结果可一键清除搜索）',
     node: <OrderListEmptyArtboard />,
   },
   {
@@ -356,7 +374,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     summary: 'AI 对话入口与预设问题，通俗 / 专业版切换、关联检测人后的个性化用药解答',
     ids: ['04', '05', '07', '08'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检查、知识科普与互动问答，一键带入 AI 咨询', ids: ['09'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检查、知识科普与互动问答，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz'] },
   {
     key: 'order',
     title: '检测下单',

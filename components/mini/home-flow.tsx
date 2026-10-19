@@ -28,9 +28,14 @@ export function HomeFlow({
   initialCart,
   initialCartOpen,
   initialCheckout,
+  initialKnowledge,
+  initialServiceSection,
   loggedIn = true,
   onRequireLogin,
 }: {
+  /** 'list' opens 知识科普 list; an article id opens that article directly. */
+  initialKnowledge?: string
+  initialServiceSection?: 'quiz'
   loggedIn?: boolean
   onRequireLogin?: () => void
   initialTab?: TabKey
@@ -45,7 +50,9 @@ export function HomeFlow({
   const [request, setRequest] = useState<ChatRequest | null>(null)
   const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
   const [loginPrompt, setLoginPrompt] = useState<string | null>(null)
-  const [knowledgeEntry, setKnowledgeEntry] = useState<{ key: number; articleId?: string } | null>(null)
+  const [knowledgeEntry, setKnowledgeEntry] = useState<{ key: number; articleId?: string } | null>(
+    initialKnowledge ? { key: 0, articleId: initialKnowledge === 'list' ? undefined : initialKnowledge } : null,
+  )
   // Remounting TestsScreen via key lets it re-read the requested detail id when entered from 服务.
   const [testEntry, setTestEntry] = useState<{ key: number; detailId?: string }>({
     key: 0,
@@ -88,6 +95,7 @@ export function HomeFlow({
             onViewAllTests={() => openTests()}
             onOpenArticle={(id) => setKnowledgeEntry({ key: Date.now(), articleId: id })}
             onViewAllArticles={() => setKnowledgeEntry({ key: Date.now() })}
+            initialSection={initialServiceSection}
           />
         ) : tab === 'test' ? (
           <TestsScreen
