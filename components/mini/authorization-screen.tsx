@@ -241,7 +241,7 @@ function ResearchPanel({
             <p className="border-b border-border px-3.5 py-2.5 text-caption tabular-nums text-muted-foreground">订单号 {orderNo}</p>
             {services.map((sid) => (
               <div key={sid} className="px-3.5 pt-3">
-                <h2 className="text-note font-semibold leading-[18px] text-foreground">{serviceName(sid)}</h2>
+                <h2 className="text-title font-semibold leading-[18px] text-foreground">{serviceName(sid)}</h2>
                 <ul>
                   {items
                     .filter((a) => a.serviceId === sid)

@@ -125,7 +125,7 @@ export function LogisticsScreen({
         </section>
 
         <section aria-labelledby="logistics-track" className="rounded-2xl bg-white p-4">
-          <h2 id="logistics-track" className="text-body font-semibold text-foreground">
+          <h2 id="logistics-track" className="text-title font-semibold text-foreground">
             物流轨迹
           </h2>
           <ol className="mt-3">

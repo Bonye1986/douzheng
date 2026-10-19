@@ -274,7 +274,7 @@ function ServiceCard({
         className="size-24 shrink-0 rounded-xl bg-secondary object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col">
-        <h2 id={`svc-${service.id}`} className="line-clamp-2 text-body font-medium leading-5 text-foreground">
+        <h2 id={`svc-${service.id}`} className="line-clamp-2 text-title font-semibold leading-5 text-foreground">
           <button type="button" onClick={onOpen} className="text-left after:absolute after:inset-0 after:rounded-2xl">
             {service.name}
           </button>

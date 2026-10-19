@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChevronRight, UserRound } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
+import { SectionHeading } from '@/components/mini/section-heading'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
 import { AuthorizationScreen } from '@/components/mini/authorization-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
@@ -75,17 +76,7 @@ function SectionHeader({
   action: string
   onAction?: () => void
 }) {
-  return (
-    <div className="flex items-center justify-between">
-      <h2 id={id} className="text-title font-semibold text-foreground">
-        {title}
-      </h2>
-      <button type="button" onClick={onAction} className="flex items-center text-caption text-muted-foreground">
-        {action}
-        <ChevronRight className="size-3.5" aria-hidden="true" />
-      </button>
-    </div>
-  )
+  return <SectionHeading id={id} title={title} action={action} onAction={onAction} />
 }
 
 export function MineScreen({
@@ -326,9 +317,7 @@ export function MineScreen({
 
         {/* 常用功能 */}
         <nav aria-labelledby="mine-tools" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <h2 id="mine-tools" className="text-title font-semibold text-foreground">
-            常用功能
-          </h2>
+  <SectionHeading id="mine-tools" title="常用功能" />
           <ul className="mt-3 grid grid-cols-4 gap-y-4">
             {tools.map((t) => (
               <li key={t.key}>

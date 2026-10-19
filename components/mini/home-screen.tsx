@@ -1,9 +1,10 @@
 'use client'
 
-import { ChevronRight, Circle, Ellipsis, MessageCircleQuestion, Sparkles } from 'lucide-react'
+import { ChevronRight, Circle, Ellipsis, Sparkles } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
 import { presetQuestions } from '@/components/mini/home-data'
+import { SectionHeading } from '@/components/mini/section-heading'
 
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
   return (
@@ -43,34 +44,26 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         </button>
 
         <section aria-labelledby="hot-q" className="mt-8">
-          <h2 id="hot-q" className="mb-3 flex items-center gap-1.5 text-body font-semibold text-foreground">
-            <MessageCircleQuestion className="size-4 text-primary" />
-            大家都在问
-          </h2>
-  <ul className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border/60 bg-white shadow-[0_4px_16px_#3a82e40f]">
-  {presetQuestions.map((item, index) => (
-  <li key={item.id}>
-  <button
-  type="button"
-  onClick={() => onOpenChat?.(item.question)}
-  className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-brand-page"
-  >
-  <span
-  aria-hidden="true"
-  className={
-  index < 3
-  ? 'flex size-5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-caption font-semibold tabular-nums text-primary'
-  : 'flex size-5 shrink-0 items-center justify-center rounded-md bg-muted text-caption font-semibold tabular-nums text-faint'
-  }
-  >
-  {index + 1}
-  </span>
-  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
-  <ChevronRight className="size-4 shrink-0 text-faint" />
-  </button>
-  </li>
-  ))}
-  </ul>
+          <SectionHeading id="hot-q" title="大家都在问" className="mb-3" />
+          <ul className="grid grid-cols-2 gap-2.5">
+            {presetQuestions.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  onClick={() => onOpenChat?.(item.question)}
+                  className="flex h-full min-h-[76px] w-full flex-col justify-between gap-2 rounded-2xl border border-border/60 bg-white p-3 text-left shadow-[0_2px_10px_#3a82e40d] transition-colors active:bg-brand-page"
+                >
+                  <span className="line-clamp-2 text-body font-medium leading-snug text-foreground">
+                    {item.question}
+                  </span>
+                  <span className="flex items-center gap-0.5 text-caption text-primary">
+                    问问 AI
+                    <ChevronRight className="size-3" />
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
     </div>

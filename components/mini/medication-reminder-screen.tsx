@@ -509,7 +509,7 @@ function ReminderFormScreen({
     <SubPage title={editing ? '编辑用药提醒' : '添加用药提醒'} titleId="reminder-form-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         <section aria-labelledby="reminder-drug-title" className="rounded-2xl bg-white p-3.5">
-          <h2 id="reminder-drug-title" className="text-body font-semibold text-foreground">
+          <h2 id="reminder-drug-title" className="text-title font-semibold text-foreground">
             用药信息
           </h2>
 
@@ -628,7 +628,7 @@ function ReminderFormScreen({
         </section>
 
         <section aria-labelledby="reminder-plan-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <h2 id="reminder-plan-title" className="text-body font-semibold text-foreground">
+          <h2 id="reminder-plan-title" className="text-title font-semibold text-foreground">
             服用计划
           </h2>
 
@@ -754,7 +754,7 @@ function ReminderFormScreen({
         </section>
 
         <section aria-labelledby="reminder-sms-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-          <h2 id="reminder-sms-title" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
+          <h2 id="reminder-sms-title" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
             <MessageSquareText className="size-4 text-primary" aria-hidden="true" />
             短信通知
           </h2>

@@ -111,7 +111,7 @@ function SurveyResult({ survey, answers }: { survey: Survey; answers: SurveyAnsw
         </p>
       </div>
 
-      <h2 className="mb-2 mt-4 px-1 text-body font-semibold text-foreground">大家的选择</h2>
+      <h2 className="mb-2 mt-4 px-1 text-title font-semibold text-foreground">大家的选择</h2>
       <div className="flex flex-col gap-2.5">
         {choiceQuestions.map((q, i) => {
           const mine = answers[q.id]

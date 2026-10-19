@@ -43,45 +43,6 @@ export const serviceCategories: ServiceCategory[] = [
 
 export const reportChatQuestion = '帮我解读一下检测报告'
 
-export type RecommendedTest = {
-  id: string
-  name: string
-  desc: string
-  tags: string[]
-  price: number
-  originalPrice?: number
-  sold: string
-}
-
-export const recommendedTests: RecommendedTest[] = [
-  {
-    id: 'full',
-    name: '个体化用药基因检测 · 全面版',
-    desc: '覆盖 20+ 科室常用药物，指导选药与剂量',
-    tags: ['居家采样', '终身有效'],
-    price: 1299,
-    originalPrice: 1599,
-    sold: '2.3万人已检',
-  },
-  {
-    id: 'cardio',
-    name: '心脑血管用药基因检测',
-    desc: '氯吡格雷、华法林、他汀类等药物反应评估',
-    tags: ['热门', '指南推荐'],
-    price: 599,
-    originalPrice: 799,
-    sold: '1.1万人已检',
-  },
-  {
-    id: 'mental',
-    name: '精神类药物基因检测',
-    desc: '抗抑郁、抗焦虑药物代谢与疗效预测',
-    tags: ['定点采样'],
-    price: 899,
-    sold: '6800人已检',
-  },
-]
-
 export type ArticleBlock =
   | { type: 'p'; text: string }
   | { type: 'h'; text: string }
@@ -198,7 +159,7 @@ export const articles: Article[] = [
       { type: 'p', text: '抗抑郁药通常需要 4–6 周才能判断疗效，如果反复换药，治疗周期会被大大拉长。研究显示，基因差异是疗效与不良反应个体差异的重要来源。' },
       { type: 'h', text: '涉及哪些基因' },
       { type: 'list', items: ['CYP2D6：影响帕罗西汀、氟西汀、文拉法辛等', 'CYP2C19：影响舍曲林、西酞普兰、艾司西酞普兰等'] },
-      { type: 'p', text: '医生可参考检测结果，优先选择与您代谢类型匹配的药物和起始剂量，减少无效试药。' },
+      { type: 'p', text: '医生可参考检测结果，优先���择与您代谢类型匹配的药物和起始剂量，减少无效试药。' },
       { type: 'tip', text: '抗抑郁药不可骤然停用，任何调整都应在专科医生指导下进行。' },
     ],
   },

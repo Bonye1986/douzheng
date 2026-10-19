@@ -86,7 +86,7 @@ export function SendSampleScreen({
         </section>
 
         <section aria-labelledby="pickup-address-label" className="rounded-2xl bg-white p-3.5">
-          <h2 id="pickup-address-label" className="text-body font-semibold text-foreground">
+          <h2 id="pickup-address-label" className="text-title font-semibold text-foreground">
             取件地址
           </h2>
           {site && address ? (
@@ -139,7 +139,7 @@ export function SendSampleScreen({
         </section>
 
         <section className="rounded-2xl bg-white p-3.5">
-          <h2 className="flex items-center gap-1.5 text-body font-semibold text-foreground">
+          <h2 className="flex items-center gap-1.5 text-title font-semibold text-foreground">
             <PackageCheck className="size-4 text-primary" aria-hidden="true" />
             寄样前请确认
           </h2>

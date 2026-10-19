@@ -123,7 +123,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
 
         {recommends.length > 0 && (
           <section aria-labelledby="cart-recommend" className="mt-4">
-            <h2 id="cart-recommend" className="mb-2 px-1 text-body font-semibold text-foreground">
+            <h2 id="cart-recommend" className="mb-2 px-1 text-title font-semibold text-foreground">
               为你推荐
             </h2>
             <ul className="grid grid-cols-2 gap-2.5">

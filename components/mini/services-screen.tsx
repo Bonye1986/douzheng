@@ -2,26 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import {
-  BookOpen,
-  ChevronRight,
-  ClipboardCheck,
-  ClipboardList,
-  Eye,
-  Lightbulb,
-  type LucideIcon,
-} from 'lucide-react'
+import { ChevronRight, ClipboardList, Eye } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
   banners,
   quizArticles,
-  recommendedTests,
   serviceCategories,
   type Article,
   type ServiceCategoryId,
 } from '@/components/mini/services-data'
+import { getSamplingModes, samplingLabel, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
+import { SectionHeading } from '@/components/mini/section-heading'
 
 type Props = {
   onOpenChat?: (question?: string) => void
@@ -72,7 +65,6 @@ export function ServicesScreen({
           <ArticleSection
             id="knowledge"
             title="知识科普"
-            icon={BookOpen}
             items={articles}
             onOpenArticle={onOpenArticle}
             onViewAll={onViewAllArticles}
@@ -80,7 +72,6 @@ export function ServicesScreen({
           <ArticleSection
             id="quiz"
             title="互动问答"
-            icon={Lightbulb}
             items={quizArticles}
             onOpenArticle={onOpenQuizArticle}
             onViewAll={onViewAllQuiz}
@@ -94,35 +85,15 @@ export function ServicesScreen({
 function SectionHeader({
   id,
   title,
-  icon: Icon,
   action,
   onAction,
 }: {
   id: string
   title: string
-  icon: LucideIcon
   action?: string
   onAction?: () => void
 }) {
-  return (
-    <div className="mb-3 flex items-center justify-between">
-      <h2 id={id} className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-        <Icon className="size-4 text-primary" aria-hidden="true" />
-        {title}
-      </h2>
-      {action && (
-        <button
-          type="button"
-          onClick={onAction}
-          aria-label={`${title}：${action}`}
-          className="flex items-center text-caption text-muted-foreground"
-        >
-          {action}
-          <ChevronRight className="size-3.5" aria-hidden="true" />
-        </button>
-      )}
-    </div>
-  )
+  return <SectionHeading id={id} title={title} action={action} onAction={onAction} className="mb-3" />
 }
 
 function BannerCarousel() {
@@ -204,16 +175,16 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
                 onClick={() => onCategory?.(id)}
                 className="group flex w-full flex-col items-center gap-2"
               >
-                <span className="relative size-12 overflow-hidden rounded-2xl bg-[#eaf2fe] transition-transform group-active:scale-95">
+                <span className="relative size-10 transition-transform group-active:scale-95">
                   <Image
                     src={categoryIcons[id] || '/placeholder.svg'}
                     alt=""
                     fill
-                    sizes="48px"
-                    className="scale-[1.12] object-cover"
+                    sizes="40px"
+                    className="object-contain"
                   />
                 </span>
-                <span className="text-caption text-foreground">{label}</span>
+                <span className="text-caption text-foreground/80">{label}</span>
               </button>
             </li>
           )
@@ -223,26 +194,36 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
   )
 }
 
+const RECOMMENDED_COUNT = 3
+
 function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTest' | 'onViewAllTests'>) {
+  const items = testServices.slice(0, RECOMMENDED_COUNT)
   return (
     <section aria-labelledby="rec-tests" className="rounded-2xl bg-white p-4">
-      <SectionHeader id="rec-tests" title="推荐检查" icon={ClipboardCheck} action="全部" onAction={onViewAllTests} />
+      <SectionHeader id="rec-tests" title="推荐检查" action="全部" onAction={onViewAllTests} />
       <ul className="flex flex-col divide-y divide-border">
-        {recommendedTests.map((t) => (
+        {items.map((t) => (
           <li key={t.id} className="py-3 first:pt-0 last:pb-0">
             <button
               type="button"
               onClick={() => onOpenTest?.(t.id)}
               className="flex w-full gap-3 text-left transition-opacity active:opacity-70"
             >
-              <span className="flex size-[72px] shrink-0 items-center justify-center rounded-xl bg-brand-tile">
-                <Image src="/images/drugene-icon.png" alt="" width={40} height={40} className="size-10 object-contain" />
-              </span>
+              <Image
+                src={t.image}
+                alt=""
+                width={80}
+                height={80}
+                className="size-20 shrink-0 rounded-xl bg-secondary object-cover"
+              />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate text-body font-medium text-foreground">{t.name}</span>
-                <span className="mt-0.5 truncate text-caption text-muted-foreground">{t.desc}</span>
+                <span className="mt-0.5 truncate text-caption text-muted-foreground">{t.summary}</span>
                 <span className="mt-1 flex gap-1">
-                  {t.tags.map((tag) => (
+                  <span className="rounded bg-success-soft px-1.5 py-px text-tag text-success">
+                    {getSamplingModes(t.id).includes('self') ? '支持居家自采' : samplingLabel.site}
+                  </span>
+                  {t.tags.slice(0, 1).map((tag) => (
                     <span key={tag} className="rounded bg-secondary px-1.5 py-px text-tag text-primary">
                       {tag}
                     </span>
@@ -272,21 +253,19 @@ function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTes
 function ArticleSection({
   id,
   title,
-  icon,
   items,
   onOpenArticle,
   onViewAll,
 }: {
   id: string
   title: string
-  icon: LucideIcon
   items: Article[]
   onOpenArticle?: (id: string) => void
   onViewAll?: () => void
 }) {
   return (
     <section aria-labelledby={id} className="rounded-2xl bg-white p-4">
-      <SectionHeader id={id} title={title} icon={icon} action="更多" onAction={onViewAll} />
+      <SectionHeader id={id} title={title} action="更多" onAction={onViewAll} />
   <ul className="-mb-1 divide-y divide-border/70">
   {items.slice(0, 3).map((a) => (
   <li key={a.id}>

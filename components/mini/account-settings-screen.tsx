@@ -402,7 +402,7 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
       </div>
 
       <section aria-labelledby="deactivate-notice" className="mt-2.5 rounded-2xl bg-white p-3.5">
-        <h2 id="deactivate-notice" className="text-body font-semibold text-foreground">
+        <h2 id="deactivate-notice" className="text-title font-semibold text-foreground">
           注销后你将失去
         </h2>
         <ul className="mt-2 space-y-2">

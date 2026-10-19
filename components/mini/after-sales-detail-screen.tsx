@@ -126,7 +126,7 @@ export function AfterSalesDetailScreen({
         </section>
 
         <section aria-labelledby="asd-progress" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-progress" className="text-body font-semibold text-foreground">
+          <h2 id="asd-progress" className="text-title font-semibold text-foreground">
             处理进度
           </h2>
           <ol className="mt-3">
@@ -169,7 +169,7 @@ export function AfterSalesDetailScreen({
 
         {d.refundRows && d.refundTotal && (
           <section aria-labelledby="asd-refund" className="mt-2.5 rounded-2xl bg-white p-4">
-            <h2 id="asd-refund" className="text-body font-semibold text-foreground">
+            <h2 id="asd-refund" className="text-title font-semibold text-foreground">
               退款信息
             </h2>
             <dl className="mt-2 flex flex-col gap-1.5 text-caption">
@@ -189,7 +189,7 @@ export function AfterSalesDetailScreen({
 
         {item.newOrderId && (
           <section aria-labelledby="asd-new" className="mt-2.5 rounded-2xl bg-white p-4">
-            <h2 id="asd-new" className="text-body font-semibold text-foreground">
+            <h2 id="asd-new" className="text-title font-semibold text-foreground">
               重采样订单
             </h2>
             <p className="mt-2 flex items-center gap-1.5 text-caption tabular-nums text-muted-foreground">
@@ -205,7 +205,7 @@ export function AfterSalesDetailScreen({
         )}
 
         <section aria-labelledby="asd-order" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-order" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
+          <h2 id="asd-order" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
             <TypeIcon className="size-4 text-primary" aria-hidden="true" />
             关联订单
           </h2>
@@ -222,7 +222,7 @@ export function AfterSalesDetailScreen({
         </section>
 
         <section aria-labelledby="asd-info" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-info" className="text-body font-semibold text-foreground">
+          <h2 id="asd-info" className="text-title font-semibold text-foreground">
             售后信息
           </h2>
           <dl className="mt-2 flex flex-col gap-2 text-caption">

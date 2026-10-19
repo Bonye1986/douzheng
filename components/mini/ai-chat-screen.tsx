@@ -11,7 +11,9 @@ import {
   Copy,
   Ellipsis,
   FileText,
+  LockKeyhole,
   Menu,
+  Plus,
   RefreshCw,
   Share2,
   ShieldCheck,
@@ -582,27 +584,31 @@ function TesteeSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="testee-title"
-        className="relative rounded-t-3xl bg-white px-4 pb-8 pt-2.5 animate-in slide-in-from-bottom duration-300"
+        className="relative rounded-t-[28px] bg-brand-page px-4 pb-7 pt-2.5 animate-in slide-in-from-bottom duration-300"
       >
-        <span aria-hidden="true" className="mx-auto block h-1 w-10 rounded-full bg-[#dbe3ef]" />
-        <div className="mt-4 flex items-center justify-between">
-          <h2 id="testee-title" className="text-heading font-bold text-foreground">
-            选择检测人（可跳过）
-          </h2>
+        <span aria-hidden="true" className="mx-auto block h-1 w-9 rounded-full bg-border" />
+        <div className="mt-3 flex items-start justify-between gap-3">
+          <div>
+            <h2 id="testee-title" className="text-heading font-semibold text-foreground">
+              选择检测人
+            </h2>
+            <p className="mt-1 text-caption text-muted-foreground">关联后 AI 将结合其检测报告作答，可跳过</p>
+          </div>
           <button
             type="button"
             aria-label="关闭"
             onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground"
+            className="-mr-1 flex size-8 shrink-0 items-center justify-center rounded-full text-faint transition-colors active:bg-muted"
           >
-            <X className="size-4" />
+            <X className="size-5" />
           </button>
         </div>
-        <p className="mt-2 text-note leading-5 text-muted-foreground">
-          选择后，AI 可在授权范围内关联该检测人的基本信息和历史检测报告；不选择则按通用知识回答。
-        </p>
 
-        <ul role="radiogroup" aria-label="检测人" className="mt-4 flex flex-col gap-2.5">
+        <ul
+          role="radiogroup"
+          aria-label="检测人"
+          className="mt-4 divide-y divide-border/60 overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_#3a82e40d]"
+        >
           {list.map((t) => {
             const active = selected === t.id
             return (
@@ -613,31 +619,44 @@ function TesteeSheet({
                   aria-checked={active}
                   onClick={() => setSelected(t.id)}
                   className={cn(
-                    'flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-left transition-colors',
-                    active ? 'border-primary bg-secondary/60' : 'border-border',
+                    'flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors',
+                    active ? 'bg-secondary/50' : 'active:bg-brand-page',
                   )}
                 >
-                  <span className="flex size-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                    <UserRound className="size-5" />
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'flex size-10 shrink-0 items-center justify-center rounded-full text-title font-semibold transition-colors',
+                      active ? 'bg-primary text-white' : 'bg-secondary text-primary',
+                    )}
+                  >
+                    {t.name.slice(-1)}
                   </span>
-                  <span className="flex-1">
-                    <strong className="block text-title font-semibold text-foreground">{testeeLabel(t)}</strong>
-                    <span className="mt-0.5 flex items-center gap-1 text-caption text-muted-foreground">
-                      {t.meta} ·
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1.5">
+                      <strong className="text-title font-semibold text-foreground">{t.name}</strong>
+                      <span className="rounded-md bg-muted px-1.5 py-px text-caption text-muted-foreground">
+                        {t.relation}
+                      </span>
+                    </span>
+                    <span className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">
+                      <span>{t.meta}</span>
+                      <span aria-hidden="true" className="h-2.5 w-px bg-border" />
                       {t.reports > 0 ? (
-                        <span className="inline-flex items-center gap-0.5 text-primary">
+                        <span className="inline-flex items-center gap-1 text-primary">
                           <BookOpenCheck className="size-3" />
-                          {t.reports}份历史报告
+                          {t.reports} 份历史报告
                         </span>
                       ) : (
-                        ' 暂无历史报告'
+                        <span>暂无历史报告</span>
                       )}
                     </span>
                   </span>
                   <span
+                    aria-hidden="true"
                     className={cn(
-                      'flex size-5 items-center justify-center rounded-full border',
-                      active ? 'border-primary bg-primary text-white' : 'border-[#c9d3e3]',
+                      'flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px] transition-colors',
+                      active ? 'border-primary bg-primary text-white' : 'border-border',
                     )}
                   >
                     {active && <Check className="size-3" strokeWidth={3} />}
@@ -646,25 +665,38 @@ function TesteeSheet({
               </li>
             )
           })}
+          <li>
+            <button
+              type="button"
+              onClick={onAdd}
+              className="flex w-full items-center gap-3 px-4 py-3 text-left text-body font-medium text-primary transition-colors active:bg-brand-page"
+            >
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-dashed border-primary/40">
+                <Plus className="size-4" />
+              </span>
+              添加检测人
+            </button>
+          </li>
         </ul>
 
-        <button type="button" onClick={onAdd} className="mt-2.5 w-full py-2 text-note font-medium text-primary">
-          + 添加检测人
-        </button>
+        <p className="mt-3 flex items-center justify-center gap-1 text-caption text-faint">
+          <LockKeyhole className="size-3" />
+          仅在授权范围内读取，信息加密保护
+        </p>
 
-        <div className="mt-2 grid grid-cols-2 gap-3">
+        <div className="mt-4 flex gap-3">
           <button
             type="button"
             onClick={() => onConfirm(null)}
-            className="h-11 rounded-full border border-border text-title font-medium text-foreground"
+            className="h-11 flex-1 rounded-full bg-white text-title font-medium text-muted-foreground shadow-[inset_0_0_0_1px_var(--color-border)]"
           >
-            不选择检测人
+            暂不选择
           </button>
           <button
             type="button"
             disabled={!selected}
             onClick={() => onConfirm(list.find((t) => t.id === selected) ?? null)}
-            className="h-11 rounded-full bg-primary text-title font-semibold text-white disabled:bg-[#cfe2f8]"
+            className="h-11 flex-[1.4] rounded-full bg-primary text-title font-semibold text-white shadow-[0_6px_16px_#3a82e433] transition-opacity disabled:opacity-40 disabled:shadow-none"
           >
             确认选择
           </button>

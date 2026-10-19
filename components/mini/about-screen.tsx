@@ -19,6 +19,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { SectionHeading } from '@/components/mini/section-heading'
 
 const APP_VERSION = '1.6.2'
 const COMPANY_NAME = '长沙都正生物科技股份有限公司'
@@ -88,10 +89,7 @@ const modules: Module[] = [
 
 function SectionTitle({ id, icon: Icon, children }: { id: string; icon: LucideIcon; children: string }) {
   return (
-    <h3 id={id} className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-      <Icon className="size-4 text-primary" aria-hidden="true" />
-      {children}
-    </h3>
+    <SectionHeading id={id} title={children} as="h3" />
   )
 }
 
@@ -158,7 +156,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
               ))}
             </ul>
             <p className="mt-3.5 rounded-lg bg-background px-3 py-2.5 text-caption leading-relaxed text-foreground/80">
-              DRUGENE 会不定期推更新基因、药物数据和逐步完善、增加其他新功能，敬请期待。
+              DRUGENE 会不定期推更新基因、药物数据和逐步完善、��加其他新功能，敬请期待。
             </p>
           </section>
 

@@ -77,7 +77,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
         )}
 
         <section aria-labelledby="relation-title" className="rounded-2xl bg-white p-3.5">
-          <h2 id="relation-title" className="text-body font-semibold text-foreground">
+          <h2 id="relation-title" className="text-title font-semibold text-foreground">
             与本人关系
             <span className="ml-0.5 text-destructive" aria-hidden="true">
               *

@@ -73,7 +73,7 @@ export function OrderDetailScreen({
         </section>
 
         <section aria-labelledby="od-sampling" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-sampling" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
+          <h2 id="od-sampling" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
             {isSelf ? (
               <House className="size-4 text-primary" aria-hidden="true" />
             ) : (
@@ -106,7 +106,7 @@ export function OrderDetailScreen({
         </section>
 
         <section aria-labelledby="od-items" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-items" className="text-body font-semibold text-foreground">
+          <h2 id="od-items" className="text-title font-semibold text-foreground">
             检测项目
           </h2>
           <ul className="mt-1">
@@ -179,7 +179,7 @@ export function OrderDetailScreen({
         </section>
 
         <section aria-labelledby="od-info" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-info" className="text-body font-semibold text-foreground">
+          <h2 id="od-info" className="text-title font-semibold text-foreground">
             订单信息
           </h2>
           <dl className="mt-2 flex flex-col gap-2 text-caption">

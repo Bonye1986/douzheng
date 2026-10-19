@@ -292,7 +292,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           </section>
 
           <section aria-labelledby="order-info" className="mt-2.5 rounded-2xl bg-white p-4">
-            <h2 id="order-info" className="text-body font-semibold text-foreground">
+            <h2 id="order-info" className="text-title font-semibold text-foreground">
               订单信息
             </h2>
             <dl className="mt-2 flex flex-col gap-2 text-caption">
@@ -350,7 +350,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
 
           {researchItems.length > 0 && (
             <section aria-labelledby="research-sign" className="mt-2.5 rounded-2xl bg-white p-4">
-              <h2 id="research-sign" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
+              <h2 id="research-sign" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
                 科研知情同意书
                 <span className="rounded bg-secondary px-1 text-tag font-normal text-muted-foreground">自愿</span>
               </h2>
@@ -386,7 +386,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
           )}
 
           <section aria-labelledby="next-steps" className="mt-2.5 rounded-2xl bg-white p-4">
-            <h2 id="next-steps" className="text-body font-semibold text-foreground">
+            <h2 id="next-steps" className="text-title font-semibold text-foreground">
               接下来
             </h2>
             <ol className="mt-3 flex flex-col gap-3">
@@ -466,7 +466,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
     <Shell title="确认订单" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         <section aria-labelledby="sampling-title" className="rounded-2xl bg-white p-3.5">
-          <h2 id="sampling-title" className="text-body font-semibold text-foreground">
+          <h2 id="sampling-title" className="text-title font-semibold text-foreground">
             采样方式
           </h2>
           <div role="radiogroup" aria-labelledby="sampling-title" className="mt-2.5 grid grid-cols-2 gap-2">
@@ -568,7 +568,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
 
         <section aria-labelledby="goods-title" className="mt-2.5 rounded-2xl bg-white">
           <div className="flex items-center justify-between px-3.5 pt-3.5">
-            <h2 id="goods-title" className="text-body font-semibold text-foreground">
+            <h2 id="goods-title" className="text-title font-semibold text-foreground">
               检测项目与受检人
             </h2>
             <button type="button" onClick={() => setExamineeForm({ serviceId: null })} className="text-caption text-primary">
@@ -703,7 +703,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
 
         {byMember.length > 0 && (
           <section aria-labelledby="member-sum-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-            <h2 id="member-sum-title" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
+            <h2 id="member-sum-title" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
               <UserRound className="size-4 text-primary" aria-hidden="true" />
               按受检人汇总
             </h2>
@@ -759,7 +759,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
         </section>
 
         <section aria-labelledby="pay-title" className="mt-2.5 rounded-2xl bg-white px-3.5 pb-1 pt-3">
-          <h2 id="pay-title" className="text-body font-semibold text-foreground">
+          <h2 id="pay-title" className="text-title font-semibold text-foreground">
             支付方式
           </h2>
           <div role="radiogroup" aria-labelledby="pay-title" className="mt-1 flex flex-col">

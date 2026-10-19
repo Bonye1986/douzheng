@@ -177,7 +177,7 @@ export function MyCouponsScreen({
         )}
 
         <section aria-labelledby="coupon-rules" className="mt-4 rounded-2xl bg-white p-3.5">
-          <h2 id="coupon-rules" className="text-note font-medium text-foreground">
+          <h2 id="coupon-rules" className="text-title font-semibold text-foreground">
             使用说明
           </h2>
           <ul className="mt-2 flex list-disc flex-col gap-1 pl-4 text-caption leading-relaxed text-muted-foreground">
