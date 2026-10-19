@@ -181,8 +181,6 @@ function KnowledgeDetail({
   answered: boolean
   onOpenSurvey: () => void
 }) {
-  const hasInlineSurvey = article.content.some((b) => b.type === 'survey')
-
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto pb-4 [scrollbar-width:none]">
@@ -201,10 +199,7 @@ function KnowledgeDetail({
 
           <div className="mt-3 space-y-3">
             {article.content.map((b, i) => {
-              if (b.type === 'survey')
-                return article.survey ? (
-                  <SurveyEntry key={i} survey={article.survey} answered={answered} onOpen={onOpenSurvey} />
-                ) : null
+              if (b.type === 'survey') return null
               if (b.type === 'h')
                 return (
                   <h3 key={i} className="flex items-center gap-1.5 pt-1 text-[15px] font-semibold text-foreground">
@@ -238,12 +233,6 @@ function KnowledgeDetail({
             })}
           </div>
 
-          {article.survey && !hasInlineSurvey && (
-            <div className="mt-4">
-              <SurveyEntry survey={article.survey} answered={answered} onOpen={onOpenSurvey} />
-            </div>
-          )}
-
           <p className="mt-5 text-[11px] leading-relaxed text-muted-foreground">
             本文仅供健康科普，不能替代医生诊断与治疗建议。
           </p>
@@ -251,15 +240,8 @@ function KnowledgeDetail({
       </div>
 
       {article.survey && (
-        <div className="flex shrink-0 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
-          <button
-            type="button"
-            onClick={onOpenSurvey}
-            className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
-          >
-            <ClipboardList className="size-4" aria-hidden="true" />
-            {answered ? '查看问卷结果' : '参与问卷'}
-          </button>
+        <div className="shrink-0 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
+          <SurveyEntry survey={article.survey} answered={answered} onOpen={onOpenSurvey} />
         </div>
       )}
     </div>
