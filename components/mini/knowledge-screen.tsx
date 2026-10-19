@@ -26,10 +26,6 @@ function ArticleMeta({ article }: { article: Article }) {
   return (
     <span className="flex items-center gap-2.5 text-caption text-muted-foreground">
       <span className="flex items-center gap-0.5">
-        <Clock className="size-3" aria-hidden="true" />
-        <span className="tabular-nums">{article.minutes}</span> 分钟
-      </span>
-      <span className="flex items-center gap-0.5">
         <Eye className="size-3" aria-hidden="true" />
         <span className="tabular-nums">{article.reads}</span>
         <span className="sr-only">次阅读</span>
@@ -63,7 +59,7 @@ export function ArticleRow({
       />
       <span className="min-w-0 flex-1">
         <span className="line-clamp-2 text-body font-medium leading-snug text-foreground">{a.title}</span>
-        <span className="mt-1 line-clamp-2 block text-caption leading-relaxed text-muted-foreground">{a.summary}</span>
+        <span className="mt-1 line-clamp-2 text-caption leading-relaxed text-muted-foreground">{a.summary}</span>
         <span className="mt-1.5 flex items-center gap-2">
           <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">{a.category}</span>
           <ArticleMeta article={a} />

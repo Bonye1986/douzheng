@@ -52,7 +52,7 @@ const screens = [
   {
     id: '09-knowledge',
     title: '服务 · 知识科普',
-    desc: '科普文章列表：按分类筛选（基因与用药、检测常识等），展示封面、标题、阅读时长与阅读量；点击文章进入详情（可在画板内交互）',
+    desc: '科普文章列表：按分类筛选（基因与用药、检测常识等），展示封面、标题（最多 2 行）、简介（最多 2 行）与阅读量；点击文章进入详情（可在画板内交互）',
     node: <HomeFlow initialTab="service" initialKnowledge="list" />,
   },
   {
@@ -304,7 +304,7 @@ const screens = [
   {
     id: '46',
     title: '账号设置 · 注销账号',
-    desc: '注销风险提示、数据清除说���、进行中订单检查、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
+    desc: '注销风���提示、数据清除说���、进行中订单检查、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
     node: <MineScreen initialAccountView="deactivate" />,
   },
   {
@@ -458,7 +458,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'home',
     title: '首页与AI咨询',
-    summary: 'AI 对话入口与预设问题，通俗 / 专业版切换��关联检测人后的个性化用药解答',
+    summary: 'AI 对话入口与预设问���，通俗 / 专业版切换��关联检测人后的个性化用药解答',
     ids: ['04', '05', '07', '08'],
   },
   { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检查、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
