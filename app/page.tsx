@@ -61,8 +61,20 @@ const screens = [
   {
     id: '09-quiz',
     title: '服务 · 互动问答',
-    desc: '按主题切换题目，选择答案后即时判断对错并展示解析；可进入下一题，或将题目带入 AI 咨询深入了解（可在画板内交互）',
-    node: <HomeFlow initialTab="service" initialServiceSection="quiz" />,
+    desc: '问答文章列表：按分类筛选，展示封面、标题、阅读信息与「含问卷 / 已参与」标签；点击进入问答文章详情（可在画板内交互）',
+    node: <HomeFlow initialTab="service" initialQuiz="list" />,
+  },
+  {
+    id: '09-quiz-article',
+    title: '互动问答 · 文章详情',
+    desc: '与科普文章详情一致的正文排版，正文中嵌入问卷入口卡片，底部固定「问问 AI」与「参与问卷」按钮',
+    node: <HomeFlow initialTab="service" initialQuiz="q1" />,
+  },
+  {
+    id: '09-survey',
+    title: '互动问答 · 问卷调查',
+    desc: '问卷说明与答题进度，支持单选、多选与选填文本题；必答题完成后可提交，提交后展示「大家的选择」统计结果',
+    node: <HomeFlow initialTab="service" initialQuiz="q1" initialSurvey />,
   },
   {
     id: '10',
@@ -374,7 +386,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     summary: 'AI 对话入口与预设问题，通俗 / 专业版切换、关联检测人后的个性化用药解答',
     ids: ['04', '05', '07', '08'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检查、知识科普与互动问答，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检查、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
   {
     key: 'order',
     title: '检测下单',

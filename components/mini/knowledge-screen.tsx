@@ -2,9 +2,24 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { BookOpen, ChevronRight, Clock, Eye, Info, Sparkles } from 'lucide-react'
+import { BookOpen, CheckCircle2, ChevronRight, ClipboardList, Clock, Eye, Info, Sparkles, Users } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
-import { articleCategories, articles, type Article } from '@/components/mini/services-data'
+import {
+  articleCategories,
+  articles as knowledgeArticles,
+  quizArticles,
+  quizCategories,
+  type Article,
+  type Survey,
+} from '@/components/mini/services-data'
+import { SurveyScreen, type SurveyAnswers } from '@/components/mini/survey-screen'
+
+export type ArticleKind = 'knowledge' | 'quiz'
+
+const sources = {
+  knowledge: { title: '知识科普', listLabel: '科普文章', categories: articleCategories, items: knowledgeArticles },
+  quiz: { title: '互动问答', listLabel: '问答文章', categories: quizCategories, items: quizArticles },
+} satisfies Record<ArticleKind, { title: string; listLabel: string; categories: readonly string[]; items: Article[] }>
 import { cn } from '@/lib/utils'
 
 function ArticleMeta({ article }: { article: Article }) {
@@ -23,18 +38,27 @@ function ArticleMeta({ article }: { article: Article }) {
   )
 }
 
-function KnowledgeList({ onOpen }: { onOpen: (id: string) => void }) {
-  const [category, setCategory] = useState<(typeof articleCategories)[number]>('全部')
+function KnowledgeList({
+  kind,
+  onOpen,
+  answered,
+}: {
+  kind: ArticleKind
+  onOpen: (id: string) => void
+  answered: Record<string, SurveyAnswers>
+}) {
+  const { categories, items: articles, listLabel } = sources[kind]
+  const [category, setCategory] = useState<string>('全部')
   const filtered = category === '全部' ? articles : articles.filter((a) => a.category === category)
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div
         role="tablist"
-        aria-label="科普分类"
+        aria-label={`${sources[kind].title}分类`}
         className="flex shrink-0 gap-1.5 overflow-x-auto bg-white px-3 pb-2.5 pt-1 [scrollbar-width:none]"
       >
-        {articleCategories.map((c) => {
+        {categories.map((c) => {
           const active = c === category
           return (
             <button
@@ -56,7 +80,7 @@ function KnowledgeList({ onOpen }: { onOpen: (id: string) => void }) {
 
       <div className="flex-1 overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
         {filtered.length > 0 ? (
-          <ul className="overflow-hidden rounded-2xl bg-white" aria-label="科普文章">
+          <ul className="overflow-hidden rounded-2xl bg-white" aria-label={listLabel}>
             {filtered.map((a, i) => (
               <li key={a.id} className={i > 0 ? 'border-t border-[#eef1f6]' : ''}>
                 <button
@@ -82,6 +106,16 @@ function KnowledgeList({ onOpen }: { onOpen: (id: string) => void }) {
                         {a.category}
                       </span>
                       <ArticleMeta article={a} />
+                      {a.survey && (
+                        <span
+                          className={cn(
+                            'ml-auto flex items-center gap-0.5 rounded px-1.5 py-px text-[10px]',
+                            answered[a.id] ? 'bg-[#e9f8f1] text-[#1f9d6b]' : 'bg-[#fff1e6] text-[#e0651c]',
+                          )}
+                        >
+                          {answered[a.id] ? '已参与' : '含问卷'}
+                        </span>
+                      )}
                     </span>
                   </span>
                 </button>
@@ -96,15 +130,65 @@ function KnowledgeList({ onOpen }: { onOpen: (id: string) => void }) {
   )
 }
 
-function KnowledgeDetail({
-  article,
+function SurveyEntry({
+  survey,
+  answered,
   onOpen,
+}: {
+  survey: Survey
+  answered: boolean
+  onOpen: () => void
+}) {
+  return (
+    <aside
+      aria-label={survey.title}
+      className="flex items-center gap-3 rounded-2xl border border-[#d6e4fb] bg-gradient-to-r from-[#eef4fe] to-[#f7faff] p-3.5"
+    >
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+        <ClipboardList className="size-5" aria-hidden="true" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[14px] font-semibold text-foreground">{survey.title}</span>
+        <span className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+          <span>共 {survey.questions.length} 题</span>
+          <span className="flex items-center gap-0.5">
+            <Users className="size-3" aria-hidden="true" />
+            {survey.participants} 人已参与
+          </span>
+        </span>
+      </span>
+      <button
+        type="button"
+        onClick={onOpen}
+        className={cn(
+          'flex h-8 shrink-0 items-center gap-1 rounded-full px-3 text-[12px] font-medium',
+          answered ? 'bg-[#e9f8f1] text-[#1f9d6b]' : 'bg-primary text-primary-foreground',
+        )}
+      >
+        {answered && <CheckCircle2 className="size-3.5" aria-hidden="true" />}
+        {answered ? '查看结果' : '参与问卷'}
+      </button>
+    </aside>
+  )
+}
+
+function KnowledgeDetail({
+  kind,
+  article,
+  answered,
+  onOpen,
+  onOpenSurvey,
   onAskAi,
 }: {
+  kind: ArticleKind
   article: Article
+  answered: boolean
   onOpen: (id: string) => void
+  onOpenSurvey: () => void
   onAskAi?: (question: string) => void
 }) {
+  const articles = sources[kind].items
+  const hasInlineSurvey = article.content.some((b) => b.type === 'survey')
   const sameCategory = articles.filter((a) => a.id !== article.id && a.category === article.category)
   const related = (sameCategory.length ? sameCategory : articles.filter((a) => a.id !== article.id)).slice(0, 3)
 
@@ -126,6 +210,10 @@ function KnowledgeDetail({
 
           <div className="mt-3 space-y-3">
             {article.content.map((b, i) => {
+              if (b.type === 'survey')
+                return article.survey ? (
+                  <SurveyEntry key={i} survey={article.survey} answered={answered} onOpen={onOpenSurvey} />
+                ) : null
               if (b.type === 'h')
                 return (
                   <h3 key={i} className="flex items-center gap-1.5 pt-1 text-[15px] font-semibold text-foreground">
@@ -159,6 +247,12 @@ function KnowledgeDetail({
             })}
           </div>
 
+          {article.survey && !hasInlineSurvey && (
+            <div className="mt-4">
+              <SurveyEntry survey={article.survey} answered={answered} onOpen={onOpenSurvey} />
+            </div>
+          )}
+
           <p className="mt-5 text-[11px] leading-relaxed text-muted-foreground">
             本文仅供健康科普，不能替代医生诊断与治疗建议。
           </p>
@@ -182,50 +276,90 @@ function KnowledgeDetail({
         </section>
       </div>
 
-      <div className="shrink-0 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
+      <div className="flex shrink-0 gap-2.5 border-t border-[#eef1f6] bg-white px-3 pb-6 pt-2.5">
         <button
           type="button"
           onClick={() => onAskAi?.(article.title)}
-          className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+          className={cn(
+            'flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full text-[14px] font-medium',
+            article.survey ? 'border border-primary text-primary' : 'bg-primary text-primary-foreground',
+          )}
         >
           <Sparkles className="size-4" aria-hidden="true" />
-          问问 AI 了解更多
+          {article.survey ? '问问 AI' : '问问 AI 了解更多'}
         </button>
+        {article.survey && (
+          <button
+            type="button"
+            onClick={onOpenSurvey}
+            className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[14px] font-medium text-primary-foreground"
+          >
+            <ClipboardList className="size-4" aria-hidden="true" />
+            {answered ? '查看问卷结果' : '参与问卷'}
+          </button>
+        )}
       </div>
     </div>
   )
 }
 
 export function KnowledgeScreen({
+  kind = 'knowledge',
   initialArticleId,
+  initialSurveyOpen = false,
   onBack,
   onAskAi,
 }: {
+  kind?: ArticleKind
   initialArticleId?: string
+  /** Opens the article's 问卷 directly (design board entry). */
+  initialSurveyOpen?: boolean
   onBack: () => void
   onAskAi?: (question: string) => void
 }) {
+  const { items: articles, title } = sources[kind]
   const [articleId, setArticleId] = useState<string | null>(initialArticleId ?? null)
+  const [surveyOpen, setSurveyOpen] = useState(initialSurveyOpen)
+  const [answers, setAnswers] = useState<Record<string, SurveyAnswers>>({})
   const article = articles.find((a) => a.id === articleId)
   // Entered straight from an article on 服务, so back should return there instead of the list.
   const enteredFromArticle = Boolean(initialArticleId)
+
+  if (article?.survey && surveyOpen) {
+    return (
+      <SurveyScreen
+        key={article.survey.id}
+        survey={article.survey}
+        initialAnswers={answers[article.id]}
+        onBack={() => setSurveyOpen(false)}
+        onSubmit={(value) => setAnswers((prev) => ({ ...prev, [article.id]: value }))}
+      />
+    )
+  }
 
   if (article) {
     return (
       <SubPage
         key={article.id}
         title="文章详情"
-        titleId="knowledge-detail-title"
+        titleId={`${kind}-detail-title`}
         onBack={() => (enteredFromArticle && article.id === initialArticleId ? onBack() : setArticleId(null))}
       >
-        <KnowledgeDetail article={article} onOpen={setArticleId} onAskAi={onAskAi} />
+        <KnowledgeDetail
+          kind={kind}
+          article={article}
+          answered={Boolean(answers[article.id])}
+          onOpen={setArticleId}
+          onOpenSurvey={() => setSurveyOpen(true)}
+          onAskAi={onAskAi}
+        />
       </SubPage>
     )
   }
 
   return (
-    <SubPage title="知识科普" titleId="knowledge-title" onBack={onBack}>
-      <KnowledgeList onOpen={setArticleId} />
+    <SubPage title={title} titleId={`${kind}-title`} onBack={onBack}>
+      <KnowledgeList kind={kind} onOpen={setArticleId} answered={answers} />
     </SubPage>
   )
 }

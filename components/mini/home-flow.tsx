@@ -14,7 +14,7 @@ import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { ExamineeManageScreen } from '@/components/mini/examinee-manage-screen'
 import { MedicationReminderScreen } from '@/components/mini/medication-reminder-screen'
 import { LoginRequiredDialog } from '@/components/mini/login-required-dialog'
-import { KnowledgeScreen } from '@/components/mini/knowledge-screen'
+import { KnowledgeScreen, type ArticleKind } from '@/components/mini/knowledge-screen'
 import {
   reportChatQuestion,
   serviceCategories,
@@ -29,12 +29,18 @@ export function HomeFlow({
   initialCartOpen,
   initialCheckout,
   initialKnowledge,
+  initialQuiz,
+  initialSurvey,
   initialServiceSection,
   loggedIn = true,
   onRequireLogin,
 }: {
   /** 'list' opens 知识科普 list; an article id opens that article directly. */
   initialKnowledge?: string
+  /** 'list' opens 互动问答 list; an article id opens that article directly. */
+  initialQuiz?: string
+  /** With initialQuiz set to an article id, opens that article's 问卷. */
+  initialSurvey?: boolean
   initialServiceSection?: 'quiz'
   loggedIn?: boolean
   onRequireLogin?: () => void
@@ -50,8 +56,21 @@ export function HomeFlow({
   const [request, setRequest] = useState<ChatRequest | null>(null)
   const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
   const [loginPrompt, setLoginPrompt] = useState<string | null>(null)
-  const [knowledgeEntry, setKnowledgeEntry] = useState<{ key: number; articleId?: string } | null>(
-    initialKnowledge ? { key: 0, articleId: initialKnowledge === 'list' ? undefined : initialKnowledge } : null,
+  const initialArticleEntry = initialQuiz ?? initialKnowledge
+  const [knowledgeEntry, setKnowledgeEntry] = useState<{
+    key: number
+    kind: ArticleKind
+    articleId?: string
+    survey?: boolean
+  } | null>(
+    initialArticleEntry
+      ? {
+          key: 0,
+          kind: initialQuiz ? 'quiz' : 'knowledge',
+          articleId: initialArticleEntry === 'list' ? undefined : initialArticleEntry,
+          survey: initialSurvey,
+        }
+      : null,
   )
   // Remounting TestsScreen via key lets it re-read the requested detail id when entered from 服务.
   const [testEntry, setTestEntry] = useState<{ key: number; detailId?: string }>({
@@ -93,8 +112,10 @@ export function HomeFlow({
             onCategory={handleCategory}
             onOpenTest={(id) => openTests(id)}
             onViewAllTests={() => openTests()}
-            onOpenArticle={(id) => setKnowledgeEntry({ key: Date.now(), articleId: id })}
-            onViewAllArticles={() => setKnowledgeEntry({ key: Date.now() })}
+            onOpenArticle={(id) => setKnowledgeEntry({ key: Date.now(), kind: 'knowledge', articleId: id })}
+            onViewAllArticles={() => setKnowledgeEntry({ key: Date.now(), kind: 'knowledge' })}
+            onOpenQuizArticle={(id) => setKnowledgeEntry({ key: Date.now(), kind: 'quiz', articleId: id })}
+            onViewAllQuiz={() => setKnowledgeEntry({ key: Date.now(), kind: 'quiz' })}
             initialSection={initialServiceSection}
           />
         ) : tab === 'test' ? (
@@ -134,6 +155,8 @@ export function HomeFlow({
       {knowledgeEntry && (
         <KnowledgeScreen
           key={knowledgeEntry.key}
+          kind={knowledgeEntry.kind}
+          initialSurveyOpen={knowledgeEntry.survey}
           initialArticleId={knowledgeEntry.articleId}
           onBack={() => setKnowledgeEntry(null)}
           onAskAi={(question) => openChat(question)}

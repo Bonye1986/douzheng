@@ -87,6 +87,27 @@ export type ArticleBlock =
   | { type: 'h'; text: string }
   | { type: 'list'; items: string[] }
   | { type: 'tip'; text: string }
+  /** Marks where the inline 问卷 entry card sits inside an 互动问答 article. */
+  | { type: 'survey' }
+
+export type SurveyOption = { id: string; text: string; percent: number }
+
+export type SurveyQuestion = {
+  id: string
+  title: string
+  kind: 'single' | 'multi' | 'text'
+  options?: SurveyOption[]
+  optional?: boolean
+}
+
+export type Survey = {
+  id: string
+  title: string
+  intro: string
+  participants: string
+  minutes: number
+  questions: SurveyQuestion[]
+}
 
 export type Article = {
   id: string
@@ -99,6 +120,7 @@ export type Article = {
   author: string
   cover: string
   content: ArticleBlock[]
+  survey?: Survey
 }
 
 export const articleCategories = ['全部', '基因与药物', '心血管', '精神神经', '检测须知'] as const
@@ -216,6 +238,179 @@ export const articles: Article[] = [
       { type: 'h', text: '误区三：用药建议永远不变' },
       { type: 'p', text: '随着 CPIC、DPWG 等指南更新，用药建议可能调整。平台会同步更新解读内容，并在「我的报告」中提示。' },
     ],
+  },
+]
+
+export const quizCategories = ['全部', '用药习惯', '检测认知', '慢病管理'] as const
+
+export const quizArticles: Article[] = [
+  {
+    id: 'q1',
+    cover: '/images/articles/a1.png',
+    title: '你有“症状好了就停药”的习惯吗？',
+    category: '用药习惯',
+    reads: '2.6万',
+    summary: '降压药、抗凝药擅自停用可能导致病情反弹。读完本文，来聊聊你的服药习惯。',
+    minutes: 3,
+    updated: '2026-10-15',
+    author: '临床药学部',
+    content: [
+      { type: 'p', text: '“血压正常了，药是不是可以停了？”这是门诊中最常被问到的问题之一。很多慢病药物的作用是“控制”而不是“治愈”，症状消失往往正是药物在起效。' },
+      { type: 'h', text: '哪些药不能说停就停' },
+      { type: 'list', items: ['降压药：骤停可能引起血压反跳，诱发心脑血管意外', '抗凝 / 抗血小板药：停药后血栓风险迅速升高', '抗抑郁药：突然停用可能出现头晕、失眠、情绪波动等撤药反应'] },
+      { type: 'survey' },
+      { type: 'h', text: '正确的做法' },
+      { type: 'p', text: '任何停药、减量都应先咨询医生或药师；如果担心副作用或疗效，可携带药物基因检测报告，与医生一起评估更合适的方案。' },
+      { type: 'tip', text: '漏服药物时不要下次加倍补服，请参考说明书或咨询药师。' },
+    ],
+    survey: {
+      id: 's-q1',
+      title: '服药习惯小调查',
+      intro: '匿名填写，结果仅用于优化用药科普内容。',
+      participants: '3,286',
+      minutes: 1,
+      questions: [
+        {
+          id: 'q1-1',
+          title: '您目前是否在长期服用某种药物？',
+          kind: 'single',
+          options: [
+            { id: 'a', text: '是，服用 1 种', percent: 34 },
+            { id: 'b', text: '是，服用 2 种及以上', percent: 41 },
+            { id: 'c', text: '没有长期服药', percent: 25 },
+          ],
+        },
+        {
+          id: 'q1-2',
+          title: '症状缓解后，您通常会怎么做？',
+          kind: 'single',
+          options: [
+            { id: 'a', text: '继续按医嘱服用', percent: 52 },
+            { id: 'b', text: '自行减量', percent: 21 },
+            { id: 'c', text: '直接停药', percent: 18 },
+            { id: 'd', text: '咨询医生后再决定', percent: 9 },
+          ],
+        },
+        {
+          id: 'q1-3',
+          title: '以下哪些情况您曾经遇到过？（可多选）',
+          kind: 'multi',
+          options: [
+            { id: 'a', text: '忘记按时服药', percent: 63 },
+            { id: 'b', text: '漏服后加倍补服', percent: 22 },
+            { id: 'c', text: '担心副作用不敢吃', percent: 38 },
+            { id: 'd', text: '以上都没有', percent: 14 },
+          ],
+        },
+        { id: 'q1-4', title: '关于服药，您还有哪些疑问？', kind: 'text', optional: true },
+      ],
+    },
+  },
+  {
+    id: 'q2',
+    cover: '/images/articles/a3.png',
+    title: '药物基因检测，你了解多少？',
+    category: '检测认知',
+    reads: '1.4万',
+    summary: '基因型终身不变，一次检测可长期参考。花 1 分钟做个小问卷，看看你的认知。',
+    minutes: 2,
+    updated: '2026-10-10',
+    author: '检测服务中心',
+    content: [
+      { type: 'p', text: '药物基因检测通过分析与药物代谢、转运和靶点相关的基因，帮助医生判断某种药物对您是否有效、剂量是否合适。' },
+      { type: 'h', text: '三个常见认知' },
+      { type: 'list', items: ['基因型终身不变，检测一次可长期参考', '口腔拭子即可采样，无需空腹', '检测结果需由医生结合病情解读，不能自行调药'] },
+      { type: 'survey' },
+      { type: 'tip', text: '报告中的用药建议会随 CPIC、DPWG 等指南更新而同步调整。' },
+    ],
+    survey: {
+      id: 's-q2',
+      title: '基因检测认知调查',
+      intro: '没有标准答案，按您的真实想法选择即可。',
+      participants: '1,957',
+      minutes: 1,
+      questions: [
+        {
+          id: 'q2-1',
+          title: '在今天之前，您是否听说过药物基因检测？',
+          kind: 'single',
+          options: [
+            { id: 'a', text: '听说过，也做过', percent: 12 },
+            { id: 'b', text: '听说过，但没做过', percent: 46 },
+            { id: 'c', text: '第一次听说', percent: 42 },
+          ],
+        },
+        {
+          id: 'q2-2',
+          title: '您最关心检测的哪些方面？（可多选）',
+          kind: 'multi',
+          options: [
+            { id: 'a', text: '检测价格', percent: 58 },
+            { id: 'b', text: '结果准确性', percent: 71 },
+            { id: 'c', text: '报告是否看得懂', percent: 44 },
+            { id: 'd', text: '个人信息安全', percent: 36 },
+          ],
+        },
+        {
+          id: 'q2-3',
+          title: '您更希望通过哪种方式了解报告？',
+          kind: 'single',
+          options: [
+            { id: 'a', text: 'AI 通俗解读', percent: 39 },
+            { id: 'b', text: '医生 / 药师当面讲解', percent: 48 },
+            { id: 'c', text: '自己阅读报告', percent: 13 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'q3',
+    cover: '/images/articles/a5.png',
+    title: '高血压患者，你的血压多久测一次？',
+    category: '慢病管理',
+    reads: '9.8千',
+    summary: '规律监测是调整用药的重要依据。分享你的测量习惯，一起看看大家怎么做。',
+    minutes: 3,
+    updated: '2026-10-03',
+    author: '心内科药师团队',
+    content: [
+      { type: 'p', text: '家庭自测血压能更真实地反映日常血压水平，是医生判断药物是否有效、是否需要调整剂量的重要参考。' },
+      { type: 'h', text: '推荐的测量方式' },
+      { type: 'list', items: ['调整用药期间：每天早晚各测 1 次，每次测 2–3 遍取平均', '血压稳定后：每周至少测 1–2 天', '测量前静坐 5 分钟，避免吸烟、喝咖啡'] },
+      { type: 'survey' },
+      { type: 'tip', text: '若连续多日血压明显偏高或偏低，请及时就医，不要自行调整药量。' },
+    ],
+    survey: {
+      id: 's-q3',
+      title: '血压监测习惯调查',
+      intro: '本问卷面向高血压患者及家属，匿名填写。',
+      participants: '1,102',
+      minutes: 1,
+      questions: [
+        {
+          id: 'q3-1',
+          title: '您（或家人）多久测量一次血压？',
+          kind: 'single',
+          options: [
+            { id: 'a', text: '每天', percent: 31 },
+            { id: 'b', text: '每周几次', percent: 37 },
+            { id: 'c', text: '不舒服时才测', percent: 24 },
+            { id: 'd', text: '基本不测', percent: 8 },
+          ],
+        },
+        {
+          id: 'q3-2',
+          title: '您会记录测量结果吗？',
+          kind: 'single',
+          options: [
+            { id: 'a', text: '会，记在本子或手机上', percent: 43 },
+            { id: 'b', text: '偶尔记录', percent: 29 },
+            { id: 'c', text: '不记录', percent: 28 },
+          ],
+        },
+      ],
+    },
   },
 ]
 

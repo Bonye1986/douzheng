@@ -4,21 +4,21 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import {
   BookOpen,
-  CheckCircle2,
   ChevronRight,
   ClipboardCheck,
+  ClipboardList,
   Eye,
   Lightbulb,
-  XCircle,
   type LucideIcon,
 } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import {
   articles,
   banners,
-  quizTopics,
+  quizArticles,
   recommendedTests,
   serviceCategories,
+  type Article,
   type ServiceCategoryId,
 } from '@/components/mini/services-data'
 import { cn } from '@/lib/utils'
@@ -30,6 +30,8 @@ type Props = {
   onViewAllTests?: () => void
   onOpenArticle?: (id: string) => void
   onViewAllArticles?: () => void
+  onOpenQuizArticle?: (id: string) => void
+  onViewAllQuiz?: () => void
   initialSection?: 'quiz'
 }
 
@@ -40,6 +42,8 @@ export function ServicesScreen({
   onViewAllTests,
   onOpenArticle,
   onViewAllArticles,
+  onOpenQuizArticle,
+  onViewAllQuiz,
   initialSection,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -65,8 +69,22 @@ export function ServicesScreen({
           <BannerCarousel />
           <CategoryGrid onCategory={onCategory} />
           <RecommendedTests onOpenTest={onOpenTest} onViewAllTests={onViewAllTests} />
-          <KnowledgeList onOpenArticle={onOpenArticle} onViewAllArticles={onViewAllArticles} />
-          <DailyQuiz onOpenChat={onOpenChat} />
+          <ArticleSection
+            id="knowledge"
+            title="知识科普"
+            icon={BookOpen}
+            items={articles}
+            onOpenArticle={onOpenArticle}
+            onViewAll={onViewAllArticles}
+          />
+          <ArticleSection
+            id="quiz"
+            title="互动问答"
+            icon={Lightbulb}
+            items={quizArticles}
+            onOpenArticle={onOpenQuizArticle}
+            onViewAll={onViewAllQuiz}
+          />
         </div>
       </div>
     </div>
@@ -251,12 +269,26 @@ function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTes
   )
 }
 
-function KnowledgeList({ onOpenArticle, onViewAllArticles }: Pick<Props, 'onOpenArticle' | 'onViewAllArticles'>) {
+function ArticleSection({
+  id,
+  title,
+  icon,
+  items,
+  onOpenArticle,
+  onViewAll,
+}: {
+  id: string
+  title: string
+  icon: LucideIcon
+  items: Article[]
+  onOpenArticle?: (id: string) => void
+  onViewAll?: () => void
+}) {
   return (
-    <section aria-labelledby="knowledge" className="rounded-2xl bg-white p-4">
-      <SectionHeader id="knowledge" title="知识科普" icon={BookOpen} action="更多" onAction={onViewAllArticles} />
+    <section aria-labelledby={id} className="rounded-2xl bg-white p-4">
+      <SectionHeader id={id} title={title} icon={icon} action="更多" onAction={onViewAll} />
   <ul className="-mb-1 divide-y divide-border/70">
-  {articles.slice(0, 3).map((a) => (
+  {items.slice(0, 3).map((a) => (
   <li key={a.id}>
   <button
   type="button"
@@ -272,6 +304,12 @@ function KnowledgeList({ onOpenArticle, onViewAllArticles }: Pick<Props, 'onOpen
   <Eye className="size-3" aria-hidden="true" />
   {a.reads}
   </span>
+  {a.survey && (
+  <span className="flex items-center gap-0.5 rounded bg-[#fff1e6] px-1.5 py-0.5 text-[#e0651c]">
+  <ClipboardList className="size-3" aria-hidden="true" />
+  含问卷
+  </span>
+  )}
   </span>
   </span>
   <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" aria-hidden="true" />
@@ -279,125 +317,6 @@ function KnowledgeList({ onOpenArticle, onViewAllArticles }: Pick<Props, 'onOpen
   </li>
   ))}
   </ul>
-    </section>
-  )
-}
-
-function DailyQuiz({ onOpenChat }: Props) {
-  const [topicId, setTopicId] = useState(quizTopics[0].id)
-  const [step, setStep] = useState(0)
-  const [picked, setPicked] = useState<string | null>(null)
-
-  const topic = quizTopics.find((t) => t.id === topicId) ?? quizTopics[0]
-  const quiz = topic.questions[step]
-  const answered = picked !== null
-  const correct = picked === quiz.answerId
-  const isLast = step === topic.questions.length - 1
-  const answerLabel = quiz.answerId.toUpperCase()
-
-  const selectTopic = (id: string) => {
-    setTopicId(id)
-    setStep(0)
-    setPicked(null)
-  }
-
-  const next = () => {
-    setStep((s) => (isLast ? 0 : s + 1))
-    setPicked(null)
-  }
-
-  return (
-    <section aria-labelledby="quiz" className="rounded-2xl bg-white p-4">
-      <h2 id="quiz" className="mb-3 flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
-        <Lightbulb className="size-4 text-primary" aria-hidden="true" />
-        互动问答
-      </h2>
-
-      <div
-        role="tablist"
-        aria-label="问答主题"
-        className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]"
-      >
-        {quizTopics.map((t) => {
-          const active = t.id === topic.id
-          return (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => selectTopic(t.id)}
-              className={cn(
-                'h-7 shrink-0 rounded-full px-3 text-[12px] transition-colors',
-                active ? 'bg-primary font-medium text-primary-foreground' : 'bg-[#f1f5fb] text-muted-foreground',
-              )}
-            >
-              {t.title}
-            </button>
-          )
-        })}
-      </div>
-
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-[14px] font-medium text-foreground">{quiz.question}</p>
-        <span className="mt-0.5 shrink-0 text-[11px] tabular-nums text-muted-foreground">
-          {step + 1}/{topic.questions.length}
-        </span>
-      </div>
-      <div className="mt-3 flex flex-col gap-2" role="radiogroup" aria-label={quiz.question}>
-        {quiz.options.map((o) => {
-          const isAnswer = o.id === quiz.answerId
-          const isPicked = o.id === picked
-          return (
-            <button
-              key={o.id}
-              type="button"
-              role="radio"
-              aria-checked={isPicked}
-              disabled={answered}
-              onClick={() => setPicked(o.id)}
-              className={cn(
-                'flex h-11 items-center justify-between rounded-xl border px-4 text-left text-[13px] transition-colors',
-                !answered && 'border-border bg-[#f8fafd] text-foreground active:bg-[#eef3fa]',
-                answered && isAnswer && 'border-[#1f9d6b] bg-[#e9f8f1] text-[#1f9d6b]',
-                answered && isPicked && !isAnswer && 'border-[#e5603a] bg-[#feecee] text-[#e5603a]',
-                answered && !isAnswer && !isPicked && 'border-border bg-[#f8fafd] text-muted-foreground',
-              )}
-            >
-              <span>
-                {o.id.toUpperCase()}. {o.text}
-              </span>
-              {answered && isAnswer && <CheckCircle2 className="size-4" aria-hidden="true" />}
-              {answered && isPicked && !isAnswer && <XCircle className="size-4" aria-hidden="true" />}
-            </button>
-          )
-        })}
-      </div>
-      {answered && (
-        <div className="mt-3 rounded-xl bg-[#f4f8fe] p-3" aria-live="polite">
-          <p className={cn('text-[13px] font-medium', correct ? 'text-[#1f9d6b]' : 'text-[#e5603a]')}>
-            {correct ? '回答正确！' : `再想想～正确答案是 ${answerLabel}`}
-          </p>
-          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">{quiz.explanation}</p>
-          <div className="mt-2 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => onOpenChat?.(quiz.question)}
-              className="flex items-center text-[12px] font-medium text-primary"
-            >
-              问问 AI 了解更多
-              <ChevronRight className="size-3.5" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              className="h-7 rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground"
-            >
-              {isLast ? '再答一轮' : '下一题'}
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   )
 }
