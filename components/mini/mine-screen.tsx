@@ -97,6 +97,7 @@ export function MineScreen({
   initialExamineeView = null,
   initialAddressView = null,
   initialAuthTab = 'test',
+  initialAuthEmpty = false,
   initialReminderView = null,
   initialGuideView = null,
   initialAboutOpen = false,
@@ -116,6 +117,7 @@ export function MineScreen({
   initialGuideView?: GuideView | null
   initialReminderView?: ReminderView | null
   initialAuthTab?: 'test' | 'research'
+  initialAuthEmpty?: boolean
   initialAuthOpen?: boolean
   initialResampleOpen?: boolean
   initialReportOpen?: boolean
@@ -382,7 +384,7 @@ export function MineScreen({
           initialDetailId={reportDetailId}
         />
       )}
-      {authOpen && <AuthorizationScreen initialTab={initialAuthTab} onBack={() => setAuthOpen(false)} />}
+      {authOpen && <AuthorizationScreen initialTab={initialAuthTab} empty={initialAuthEmpty} onBack={() => setAuthOpen(false)} />}
       {resampleOpen && <ResampleScreen onBack={() => setResampleOpen(false)} />}
       {myCouponsOpen && (
         <MyCouponsScreen

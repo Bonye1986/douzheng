@@ -196,7 +196,7 @@ const screens = [
   {
     id: '27',
     title: '检测人管理 · 删除检测人',
-    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除，弹窗提示原因',
+    desc: '删除��二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除，弹窗提示原因',
     node: <MineScreen initialExamineeView="delete" />,
   },
   {
@@ -304,20 +304,32 @@ const screens = [
   {
     id: '46',
     title: '账号设置 · 注销账号',
-    desc: '注销风险提示、数据清除说���、进行中订单检���、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
+    desc: '注销风险提示、数据清除说�����、进行中订单检���、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
     node: <MineScreen initialAccountView="deactivate" />,
   },
   {
     id: '16',
-    title: '我的 · 授权与同意书',
+    title: '授权与同意书 · 检测知情同意书',
     desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
     node: <MineScreen initialAuthOpen />,
   },
   {
+    id: '16-empty',
+    title: '授权与同意书 · 检测知情同意书 · 空状态',
+    desc: '尚未下单检测时，检测知情同意书页签展示空状态插图与说明：下单时阅读并同意后签署记录将按订单存档（可在画板内交互）',
+    node: <MineScreen initialAuthOpen initialAuthEmpty />,
+  },
+  {
     id: '34',
-    title: '授权与同意书 · 科研签署（e签宝人脸核验）',
+    title: '授权与同意书 · 科研知情同意书',
     desc: '科研知情同意书签署 / 撤销流程：阅读文书 → e签宝 人脸核验 → 签署完成；已授权可签署《科研知情同意撤销书》撤回授权（可在画板内交互）',
     node: <MineScreen initialAuthOpen initialAuthTab="research" />,
+  },
+  {
+    id: '34-empty',
+    title: '授权与同意书 · 科研知情同意书 · 空状态',
+    desc: '未勾选任何科研授权时，科研知情同意书页签展示空状态插图与说明：科研授权为自愿，不影响检测与报告（可在画板内交互）',
+    node: <MineScreen initialAuthOpen initialAuthTab="research" initialAuthEmpty />,
   },
   {
     id: '19',
@@ -490,7 +502,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'consent',
     title: '授权与同意书',
     summary: '检测知情同意书存档，科研知情同意书签署 / 撤销（e签宝人脸核验）',
-    ids: ['16', '34'],
+    ids: ['16', '16-empty', '34', '34-empty'],
   },
   {
     key: 'examinee',

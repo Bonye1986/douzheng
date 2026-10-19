@@ -33,9 +33,18 @@ const now = () => {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
 }
 
-export function AuthorizationScreen({ onBack, initialTab = 'test' }: { onBack: () => void; initialTab?: Tab }) {
+export function AuthorizationScreen({
+  onBack,
+  initialTab = 'test',
+  empty = false,
+}: {
+  onBack: () => void
+  initialTab?: Tab
+  empty?: boolean
+}) {
   const [tab, setTab] = useState<Tab>(initialTab)
-  const [auths, setAuths] = useState<ResearchAuth[]>(initialResearchAuths)
+  const [auths, setAuths] = useState<ResearchAuth[]>(empty ? [] : initialResearchAuths)
+  const consents = empty ? [] : testConsents
   const [pending, setPending] = useState<{ auth: ResearchAuth; action: SignAction } | null>(null)
   const [viewingSignedAt, setViewingSignedAt] = useState<string | null>(null)
 
@@ -87,9 +96,26 @@ export function AuthorizationScreen({ onBack, initialTab = 'test' }: { onBack: (
       <div
         id={`auth-panel-${tab}`}
         role="tabpanel"
-        className="flex-1 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]"
+        className="flex flex-1 flex-col overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]"
       >
-        {tab === 'test' ? <TestConsentPanel onView={setViewingSignedAt} /> : <ResearchPanel auths={auths} onAction={(auth, action) => setPending({ auth, action })} />}
+        {tab === 'test' ? (
+          consents.length === 0 ? (
+            <ConsentEmptyState
+              title="暂无检测知情同意书"
+              desc="下单检测时阅读并同意《基因检测知情同意书》后，签署记录将按订单存档在这里"
+            />
+          ) : (
+            <TestConsentPanel consents={consents} onView={setViewingSignedAt} />
+          )
+        ) : auths.length === 0 ? (
+          <ConsentEmptyState
+            title="暂无科研知情同意书"
+            desc="下单时可自愿勾选科研授权，勾选后的签署 / 撤销记录将按订单在这里展示；不授权不影响检测与报告"
+            research
+          />
+        ) : (
+          <ResearchPanel auths={auths} onAction={(auth, action) => setPending({ auth, action })} />
+        )}
       </div>
 
       {pending && (
@@ -110,7 +136,29 @@ export function AuthorizationScreen({ onBack, initialTab = 'test' }: { onBack: (
   )
 }
 
-function TestConsentPanel({ onView }: { onView: (signedAt: string) => void }) {
+function ConsentEmptyState({ title, desc, research }: { title: string; desc: string; research?: boolean }) {
+  const Icon = research ? ShieldCheck : FileCheck2
+  return (
+    <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
+      <span className="relative flex size-24 items-center justify-center rounded-full bg-[#e3eeff]" aria-hidden="true">
+        <Icon className="size-11 text-primary" strokeWidth={1.4} />
+        <span className="absolute bottom-1 right-1 flex size-7 items-center justify-center rounded-full bg-white shadow-sm">
+          <Lock className="size-4 text-primary" />
+        </span>
+      </span>
+      <h2 className="mt-5 text-[16px] font-semibold text-foreground">{title}</h2>
+      <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">{desc}</p>
+    </div>
+  )
+}
+
+function TestConsentPanel({
+  consents,
+  onView,
+}: {
+  consents: typeof testConsents
+  onView: (signedAt: string) => void
+}) {
   return (
     <>
       <section className="flex items-start gap-2 rounded-2xl bg-[#e8f0fd] px-3.5 py-3 text-[12px] leading-5 text-[#2f5fb3]">
@@ -119,7 +167,7 @@ function TestConsentPanel({ onView }: { onView: (signedAt: string) => void }) {
       </section>
 
       <ul className="mt-2.5 flex flex-col gap-2.5">
-        {testConsents.map((c) => (
+        {consents.map((c) => (
           <li key={c.orderNo} className="rounded-2xl bg-white p-3.5">
             <div className="flex items-center gap-2">
               <FileCheck2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
