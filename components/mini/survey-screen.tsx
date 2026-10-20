@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, CheckCircle2, ClipboardList, Clock, Users } from 'lucide-react'
+import { Check, CheckCircle2, ClipboardList, Clock, TriangleAlert, Users } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import type { Survey, SurveyQuestion } from '@/components/mini/services-data'
 import { cn } from '@/lib/utils'
@@ -150,6 +150,50 @@ function SurveyResult({ survey, answers }: { survey: Survey; answers: SurveyAnsw
   )
 }
 
+function LeaveSurveyDialog({ onStay, onLeave }: { onStay: () => void; onLeave: () => void }) {
+  return (
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/45 px-8">
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="leave-survey-title"
+        aria-describedby="leave-survey-desc"
+        className="w-full rounded-2xl bg-white px-5 pb-4 pt-5 text-center motion-safe:animate-in motion-safe:zoom-in-95"
+      >
+        <span
+          className="mx-auto flex size-11 items-center justify-center rounded-full bg-[#fff4e5] text-[#f08c00]"
+          aria-hidden="true"
+        >
+          <TriangleAlert className="size-5" />
+        </span>
+        <h2 id="leave-survey-title" className="mt-3 text-title font-semibold text-foreground">
+          确定离开问卷？
+        </h2>
+        <p id="leave-survey-desc" className="mt-2 text-note leading-5 text-muted-foreground">
+          退出后已填写内容将不保存
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-2.5">
+          <button
+            type="button"
+            autoFocus
+            onClick={onStay}
+            className="h-10 rounded-full bg-muted text-body font-medium text-foreground"
+          >
+            取消
+          </button>
+          <button
+            type="button"
+            onClick={onLeave}
+            className="h-10 rounded-full bg-primary text-body font-medium text-primary-foreground"
+          >
+            确认离开
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function SurveyScreen({
   survey,
   initialAnswers,
@@ -168,9 +212,17 @@ export function SurveyScreen({
   const done = required.filter((q) => isAnswered(q, answers[q.id])).length
   const remaining = required.length - done
   const progress = required.length ? Math.round((done / required.length) * 100) : 100
+  const [confirmLeave, setConfirmLeave] = useState(false)
+  const hasDraft = Object.values(answers).some((v) => (Array.isArray(v) ? v.length > 0 : v.trim() !== ''))
+
+  const handleBack = () => {
+    if (!submitted && hasDraft) setConfirmLeave(true)
+    else onBack()
+  }
 
   return (
-    <SubPage title={submitted ? '问卷结果' : '问卷调查'} titleId="survey-title" onBack={onBack}>
+    <SubPage title={submitted ? '问卷结果' : '问卷调查'} titleId="survey-title" onBack={handleBack}>
+      {confirmLeave && <LeaveSurveyDialog onStay={() => setConfirmLeave(false)} onLeave={onBack} />}
       {submitted ? (
         <SurveyResult survey={survey} answers={answers} />
       ) : (
