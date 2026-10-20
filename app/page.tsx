@@ -171,7 +171,7 @@ const screens = [
   },
   {
     id: '20',
-    title: '我的 · 我的报告',
+    title: '我����� · 我的报告',
     desc: '按受检人筛选；已出具报告展示需调整 / 谨慎使用 / 正常使用药物数量，可查看报告、AI 解读、分享报告；检测中报告展示进度（已收样 → 检测中 → 出具报告），重采样订单带标记（可在画板内交互）',
     node: <MineScreen initialReportOpen />,
   },
@@ -310,13 +310,13 @@ const screens = [
   {
     id: '44',
     title: '我的 · 账号设置',
-    desc: '个人资料（头像 / 昵称 / 绑定手机号），短信通知开关（用药提醒 / 报告出具 / 订单与样本进度 / 优惠活动），隐私与协议、系统权限、清除缓存，注销账号与退出登录（可在画板内交互）',
+    desc: '个人资料（头像 / 昵称 / 绑定手机号），短信通知开关（用药提醒 / 报告出具 / 订单与样本进��� / ���惠活动），隐私与协议、系统权限、清除缓存，注销账号与退出登录（可在画板内交互）',
     node: <MineScreen initialAccountView="main" />,
   },
   {
     id: '45',
     title: '账号设置 · 更换手机号',
-    desc: '两步流程：短信验证原手机号 → 输入新手机号并验证，含 60 秒重发倒计时与重复号码校验（可在画板内交互）',
+    desc: '两步流程：短信验证原手机号 → 输入新手���号并验证，含 60 秒重发倒计时与重复号码校验（可在画板内交互）',
     node: <MineScreen initialAccountView="phone" />,
   },
   {
@@ -434,9 +434,15 @@ const screens = [
     node: <OrderActionArtboard kind="logistics" />,
   },
   {
+    id: '47-scan',
+    title: '订单列表 · 采样（扫码绑定样本）',
+    desc: '自采样待采样订单点击「采样」，唤起摄像头扫描采样盒上的样本标签码，确认后将样本与订单绑定，订单变为待寄样（可在画板内交互）',
+    node: <OrderActionArtboard kind="scan" />,
+  },
+  {
     id: '47-send',
     title: '订单列表 · 寄样',
-    desc: '自采样待采样 / 待寄样订单点击「寄样」，预约顺丰上门取件：确认寄件地址与上门时间，提交后订单变为待收样（可在画板内交互）',
+    desc: '自采样待寄样订单点击「寄样」，预约顺丰上门取件：确认寄件地址，提交后订单变为待收样（可在画板内交互）',
     node: <OrderActionArtboard kind="send" />,
   },
   {
@@ -454,7 +460,7 @@ const screens = [
   {
     id: '05',
     title: 'AI咨询 · 默认态',
-    desc: '通俗版 / 专业版切换，未选检测人时按通用知识回答；技能入口与工具栏可直接触发对话',
+    desc: '通俗版 / 专业版切换，未选检测人时按通用知识回答；技能入口与工具栏可直���触发对话',
     node: <AiChatScreen />,
   },
   {
@@ -504,6 +510,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
       '47-code',
       '47-refund',
       '47-logistics',
+      '47-scan',
       '47-send',
       '47-report',
       '48',

@@ -55,6 +55,7 @@ const orderActionPresets: Record<OrderActionKind, OrderInitialAction> = {
   code: { kind: 'code', status: '待核销', type: 'site' },
   refund: { kind: 'refund', status: '待收样', type: 'self' },
   logistics: { kind: 'logistics', status: '待收货', type: 'self' },
+  scan: { kind: 'scan', status: '待采样', type: 'self' },
   send: { kind: 'send', status: '待寄样', type: 'self' },
   report: { kind: 'report', status: '已完成', type: 'self' },
 }
