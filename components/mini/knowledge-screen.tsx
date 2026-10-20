@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { CheckCircle2, ClipboardList, Clock, Eye, Info, Sparkles, Users } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Clock, Eye, Info, Search, Sparkles, Users, X } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import {
   articleCategories,
@@ -90,10 +90,39 @@ function KnowledgeList({
 }) {
   const { categories, items: articles, listLabel } = sources[kind]
   const [category, setCategory] = useState<string>('全部')
-  const filtered = category === '全部' ? articles : articles.filter((a) => a.category === category)
+  const [keyword, setKeyword] = useState('')
+  const query = keyword.trim().toLowerCase()
+  const filtered = articles.filter(
+    (a) =>
+      (category === '全部' || a.category === category) &&
+      (!query || a.title.toLowerCase().includes(query) || a.summary.toLowerCase().includes(query)),
+  )
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0 bg-white px-3 pt-2.5">
+        <label className="flex h-9 items-center gap-2 rounded-full bg-muted px-3">
+          <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <span className="sr-only">搜索{sources[kind].title}</span>
+          <input
+            type="search"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="搜索文章标题或内容"
+            className="h-full min-w-0 flex-1 bg-transparent text-caption text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
+          />
+          {keyword && (
+            <button
+              type="button"
+              onClick={() => setKeyword('')}
+              aria-label="清空搜索"
+              className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted-foreground/30 text-white"
+            >
+              <X className="size-3" aria-hidden="true" />
+            </button>
+          )}
+        </label>
+      </div>
       <div
         role="tablist"
         aria-label={`${sources[kind].title}分类`}
@@ -129,7 +158,9 @@ function KnowledgeList({
             ))}
           </ul>
         ) : (
-          <p className="pt-16 text-center text-note text-muted-foreground">该分类暂无文章</p>
+          <p className="pt-16 text-center text-note text-muted-foreground">
+            {query ? '没有找到相关文章，换个关键词试试' : '该分类暂无文章'}
+          </p>
         )}
       </div>
     </div>
