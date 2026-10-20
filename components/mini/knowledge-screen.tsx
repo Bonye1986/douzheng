@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { CheckCircle2, ClipboardList, Clock, Eye, Info, Search, Sparkles, Users, X } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
@@ -197,13 +197,14 @@ function SurveyEntry({
       <button
         type="button"
         onClick={onOpen}
+        disabled={answered}
         className={cn(
           'flex h-8 shrink-0 items-center gap-1 rounded-full px-3 text-caption font-medium',
           answered ? 'bg-success-soft text-success' : 'bg-primary text-primary-foreground',
         )}
       >
         {answered && <CheckCircle2 className="size-3.5" aria-hidden="true" />}
-        {answered ? '查看结果' : '参与问卷'}
+        {answered ? '已参与' : '参与问卷'}
       </button>
     </aside>
   )
@@ -296,7 +297,6 @@ export function KnowledgeScreen({
   initialArticleId?: string
   /** Opens the article's 问卷 directly (design board entry). */
   initialSurveyOpen?: boolean
-  /** Pre-submitted answers for the initial article, so the 问卷 opens on its 结果 view. */
   initialSurveyAnswers?: SurveyAnswers
   onBack: () => void
 }) {
@@ -306,6 +306,12 @@ export function KnowledgeScreen({
   const [answers, setAnswers] = useState<Record<string, SurveyAnswers>>(
     initialArticleId && initialSurveyAnswers ? { [initialArticleId]: initialSurveyAnswers } : {},
   )
+  const [toast, setToast] = useState('')
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(''), 1800)
+    return () => clearTimeout(t)
+  }, [toast])
   const article = articles.find((a) => a.id === articleId)
   // Entered straight from an article on 服务, so back should return there instead of the list.
   const enteredFromArticle = Boolean(initialArticleId)
@@ -315,9 +321,12 @@ export function KnowledgeScreen({
       <SurveyScreen
         key={article.survey.id}
         survey={article.survey}
-        initialAnswers={answers[article.id]}
         onBack={() => setSurveyOpen(false)}
-        onSubmit={(value) => setAnswers((prev) => ({ ...prev, [article.id]: value }))}
+        onSubmit={(value) => {
+          setAnswers((prev) => ({ ...prev, [article.id]: value }))
+          setSurveyOpen(false)
+          setToast('提交成功，感谢参与')
+        }}
       />
     )
   }
@@ -335,6 +344,14 @@ export function KnowledgeScreen({
           answered={Boolean(answers[article.id])}
           onOpenSurvey={() => setSurveyOpen(true)}
         />
+        {toast && (
+          <p
+            role="status"
+            className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-xl bg-black/75 px-4 py-2.5 text-note text-white"
+          >
+            {toast}
+          </p>
+        )}
       </SubPage>
     )
   }

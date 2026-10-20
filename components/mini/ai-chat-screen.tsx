@@ -31,6 +31,7 @@ import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { useExaminees } from '@/components/mini/examinee-store'
 import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/components/mini/chat-share'
+import { ChatCard, cardKindText, detectCardKind, type CardKind } from '@/components/mini/ai-cards'
 import {
   answerToText,
   confidenceMeta,
@@ -51,6 +52,7 @@ type Answers = Record<Mode, AiAnswer>
 type Message =
   | { id: number; role: 'user'; text: string; attachments?: Attachment[] }
   | { id: number; role: 'assistant'; answers: Answers | null; view: Mode }
+  | { id: number; role: 'card'; kind: CardKind; ready: boolean }
 
 type Session = { id: string; title: string; time: string; messages: Message[] }
 
@@ -66,22 +68,28 @@ function buildAnswers(question: string, hasTestee: boolean): Answers {
   return { plain: getAnswer(question, 'plain', hasTestee), pro: getAnswer(question, 'pro', hasTestee) }
 }
 
+function buildReply(question: string, hasTestee: boolean, mode: Mode, ready: boolean): Message {
+  const kind = detectCardKind(question)
+  if (kind) return { id: nextMessageId(), role: 'card', kind, ready }
+  return { id: nextMessageId(), role: 'assistant', answers: ready ? buildAnswers(question, hasTestee) : null, view: mode }
+}
+
 function seedSession(id: string, question: string, time: string): Session {
   return {
     id,
     title: question,
     time,
-    messages: [
-      { id: nextMessageId(), role: 'user', text: question },
-      { id: nextMessageId(), role: 'assistant', answers: buildAnswers(question, false), view: 'plain' },
-    ],
+    messages: [{ id: nextMessageId(), role: 'user', text: question }, buildReply(question, false, 'plain', true)],
   }
 }
 
 function initialSessions(question: string | undefined, mode: Mode, hasTestee: boolean): Session[] {
   const history = [
+    seedSession('s-r', '查看我的报告', '今天 10:26'),
     seedSession('s-1', '高血压用药注意事项', '今天 09:12'),
+    seedSession('s-o', '我的订单进度', '昨天 22:05'),
     seedSession('s-2', '华法林剂量为什么因人而异？', '昨天 21:40'),
+    seedSession('s-v', '推荐适合我的检测服务', '10月14日'),
     seedSession('s-3', 'CYP2C19 慢代谢是什么意思', '10月12日'),
   ]
   if (!question) return history
@@ -90,10 +98,7 @@ function initialSessions(question: string | undefined, mode: Mode, hasTestee: bo
       id: 's-init',
       title: question,
       time: '刚刚',
-      messages: [
-        { id: nextMessageId(), role: 'user', text: question },
-        { id: nextMessageId(), role: 'assistant', answers: buildAnswers(question, hasTestee), view: mode },
-      ],
+      messages: [{ id: nextMessageId(), role: 'user', text: question }, buildReply(question, hasTestee, mode, true)],
     },
     ...history,
   ]
@@ -138,9 +143,12 @@ export function AiChatScreen({
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = sessions.find((s) => s.id === currentId)?.messages ?? []
-  const isReplying = messages.some((m) => m.role === 'assistant' && m.answers === null)
+  const isReplying = messages.some(
+    (m) => (m.role === 'assistant' && m.answers === null) || (m.role === 'card' && !m.ready),
+  )
   const sharing = shareIds !== null
-  const shareable = messages.filter((m) => m.role === 'user' || m.answers !== null)
+  const isComplete = (m: Message) => m.role === 'user' || (m.role === 'assistant' ? m.answers !== null : m.ready)
+  const shareable = messages.filter(isComplete)
   const allShareSelected = sharing && shareable.length > 0 && shareable.every((m) => shareIds.has(m.id))
 
   let round = 0
@@ -156,7 +164,9 @@ export function AiChatScreen({
         .map((m) =>
           m.role === 'user'
             ? { id: m.id, role: 'user', text: m.text }
-            : { id: m.id, role: 'assistant', text: m.answers ? answerToText(m.answers[mode]) : '' },
+            : m.role === 'card'
+              ? { id: m.id, role: 'assistant', text: cardKindText[m.kind] }
+              : { id: m.id, role: 'assistant', text: m.answers ? answerToText(m.answers[mode]) : '' },
         )
     : []
 
@@ -188,8 +198,8 @@ export function AiChatScreen({
     if ((!startNew && isReplying) || (!text && attachments.length === 0)) return
     const question = text || (attachments.some((a) => a.kind === 'pdf') ? '请帮我解读这份报告' : '请帮我看看这张图片')
     const userMsg: Message = { id: nextMessageId(), role: 'user', text: question, attachments }
-    const replyId = nextMessageId()
-    const replyMsg: Message = { id: replyId, role: 'assistant', answers: null, view: mode }
+    const replyMsg = buildReply(question, Boolean(testee), mode, false)
+    const replyId = replyMsg.id
 
     let sessionId = startNew ? null : currentId
     if (!sessionId) {
@@ -205,10 +215,17 @@ export function AiChatScreen({
       ])
     }
 
-    const answers = buildAnswers(question, Boolean(testee))
+    const answers = replyMsg.role === 'assistant' ? buildAnswers(question, Boolean(testee)) : null
     const targetId = sessionId
     window.setTimeout(() => {
-      updateMessages(targetId, (prev) => prev.map((m) => (m.id === replyId && m.role === 'assistant' ? { ...m, answers } : m)))
+      updateMessages(targetId, (prev) =>
+        prev.map((m) => {
+          if (m.id !== replyId) return m
+          if (m.role === 'card') return { ...m, ready: true }
+          if (m.role === 'assistant') return { ...m, answers }
+          return m
+        }),
+      )
     }, 1200)
   }
 
@@ -389,7 +406,7 @@ export function AiChatScreen({
           <p className="mt-1.5 text-caption leading-5 text-muted-foreground">
             回答基于已授权资料和知识来源生成。医疗问题需结合专业人员判断；紧急或严重不适请及时就医。
           </p>
-          <ul className="mt-3 flex gap-2">
+          <ul className="mt-3 flex flex-wrap gap-2">
             {skills.map((skill) => (
               <li key={skill.key}>
                 <button
@@ -424,6 +441,13 @@ export function AiChatScreen({
                     {m.text}
                   </p>
                 </div>
+              ) : m.role === 'card' ? (
+                <div className="flex gap-2">
+                  <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
+                  <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-white px-3 py-3 text-left shadow-[0_4px_14px_#3a82e40d]">
+                    {m.ready ? <ChatCard kind={m.kind} onAsk={(q) => ask(q)} /> : <TypingDots />}
+                  </div>
+                </div>
               ) : (
                 <div className="flex gap-2">
                   <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
@@ -446,7 +470,7 @@ export function AiChatScreen({
               )
 
             if (!sharing) return <li key={m.id}>{content}</li>
-            const selectable = m.role === 'user' || m.answers !== null
+            const selectable = isComplete(m)
             const checked = shareIds.has(m.id)
             return (
               <li key={m.id}>

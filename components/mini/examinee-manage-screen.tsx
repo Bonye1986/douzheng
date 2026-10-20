@@ -1,19 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlertTriangle, PencilLine, Phone, Plus, ShieldCheck, Trash2, UserRound, Users } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, ChevronRight, PencilLine, Phone, Plus, ShieldAlert, ShieldCheck, Trash2, UserRound, Users } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
+import { ExamineeVerifyScreen } from '@/components/mini/examinee-verify-screen'
 import { examineeMeta, initialExaminees, type Examinee } from '@/components/mini/checkout-data'
 import { examineeReportCount, useExaminees } from '@/components/mini/examinee-store'
 import { cn } from '@/lib/utils'
 
-export type ExamineeView = 'list' | 'add' | 'edit' | 'delete' | 'empty'
+export type ExamineeView = 'list' | 'add' | 'edit' | 'edit-self' | 'delete' | 'empty' | 'unverified' | 'verify'
 
 const MAX_EXAMINEES = 10
 
 const activeOrderIds = new Set(['spouse'])
 const reportCount = examineeReportCount
+const unverifiedList = initialExaminees.map((m) => (m.relation === '本人' ? { ...m, idCard: undefined } : m))
 
 type Props = {
   onBack: () => void
@@ -21,10 +23,19 @@ type Props = {
 }
 
 export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
-  const [list, setList] = useExaminees(initialView === 'empty' ? [] : undefined)
-  const [form, setForm] = useState<{ target?: Examinee } | null>(
-    initialView === 'add' ? {} : initialView === 'edit' ? { target: initialExaminees[1] } : null,
+  const [list, setList] = useExaminees(
+    initialView === 'empty' ? [] : initialView === 'unverified' || initialView === 'verify' ? unverifiedList : undefined,
   )
+  const [form, setForm] = useState<{ target?: Examinee } | null>(
+    initialView === 'add'
+      ? {}
+      : initialView === 'edit'
+        ? { target: initialExaminees[1] }
+        : initialView === 'edit-self'
+          ? { target: initialExaminees[0] }
+          : null,
+  )
+  const [verifying, setVerifying] = useState(initialView === 'verify')
   const [pendingDelete, setPendingDelete] = useState<Examinee | null>(
     initialView === 'delete' ? initialExaminees[2] : null,
   )
@@ -58,6 +69,13 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
     setToast('已删除')
   }
 
+  const verified = (e: Examinee) => {
+    setList((l) => l.map((m) => (m.id === e.id ? e : m)))
+    setVerifying(false)
+    setToast('实名认证成功')
+  }
+  const selfMember = list.find((m) => m.relation === '本人')
+
   const blocked = pendingDelete && (pendingDelete.relation === '本人' || activeOrderIds.has(pendingDelete.id))
 
   return (
@@ -73,6 +91,26 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               </span>
               <span>下单时可直接选择</span>
             </p>
+
+            {selfMember && !selfMember.idCard && (
+              <button
+                type="button"
+                onClick={() => setVerifying(true)}
+                className="mt-2 flex w-full items-center gap-2.5 rounded-2xl bg-warning-soft px-3.5 py-3 text-left"
+              >
+                <ShieldAlert className="size-5 shrink-0 text-warning" aria-hidden="true" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-body font-semibold text-foreground">本人尚未实名认证</span>
+                  <span className="mt-0.5 block text-caption text-muted-foreground">
+                    认证后可签署科研同意书、查看完整报告
+                  </span>
+                </span>
+                <span className="flex shrink-0 items-center text-caption font-medium text-warning">
+                  去认证
+                  <ChevronRight className="size-3.5" aria-hidden="true" />
+                </span>
+              </button>
+            )}
 
             <ul className="mt-2 flex flex-col gap-2.5">
               {list.map((m) => (
@@ -117,28 +155,42 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
 
                   <div className="mt-3 flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-caption text-muted-foreground">
-                      {m.relation === '本人' && (
-                        <span
-                          className={cn(
-                            'rounded px-1.5 py-px',
-                            m.idCard ? 'bg-[#e8f7ef] text-[#1f9d55]' : 'bg-[#fff1eb] text-destructive',
-                          )}
-                        >
-                          {m.idCard ? '已实名' : '未实名'}
-                        </span>
+                      {m.relation === '本人' &&
+                        (m.idCard ? (
+                          <span className="flex items-center gap-0.5 rounded bg-[#e8f7ef] px-1.5 py-px text-[#1f9d55]">
+                            <BadgeCheck className="size-3" aria-hidden="true" />
+                            已认证
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setVerifying(true)}
+                            className="flex items-center gap-0.5 rounded bg-warning-soft px-1.5 py-px text-warning"
+                          >
+                            未认证 · 去认证
+                            <ChevronRight className="size-3" aria-hidden="true" />
+                          </button>
+                        ))}
+                      {activeOrderIds.has(m.id) && (
+                        <span className="rounded bg-secondary px-1.5 py-px text-primary">进行中订单</span>
                       )}
-                      {activeOrderIds.has(m.id) && '有进行中的检测订单'}
                     </span>
                     <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setPendingDelete(m)}
-                        className="flex h-7 items-center gap-1 rounded-full border border-border px-3 text-caption text-foreground"
-                        aria-label={`删除检测人 ${m.name}`}
-                      >
-                        <Trash2 className="size-3.5" aria-hidden="true" />
-                        删除
-                      </button>
+                      {m.relation !== '本人' && (
+                        <button
+                          type="button"
+                          onClick={() => setPendingDelete(m)}
+                          aria-disabled={activeOrderIds.has(m.id)}
+                          className={cn(
+                            'flex h-7 items-center gap-1 rounded-full border px-3 text-caption',
+                            activeOrderIds.has(m.id) ? 'border-border text-faint' : 'border-border text-foreground',
+                          )}
+                          aria-label={`删除检测人 ${m.name}`}
+                        >
+                          <Trash2 className="size-3.5" aria-hidden="true" />
+                          删除
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => setForm({ target: m })}
@@ -202,7 +254,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               {pendingDelete.relation === '本人'
                 ? '「本人」为账号持有人，不可删除，可通过编辑修改信息。'
                 : blocked
-                  ? '该检测人有进行中的检测订单，请在订单完成或取消后再删除。'
+                  ? '该检测人有进行中的检测订单，暂不可删除，可通过「编辑」修改信息；订单完成或取消后可删除。'
                   : '删除后下单时将无法选择该检测人，已出具的报告仍可在「我的报告」中查看。'}
             </p>
             {blocked ? (
@@ -242,6 +294,10 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
           onBack={() => setForm(null)}
           onSave={save}
         />
+      )}
+
+      {verifying && selfMember && (
+        <ExamineeVerifyScreen self={selfMember} onBack={() => setVerifying(false)} onVerified={verified} />
       )}
 
       {toast && (

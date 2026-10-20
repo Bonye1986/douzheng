@@ -1,7 +1,9 @@
 'use client'
 
-import { Building2, Clock, House, MapPin, UserRound } from 'lucide-react'
+import { useState } from 'react'
+import { Building2, ChevronUp, Clock, House, MapPin, UserRound } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
+import { cn } from '@/lib/utils'
 
 type MemberGroup = {
   id: string
@@ -20,6 +22,10 @@ type Props = {
   couponOff: number
   /** 优惠来自合并支付的优惠券，按金额比例分摊到本订单 */
   couponShared?: boolean
+  /** 使用的优惠券名称，如「满 1000 减 100」 */
+  couponName?: string
+  /** 合并支付时该券的总抵扣金额 */
+  couponTotal?: number
   /** 合并支付单号，拆单后的子订单展示 */
   parentOrderNo?: string
   payable: number
@@ -36,6 +42,61 @@ type Props = {
 
 const yuan = (n: number) => `¥${n.toLocaleString('zh-CN', { maximumFractionDigits: 2 })}`
 
+function CouponRow({
+  couponOff,
+  couponName,
+  couponTotal,
+}: {
+  couponOff: number
+  couponName?: string
+  couponTotal?: number
+}) {
+  const [open, setOpen] = useState(true)
+  if (couponOff <= 0 || !couponName) {
+    return (
+      <div className="flex justify-between">
+        <dt className="text-muted-foreground">优惠券</dt>
+        <dd className="tabular-nums text-destructive">{couponOff > 0 ? `-${yuan(couponOff)}` : '未使用'}</dd>
+      </div>
+    )
+  }
+  return (
+    <div>
+      <div className="flex justify-between">
+        <dt className="text-muted-foreground">优惠券</dt>
+        <dd>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="od-coupon-detail"
+            className="flex items-center gap-0.5 font-medium tabular-nums text-destructive"
+          >
+            -{yuan(couponOff)}
+            <ChevronUp
+              className={cn('size-3.5 text-muted-foreground transition-transform', !open && 'rotate-180')}
+              aria-hidden="true"
+            />
+          </button>
+        </dd>
+      </div>
+      {open && (
+        <dd id="od-coupon-detail" className="mt-1.5 rounded-lg bg-background px-2.5 py-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="min-w-0 truncate text-foreground">{couponName}</span>
+            <span className="shrink-0 tabular-nums text-muted-foreground">本单 -{yuan(couponOff)}</span>
+          </div>
+          {couponTotal != null && couponTotal > couponOff && (
+            <p className="mt-1 leading-4 text-muted-foreground">
+              合并支付共抵扣 {yuan(couponTotal)}，按各子订单商品金额比例分摊，退款时按本单实付金额退回
+            </p>
+          )}
+        </dd>
+      )}
+    </div>
+  )
+}
+
 export function OrderDetailScreen({
   orderNo,
   payTime,
@@ -45,7 +106,8 @@ export function OrderDetailScreen({
   groups,
   goodsTotal,
   couponOff,
-  couponShared = false,
+  couponName,
+  couponTotal,
   parentOrderNo,
   payable,
   status: statusProp,
@@ -161,15 +223,7 @@ export function OrderDetailScreen({
                 </div>
               </>
             ) : (
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">{couponShared ? '优惠券（分摊）' : '优惠券'}</dt>
-                <dd className="tabular-nums text-destructive">{couponOff > 0 ? `-${yuan(couponOff)}` : '未使用'}</dd>
-              </div>
-            )}
-            {couponShared && couponOff > 0 && (
-              <p className="rounded-lg bg-background px-2.5 py-1.5 text-caption leading-4 text-muted-foreground">
-                合并支付使用的优惠券已按各子订单商品金额比例分摊，退款时按本订单实付金额退回
-              </p>
+              <CouponRow couponOff={couponOff} couponName={couponName} couponTotal={couponTotal} />
             )}
             <div className="flex items-baseline justify-between pt-1">
               <dt className="text-note text-foreground">{isPaid ? '实付款' : '需付款'}</dt>

@@ -1,22 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { FileCheck2, Info, Lock, ShieldCheck } from 'lucide-react'
+import { Info, Lock, ShieldCheck } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import {
   initialExaminees,
   initialResearchAuths,
   researchStatusLabel,
-  testConsents,
   type ResearchAuth,
   type ResearchStatus,
 } from '@/components/mini/checkout-data'
 import { testServices } from '@/components/mini/tests-data'
 import { ResearchSignFlow, type SignAction } from '@/components/mini/research-sign-flow'
-import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
 import { cn } from '@/lib/utils'
-
-type Tab = 'test' | 'research'
 
 const statusStyle: Record<ResearchStatus, string> = {
   signed: 'bg-[#e6f7ef] text-success',
@@ -35,18 +31,21 @@ const now = () => {
 
 export function AuthorizationScreen({
   onBack,
-  initialTab = 'test',
   empty = false,
+  initialFlow,
 }: {
   onBack: () => void
-  initialTab?: Tab
   empty?: boolean
+  initialFlow?: SignAction
 }) {
-  const [tab, setTab] = useState<Tab>(initialTab)
   const [auths, setAuths] = useState<ResearchAuth[]>(empty ? [] : initialResearchAuths)
-  const consents = empty ? [] : testConsents
-  const [pending, setPending] = useState<{ auth: ResearchAuth; action: SignAction } | null>(null)
-  const [viewingSignedAt, setViewingSignedAt] = useState<string | null>(null)
+  const [pending, setPending] = useState<{ auth: ResearchAuth; action: SignAction } | null>(() => {
+    if (!initialFlow || empty) return null
+    const target = initialResearchAuths.find((a) =>
+      initialFlow === 'sign' ? a.status === 'unsigned' : a.status === 'signed',
+    )
+    return target ? { auth: target, action: initialFlow } : null
+  })
 
   const finish = () => {
     if (!pending) return
@@ -55,63 +54,13 @@ export function AuthorizationScreen({
     setPending(null)
   }
 
-  const tabs: { id: Tab; label: string; tag: string }[] = [
-    { id: 'test', label: '检测知情同意书', tag: '必签' },
-    { id: 'research', label: '科研知情同意书', tag: '自愿' },
-  ]
-
   return (
     <SubPage title="授权与同意书" titleId="auth-title" onBack={onBack}>
-      <div role="tablist" aria-label="同意书类型" className="flex shrink-0 bg-white px-3">
-        {tabs.map((t) => {
-          const on = tab === t.id
-          return (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={on}
-              aria-controls={`auth-panel-${t.id}`}
-              onClick={() => setTab(t.id)}
-              className={cn(
-                'relative flex h-11 flex-1 items-center justify-center gap-1 text-body',
-                on ? 'font-semibold text-foreground' : 'text-muted-foreground',
-              )}
-            >
-              {t.label}
-              <span
-                className={cn(
-                  'rounded px-1 text-tag font-normal',
-                  t.id === 'test' ? 'bg-[#e8f0fd] text-primary' : 'bg-secondary text-muted-foreground',
-                )}
-              >
-                {t.tag}
-              </span>
-              {on && <span aria-hidden="true" className="absolute bottom-0 h-[3px] w-6 rounded-full bg-primary" />}
-            </button>
-          )
-        })}
-      </div>
-
-      <div
-        id={`auth-panel-${tab}`}
-        role="tabpanel"
-        className="flex flex-1 flex-col overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]"
-      >
-        {tab === 'test' ? (
-          consents.length === 0 ? (
-            <ConsentEmptyState
-              title="暂无检测知情同意书"
-              desc="下单检测时阅读并同意《基因检测知情同意书》后，签署记录将按订单存档在这里"
-            />
-          ) : (
-            <TestConsentPanel consents={consents} onView={setViewingSignedAt} />
-          )
-        ) : auths.length === 0 ? (
+      <div className="flex flex-1 flex-col overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]">
+        {auths.length === 0 ? (
           <ConsentEmptyState
             title="暂无科研知情同意书"
             desc="下单时可自愿勾选科研授权，勾选后的签署 / 撤销记录将按订单在这里展示；不授权不影响检测与报告"
-            research
           />
         ) : (
           <ResearchPanel auths={auths} onAction={(auth, action) => setPending({ auth, action })} />
@@ -128,16 +77,12 @@ export function AuthorizationScreen({
           onDone={finish}
         />
       )}
-
-      {viewingSignedAt && (
-        <ConsentReaderScreen readOnly signedAt={viewingSignedAt} onBack={() => setViewingSignedAt(null)} />
-      )}
     </SubPage>
   )
 }
 
-function ConsentEmptyState({ title, desc, research }: { title: string; desc: string; research?: boolean }) {
-  const Icon = research ? ShieldCheck : FileCheck2
+function ConsentEmptyState({ title, desc }: { title: string; desc: string }) {
+  const Icon = ShieldCheck
   return (
     <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
       <span className="relative flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
@@ -149,54 +94,6 @@ function ConsentEmptyState({ title, desc, research }: { title: string; desc: str
       <h2 className="mt-5 text-title font-semibold text-foreground">{title}</h2>
       <p className="mt-1.5 text-note leading-5 text-muted-foreground">{desc}</p>
     </div>
-  )
-}
-
-function TestConsentPanel({
-  consents,
-  onView,
-}: {
-  consents: typeof testConsents
-  onView: (signedAt: string) => void
-}) {
-  return (
-    <>
-      <section className="flex items-start gap-2 rounded-2xl bg-[#e8f0fd] px-3.5 py-3 text-caption leading-5 text-[#2f5fb3]">
-        <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-        <p>每个订单下单前须阅读并同意《基因检测知情同意书》，签署后作为检测依据存档，不可撤回</p>
-      </section>
-
-      <ul className="mt-2.5 flex flex-col gap-2.5">
-        {consents.map((c) => (
-          <li key={c.orderNo} className="rounded-2xl bg-white p-3.5">
-            <div className="flex items-center gap-2">
-              <FileCheck2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
-              <p className="min-w-0 flex-1 text-body font-semibold text-foreground">基因检测知情同意书</p>
-              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-caption text-success">已签署</span>
-            </div>
-            <dl className="mt-2.5 flex flex-col gap-1.5 text-caption leading-[18px]">
-              <Row label="订单号" value={c.orderNo} mono />
-              <Row label="检测项目" value={c.serviceIds.map(serviceName).join('、')} />
-              <Row label="受检人" value={c.memberIds.map(memberName).join('、')} />
-              <Row label="签署时间" value={c.signedAt} mono />
-            </dl>
-            <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5">
-              <span className="flex items-center gap-1 text-caption text-faint">
-                <Lock className="size-3" aria-hidden="true" />
-                不可撤回
-              </span>
-              <button
-                type="button"
-                onClick={() => onView(c.signedAt)}
-                className="h-7 rounded-full border border-border px-3 text-caption text-foreground"
-              >
-                查看同意书
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </>
   )
 }
 
@@ -229,7 +126,7 @@ function ResearchPanel({
           </p>
         </div>
         <p className="mt-1 text-caption leading-4 opacity-80">
-          按订单 × 检测项目 × 受检人分别授权；签署与撤销均需通过 e签宝 人脸核验
+          按订单 × 检测项目 × 受检人分别授权；签署需手写签名并通过 e签宝 人脸核验，撤销仅需手写签名
         </p>
       </section>
 

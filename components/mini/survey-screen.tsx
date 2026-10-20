@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, CheckCircle2, ClipboardList, Clock, TriangleAlert, Users } from 'lucide-react'
+import { Check, ClipboardList, Clock, TriangleAlert, Users } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import type { Survey, SurveyQuestion } from '@/components/mini/services-data'
 import { cn } from '@/lib/utils'
@@ -98,58 +98,6 @@ function QuestionCard({
   )
 }
 
-function SurveyResult({ survey, answers }: { survey: Survey; answers: SurveyAnswers }) {
-  const choiceQuestions = survey.questions.filter((q) => q.kind !== 'text')
-
-  return (
-    <div className="flex-1 overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
-      <div className="flex flex-col items-center rounded-2xl bg-white px-4 py-6 text-center" aria-live="polite">
-        <CheckCircle2 className="size-12 text-success" aria-hidden="true" />
-        <p className="mt-2 text-heading font-semibold text-foreground">提交成功，感谢参与</p>
-        <p className="mt-1 text-caption text-muted-foreground">
-          您是第 <span className="tabular-nums text-primary">{survey.participants}</span> 位参与者
-        </p>
-      </div>
-
-      <h2 className="mb-2 mt-4 px-1 text-title font-semibold text-foreground">大家的选择</h2>
-      <div className="flex flex-col gap-2.5">
-        {choiceQuestions.map((q, i) => {
-          const mine = answers[q.id]
-          return (
-            <section key={q.id} aria-label={q.title} className="rounded-2xl bg-white p-4">
-              <p className="text-note font-medium leading-snug text-foreground">
-                {i + 1}. {q.title}
-              </p>
-              <ul className="mt-3 flex flex-col gap-2.5">
-                {q.options?.map((o) => {
-                  const isMine = Array.isArray(mine) && mine.includes(o.id)
-                  return (
-                    <li key={o.id}>
-                      <div className="flex items-center justify-between text-caption">
-                        <span className={cn(isMine ? 'font-medium text-primary' : 'text-foreground')}>
-                          {o.text}
-                          {isMine && <span className="ml-1 text-tag">（我的选择）</span>}
-                        </span>
-                        <span className="tabular-nums text-muted-foreground">{o.percent}%</span>
-                      </div>
-                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#eef2f8]" aria-hidden="true">
-                        <div
-                          className={cn('h-full rounded-full', isMine ? 'bg-primary' : 'bg-[#b9cdee]')}
-                          style={{ width: `${o.percent}%` }}
-                        />
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
-            </section>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 function LeaveSurveyDialog({ onStay, onLeave }: { onStay: () => void; onLeave: () => void }) {
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/45 px-8">
@@ -196,17 +144,14 @@ function LeaveSurveyDialog({ onStay, onLeave }: { onStay: () => void; onLeave: (
 
 export function SurveyScreen({
   survey,
-  initialAnswers,
   onBack,
   onSubmit,
 }: {
   survey: Survey
-  initialAnswers?: SurveyAnswers
   onBack: () => void
   onSubmit: (answers: SurveyAnswers) => void
 }) {
-  const [answers, setAnswers] = useState<SurveyAnswers>(initialAnswers ?? {})
-  const [submitted, setSubmitted] = useState(Boolean(initialAnswers))
+  const [answers, setAnswers] = useState<SurveyAnswers>({})
 
   const required = survey.questions.filter((q) => !q.optional)
   const done = required.filter((q) => isAnswered(q, answers[q.id])).length
@@ -216,17 +161,13 @@ export function SurveyScreen({
   const hasDraft = Object.values(answers).some((v) => (Array.isArray(v) ? v.length > 0 : v.trim() !== ''))
 
   const handleBack = () => {
-    if (!submitted && hasDraft) setConfirmLeave(true)
+    if (hasDraft) setConfirmLeave(true)
     else onBack()
   }
 
   return (
-    <SubPage title={submitted ? '问卷结果' : '问卷调查'} titleId="survey-title" onBack={handleBack}>
+    <SubPage title="问卷调查" titleId="survey-title" onBack={handleBack}>
       {confirmLeave && <LeaveSurveyDialog onStay={() => setConfirmLeave(false)} onLeave={onBack} />}
-      {submitted ? (
-        <SurveyResult survey={survey} answers={answers} />
-      ) : (
-        <>
           <div className="flex-1 overflow-y-auto px-3 pb-4 pt-3 [scrollbar-width:none]">
             <header className="rounded-2xl bg-gradient-to-br from-[#3f7ee8] to-[#5b9bf5] p-4 text-white">
               <p className="flex items-center gap-1.5 text-title font-semibold">
@@ -273,17 +214,12 @@ export function SurveyScreen({
             <button
               type="button"
               disabled={remaining > 0}
-              onClick={() => {
-                setSubmitted(true)
-                onSubmit(answers)
-              }}
+              onClick={() => onSubmit(answers)}
               className="flex h-10 w-full items-center justify-center rounded-full bg-primary text-body font-medium text-primary-foreground transition-opacity disabled:opacity-45"
             >
               {remaining > 0 ? `还有 ${remaining} 题未作答` : '提交问卷'}
             </button>
           </div>
-        </>
-      )}
     </SubPage>
   )
 }

@@ -85,44 +85,10 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
                         <TypeIcon className="size-4.5" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block pr-14 text-body font-medium leading-5 text-foreground">{s.name}</span>
-                        <span className="mt-1 flex flex-wrap items-center gap-1">
-                          <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
-                            {siteTypeLabel[s.type]}
-                          </span>
-                          <span
-                            className={cn(
-                              'rounded px-1.5 py-px text-tag',
-                              s.todayAvailable ? 'bg-success-soft text-success' : 'bg-[#fff7ec] text-[#c27a1a]',
-                            )}
-                          >
-                            {s.todayAvailable ? '今日可采' : '明日起可约'}
-                          </span>
+                        <span className="block text-body font-medium leading-5 text-foreground">{s.name}</span>
+                        <span className="mt-1 block text-caption tabular-nums text-muted-foreground">
+                          距您 {s.distance} km
                         </span>
-                      </span>
-                    </span>
-                    <span className="absolute right-3.5 top-3.5 text-caption font-medium tabular-nums text-foreground">
-                      {s.distance} km
-                    </span>
-
-                    <span className="mt-2.5 flex flex-col gap-1 border-t border-border pt-2.5 text-caption leading-[18px] text-muted-foreground">
-                      <span className="flex items-start gap-1.5">
-                        <MapPin className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                        {s.district} {s.detail}
-                      </span>
-                      <span className="flex items-start gap-1.5">
-                        <Clock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                        {s.time}
-                      </span>
-                    </span>
-
-                    <span className="mt-2.5 flex items-center gap-2">
-                      <span className="min-w-0 flex-1 truncate text-caption text-muted-foreground">
-                        可采：{sampleLabels.join(' / ')}
-                      </span>
-                      <span className="flex shrink-0 items-center gap-0.5 text-caption text-primary">
-                        <Navigation className="size-3" aria-hidden="true" />
-                        导航
                       </span>
                       <span
                         aria-hidden="true"
@@ -133,6 +99,23 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
                       >
                         {active && <Check className="size-3" strokeWidth={3} />}
                         {active ? '已选择' : '选择'}
+                      </span>
+                    </span>
+
+                    <span className="mt-2.5 flex flex-col gap-1 border-t border-border pt-2.5 text-caption leading-[18px] text-muted-foreground">
+                      <span className="flex items-start gap-1.5">
+                        <MapPin className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+                        <span className="min-w-0 flex-1">
+                          {s.district} {s.detail}
+                        </span>
+                        <span className="flex shrink-0 items-center gap-0.5 text-primary">
+                          <Navigation className="size-3" aria-hidden="true" />
+                          导航
+                        </span>
+                      </span>
+                      <span className="flex items-start gap-1.5">
+                        <Clock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+                        {s.time}
                       </span>
                     </span>
                   </button>

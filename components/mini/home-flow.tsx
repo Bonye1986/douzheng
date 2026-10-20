@@ -17,7 +17,6 @@ import { LoginRequiredDialog } from '@/components/mini/login-required-dialog'
 import { KnowledgeScreen, type ArticleKind } from '@/components/mini/knowledge-screen'
 import type { SurveyAnswers } from '@/components/mini/survey-screen'
 import {
-  reportChatQuestion,
   serviceCategories,
   type ServiceCategoryId,
 } from '@/components/mini/services-data'
@@ -100,7 +99,7 @@ export function HomeFlow({
       return
     }
     if (id === 'tests') openTests()
-    else if (id === 'report') openChat(reportChatQuestion)
+    else if (id === 'knowledge') setKnowledgeEntry({ key: Date.now(), kind: 'knowledge' })
     else if (id === 'health') setSubPage('examinee')
     else if (id === 'remind') setSubPage('reminder')
   }

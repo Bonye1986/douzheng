@@ -196,6 +196,8 @@ function OrderDetailFromList({
       goodsTotal={goodsTotal}
       couponOff={order.priceChanged ? 0 : Math.max(Math.round((goodsTotal - payable) * 100) / 100, 0)}
       couponShared={Boolean(order.parentId && order.couponShare)}
+      couponName={order.parentId && order.couponShare ? couponTitle(splitParents[order.type].coupon) : undefined}
+      couponTotal={order.parentId && order.couponShare ? splitParents[order.type].coupon : undefined}
       parentOrderNo={order.parentId}
       payable={payable}
       actions={actions}
@@ -433,7 +435,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'toSample',
     status: '待寄样',
     refund: 'testing',
-    notes: ['机构已完成采样，将由机构统一寄送至实验室'],
+    notes: ['机构已完成采���，将由机构统一寄送至实验室'],
   },
   {
     type: 'site',
@@ -477,6 +479,8 @@ const seedProducts: { name: string; price: number }[] = [
   { name: '儿童安全用药基因检测', price: 699 },
 ]
 const seedExaminees = ['王建国', '李秀兰', '张伟', '刘芳', '陈静']
+
+const couponTitle = (amount: number) => `满 ${amount * 10} 减 ${amount}`
 
 const splitParents: Record<Order['type'], { id: string; coupon: number }> = {
   self: { id: 'JY20261012283615', coupon: 100 },

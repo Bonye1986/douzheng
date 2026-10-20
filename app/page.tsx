@@ -80,24 +80,6 @@ const screens = [
     node: <HomeFlow initialTab="service" initialQuiz="q1" initialSurvey />,
   },
   {
-    id: '09-survey-result',
-    title: '互动问答 · 问卷结果',
-    desc: '提交后的结果页：提交成功提示，各题「大家的选择」百分比统计，并高亮我的选项',
-    node: (
-      <HomeFlow
-        initialTab="service"
-        initialQuiz="q1"
-        initialSurvey
-        initialSurveyAnswers={{
-          'q1-1': 'b',
-          'q1-2': 'a',
-          'q1-3': ['a', 'c'],
-          'q1-4': '降压药可以和保健品一起吃吗？',
-        }}
-      />
-    ),
-  },
-  {
     id: '10',
     title: '检测',
     desc: '检测服务列表：顶部搜索栏（支持项目 / 药物 / 基因关键词）与购物车，分类筛选；点击服务进入详情，「+」快速加购（可在画板内交互）',
@@ -167,7 +149,7 @@ const screens = [
   {
     id: '18-guest',
     title: '我的 · 未登录',
-    desc: '未登录时展示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及检测人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
+    desc: '未登录时展示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及检测人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系���服无需登录（可在画板内交互）',
     node: <HomeFlow initialTab="me" loggedIn={false} />,
   },
   {
@@ -209,13 +191,31 @@ const screens = [
   {
     id: '26',
     title: '检测人管理 · 编辑检测人',
-    desc: '回填已有信息，可修改后保存；本人的关系不可修改，已脱敏的手机号 / 身份证号不修改时原样保留',
+    desc: '回填已有信息，可修改后保存；有进行中订单的检测人同样可编辑；已脱敏的手机号不修改时原样保留',
     node: <MineScreen initialExamineeView="edit" />,
+  },
+  {
+    id: '26-self',
+    title: '检测人管理 · 编辑本人（已认证）',
+    desc: '本人完成实名认证后，姓名、性别、出生日期、身份证号显示锁形图标且不可修改，顶部提示已锁定原因，仅手机号可修改',
+    node: <MineScreen initialExamineeView="edit-self" />,
+  },
+  {
+    id: '24-unverified',
+    title: '检测人管理 · 本人未认证',
+    desc: '本人未完成实名认证时，列表顶部展示认证提示条，本人卡片显示「未认证 · 去认证」，点击任一入口进入实名认证页',
+    node: <MineScreen initialExamineeView="unverified" />,
+  },
+  {
+    id: '24-verify',
+    title: '检测人管理 · 本人实名认证',
+    desc: '回填本人姓名，填写身份证号并勾选授权后，经 e签宝人脸核验完成实名；认证成功返回列表，本人信息随即锁定',
+    node: <MineScreen initialExamineeView="verify" />,
   },
   {
     id: '27',
     title: '检测人管理 · 删除检测人',
-    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除，弹窗提示原因',
+    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的检测人不可删除（卡片删除按钮置灰），弹窗提示原因并引导使用「编辑」',
     node: <MineScreen initialExamineeView="delete" />,
   },
   {
@@ -328,27 +328,27 @@ const screens = [
   },
   {
     id: '16',
-    title: '授权与同意书 · 检测知情同意书',
-    desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
+    title: '授权与同意书 · 科研知情同意书',
+    desc: '仅展示科研知情同意书：顶部统计已授权 / 待签署数量，按订单 × 检测项目 × 受检人列出状态（待签署 / 已授权 / 已撤回），可去签署、撤销授权或重新签署（可在画板内交互）',
     node: <MineScreen initialAuthOpen />,
   },
   {
-    id: '16-empty',
-    title: '授权与同意书 · 检测知情同意书 · 空状态',
-    desc: '尚未下单检测时，检测知情同意书页签展示空状态插图与说明：下单时阅读并同意后签署记录将按订单存档（可在画板内交互）',
-    node: <MineScreen initialAuthOpen initialAuthEmpty />,
-  },
-  {
     id: '34',
-    title: '授权与同意书 · 科研知情同意书',
-    desc: '科研知情同意书签署 / 撤销流程：阅读文书 → e签宝 人脸核验 → 签署完成；已授权可签署《科研知情同意撤销书》撤回授权（可在画板内交互）',
-    node: <MineScreen initialAuthOpen initialAuthTab="research" />,
+    title: '科研知情同意书 · 签署页',
+    desc: '全屏签署页：受检人 / 项目 / 订单信息、同意书正文、手写签名区（可重写）与同意勾选；签名并勾选后「确认签署」唤起 e签宝 实名人脸核验（无步骤进度条），核验通过后展示签署成功（可在画板内交互）',
+    node: <MineScreen initialAuthOpen initialAuthFlow="sign" />,
   },
   {
-    id: '34-empty',
-    title: '授权与同意书 · 科研知情同意书 · 空状态',
-    desc: '未勾选任何科研授权时，科研知情同意书页签展示空状态插图与说明：科研授权为自愿，不影响检测与报告（可在画板内交互）',
-    node: <MineScreen initialAuthOpen initialAuthTab="research" initialAuthEmpty />,
+    id: '34-withdraw',
+    title: '科研知情同意书 · 撤销页',
+    desc: '全屏撤销页：展示《科研知情同意撤销书》正文、手写签名区与同意勾选；「确认撤销」无需人脸核验，提交后即刻生效并展示撤销成功（可在画板内交互）',
+    node: <MineScreen initialAuthOpen initialAuthFlow="withdraw" />,
+  },
+  {
+    id: '16-empty',
+    title: '授权与同意书 · 空状态',
+    desc: '未勾选任何科研授权时展示空状态插图与说明：科研授权为自愿，不影响检测与报告（可在画板内交互）',
+    node: <MineScreen initialAuthOpen initialAuthEmpty />,
   },
   {
     id: '19',
@@ -477,6 +477,24 @@ const screens = [
     node: <AiChatScreen initialMode="pro" initialTesteeId="self" initialQuestion="我能正常使用氯吡格雷吗？" />,
   },
   {
+    id: '08-r',
+    title: 'AI咨询 · 我的报告',
+    desc: '识别「我的报告」意图，以卡片列出各检测人报告状态，已出报告可一键发起 AI 解读',
+    node: <AiChatScreen initialTesteeId="self" initialQuestion="查看我的报告" />,
+  },
+  {
+    id: '08-o',
+    title: 'AI咨询 · 我的订单',
+    desc: '识别订单查询意图，卡片展示进行中订单的状态、金额与当前进度',
+    node: <AiChatScreen initialTesteeId="self" initialQuestion="我的订单进度" />,
+  },
+  {
+    id: '08-v',
+    title: 'AI咨询 · 推荐检测服务',
+    desc: '推荐卡片附带检测项目（基因位点、覆盖药物数）、价格与推荐理由',
+    node: <AiChatScreen initialTesteeId="self" initialQuestion="推荐适合我的检测服务" />,
+  },
+  {
     id: '06',
     title: 'AI咨询 · 历史对话抽屉',
     desc: '左侧滑出抽屉，可搜索、新建、切换会话，「…」菜单内修改名称或删除会话（删除需二次确认）（可在画板内交互）',
@@ -490,9 +508,9 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'home',
     title: '首页与AI咨询',
     summary: 'AI 对话入口与预设问题，通俗 / 专业版切换，关联检测人后的个性化用药解答',
-    ids: ['04', '05', '06', '07', '08'],
+    ids: ['04', '05', '06', '07', '08', '08-r', '08-o', '08-v'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey', '09-survey-result'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
   {
     key: 'order',
     title: '检测下单',
@@ -533,14 +551,14 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'consent',
     title: '授权与同意书',
-    summary: '检测知情同意书存档，科研知情同意书签署 / 撤销（e签宝人脸核验）',
-    ids: ['16', '16-empty', '34', '34-empty'],
+    summary: '科研知情同意书列表、签署页（手写签名 + e签宝人脸核验）、撤销页（手写签名，免核验）与空状态',
+    ids: ['16', '34', '34-withdraw', '16-empty'],
   },
   {
     key: 'examinee',
     title: '检测人管理',
-    summary: '检测人列表、添加 / 编辑 / 删除检测人与空状态',
-    ids: ['24', '25', '26', '27', '28'],
+    summary: '检测人列表、本人实名认证、添加 / 编辑 / 删除检测人与空状态',
+    ids: ['24', '24-unverified', '24-verify', '25', '26', '26-self', '27', '28'],
   },
   {
     key: 'address',
