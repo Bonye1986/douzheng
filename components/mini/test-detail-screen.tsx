@@ -169,6 +169,15 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
           <CartButton count={cartCount} onClick={onOpenCart} className="size-7 active:bg-transparent [&>img]:size-7" />
           <span aria-hidden="true">购物车</span>
         </div>
+        {service.offShelf ? (
+          <button
+            type="button"
+            disabled
+            className="ml-1 h-10 flex-1 rounded-full bg-muted text-body font-medium text-faint"
+          >
+            该项目已下架
+          </button>
+        ) : (
         <div className="ml-1 flex h-10 flex-1 overflow-hidden rounded-full">
           <button
             type="button"
@@ -185,6 +194,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
             立即购买
           </button>
         </div>
+        )}
       </div>
     </div>
   )

@@ -213,7 +213,7 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
 const RECOMMENDED_COUNT = 4
 
 function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTest' | 'onViewAllTests'>) {
-  const items = testServices.slice(0, RECOMMENDED_COUNT)
+  const items = testServices.filter((s) => !s.offShelf).slice(0, RECOMMENDED_COUNT)
   return (
     <section aria-labelledby="rec-tests">
       <div className="px-1">
