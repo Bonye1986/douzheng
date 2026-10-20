@@ -106,6 +106,7 @@ export function AiChatScreen({
   initialTesteeId,
   initialQuestion,
   initialSheetOpen = false,
+  initialDrawerOpen = false,
   request,
   active = true,
   onBack,
@@ -114,6 +115,7 @@ export function AiChatScreen({
   initialTesteeId?: string
   initialQuestion?: string
   initialSheetOpen?: boolean
+  initialDrawerOpen?: boolean
   request?: ChatRequest | null
   active?: boolean
   onBack?: () => void
@@ -126,7 +128,7 @@ export function AiChatScreen({
   const setTestee = (t: Testee | null) => setTesteeId(t?.id ?? null)
   const [sheetOpen, setSheetOpen] = useState(initialSheetOpen)
   const [addTesteeOpen, setAddTesteeOpen] = useState(false)
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(initialDrawerOpen)
   const [sessions, setSessions] = useState<Session[]>(() =>
     initialSessions(initialQuestion, initialMode, Boolean(initialTesteeId)),
   )
