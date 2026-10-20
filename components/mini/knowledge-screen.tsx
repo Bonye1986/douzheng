@@ -289,18 +289,23 @@ export function KnowledgeScreen({
   kind = 'knowledge',
   initialArticleId,
   initialSurveyOpen = false,
+  initialSurveyAnswers,
   onBack,
 }: {
   kind?: ArticleKind
   initialArticleId?: string
   /** Opens the article's 问卷 directly (design board entry). */
   initialSurveyOpen?: boolean
+  /** Pre-submitted answers for the initial article, so the 问卷 opens on its 结果 view. */
+  initialSurveyAnswers?: SurveyAnswers
   onBack: () => void
 }) {
   const { items: articles, title } = sources[kind]
   const [articleId, setArticleId] = useState<string | null>(initialArticleId ?? null)
   const [surveyOpen, setSurveyOpen] = useState(initialSurveyOpen)
-  const [answers, setAnswers] = useState<Record<string, SurveyAnswers>>({})
+  const [answers, setAnswers] = useState<Record<string, SurveyAnswers>>(
+    initialArticleId && initialSurveyAnswers ? { [initialArticleId]: initialSurveyAnswers } : {},
+  )
   const article = articles.find((a) => a.id === articleId)
   // Entered straight from an article on 服务, so back should return there instead of the list.
   const enteredFromArticle = Boolean(initialArticleId)

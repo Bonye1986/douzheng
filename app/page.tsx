@@ -80,6 +80,24 @@ const screens = [
     node: <HomeFlow initialTab="service" initialQuiz="q1" initialSurvey />,
   },
   {
+    id: '09-survey-result',
+    title: '互动问答 · 问卷结果',
+    desc: '提交后的结果页：提交成功提示，各题「大家的选择」百分比统计，并高亮我的选项',
+    node: (
+      <HomeFlow
+        initialTab="service"
+        initialQuiz="q1"
+        initialSurvey
+        initialSurveyAnswers={{
+          'q1-1': 'b',
+          'q1-2': 'a',
+          'q1-3': ['a', 'c'],
+          'q1-4': '降压药可以和保健品一起吃吗？',
+        }}
+      />
+    ),
+  },
+  {
     id: '10',
     title: '检测',
     desc: '检测服务列表：顶部搜索栏（支持项目 / 药物 / 基因关键词）与购物车，分类筛选；点击服务进入详情，「+」快速加购（可在画板内交互）',
@@ -303,7 +321,7 @@ const screens = [
   },
   {
     id: '46',
-    title: '账号设置 · 注销账号',
+    title: '账号设置 · 注销���号',
     desc: '注销风险提示、数据清除说明、进行中订单检查、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
     node: <MineScreen initialAccountView="deactivate" />,
   },
@@ -467,7 +485,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     summary: 'AI 对话入口与预设问题，通俗 / 专业版切换，关联检测人后的个性化用药解答',
     ids: ['04', '05', '06', '07', '08'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey', '09-survey-result'] },
   {
     key: 'order',
     title: '检测下单',
