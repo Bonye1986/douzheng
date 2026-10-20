@@ -217,7 +217,7 @@ function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTes
   return (
     <section aria-labelledby="rec-tests">
       <div className="px-1">
-        <SectionHeader id="rec-tests" title="推荐检查" action="全部" onAction={onViewAllTests} />
+        <SectionHeader id="rec-tests" title="推荐检测" action="全部" onAction={onViewAllTests} />
       </div>
       <ul className="grid grid-cols-2 gap-2.5">
         {items.map((t) => (
