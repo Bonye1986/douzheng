@@ -1,0 +1,300 @@
+'use client'
+
+import { useState } from 'react'
+import { FileCheck2, Info, Lock, ShieldCheck } from 'lucide-react'
+import { SubPage } from '@/components/mini/sub-page'
+import {
+  initialExaminees,
+  initialResearchAuths,
+  researchStatusLabel,
+  testConsents,
+  type ResearchAuth,
+  type ResearchStatus,
+} from '@/components/mini/checkout-data'
+import { testServices } from '@/components/mini/tests-data'
+import { ResearchSignFlow, type SignAction } from '@/components/mini/research-sign-flow'
+import { ConsentReaderScreen } from '@/components/mini/consent-reader-screen'
+import { cn } from '@/lib/utils'
+
+type Tab = 'test' | 'research'
+
+const statusStyle: Record<ResearchStatus, string> = {
+  signed: 'bg-[#e6f7ef] text-success',
+  withdrawn: 'bg-secondary text-muted-foreground',
+  unsigned: 'bg-warning-soft text-warning',
+}
+
+const memberName = (id: string) => initialExaminees.find((m) => m.id === id)?.name ?? ''
+const serviceName = (id: string) => testServices.find((s) => s.id === id)?.name ?? ''
+
+const now = () => {
+  const d = new Date()
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
+}
+
+export function AuthorizationScreen({
+  onBack,
+  initialTab = 'test',
+  empty = false,
+}: {
+  onBack: () => void
+  initialTab?: Tab
+  empty?: boolean
+}) {
+  const [tab, setTab] = useState<Tab>(initialTab)
+  const [auths, setAuths] = useState<ResearchAuth[]>(empty ? [] : initialResearchAuths)
+  const consents = empty ? [] : testConsents
+  const [pending, setPending] = useState<{ auth: ResearchAuth; action: SignAction } | null>(null)
+  const [viewingSignedAt, setViewingSignedAt] = useState<string | null>(null)
+
+  const finish = () => {
+    if (!pending) return
+    const status: ResearchStatus = pending.action === 'sign' ? 'signed' : 'withdrawn'
+    setAuths((list) => list.map((a) => (a.id === pending.auth.id ? { ...a, status, updatedAt: now() } : a)))
+    setPending(null)
+  }
+
+  const tabs: { id: Tab; label: string; tag: string }[] = [
+    { id: 'test', label: '检测知情同意书', tag: '必签' },
+    { id: 'research', label: '科研知情同意书', tag: '自愿' },
+  ]
+
+  return (
+    <SubPage title="授权与同意书" titleId="auth-title" onBack={onBack}>
+      <div role="tablist" aria-label="同意书类型" className="flex shrink-0 bg-white px-3">
+        {tabs.map((t) => {
+          const on = tab === t.id
+          return (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              aria-controls={`auth-panel-${t.id}`}
+              onClick={() => setTab(t.id)}
+              className={cn(
+                'relative flex h-11 flex-1 items-center justify-center gap-1 text-body',
+                on ? 'font-semibold text-foreground' : 'text-muted-foreground',
+              )}
+            >
+              {t.label}
+              <span
+                className={cn(
+                  'rounded px-1 text-tag font-normal',
+                  t.id === 'test' ? 'bg-[#e8f0fd] text-primary' : 'bg-secondary text-muted-foreground',
+                )}
+              >
+                {t.tag}
+              </span>
+              {on && <span aria-hidden="true" className="absolute bottom-0 h-[3px] w-6 rounded-full bg-primary" />}
+            </button>
+          )
+        })}
+      </div>
+
+      <div
+        id={`auth-panel-${tab}`}
+        role="tabpanel"
+        className="flex flex-1 flex-col overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]"
+      >
+        {tab === 'test' ? (
+          consents.length === 0 ? (
+            <ConsentEmptyState
+              title="暂无检测知情同意书"
+              desc="下单检测时阅读并同意《基因检测知情同意书》后，签署记录将按订单存档在这里"
+            />
+          ) : (
+            <TestConsentPanel consents={consents} onView={setViewingSignedAt} />
+          )
+        ) : auths.length === 0 ? (
+          <ConsentEmptyState
+            title="暂无科研知情同意书"
+            desc="下单时可自愿勾选科研授权，勾选后的签署 / 撤销记录将按订单在这里展示；不授权不影响检测与报告"
+            research
+          />
+        ) : (
+          <ResearchPanel auths={auths} onAction={(auth, action) => setPending({ auth, action })} />
+        )}
+      </div>
+
+      {pending && (
+        <ResearchSignFlow
+          action={pending.action}
+          memberName={memberName(pending.auth.memberId)}
+          serviceName={serviceName(pending.auth.serviceId)}
+          orderNo={pending.auth.orderNo}
+          onClose={() => setPending(null)}
+          onDone={finish}
+        />
+      )}
+
+      {viewingSignedAt && (
+        <ConsentReaderScreen readOnly signedAt={viewingSignedAt} onBack={() => setViewingSignedAt(null)} />
+      )}
+    </SubPage>
+  )
+}
+
+function ConsentEmptyState({ title, desc, research }: { title: string; desc: string; research?: boolean }) {
+  const Icon = research ? ShieldCheck : FileCheck2
+  return (
+    <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
+      <span className="relative flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
+        <Icon className="size-11 text-primary" strokeWidth={1.4} />
+        <span className="absolute bottom-1 right-1 flex size-7 items-center justify-center rounded-full bg-white shadow-sm">
+          <Lock className="size-4 text-primary" />
+        </span>
+      </span>
+      <h2 className="mt-5 text-title font-semibold text-foreground">{title}</h2>
+      <p className="mt-1.5 text-note leading-5 text-muted-foreground">{desc}</p>
+    </div>
+  )
+}
+
+function TestConsentPanel({
+  consents,
+  onView,
+}: {
+  consents: typeof testConsents
+  onView: (signedAt: string) => void
+}) {
+  return (
+    <>
+      <section className="flex items-start gap-2 rounded-2xl bg-[#e8f0fd] px-3.5 py-3 text-caption leading-5 text-[#2f5fb3]">
+        <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+        <p>每个订单下单前须阅读并同意《基因检测知情同意书》，签署后作为检测依据存档，不可撤回</p>
+      </section>
+
+      <ul className="mt-2.5 flex flex-col gap-2.5">
+        {consents.map((c) => (
+          <li key={c.orderNo} className="rounded-2xl bg-white p-3.5">
+            <div className="flex items-center gap-2">
+              <FileCheck2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
+              <p className="min-w-0 flex-1 text-body font-semibold text-foreground">基因检测知情同意书</p>
+              <span className="shrink-0 rounded bg-[#e6f7ef] px-1.5 py-px text-caption text-success">已签署</span>
+            </div>
+            <dl className="mt-2.5 flex flex-col gap-1.5 text-caption leading-[18px]">
+              <Row label="订单号" value={c.orderNo} mono />
+              <Row label="检测项目" value={c.serviceIds.map(serviceName).join('、')} />
+              <Row label="受检人" value={c.memberIds.map(memberName).join('、')} />
+              <Row label="签署时间" value={c.signedAt} mono />
+            </dl>
+            <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5">
+              <span className="flex items-center gap-1 text-caption text-faint">
+                <Lock className="size-3" aria-hidden="true" />
+                不可撤回
+              </span>
+              <button
+                type="button"
+                onClick={() => onView(c.signedAt)}
+                className="h-7 rounded-full border border-border px-3 text-caption text-foreground"
+              >
+                查看同意书
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
+  )
+}
+
+function ResearchPanel({
+  auths,
+  onAction,
+}: {
+  auths: ResearchAuth[]
+  onAction: (auth: ResearchAuth, action: SignAction) => void
+}) {
+  const signedCount = auths.filter((a) => a.status === 'signed').length
+  const pendingCount = auths.filter((a) => a.status === 'unsigned').length
+  const orders = [...new Set(auths.map((a) => a.orderNo))]
+
+  return (
+    <>
+      <section className="rounded-2xl bg-primary p-4 text-primary-foreground">
+        <p className="flex items-center gap-1.5 text-note opacity-90">
+          <ShieldCheck className="size-4" aria-hidden="true" />
+          科研样本授权
+        </p>
+        <div className="mt-1.5 flex items-end gap-4">
+          <p className="text-headline font-bold tabular-nums">
+            {signedCount}
+            <span className="ml-1 text-caption font-normal opacity-90">已授权</span>
+          </p>
+          <p className="text-headline font-bold tabular-nums">
+            {pendingCount}
+            <span className="ml-1 text-caption font-normal opacity-90">待签署</span>
+          </p>
+        </div>
+        <p className="mt-1 text-caption leading-4 opacity-80">
+          按订单 × 检测项目 × 受检人分别授权；签署与撤销均需通过 e签宝 人脸核验
+        </p>
+      </section>
+
+      {orders.map((orderNo) => {
+        const items = auths.filter((a) => a.orderNo === orderNo)
+        const services = [...new Set(items.map((a) => a.serviceId))]
+        return (
+          <section key={orderNo} aria-label={`订单 ${orderNo}`} className="mt-2.5 rounded-2xl bg-white">
+            <p className="border-b border-border px-3.5 py-2.5 text-caption tabular-nums text-muted-foreground">订单号 {orderNo}</p>
+            {services.map((sid) => (
+              <div key={sid} className="px-3.5 pt-3">
+                <h2 className="text-title font-semibold leading-[18px] text-foreground">{serviceName(sid)}</h2>
+                <ul>
+                  {items
+                    .filter((a) => a.serviceId === sid)
+                    .map((a) => {
+                      const member = initialExaminees.find((m) => m.id === a.memberId)
+                      const signed = a.status === 'signed'
+                      return (
+                        <li key={a.id} className="flex items-center gap-2 border-b border-border py-3 last:border-0">
+                          <div className="min-w-0 flex-1">
+                            <p className="flex items-center gap-1.5 text-note text-foreground">
+                              {member?.name}
+                              <span className="rounded bg-background px-1 text-tag text-muted-foreground">{member?.relation}</span>
+                              <span className={cn('rounded px-1.5 py-px text-tag', statusStyle[a.status])}>
+                                {researchStatusLabel[a.status]}
+                              </span>
+                            </p>
+                            <p className="mt-0.5 text-caption tabular-nums text-faint">
+                              {a.status === 'unsigned' ? '下单时已勾选 · ' : ''}更新于 {a.updatedAt}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => onAction(a, signed ? 'withdraw' : 'sign')}
+                            className={cn(
+                              'h-7 shrink-0 rounded-full px-3 text-caption',
+                              signed ? 'border border-border text-foreground' : 'bg-primary text-primary-foreground',
+                            )}
+                          >
+                            {signed ? '撤销授权' : a.status === 'withdrawn' ? '重新签署' : '去签署'}
+                          </button>
+                        </li>
+                      )
+                    })}
+                </ul>
+              </div>
+            ))}
+          </section>
+        )
+      })}
+
+      <p className="mt-3 flex items-start gap-1 px-1 text-caption leading-4 text-faint">
+        <Info className="mt-px size-3 shrink-0" aria-hidden="true" />
+        科研授权为自愿选择，不影响检测服务及报告出具；撤销需签署《科研知情同意撤销书》；未成年受检人由监护人代为签署
+      </p>
+    </>
+  )
+}
+
+function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="flex gap-3">
+      <dt className="w-14 shrink-0 text-muted-foreground">{label}</dt>
+      <dd className={cn('min-w-0 flex-1 text-foreground', mono && 'tabular-nums')}>{value}</dd>
+    </div>
+  )
+}
