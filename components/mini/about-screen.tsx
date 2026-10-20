@@ -163,7 +163,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
               ))}
             </ul>
             <p className="mt-3.5 rounded-lg bg-background px-3 py-2.5 text-caption leading-relaxed text-foreground/80">
-              DRUGENE 会不定期推更新基因、药物数据和逐步完善、��加其他新功能，敬请期待。
+              DRUGENE 会不定期推更新基因、药物数据和逐步完善、增加其他新功能，敬请期待。
             </p>
           </section>
 
@@ -175,7 +175,7 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
               {COMPANY_NAME}（简称「都正生物」）成立于 2016 年，位于湘江新区，集「产、学、研」于一体，提供临床研究、医药研发信息化、医学检验技术服务，是一家以临床研究为基础、以「数据」沉淀为核心的学术型合同研究组织（Academic CRO）。
             </p>
             <p className="mt-2 text-note leading-relaxed text-foreground/80">
-              公司拥有「药物临床评价技术」国家地方联合工程实验室、「复杂基质样本生物分析」湖南省重点实验室等平台，是国家级专精特新「小巨人」��业、「中国研发 CRO 20 强」。旗下长沙都正医学检验有限责任公司专注药物基因组检测、治疗药物监测（TDM）等精准医学服务。
+              公司拥有「药物临床评价技术」国家地方联合工程实验室、「复杂基质样本生物分析」湖南省重点实验室等平台，是国家级专精特新「小巨人」企业、「中国研发 CRO 20 强」。旗下长沙都正医学检验有限责任公司专注药物基因组检测、治疗药物监测（TDM）等精准医学服务。
             </p>
             <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
               {[

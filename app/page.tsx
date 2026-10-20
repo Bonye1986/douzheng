@@ -304,13 +304,13 @@ const screens = [
   {
     id: '46',
     title: '账号设置 · 注销账号',
-    desc: '注销风���提示、数据清除说���、进行中订单检查、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
+    desc: '注销风险提示、数据清除说明、进行中订单检查、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
     node: <MineScreen initialAccountView="deactivate" />,
   },
   {
     id: '16',
     title: '授权与同意书 · 检测知情同意书',
-    desc: '分「检测知情同意书 / 科研知���同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
+    desc: '分「检测知情同意书 / 科研知情同意书」两个页签：检测知情同意书按订单存档，下单必签、不可撤回；科研知情同意书按订单 × 项目 × 受检人展示（待签署 / 已授权 / 已撤回）（可在画板内交互）',
     node: <MineScreen initialAuthOpen />,
   },
   {
@@ -458,7 +458,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'home',
     title: '首页与AI咨询',
-    summary: 'AI 对话入口与预设问���，通俗 / 专业版切换��关联检测人后的个性化用药解答',
+    summary: 'AI 对话入口与预设问题，通俗 / 专业版切换，关联检测人后的个性化用药解答',
     ids: ['04', '05', '07', '08'],
   },
   { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检查、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
