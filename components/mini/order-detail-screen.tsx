@@ -134,17 +134,12 @@ export function OrderDetailScreen({
           <p className="mt-1 text-caption leading-5 text-primary-foreground/85">{statusDesc}</p>
         </section>
 
-        <section aria-labelledby="od-sampling" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-sampling" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-            {isSelf ? (
-              <House className="size-4 text-primary" aria-hidden="true" />
-            ) : (
-              <Building2 className="size-4 text-primary" aria-hidden="true" />
-            )}
-            {isSelf ? '居家自采样' : '定点采样'}
-          </h2>
+        <section
+          aria-label={isSelf ? '收货地址' : '采样机构'}
+          className="mt-2.5 rounded-2xl bg-white p-4"
+        >
           {isSelf && receiver && (
-            <div className="mt-2.5 flex gap-2">
+            <div className="flex gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-note font-medium text-foreground">
@@ -156,7 +151,7 @@ export function OrderDetailScreen({
             </div>
           )}
           {!isSelf && site && (
-            <div className="mt-2.5 flex gap-2">
+            <div className="flex gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-note font-medium text-foreground">{site.name}</p>
@@ -185,6 +180,17 @@ export function OrderDetailScreen({
                         <span className="min-w-0 truncate text-muted-foreground">{s.name}</span>
                         <span className="shrink-0 tabular-nums text-foreground">{yuan(s.price)}</span>
                       </div>
+                      <p className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">
+                        采样方式
+                        <span className="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
+                          {isSelf ? (
+                            <House className="size-3" aria-hidden="true" />
+                          ) : (
+                            <Building2 className="size-3" aria-hidden="true" />
+                          )}
+                          {isSelf ? '居家自采样' : '定点采样'}
+                        </span>
+                      </p>
                       {s.sampleType && (
                         <p className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">
                           样本类型
