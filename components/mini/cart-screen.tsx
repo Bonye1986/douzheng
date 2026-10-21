@@ -7,7 +7,6 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { CareBagIcon } from '@/components/mini/tests-screen'
 import {
   getSamplingModes,
-  sampleTypeText,
   samplingLabel,
   testServices,
   type TestService,
@@ -277,7 +276,7 @@ function CartRow({
         <p className="line-clamp-2 text-note font-medium leading-[18px] text-foreground">{service.name}</p>
         <p className="mt-1 flex">
           <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
-                {getSamplingModes(service.id).map((m) => samplingLabel[m]).join(' / ')} · {sampleTypeText(service.id, undefined, '/')}
+                {getSamplingModes(service.id).map((m) => samplingLabel[m]).join(' / ')}
           </span>
         </p>
         <p className="mt-auto flex items-baseline gap-1 pt-1.5">
