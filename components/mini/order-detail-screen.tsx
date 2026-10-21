@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Building2, ChevronUp, Clock, House, MapPin } from 'lucide-react'
+import { Building2, ChevronUp, CircleCheck, Clock, House, MapPin } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
 
@@ -35,6 +35,8 @@ type Props = {
   sampleCodes?: { name: string; code: string }[]
   /** 客服改价信息，待付款且已改价订单展示改价前后金额 */
   priceAdjust?: { before: number; after: number }
+  /** 定点采样订单核销完成后展示 */
+  verification?: { operator: string; time: string }
   /** 底部操作按钮，与订单列表同状态的操作保持一致 */
   actions?: React.ReactNode
   onBack: () => void
@@ -114,6 +116,7 @@ export function OrderDetailScreen({
   statusDesc: statusDescProp,
   sampleCodes,
   priceAdjust,
+  verification,
   actions,
   onBack,
 }: Props) {
@@ -159,6 +162,28 @@ export function OrderDetailScreen({
                 <p className="mt-0.5 text-caption text-muted-foreground">{site.time}</p>
               </div>
             </div>
+          )}
+          {!isSelf && verification && (
+            <dl
+              aria-label="核销信息"
+              className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-caption"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">核销状态</dt>
+                <dd className="flex items-center gap-1 font-medium text-success">
+                  <CircleCheck className="size-3.5" aria-hidden="true" />
+                  已核销
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">核销人员</dt>
+                <dd className="text-foreground">{verification.operator}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">核销时间</dt>
+                <dd className="tabular-nums text-foreground">{verification.time}</dd>
+              </div>
+            </dl>
           )}
         </section>
 

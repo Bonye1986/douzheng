@@ -26,6 +26,7 @@ import { getSampleTypes, testServices } from '@/components/mini/tests-data'
 import { cn } from '@/lib/utils'
 
 const noSampleCodeStatuses = new Set(['待发货', '待核销'])
+const verifiedSiteStatuses = new Set(['待寄样', '待收样', '待检测', '检测中', '已完成'])
 
 const initialDetailKey = '__initial-detail__'
 
@@ -183,6 +184,11 @@ function OrderDetailFromList({
           : order.note
       }
       sampleCodes={sampleCodes}
+      verification={
+        order.type === 'site' && verifiedSiteStatuses.has(order.status)
+          ? { operator: '张敏（采样前台）', time: `${payTime.slice(0, 10)} 09:42:18` }
+          : undefined
+      }
       priceAdjust={
         order.priceChanged && order.status === '待付款' ? { before: goodsTotal, after: payable } : undefined
       }
@@ -426,7 +432,7 @@ const siteSeeds: StatusSeed[] = [
   {
     type: 'site',
     phase: 'toSample',
-    status: '待���样',
+    status: '待�����样',
     refund: 'testing',
     notes: ['已核销，都正检测中心（徐汇） 正在为您采样'],
   },
