@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Plus, Search, X } from 'lucide-react'
 import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { TestDetailScreen } from '@/components/mini/test-detail-screen'
-import { CartScreen, MAX_QTY, type CartItem } from '@/components/mini/cart-screen'
+import { CartScreen, MAX_QTY, isOffShelf, type CartItem } from '@/components/mini/cart-screen'
 import { CheckoutScreen, type CheckoutLine } from '@/components/mini/checkout-screen'
 import {
   testCategories,
@@ -47,6 +47,10 @@ export function TestsScreen({
   }
 
   const addToCart = (service: TestService) => {
+    if (service.offShelf) {
+      showToast('该项目已下架')
+      return
+    }
     const existing = cart.find((i) => i.id === service.id)
     if (existing && existing.qty >= MAX_QTY) {
       showToast(`单个项目最多购买 ${MAX_QTY} 份`)
@@ -65,6 +69,7 @@ export function TestsScreen({
   const keyword = query.trim().toLowerCase()
   const list = testServices.filter(
     (s) =>
+      !s.offShelf &&
       (category === 'all' || s.category === category) &&
       (!keyword ||
         s.name.toLowerCase().includes(keyword) ||
@@ -182,7 +187,7 @@ export function TestsScreen({
             onBack={() => setCartOpen(false)}
             onCheckout={() =>
               setCheckout({
-                lines: cart.filter((i) => i.checked).map(({ id, qty }) => ({ id, qty })),
+                lines: cart.filter((i) => i.checked && !isOffShelf(i.id)).map(({ id, qty }) => ({ id, qty })),
                 fromCart: true,
               })
             }
@@ -200,7 +205,7 @@ export function TestsScreen({
           lines={checkout.lines}
           onBack={() => setCheckout(null)}
           onSubmitted={() => {
-            if (checkout.fromCart) setCart((c) => c.filter((i) => !i.checked))
+            if (checkout.fromCart) setCart((c) => c.filter((i) => !i.checked || isOffShelf(i.id)))
           }}
           onDone={() => {
             setCheckout(null)

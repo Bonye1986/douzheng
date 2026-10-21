@@ -72,6 +72,7 @@ export type TestService = {
   genes: string[]
   audience: string[]
   notes: string[]
+  offShelf?: boolean
 }
 
 export const testFlow = ['下单购买', '采样寄回', '实验室检测', '查看报告']
@@ -149,6 +150,7 @@ export const testServices: TestService[] = [
   },
   {
     id: 'epilepsy',
+    offShelf: true,
     name: '癫痫用药安全基因检测',
     category: 'mental',
     summary: '卡马西平等药物严重皮肤不良反应风险筛查',

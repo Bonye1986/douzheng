@@ -162,13 +162,24 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
           onClick={onContact}
           className="flex w-11 flex-col items-center gap-0.5 text-tag text-muted-foreground"
         >
-          <Headset className="size-5 text-foreground" strokeWidth={1.8} aria-hidden="true" />
+          <span className="flex size-7 items-center justify-center" aria-hidden="true">
+            <img src="/images/icons/service-headset.png" alt="" className="size-7 object-contain" />
+          </span>
           客服
         </button>
         <div className="flex w-11 flex-col items-center gap-0.5 text-tag text-muted-foreground">
           <CartButton count={cartCount} onClick={onOpenCart} className="size-7 active:bg-transparent [&>img]:size-7" />
           <span aria-hidden="true">购物车</span>
         </div>
+        {service.offShelf ? (
+          <button
+            type="button"
+            disabled
+            className="ml-1 h-10 flex-1 rounded-full bg-muted text-body font-medium text-faint"
+          >
+            该项目已下架
+          </button>
+        ) : (
         <div className="ml-1 flex h-10 flex-1 overflow-hidden rounded-full">
           <button
             type="button"
@@ -185,6 +196,7 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
             立即购买
           </button>
         </div>
+        )}
       </div>
     </div>
   )

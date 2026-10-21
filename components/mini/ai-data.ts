@@ -43,7 +43,9 @@ export function testeeLabel(t: Testee) {
 
 export const skills = [
   { key: 'report', label: '报告解读', question: '帮我解读一下检测报告' },
-  { key: 'recommend', label: '检测推荐', question: '我适合做哪种基因检测？' },
+  { key: 'recommend', label: '推荐检测', question: '推荐适合我的检测服务' },
+  { key: 'myReports', label: '我的报告', question: '查看我的报告' },
+  { key: 'myOrders', label: '我的订单', question: '我的订单进度' },
 ] as const
 
 export const quickPrompts = ['我能正常使用氯吡格雷吗？', '高血压用药注意事项', '华法林剂量为什么因人而异？']

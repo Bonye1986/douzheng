@@ -15,6 +15,7 @@ const samplingSite = {
   phone: '021-6485 2200',
 }
 import { SendSampleScreen } from '@/components/mini/send-sample-screen'
+import { ScanSampleScreen } from '@/components/mini/scan-sample-screen'
 import { ResampleScreen } from '@/components/mini/resample-screen'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { WechatPaySheet } from '@/components/mini/wechat-pay-sheet'
@@ -61,6 +62,7 @@ type OrderActionHandlers = {
   onHandleUnqualified: (o: Order) => void
   onOpenGuide: () => void
   onSendSample: (o: Order) => void
+  onScanSample: (o: Order) => void
   onTestingRefund: (o: Order) => void
   onViewLogistics: (o: Order) => void
   onViewReport: (o: Order) => void
@@ -68,8 +70,9 @@ type OrderActionHandlers = {
   onShowVerifyCode: (o: Order) => void
 }
 
-/** 仅自采样由用户寄样；定点采样的采样与寄样均由机构操作 */
-const canSendSample = (o: Order) => o.type === 'self' && (o.status === '待采样' || o.status === '待寄样')
+/** 仅自采样由用户操作：待采样 → 扫码绑定样本（采样）；待寄样 → 预约寄回（寄样）。定点采样均由机构操作 */
+const canScanSample = (o: Order) => o.type === 'self' && o.status === '待采样'
+const canSendSample = (o: Order) => o.type === 'self' && o.status === '待寄样'
 
 function OrderActions({
   order: o,
@@ -78,12 +81,14 @@ function OrderActions({
   onHandleUnqualified,
   onOpenGuide,
   onSendSample,
+  onScanSample,
   onTestingRefund,
   onViewLogistics,
   onViewReport,
   onPay,
   onShowVerifyCode,
 }: { order: Order } & OrderActionHandlers) {
+  const scannable = canScanSample(o)
   const sendable = canSendSample(o)
   return (
     <>
@@ -113,12 +118,21 @@ function OrderActions({
           }}
           className={cn(
             'h-7 rounded-full px-3.5 text-caption font-medium',
-            o.action.primary && !sendable
+            o.action.primary && !sendable && !scannable
               ? 'bg-primary text-primary-foreground'
               : 'border border-border text-foreground',
           )}
         >
           {o.action.label}
+        </button>
+      )}
+      {scannable && (
+        <button
+          type="button"
+          onClick={() => onScanSample(o)}
+          className="h-7 rounded-full bg-primary px-3.5 text-caption font-medium text-primary-foreground"
+        >
+          采样
         </button>
       )}
       {sendable && (
@@ -182,6 +196,8 @@ function OrderDetailFromList({
       goodsTotal={goodsTotal}
       couponOff={order.priceChanged ? 0 : Math.max(Math.round((goodsTotal - payable) * 100) / 100, 0)}
       couponShared={Boolean(order.parentId && order.couponShare)}
+      couponName={order.parentId && order.couponShare ? couponTitle(splitParents[order.type].coupon) : undefined}
+      couponTotal={order.parentId && order.couponShare ? splitParents[order.type].coupon : undefined}
       parentOrderNo={order.parentId}
       payable={payable}
       actions={actions}
@@ -342,7 +358,7 @@ const selfSeeds: StatusSeed[] = [
     status: '待采样',
     refund: 'shipped',
     action: { label: '采样指引', primary: true },
-    notes: ['采样盒已签收，请观看采样指引完成采样'],
+    notes: ['采样盒已签收，完成采样后点击「采样」扫描样本标签码绑定样本'],
   },
   {
     type: 'self',
@@ -419,7 +435,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'toSample',
     status: '待寄样',
     refund: 'testing',
-    notes: ['机构已完成采样，将由机构统一寄送至实验室'],
+    notes: ['机构已完成采���，将由机构统一寄送至实验室'],
   },
   {
     type: 'site',
@@ -442,7 +458,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'testing',
     status: '检测中',
     refund: 'testing',
-    notes: ['实验室检测中，预计 5 个工作日内出具报告'],
+    notes: ['实验室检测中，预计 5 个工作���内出具报告'],
     extra: [unqualifiedVariant, resampleTestingVariant],
   },
   {
@@ -463,6 +479,8 @@ const seedProducts: { name: string; price: number }[] = [
   { name: '儿童安全用药基因检测', price: 699 },
 ]
 const seedExaminees = ['王建国', '李秀兰', '张伟', '刘芳', '陈静']
+
+const couponTitle = (amount: number) => `满 ${amount * 10} 减 ${amount}`
 
 const splitParents: Record<Order['type'], { id: string; coupon: number }> = {
   self: { id: 'JY20261012283615', coupon: 100 },
@@ -533,7 +551,7 @@ const allOrders: Order[] = buildSeedOrders()
 
 export type OrderTabKey = StatusTabKey
 
-export type OrderActionKind = 'cancel' | 'pay' | 'code' | 'refund' | 'logistics' | 'send' | 'report'
+export type OrderActionKind = 'cancel' | 'pay' | 'code' | 'refund' | 'logistics' | 'scan' | 'send' | 'report'
 export type OrderInitialAction = { kind: OrderActionKind; status: string; type: 'self' | 'site' }
 
 export function countOrders(key: Exclude<StatusTabKey, 'all'>) {
@@ -582,6 +600,8 @@ export function OrderListScreen({
   const [cancelledIds, setCancelledIds] = useState<ReadonlySet<string>>(() => new Set())
   const [sendTarget, setSendTarget] = useState<Order | null>(() => initialTarget('send'))
   const [sentNotes, setSentNotes] = useState<ReadonlyMap<string, string>>(() => new Map())
+  const [scanTarget, setScanTarget] = useState<Order | null>(() => initialTarget('scan'))
+  const [boundCodes, setBoundCodes] = useState<ReadonlyMap<string, string>>(() => new Map())
   const [logisticsTarget, setLogisticsTarget] = useState<Order | null>(() => initialTarget('logistics'))
   const [reportTarget, setReportTarget] = useState<Order | null>(() => initialTarget('report'))
   const [refundTarget, setRefundTarget] = useState<Order | null>(() => initialTarget('refund'))
@@ -622,6 +642,16 @@ export function OrderListScreen({
   })
   const withSiteActions = (o: Order): Order => {
     if (o.phase === 'toPay' && !paidIds.has(o.id)) return o.refund ? o : { ...o, refund: 'cancel' }
+    const boundCode = boundCodes.get(o.id)
+    if (o.type === 'self' && o.status === '待采样' && boundCode) {
+      return {
+        ...o,
+        status: '待寄样',
+        note: `已绑定样本 ${boundCode}，请预约顺丰上门取件寄回样本`,
+        refund: 'testing',
+        action: { label: '采样指引' },
+      }
+    }
     if (o.type !== 'site') return o
     if (o.status === '待核销' && !o.refund) return { ...o, refund: 'cancel' }
     if (o.status === '待收样' && !o.action) return { ...o, action: { label: '查看物流' } }
@@ -702,7 +732,7 @@ export function OrderListScreen({
             ...o,
             phase: 'closed',
             status: '已关闭',
-            note: '超时未支付，订单已自动关闭',
+            note: '超时未支付，订单���自动关闭',
             priceChanged: false,
             originalAmount: undefined,
             refund: undefined,
@@ -770,6 +800,7 @@ export function OrderListScreen({
     onHandleUnqualified: setResampleTarget,
     onOpenGuide: () => setGuideOpen(true),
     onSendSample: setSendTarget,
+    onScanSample: setScanTarget,
     onTestingRefund: setRefundTarget,
     onViewLogistics: setLogisticsTarget,
     onViewReport: setReportTarget,
@@ -782,7 +813,7 @@ export function OrderListScreen({
       : detailId
         ? orders.find((o) => o.id === detailId)
         : undefined
-  const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o))
+  const hasActions = (o: Order) => Boolean(o.refund || o.action || canSendSample(o) || canScanSample(o))
 
   const activeTab = statusTabs.find((t) => t.key === statusKey) ?? statusTabs[0]
   const trimmedKeyword = keyword.trim()
@@ -967,6 +998,19 @@ export function OrderListScreen({
         />
       )}
       {guideOpen && <SamplingVideoDialog onClose={() => setGuideOpen(false)} />}
+      {scanTarget && (
+        <ScanSampleScreen
+          orderNo={scanTarget.id}
+          examinees={scanTarget.examinees}
+          product={scanTarget.product}
+          onBack={() => setScanTarget(null)}
+          onBound={(code) => setBoundCodes((prev) => new Map(prev).set(scanTarget.id, code))}
+          onGoSend={() => {
+            setSendTarget({ ...scanTarget, status: '待寄样' })
+            setScanTarget(null)
+          }}
+        />
+      )}
       {sendTarget && (
         <SendSampleScreen
           orderNo={sendTarget.id}

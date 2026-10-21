@@ -175,7 +175,7 @@ function BannerCarousel() {
 const categoryIcons: Record<ServiceCategoryId, string> = {
   tests: '/images/icons/svc-tests.png',
   health: '/images/icons/svc-health.png',
-  report: '/images/icons/svc-report.png',
+  knowledge: '/images/icons/sec-knowledge.png',
   remind: '/images/icons/svc-remind.png',
 }
 
@@ -213,11 +213,11 @@ function CategoryGrid({ onCategory }: Pick<Props, 'onCategory'>) {
 const RECOMMENDED_COUNT = 4
 
 function RecommendedTests({ onOpenTest, onViewAllTests }: Pick<Props, 'onOpenTest' | 'onViewAllTests'>) {
-  const items = testServices.slice(0, RECOMMENDED_COUNT)
+  const items = testServices.filter((s) => !s.offShelf).slice(0, RECOMMENDED_COUNT)
   return (
     <section aria-labelledby="rec-tests">
       <div className="px-1">
-        <SectionHeader id="rec-tests" title="推荐检查" action="全部" onAction={onViewAllTests} />
+        <SectionHeader id="rec-tests" title="推荐检测" action="全部" onAction={onViewAllTests} />
       </div>
       <ul className="grid grid-cols-2 gap-2.5">
         {items.map((t) => (

@@ -15,8 +15,8 @@ import { ExamineeManageScreen } from '@/components/mini/examinee-manage-screen'
 import { MedicationReminderScreen } from '@/components/mini/medication-reminder-screen'
 import { LoginRequiredDialog } from '@/components/mini/login-required-dialog'
 import { KnowledgeScreen, type ArticleKind } from '@/components/mini/knowledge-screen'
+import type { SurveyAnswers } from '@/components/mini/survey-screen'
 import {
-  reportChatQuestion,
   serviceCategories,
   type ServiceCategoryId,
 } from '@/components/mini/services-data'
@@ -31,10 +31,13 @@ export function HomeFlow({
   initialKnowledge,
   initialQuiz,
   initialSurvey,
+  initialSurveyAnswers,
   initialServiceSection,
   loggedIn = true,
   onRequireLogin,
 }: {
+  /** With initialSurvey, opens the 问卷 already submitted (结果页). */
+  initialSurveyAnswers?: SurveyAnswers
   /** 'list' opens 知识科普 list; an article id opens that article directly. */
   initialKnowledge?: string
   /** 'list' opens 互动问答 list; an article id opens that article directly. */
@@ -96,7 +99,7 @@ export function HomeFlow({
       return
     }
     if (id === 'tests') openTests()
-    else if (id === 'report') openChat(reportChatQuestion)
+    else if (id === 'knowledge') setKnowledgeEntry({ key: Date.now(), kind: 'knowledge' })
     else if (id === 'health') setSubPage('examinee')
     else if (id === 'remind') setSubPage('reminder')
   }
@@ -162,6 +165,7 @@ export function HomeFlow({
           key={knowledgeEntry.key}
           kind={knowledgeEntry.kind}
           initialSurveyOpen={knowledgeEntry.survey}
+          initialSurveyAnswers={knowledgeEntry.key === 0 ? initialSurveyAnswers : undefined}
           initialArticleId={knowledgeEntry.articleId}
             onBack={() => setKnowledgeEntry(null)}
         />

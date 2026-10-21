@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { CheckCircle2, ClipboardList, Clock, Eye, Info, Sparkles, Users } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Clock, Eye, Info, Search, Sparkles, Users, X } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import {
   articleCategories,
@@ -90,10 +90,39 @@ function KnowledgeList({
 }) {
   const { categories, items: articles, listLabel } = sources[kind]
   const [category, setCategory] = useState<string>('全部')
-  const filtered = category === '全部' ? articles : articles.filter((a) => a.category === category)
+  const [keyword, setKeyword] = useState('')
+  const query = keyword.trim().toLowerCase()
+  const filtered = articles.filter(
+    (a) =>
+      (category === '全部' || a.category === category) &&
+      (!query || a.title.toLowerCase().includes(query) || a.summary.toLowerCase().includes(query)),
+  )
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0 bg-white px-3 pt-2.5">
+        <label className="flex h-9 items-center gap-2 rounded-full bg-muted px-3">
+          <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <span className="sr-only">搜索{sources[kind].title}</span>
+          <input
+            type="search"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="搜索文章标题或内容"
+            className="h-full min-w-0 flex-1 bg-transparent text-caption text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
+          />
+          {keyword && (
+            <button
+              type="button"
+              onClick={() => setKeyword('')}
+              aria-label="清空搜索"
+              className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted-foreground/30 text-white"
+            >
+              <X className="size-3" aria-hidden="true" />
+            </button>
+          )}
+        </label>
+      </div>
       <div
         role="tablist"
         aria-label={`${sources[kind].title}分类`}
@@ -129,7 +158,9 @@ function KnowledgeList({
             ))}
           </ul>
         ) : (
-          <p className="pt-16 text-center text-note text-muted-foreground">该分类暂无文章</p>
+          <p className="pt-16 text-center text-note text-muted-foreground">
+            {query ? '没有找到相关文章，换个关键词试试' : '该分类暂无文章'}
+          </p>
         )}
       </div>
     </div>
@@ -166,13 +197,14 @@ function SurveyEntry({
       <button
         type="button"
         onClick={onOpen}
+        disabled={answered}
         className={cn(
           'flex h-8 shrink-0 items-center gap-1 rounded-full px-3 text-caption font-medium',
           answered ? 'bg-success-soft text-success' : 'bg-primary text-primary-foreground',
         )}
       >
         {answered && <CheckCircle2 className="size-3.5" aria-hidden="true" />}
-        {answered ? '查看结果' : '参与问卷'}
+        {answered ? '已参与' : '参与问卷'}
       </button>
     </aside>
   )
@@ -258,18 +290,28 @@ export function KnowledgeScreen({
   kind = 'knowledge',
   initialArticleId,
   initialSurveyOpen = false,
+  initialSurveyAnswers,
   onBack,
 }: {
   kind?: ArticleKind
   initialArticleId?: string
   /** Opens the article's 问卷 directly (design board entry). */
   initialSurveyOpen?: boolean
+  initialSurveyAnswers?: SurveyAnswers
   onBack: () => void
 }) {
   const { items: articles, title } = sources[kind]
   const [articleId, setArticleId] = useState<string | null>(initialArticleId ?? null)
   const [surveyOpen, setSurveyOpen] = useState(initialSurveyOpen)
-  const [answers, setAnswers] = useState<Record<string, SurveyAnswers>>({})
+  const [answers, setAnswers] = useState<Record<string, SurveyAnswers>>(
+    initialArticleId && initialSurveyAnswers ? { [initialArticleId]: initialSurveyAnswers } : {},
+  )
+  const [toast, setToast] = useState('')
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(''), 1800)
+    return () => clearTimeout(t)
+  }, [toast])
   const article = articles.find((a) => a.id === articleId)
   // Entered straight from an article on 服务, so back should return there instead of the list.
   const enteredFromArticle = Boolean(initialArticleId)
@@ -279,9 +321,12 @@ export function KnowledgeScreen({
       <SurveyScreen
         key={article.survey.id}
         survey={article.survey}
-        initialAnswers={answers[article.id]}
         onBack={() => setSurveyOpen(false)}
-        onSubmit={(value) => setAnswers((prev) => ({ ...prev, [article.id]: value }))}
+        onSubmit={(value) => {
+          setAnswers((prev) => ({ ...prev, [article.id]: value }))
+          setSurveyOpen(false)
+          setToast('提交成功，感谢参与')
+        }}
       />
     )
   }
@@ -299,6 +344,14 @@ export function KnowledgeScreen({
           answered={Boolean(answers[article.id])}
           onOpenSurvey={() => setSurveyOpen(true)}
         />
+        {toast && (
+          <p
+            role="status"
+            className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-xl bg-black/75 px-4 py-2.5 text-note text-white"
+          >
+            {toast}
+          </p>
+        )}
       </SubPage>
     )
   }

@@ -7,7 +7,6 @@ import { Capsule, StatusBar } from '@/components/mini/phone-frame'
 import { CareBagIcon } from '@/components/mini/tests-screen'
 import {
   getSamplingModes,
-  sampleTypeText,
   samplingLabel,
   testServices,
   type TestService,
@@ -17,6 +16,8 @@ import { cn } from '@/lib/utils'
 export const MAX_QTY = 10
 
 export type CartItem = { id: string; qty: number; checked: boolean }
+
+export const isOffShelf = (id: string) => !!testServices.find((s) => s.id === id)?.offShelf
 
 type Props = {
   items: CartItem[]
@@ -29,10 +30,13 @@ type Props = {
 
 export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService, onAddRecommend }: Props) {
   const [managing, setManaging] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
 
-  const rows = items
+  const allRows = items
     .map((item) => ({ item, service: testServices.find((s) => s.id === item.id) }))
     .filter((r): r is { item: CartItem; service: TestService } => !!r.service)
+  const rows = allRows.filter((r) => !r.service.offShelf)
+  const invalidRows = allRows.filter((r) => r.service.offShelf)
 
   const checkedRows = rows.filter((r) => r.item.checked)
   const allChecked = rows.length > 0 && checkedRows.length === rows.length
@@ -41,13 +45,21 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
 
   const update = (id: string, patch: Partial<CartItem>) =>
     onChange(items.map((i) => (i.id === id ? { ...i, ...patch } : i)))
-  const toggleAll = () => onChange(items.map((i) => ({ ...i, checked: !allChecked })))
+  const toggleAll = () =>
+    onChange(items.map((i) => (isOffShelf(i.id) ? i : { ...i, checked: !allChecked })))
   const removeChecked = () => {
-    onChange(items.filter((i) => !i.checked))
+    onChange(items.filter((i) => isOffShelf(i.id) || !i.checked))
     setManaging(false)
   }
+  const clearInvalid = () => {
+    onChange(items.filter((i) => !isOffShelf(i.id)))
+    setToast('已清空失效项目')
+    setTimeout(() => setToast(null), 1600)
+  }
 
-  const recommends = testServices.filter((s) => !items.some((i) => i.id === s.id)).slice(0, 4)
+  const recommends = testServices
+    .filter((s) => !s.offShelf && !items.some((i) => i.id === s.id))
+    .slice(0, 4)
 
   return (
     <div
@@ -68,14 +80,29 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
             <ChevronLeft className="size-6" aria-hidden="true" />
           </button>
           <h1 id="cart-title" className="text-heading font-semibold text-foreground">
-            购物车{rows.length > 0 && <span className="text-body font-normal text-muted-foreground">（{rows.length}）</span>}
+            购物车{allRows.length > 0 && <span className="text-body font-normal text-muted-foreground">（{allRows.length}）</span>}
           </h1>
           <Capsule className="absolute right-3" />
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
-        {rows.length > 0 ? (
+        {allRows.length === 0 ? (
+          <section className="flex flex-col items-center rounded-2xl bg-white px-6 py-10 text-center">
+            <span className="flex size-16 items-center justify-center rounded-full bg-secondary">
+              <CareBagIcon className="size-12" />
+            </span>
+            <p className="mt-3 text-body font-medium text-foreground">购物车还是空的</p>
+            <p className="mt-1 text-caption text-muted-foreground">挑选适合你或家人的用药基因检测吧</p>
+            <button
+              type="button"
+              onClick={onBack}
+              className="mt-4 h-8 rounded-full border border-primary px-5 text-note text-primary active:bg-secondary"
+            >
+              去逛逛
+            </button>
+          </section>
+        ) : rows.length > 0 ? (
           <section aria-label="已选检测服务" className="rounded-2xl bg-white">
             <div className="flex items-center justify-between border-b border-border px-3.5 py-2.5">
               <p className="text-note font-medium text-foreground">检测服务</p>
@@ -101,20 +128,25 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
               ))}
             </ul>
           </section>
-        ) : (
-          <section className="flex flex-col items-center rounded-2xl bg-white px-6 py-10 text-center">
-            <span className="flex size-16 items-center justify-center rounded-full bg-secondary">
-                <CareBagIcon className="size-12" />
-            </span>
-            <p className="mt-3 text-body font-medium text-foreground">购物车还是空的</p>
-            <p className="mt-1 text-caption text-muted-foreground">挑选适合你或家人的用药基因检测吧</p>
-            <button
-              type="button"
-              onClick={onBack}
-              className="mt-4 h-8 rounded-full border border-primary px-5 text-note text-primary active:bg-secondary"
-            >
-              去逛逛
-            </button>
+        ) : null}
+
+        {invalidRows.length > 0 && (
+          <section aria-labelledby="cart-invalid" className={cn('rounded-2xl bg-white', rows.length > 0 && 'mt-2.5')}>
+            <div className="flex items-center justify-between border-b border-border px-3.5 py-2.5">
+              <p id="cart-invalid" className="text-note font-medium text-foreground">
+                失效项目（{invalidRows.length}）
+              </p>
+              <button type="button" onClick={clearInvalid} className="text-note text-primary">
+                清空失效项目
+              </button>
+            </div>
+            <ul>
+              {invalidRows.map(({ item, service }) => (
+                <li key={item.id} className="border-b border-border last:border-0">
+                  <InvalidRow service={service} onOpen={() => onOpenService(service)} />
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
@@ -154,6 +186,15 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
           </section>
         )}
       </div>
+
+      {toast && (
+        <div
+          role="status"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 rounded-lg bg-foreground/85 px-4 py-2 text-note text-white"
+        >
+          {toast}
+        </div>
+      )}
 
       {rows.length > 0 && (
         <div className="flex shrink-0 items-center gap-3 border-t border-border bg-white px-4 pb-6 pt-2.5">
@@ -235,7 +276,7 @@ function CartRow({
         <p className="line-clamp-2 text-note font-medium leading-[18px] text-foreground">{service.name}</p>
         <p className="mt-1 flex">
           <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
-                {getSamplingModes(service.id).map((m) => samplingLabel[m]).join(' / ')} · {sampleTypeText(service.id, undefined, '/')}
+                {getSamplingModes(service.id).map((m) => samplingLabel[m]).join(' / ')}
           </span>
         </p>
         <p className="mt-auto flex items-baseline gap-1 pt-1.5">
@@ -248,6 +289,36 @@ function CartRow({
           )}
           <span className="text-tag text-muted-foreground">/人</span>
         </p>
+      </div>
+    </div>
+  )
+}
+
+function InvalidRow({ service, onOpen }: { service: TestService; onOpen: () => void }) {
+  return (
+    <div className="flex items-center gap-2.5 p-3.5">
+      <span
+        aria-hidden="true"
+        className="flex size-[18px] shrink-0 items-center justify-center rounded-full border border-border bg-muted"
+      />
+      <button type="button" onClick={onOpen} className="relative shrink-0" aria-label={`查看${service.name}详情（已下架）`}>
+        <Image
+          src={service.image}
+          alt=""
+          width={76}
+          height={76}
+          className="size-[76px] rounded-xl bg-secondary object-cover opacity-50 grayscale"
+        />
+        <span className="absolute inset-0 flex items-center justify-center">
+          <span className="rounded-full bg-foreground/60 px-2 py-0.5 text-tag text-white">已下架</span>
+        </span>
+      </button>
+      <div className="flex min-w-0 flex-1 flex-col self-stretch">
+        <p className="line-clamp-2 text-note font-medium leading-[18px] text-faint">{service.name}</p>
+        <p className="mt-1 flex">
+          <span className="rounded bg-muted px-1.5 py-px text-tag text-faint">已下架</span>
+        </p>
+        <p className="mt-auto pt-1.5 text-caption text-muted-foreground">该项目已下架，暂不可购买</p>
       </div>
     </div>
   )

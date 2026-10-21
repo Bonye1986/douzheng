@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight, ShieldCheck } from 'lucide-react'
+import { BadgeCheck, ChevronRight, Lock, ShieldCheck } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { DatePickerSheet } from '@/components/mini/date-picker-sheet'
 import { genderLabel, relations, type Examinee, type Gender } from '@/components/mini/checkout-data'
@@ -40,6 +40,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
 
   const today = new Date().toISOString().slice(0, 10)
   const isSelf = relation === '本人'
+  const locked = editing && initial?.relation === '本人' && !!initial?.idCard
 
   const save = () => {
     const next: Errors = {}
@@ -47,10 +48,6 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
     if (!/^[\u4e00-\u9fa5·a-zA-Z]{2,20}$/.test(name.trim())) next.name = '请填写 2–20 位真实姓名'
     if (!birth || birth > today) next.birth = '请选择正确的出生日期'
     if (phone && !isMasked(phone) && !/^1\d{10}$/.test(phone)) next.phone = '请输入 11 位手机号'
-    if (isSelf) {
-      if (!idCard) next.idCard = '本人需完成实名认证，请填写身份证号'
-      else if (!isMasked(idCard) && !/^\d{17}[\dXx]$/.test(idCard)) next.idCard = '请输入 18 位身份证号'
-    }
     setErrors(next)
     if (Object.keys(next).length) return
     onSave({
@@ -61,7 +58,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
       age: ageFrom(birth),
       birth,
       phone: phone ? (isMasked(phone) ? phone : `${phone.slice(0, 3)}****${phone.slice(7)}`) : undefined,
-      idCard: isSelf && idCard ? (isMasked(idCard) ? idCard : `${idCard.slice(0, 4)}**********${idCard.slice(14)}`) : undefined,
+      idCard: isSelf ? initial?.idCard : undefined,
     })
   }
 
@@ -73,6 +70,13 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
         {targetName && (
           <p className="mb-2.5 rounded-xl bg-secondary px-3 py-2 text-caption leading-[18px] text-primary">
             保存后将自动为该受检人选择「{targetName}」
+          </p>
+        )}
+
+        {locked && (
+          <p className="mb-2.5 flex items-start gap-1.5 rounded-xl bg-[#e8f7ef] px-3 py-2 text-caption leading-[18px] text-[#1f9d55]">
+            <BadgeCheck className="mt-px size-3.5 shrink-0" aria-hidden="true" />
+            本人已完成实名认证，姓名、性别、出生日期、身份证号已锁定不可修改，仅可修改手机号
           </p>
         )}
 
@@ -118,6 +122,9 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
 
         <section aria-label="基本信息" className="mt-2.5 rounded-2xl bg-white px-3.5">
           <Row label="姓名" required error={errors.name}>
+            {locked ? (
+              <LockedValue value={name} />
+            ) : (
             <input
               value={name}
               onChange={(e) => {
@@ -128,8 +135,12 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               aria-invalid={!!errors.name}
               className="min-w-0 flex-1 bg-transparent text-right text-body text-foreground outline-none placeholder:text-faint"
             />
+            )}
           </Row>
           <Row label="性别" required>
+            {locked ? (
+              <LockedValue value={genderLabel[gender]} />
+            ) : (
             <div role="radiogroup" aria-label="性别" className="ml-auto flex rounded-full bg-muted p-0.5">
               {(['male', 'female'] as const).map((g) => (
                 <button
@@ -147,8 +158,12 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
                 </button>
               ))}
             </div>
+            )}
           </Row>
           <Row label="出生日期" required error={errors.birth}>
+            {locked ? (
+              <LockedValue value={birth.replace(/^(\d+)-(\d+)-(\d+)$/, '$1年$2月$3日')} />
+            ) : (
             <button
               type="button"
               onClick={() => setPickerOpen(true)}
@@ -161,6 +176,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
               </span>
               <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
             </button>
+            )}
           </Row>
           <Row label="手机号" error={errors.phone} last={!isSelf}>
             <input
@@ -177,17 +193,12 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
             />
           </Row>
           {isSelf && (
-            <Row label="身份证号" required error={errors.idCard} last>
-              <input
-                value={idCard}
-                onChange={(e) => {
-                  setIdCard(e.target.value.replace(/[^\dXx]/g, '').slice(0, 18).toUpperCase())
-                  clear('idCard')
-                }}
-                placeholder="用于本人实名认证"
-                aria-invalid={!!errors.idCard}
-                className="min-w-0 flex-1 bg-transparent text-right text-body tabular-nums text-foreground outline-none placeholder:text-faint"
-              />
+            <Row label="实名认证" last>
+              {initial?.idCard ? (
+                <LockedValue value={initial.idCard} />
+              ) : (
+                <span className="ml-auto text-note text-warning">未认证 · 保存后可在列表去认证</span>
+              )}
             </Row>
           )}
         </section>
@@ -227,6 +238,15 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
         />
       )}
     </SubPage>
+  )
+}
+
+function LockedValue({ value }: { value: string }) {
+  return (
+    <span className="ml-auto flex min-w-0 items-center gap-1 text-body tabular-nums text-muted-foreground">
+      <span className="truncate">{value}</span>
+      <Lock className="size-3.5 shrink-0 text-faint" aria-label="已锁定" />
+    </span>
   )
 }
 
