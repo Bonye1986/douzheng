@@ -602,6 +602,14 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                       </div>
                     </div>
                   </div>
+                  <SampleTypePicker
+                    serviceId={service.id}
+                    serviceName={service.name}
+                    mode={mode}
+                    value={sampleType[service.id]}
+                    warn={sampleWarn}
+                    onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
+                  />
                   <div
                     role="group"
                     aria-label={`${service.name}的受检人`}
@@ -687,14 +695,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                       </p>
                     </div>
                   )}
-                  <SampleTypePicker
-                    serviceId={service.id}
-                    serviceName={service.name}
-                    mode={mode}
-                    value={sampleType[service.id]}
-                    warn={sampleWarn}
-                    onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
-                  />
                 </li>
               )
             })}
