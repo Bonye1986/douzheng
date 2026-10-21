@@ -1014,54 +1014,54 @@ function SampleTypePicker({
   const labelId = `sample-${serviceId}`
 
   return (
-    <div className={cn('mt-2.5 rounded-xl border p-3 transition-colors', warn && !current ? 'border-[#f3b6a3] bg-[#fff7f4]' : 'border-border')}>
-      <p className="flex items-center gap-1.5">
-        <span className="flex size-5 items-center justify-center rounded-md bg-secondary text-primary" aria-hidden="true">
-          <FlaskConical className="size-3" />
-        </span>
-        <span id={labelId} className="text-caption font-medium text-foreground">
+    <div className="mt-2.5">
+      <div
+        className={cn(
+          'flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors',
+          warn && !current ? 'bg-destructive-soft' : 'bg-[#f5f7fb]',
+        )}
+      >
+        <span id={labelId} className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
+          <FlaskConical className="size-3.5 text-primary" aria-hidden="true" />
           样本类型
         </span>
-        <span className="ml-auto text-tag text-muted-foreground">
-          {opts.length > 1 ? `${opts.length} 种可选` : `${samplingLabel[mode]}仅支持此类型`}
-        </span>
-      </p>
-      <div
-        role="radiogroup"
-        aria-labelledby={labelId}
-        aria-label={`${serviceName}的样本类型`}
-        className={cn('mt-2 grid gap-1.5', opts.length > 1 ? 'grid-cols-2' : 'grid-cols-1')}
-      >
-        {opts.map((o) => {
-          const on = o.id === value
-          return (
-            <button
-              key={o.id}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              onClick={() => onChange(o.id)}
-              className={cn(
-                'relative flex flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 text-left transition-colors',
-                on ? 'border-primary bg-secondary' : 'border-transparent bg-[#f5f7fb]',
-              )}
-            >
-              <span className={cn('text-note font-medium', on ? 'text-primary' : 'text-foreground')}>{o.label}</span>
-              <span className="pr-4 text-tag leading-[14px] text-muted-foreground">{o.hint}</span>
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute right-1.5 top-1.5 flex size-3.5 items-center justify-center rounded-full bg-primary text-primary-foreground"
+        {opts.length === 1 ? (
+          <span className="ml-auto text-caption font-medium text-foreground">
+            {opts[0].label}
+            <span className="ml-1 font-normal text-muted-foreground">（{samplingLabel[mode]}仅支持）</span>
+          </span>
+        ) : (
+          <div
+            role="radiogroup"
+            aria-labelledby={labelId}
+            aria-label={`${serviceName}的样本类型`}
+            className="ml-auto flex flex-wrap justify-end gap-1"
+          >
+            {opts.map((o) => {
+              const on = o.id === value
+              return (
+                <button
+                  key={o.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  title={o.hint}
+                  onClick={() => onChange(o.id)}
+                  className={cn(
+                    'flex h-6 items-center gap-0.5 rounded-full border px-2 text-caption transition-colors',
+                    on ? 'border-primary bg-white font-medium text-primary' : 'border-transparent bg-white text-foreground',
+                  )}
                 >
-                  <Check className="size-3" strokeWidth={3} />
-                </span>
-              )}
-            </button>
-          )
-        })}
+                  {on && <Check className="size-3" strokeWidth={3} aria-hidden="true" />}
+                  {o.label}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
       {warn && !current && (
-        <p role="alert" className="mt-1.5 text-caption text-destructive">
+        <p role="alert" className="mt-1 text-caption text-destructive">
           请选择样本类型
         </p>
       )}
