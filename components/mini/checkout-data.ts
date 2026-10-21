@@ -74,9 +74,9 @@ export const testConsents: TestConsent[] = [
   { orderNo: 'GX20260928016', serviceIds: ['child'], memberIds: ['self', 'child'], signedAt: '2026-09-28 20:04' },
 ]
 
-export type SiteType = 'hospital' | 'lab'
+export type SiteType = 'clinic' | 'pharmacy'
 
-export const siteTypeLabel: Record<SiteType, string> = { hospital: '医院', lab: '第三方检验机构' }
+export const siteTypeLabel: Record<SiteType, string> = { clinic: '诊所', pharmacy: '药店' }
 
 export type Site = {
   id: string
@@ -91,10 +91,10 @@ export type Site = {
 
 /** 定点采样机构 —— 由后台维护，前端按定位获取并按距离排序 */
 export const sites: Site[] = [
-  { id: 'h1', name: '湖南省人民医院 · 检验科', type: 'hospital', district: '芙蓉区', detail: '解放西路 61 号 · 门诊楼 2 层', time: '周一至周六 08:00–16:30', distance: 1.8, todayAvailable: true },
-  { id: 'h2', name: '中南大学湘雅二医院 · 采样中心', type: 'hospital', district: '芙蓉区', detail: '人民中路 139 号 · 门诊 1 层', time: '每日 07:30–17:00', distance: 3.2, todayAvailable: true },
-  { id: 'h3', name: '中南大学湘雅医院 · 精准医学中心', type: 'hospital', district: '开福区', detail: '湘雅路 87 号 · 新医疗区 4 层', time: '周一至周五 08:00–16:00', distance: 4.6, todayAvailable: false },
-  { id: 'h4', name: '长沙市第一医院 · 检验科', type: 'hospital', district: '开福区', detail: '营盘路 311 号 · 门诊楼 3 层', time: '周一至周六 08:00–17:00', distance: 5.1, todayAvailable: true },
-  { id: 'h5', name: '中南大学湘雅三医院 · 采样中心', type: 'hospital', district: '岳麓区', detail: '桐梓坡路 138 号 · 门诊 1 层', time: '每日 08:00–16:30', distance: 8.4, todayAvailable: true },
-  { id: 'h6', name: '金域医学 · 长沙采样点', type: 'lab', district: '岳麓区', detail: '麓谷大道 627 号 · 长海科技园 1 层', time: '周一至周五 09:00–17:00', distance: 13.7, todayAvailable: false },
+  { id: 'h1', name: '老百姓大药房 · 解放西路店', type: 'pharmacy', district: '芙蓉区', detail: '解放西路 58 号 · 临街门面', time: '每日 08:00–22:00', distance: 0.9, todayAvailable: true },
+  { id: 'h2', name: '仁和诊所 · 五一广场', type: 'clinic', district: '芙蓉区', detail: '黄兴中路 102 号 · 2 楼', time: '周一至周六 08:30–18:00', distance: 1.8, todayAvailable: true },
+  { id: 'h3', name: '益丰大药房 · 人民中路店', type: 'pharmacy', district: '芙蓉区', detail: '人民中路 145 号 · 1 层', time: '每日 08:00–21:30', distance: 3.2, todayAvailable: true },
+  { id: 'h4', name: '康源综合门诊部', type: 'clinic', district: '开福区', detail: '营盘路 296 号 · 1 层', time: '周一至周五 08:00–17:30', distance: 4.6, todayAvailable: false },
+  { id: 'h5', name: '大参林药房 · 湘雅路店', type: 'pharmacy', district: '开福区', detail: '湘雅路 91 号 · 临街门面', time: '每日 08:30–21:00', distance: 5.1, todayAvailable: true },
+  { id: 'h6', name: '麓谷社区诊所', type: 'clinic', district: '岳麓区', detail: '麓谷大道 618 号 · 长海科技园 1 层', time: '周一至周六 09:00–18:00', distance: 8.4, todayAvailable: false },
 ]
