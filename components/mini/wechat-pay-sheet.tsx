@@ -5,7 +5,7 @@ import { Check, ChevronRight, Delete, Loader2, X } from 'lucide-react'
 import { WechatIcon } from '@/components/mini/wechat-icon'
 import { cn } from '@/lib/utils'
 
-type Step = 'confirm' | 'password' | 'processing' | 'success'
+type Step = 'password' | 'processing' | 'success'
 
 type Props = {
   amount: number
@@ -17,7 +17,7 @@ type Props = {
 const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'] as const
 
 export function WechatPaySheet({ amount, merchant = '长沙精准医学检验实验室有限公司', onCancel, onSuccess }: Props) {
-  const [step, setStep] = useState<Step>('confirm')
+  const [step, setStep] = useState<Step>('password')
   const [pwd, setPwd] = useState('')
   const pwdRef = useRef('')
   const timers = useRef<number[]>([])
@@ -75,7 +75,7 @@ export function WechatPaySheet({ amount, merchant = '长沙精准医学检验实
           </h2>
         </div>
 
-        {(step === 'confirm' || step === 'password') && (
+        {step === 'password' && (
           <div className="px-6 pb-5 pt-5 text-center">
             <div className="flex items-center justify-center gap-2">
               <span
@@ -103,18 +103,6 @@ export function WechatPaySheet({ amount, merchant = '长沙精准医学检验实
                 <ChevronRight className="size-3.5 text-[#bbb]" aria-hidden="true" />
               </span>
             </div>
-          </div>
-        )}
-
-        {step === 'confirm' && (
-          <div className="px-6 pb-8">
-            <button
-              type="button"
-              onClick={() => setStep('password')}
-              className="h-11 w-full rounded-lg bg-[#07c160] text-title font-medium text-white active:bg-[#06ad56]"
-            >
-              确认支付
-            </button>
           </div>
         )}
 
