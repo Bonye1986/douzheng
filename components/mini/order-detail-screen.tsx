@@ -175,10 +175,7 @@ export function OrderDetailScreen({
                       <dt className="shrink-0 text-muted-foreground">检测项目</dt>
                       <dd className="min-w-0 text-right font-medium text-foreground">{s.name}</dd>
                     </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <dt className="shrink-0 text-muted-foreground">项目金额</dt>
-                      <dd className="tabular-nums text-foreground">{yuan(s.price)}</dd>
-                    </div>
+
                     <div className="flex items-center justify-between gap-4">
                       <dt className="shrink-0 text-muted-foreground">采样方式</dt>
                       <dd className="text-foreground">{isSelf ? '居家自采样' : '定点采样'}</dd>
