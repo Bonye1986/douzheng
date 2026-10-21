@@ -38,7 +38,7 @@ import { WechatIcon } from '@/components/mini/wechat-icon'
 import { researchDocs } from '@/components/mini/research-sign-flow'
 
 type ResearchItem = { key: string; memberName: string; serviceName: string }
-import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
+import { initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
 import { useExaminees } from '@/components/mini/examinee-store'
 import {
   getSampleTypes,
@@ -355,7 +355,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 <span className="rounded bg-secondary px-1 text-tag font-normal text-muted-foreground">自愿</span>
               </h2>
               <p className="mt-1 text-caption leading-4 text-muted-foreground">
-                已向以下受检人发送签署短信，受检人点击短信中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
+                已向以下受检人发送签署短信，受检人点击短���中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
               </p>
               <ul className="mt-2">
                 {researchItems.map((it) => {
@@ -700,30 +700,6 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
             })}
           </ul>
         </section>
-
-        {byMember.length > 0 && (
-          <section aria-labelledby="member-sum-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-            <h2 id="member-sum-title" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-              <img src="/images/icons/mine-examinee.png" alt="" aria-hidden="true" width={22} height={22} className="size-[22px] object-contain" />
-              按受检人汇总
-            </h2>
-            <ul className="mt-2.5 flex flex-col gap-2">
-              {byMember.map(({ member, items }) => (
-                <li key={member.id} className="rounded-xl bg-background px-3 py-2.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-note font-medium text-foreground">{member.name}</span>
-                    <span className="rounded bg-white px-1 text-tag text-muted-foreground">{member.relation}</span>
-                    <span className="text-caption text-muted-foreground">{examineeMeta(member)}</span>
-                    <span className="ml-auto text-caption tabular-nums text-primary">{items.length} 项</span>
-                  </div>
-                  <p className="mt-1 text-caption leading-[18px] text-muted-foreground">
-                    {items.map((s) => s.name).join('、')}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
 
         <section aria-label="优惠券" className="mt-2.5 rounded-2xl bg-white px-3.5">
           <button
