@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Building2, ChevronUp, Clock, House, MapPin, UserRound } from 'lucide-react'
+import { Building2, ChevronUp, Clock, House, MapPin } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
 
@@ -167,43 +167,43 @@ export function OrderDetailScreen({
             检测项目
           </h2>
           <ul className="mt-1">
-            {groups.map((g) => (
-              <li key={g.id} className="border-b border-border py-2.5 last:border-0">
-                <p className="flex items-center gap-1.5 text-note font-medium text-foreground">
-                  <UserRound className="size-3.5 text-primary" aria-hidden="true" />
-                  {g.name}
-                </p>
-                <ul className="mt-1.5 flex flex-col gap-2">
-                  {g.items.map((s) => (
-                    <li key={s.id} className="text-caption">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="min-w-0 truncate text-muted-foreground">{s.name}</span>
-                        <span className="shrink-0 tabular-nums text-foreground">{yuan(s.price)}</span>
+            {groups.flatMap((g) =>
+              g.items.map((s) => (
+                <li key={`${g.id}-${s.id}`} className="border-b border-border py-3 last:border-0">
+                  <dl className="flex flex-col gap-2 text-caption">
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">检测项目</dt>
+                      <dd className="min-w-0 text-right font-medium text-foreground">{s.name}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">采样方式</dt>
+                      <dd className="flex items-center gap-1 text-foreground">
+                        {isSelf ? (
+                          <House className="size-3.5 text-primary" aria-hidden="true" />
+                        ) : (
+                          <Building2 className="size-3.5 text-primary" aria-hidden="true" />
+                        )}
+                        {isSelf ? '居家自采样' : '定点采样'}
+                      </dd>
+                    </div>
+                    {s.sampleType && (
+                      <div className="flex items-center justify-between gap-4">
+                        <dt className="shrink-0 text-muted-foreground">样本类型</dt>
+                        <dd className="text-foreground">{s.sampleType}</dd>
                       </div>
-                      <p className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">
-                        采样方式
-                        <span className="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
-                          {isSelf ? (
-                            <House className="size-3" aria-hidden="true" />
-                          ) : (
-                            <Building2 className="size-3" aria-hidden="true" />
-                          )}
-                          {isSelf ? '居家自采样' : '定点采样'}
-                        </span>
-                      </p>
-                      {s.sampleType && (
-                        <p className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">
-                          样本类型
-                          <span className="rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
-                            {s.sampleType}
-                          </span>
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
+                    )}
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">受检人</dt>
+                      <dd className="text-foreground">{g.name}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">项目金额</dt>
+                      <dd className="tabular-nums text-foreground">{yuan(s.price)}</dd>
+                    </div>
+                  </dl>
+                </li>
+              )),
+            )}
           </ul>
           <dl className="mt-1 flex flex-col gap-1.5 border-t border-border pt-3 text-caption">
             <div className="flex justify-between">
