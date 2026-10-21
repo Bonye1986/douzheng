@@ -426,7 +426,7 @@ const siteSeeds: StatusSeed[] = [
   {
     type: 'site',
     phase: 'toSample',
-    status: '待采样',
+    status: '待���样',
     refund: 'testing',
     notes: ['已核销，都正检测中心（徐汇） 正在为您采样'],
   },
@@ -547,7 +547,7 @@ function buildSeedOrders(): Order[] {
   return orders.sort((a, b) => b.id.slice(2, 10).localeCompare(a.id.slice(2, 10)))
 }
 
-const allOrders: Order[] = buildSeedOrders()
+const allOrders: Order[] = buildSeedOrders().filter((o) => !o.resample)
 
 export type OrderTabKey = StatusTabKey
 
@@ -657,7 +657,10 @@ export function OrderListScreen({
     if (o.status === '待收样' && !o.action) return { ...o, action: { label: '查看物流' } }
     return o
   }
-  const sourceOrders = [...extraOrders, ...resampleOrders, ...baseOrders].map(withSiteActions).flatMap((o): Order[] => {
+  const sourceOrders = [...extraOrders, ...resampleOrders, ...baseOrders]
+    .filter((o) => !o.resample)
+    .map(withSiteActions)
+    .flatMap((o): Order[] => {
     const names = o.examinees.split('、')
     if (!paidIds.has(o.id) || names.length < 2) return [o]
     const goods = parseYuan(o.goodsAmount ?? o.originalAmount ?? o.amount)
