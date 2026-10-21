@@ -162,12 +162,8 @@ export function TestDetailScreen({ service, cartCount, onBack, onAddToCart, onBu
           onClick={onContact}
           className="flex w-11 flex-col items-center gap-0.5 text-tag text-muted-foreground"
         >
-          <span className="flex size-7 items-center justify-center overflow-hidden" aria-hidden="true">
-            <img
-              src="/images/icons/service-headset.png"
-              alt=""
-              className="size-7 scale-[1.35] object-cover mix-blend-multiply"
-            />
+          <span className="flex size-7 items-center justify-center" aria-hidden="true">
+            <img src="/images/icons/service-headset.png" alt="" className="size-7 object-contain" />
           </span>
           客服
         </button>
