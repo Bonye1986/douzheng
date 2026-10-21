@@ -17,6 +17,11 @@ type Props = {
 
 const isMasked = (v: string) => v.includes('*')
 
+const ID_RE = /^\d{6}(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dX]$/
+const maskId = (v: string) => `${v.slice(0, 4)}**********${v.slice(14)}`
+const birthFromId = (v: string) => `${v.slice(6, 10)}-${v.slice(10, 12)}-${v.slice(12, 14)}`
+const genderFromId = (v: string): Gender => (Number(v[16]) % 2 === 1 ? 'male' : 'female')
+
 type Errors = Partial<Record<'relation' | 'name' | 'birth' | 'phone' | 'idCard', string>>
 
 const ageFrom = (birth: string) => {
@@ -34,7 +39,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
   const [gender, setGender] = useState<Gender>(initial?.gender ?? 'male')
   const [birth, setBirth] = useState(initial?.birth ?? '')
   const [phone, setPhone] = useState(initial?.phone ?? '')
-  const [idCard, setIdCard] = useState(initial?.idCard ?? '')
+  const [idNo, setIdNo] = useState(initial?.idNo ?? initial?.idCard ?? '')
   const [errors, setErrors] = useState<Errors>({})
   const [pickerOpen, setPickerOpen] = useState(false)
 
@@ -46,6 +51,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
     const next: Errors = {}
     if (!relation) next.relation = '请选择与本人关系'
     if (!/^[\u4e00-\u9fa5·a-zA-Z]{2,20}$/.test(name.trim())) next.name = '请填写 2–20 位真实姓名'
+    if (!locked && !isMasked(idNo) && !ID_RE.test(idNo)) next.idCard = '请输入正确的 18 位身份证号'
     if (!birth || birth > today) next.birth = '请选择正确的出生日期'
     if (phone && !isMasked(phone) && !/^1\d{10}$/.test(phone)) next.phone = '请输入 11 位手机号'
     setErrors(next)
@@ -58,6 +64,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
       age: ageFrom(birth),
       birth,
       phone: phone ? (isMasked(phone) ? phone : `${phone.slice(0, 3)}****${phone.slice(7)}`) : undefined,
+      idNo: isMasked(idNo) ? idNo : maskId(idNo),
       idCard: isSelf ? initial?.idCard : undefined,
     })
   }
@@ -137,6 +144,31 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
             />
             )}
           </Row>
+          <Row label="身份证号" required error={errors.idCard}>
+            {locked ? (
+              <LockedValue value={initial?.idCard ?? idNo} />
+            ) : (
+              <input
+                inputMode="text"
+                autoComplete="off"
+                value={idNo}
+                onFocus={() => isMasked(idNo) && setIdNo('')}
+                onChange={(e) => {
+                  const v = e.target.value.toUpperCase().replace(/[^\dX]/g, '').slice(0, 18)
+                  setIdNo(v)
+                  clear('idCard')
+                  if (ID_RE.test(v)) {
+                    setBirth(birthFromId(v))
+                    setGender(genderFromId(v))
+                    clear('birth')
+                  }
+                }}
+                placeholder="请输入 18 位身份证号"
+                aria-invalid={!!errors.idCard}
+                className="min-w-0 flex-1 bg-transparent text-right text-body tabular-nums text-foreground outline-none placeholder:text-faint"
+              />
+            )}
+          </Row>
           <Row label="性别" required>
             {locked ? (
               <LockedValue value={genderLabel[gender]} />
@@ -205,7 +237,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
 
         {relation && !isSelf && (
           <p className="mt-2.5 rounded-xl bg-secondary px-3 py-2 text-caption leading-[18px] text-primary">
-            家人无需实名认证，填写姓名、性别和出生日期即可下单检测
+            家人无需人脸实名认证，填写姓名与身份证号后将自动回填性别和出生日期
           </p>
         )}
 

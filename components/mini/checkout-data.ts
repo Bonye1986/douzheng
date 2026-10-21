@@ -8,6 +8,9 @@ export type Examinee = {
   age: number
   phone?: string
   birth?: string
+  /** 受检人身份证号（脱敏存储） */
+  idNo?: string
+  /** 本人实名认证后的身份证号，存在即表示已认证 */
   idCard?: string
 }
 
@@ -26,10 +29,11 @@ export const initialExaminees: Examinee[] = [
     age: 58,
     phone: '138****6721',
     birth: '1968-03-12',
+    idNo: '3101**********1234',
     idCard: '3101**********1234',
   },
-  { id: 'spouse', name: '李秀兰', relation: '配偶', gender: 'female', age: 56, birth: '1970-07-21' },
-  { id: 'child', name: '王小米', relation: '子女', gender: 'female', age: 8, birth: '2018-05-06' },
+  { id: 'spouse', name: '李秀兰', relation: '配偶', gender: 'female', age: 56, birth: '1970-07-21', idNo: '4301**********2846' },
+  { id: 'child', name: '王小米', relation: '子女', gender: 'female', age: 8, birth: '2018-05-06', idNo: '4301**********0623' },
 ]
 
 export type ResearchStatus = 'signed' | 'withdrawn' | 'unsigned'
