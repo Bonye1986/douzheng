@@ -16,7 +16,7 @@ type Props = {
 
 const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'] as const
 
-export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检测服务', onCancel, onSuccess }: Props) {
+export function WechatPaySheet({ amount, merchant = '长沙精准医学检验实验室有限公司', onCancel, onSuccess }: Props) {
   const [step, setStep] = useState<Step>('confirm')
   const [pwd, setPwd] = useState('')
   const pwdRef = useRef('')
@@ -77,8 +77,19 @@ export function WechatPaySheet({ amount, merchant = '精准用药 · 基因检�
 
         {(step === 'confirm' || step === 'password') && (
           <div className="px-6 pb-5 pt-5 text-center">
-            <p className="text-note text-[#666]">{merchant}</p>
-            <p className="mt-1.5 font-semibold tabular-nums text-[#1a1a1a]">
+            <div className="flex items-center justify-center gap-2">
+              <span
+                className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#3a6fd8] text-caption font-semibold text-white"
+                aria-hidden="true"
+              >
+                {merchant.slice(0, 1)}
+              </span>
+              <p className="text-note text-[#333]">
+                <span className="sr-only">收款商家：</span>
+                {merchant}
+              </p>
+            </div>
+            <p className="mt-2.5 font-semibold tabular-nums text-[#1a1a1a]">
               <span className="text-headline">¥</span>
               <span className="text-hero leading-none">{amountText}</span>
             </p>
