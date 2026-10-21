@@ -176,15 +176,12 @@ export function OrderDetailScreen({
                       <dd className="min-w-0 text-right font-medium text-foreground">{s.name}</dd>
                     </div>
                     <div className="flex items-center justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">项目金额</dt>
+                      <dd className="tabular-nums text-foreground">{yuan(s.price)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
                       <dt className="shrink-0 text-muted-foreground">采样方式</dt>
-                      <dd className="flex items-center gap-1 text-foreground">
-                        {isSelf ? (
-                          <House className="size-3.5 text-primary" aria-hidden="true" />
-                        ) : (
-                          <Building2 className="size-3.5 text-primary" aria-hidden="true" />
-                        )}
-                        {isSelf ? '居家自采样' : '定点采样'}
-                      </dd>
+                      <dd className="text-foreground">{isSelf ? '居家自采样' : '定点采样'}</dd>
                     </div>
                     {s.sampleType && (
                       <div className="flex items-center justify-between gap-4">
@@ -195,10 +192,6 @@ export function OrderDetailScreen({
                     <div className="flex items-center justify-between gap-4">
                       <dt className="shrink-0 text-muted-foreground">受检人</dt>
                       <dd className="text-foreground">{g.name}</dd>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <dt className="shrink-0 text-muted-foreground">项目金额</dt>
-                      <dd className="tabular-nums text-foreground">{yuan(s.price)}</dd>
                     </div>
                   </dl>
                 </li>
