@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleCheck,
+  Clock3,
   FlaskConical,
   House,
   MapPin,
@@ -148,6 +149,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [payMethod, setPayMethod] = useState<PayMethod>('wechat')
   const [submitted, setSubmitted] = useState(false)
   const [paying, setPaying] = useState(false)
+  const [unpaid, setUnpaid] = useState(false)
   const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
   const [resentSms, setResentSms] = useState<string[]>([])
   const [orderDetailOpen, setOrderDetailOpen] = useState(false)
@@ -210,16 +212,135 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
     setPaying(true)
   }
 
-  const paySuccess = () => {
+  const makeOrderInfo = () => {
     const now = new Date()
     const pad = (n: number) => String(n).padStart(2, '0')
-    setPaidInfo({
+    return {
       orderNo: `JY${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${String(now.getTime()).slice(-6)}`,
       time: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
-    })
+    }
+  }
+
+  const paySuccess = () => {
+    const info = makeOrderInfo()
+    setPaidInfo((prev) => (prev ? { orderNo: prev.orderNo, time: info.time } : info))
     setPaying(false)
+    setUnpaid(false)
+    setOrderDetailOpen(false)
     setSubmitted(true)
     onSubmitted()
+  }
+
+  const payCancel = () => {
+    setPaying(false)
+    if (!unpaid) {
+      setPaidInfo((prev) => prev ?? makeOrderInfo())
+      setUnpaid(true)
+      onSubmitted()
+    }
+  }
+
+  const detailGroups = byMember.map((g) => ({
+    id: g.member.id,
+    name: g.member.name,
+    items: g.items.map((s) => ({
+      id: s.id,
+      name: s.name,
+      price: s.price,
+      sampleType: getSampleTypes(s.id, mode).find((t) => t.id === sampleType[s.id])?.label,
+    })),
+  }))
+
+  if (unpaid && !submitted) {
+    return (
+      <Shell title="订单结果" onBack={onDone}>
+        <div className="flex-1 overflow-y-auto px-3 pt-2.5 [scrollbar-width:none]">
+          <section className="flex flex-col items-center rounded-2xl bg-white px-6 pb-6 pt-8 text-center">
+            <span className="flex size-14 items-center justify-center rounded-full bg-warning-soft">
+              <Clock3 className="size-8 text-[#d97706]" strokeWidth={1.8} aria-hidden="true" />
+            </span>
+            <p className="mt-3 text-heading font-semibold text-foreground">订单未支付</p>
+            <p className="mt-1 text-headline font-bold tabular-nums text-foreground">
+              <span className="text-title">¥</span>
+              {payable.toLocaleString('zh-CN')}
+            </p>
+            <p className="mt-2 text-caption leading-5 text-muted-foreground">
+              订单已提交，请在 30 分钟内完成支付，超时订单将自动取消
+            </p>
+            <div className="mt-5 flex w-full gap-2.5">
+              <button
+                type="button"
+                onClick={onDone}
+                className="h-10 flex-1 rounded-full border border-border text-body text-foreground active:bg-muted"
+              >
+                返回检测
+              </button>
+              <button
+                type="button"
+                onClick={() => setOrderDetailOpen(true)}
+                className="h-10 flex-1 rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
+              >
+                查看订单详情
+              </button>
+            </div>
+          </section>
+
+          <section aria-labelledby="unpaid-info" className="mt-2.5 rounded-2xl bg-white p-4">
+            <h2 id="unpaid-info" className="text-title font-semibold text-foreground">
+              订单信息
+            </h2>
+            <dl className="mt-2 flex flex-col gap-2 text-caption">
+              {[
+                ['订单编号', paidInfo?.orderNo ?? '-'],
+                ['下单时间', paidInfo?.time ?? '-'],
+                ['支付状态', '待付款'],
+                ['采样方式', hasSelf ? `居家自采样 · ${address.name} ${address.phone}` : `定点采样 · ${site?.name ?? '-'}`],
+              ].map(([k, v]) => (
+                <div key={k} className="flex gap-3">
+                  <dt className="w-14 shrink-0 text-muted-foreground">{k}</dt>
+                  <dd className="min-w-0 flex-1 text-right tabular-nums text-foreground">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <ul className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+              {byMember.map((g) => (
+                <li key={g.member.id} className="flex items-start justify-between gap-3 text-caption">
+                  <span className="shrink-0 font-medium text-foreground">{g.member.name}</span>
+                  <span className="min-w-0 text-right text-muted-foreground">{g.items.map((s) => s.name).join('、')}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+        {orderDetailOpen && (
+          <OrderDetailScreen
+            orderNo={paidInfo?.orderNo ?? '-'}
+            payTime={paidInfo?.time ?? '-'}
+            mode={mode}
+            receiver={address}
+            site={site ? { name: site.name, address: `${site.district} ${site.detail}`, time: site.time } : null}
+            groups={detailGroups}
+            goodsTotal={goodsTotal}
+            couponOff={couponOff}
+            couponName={coupon?.title}
+            payable={payable}
+            status="待付款"
+            statusDesc="请在 30 分钟内完成支付，超时订单将自动取消"
+            actions={
+              <button
+                type="button"
+                onClick={() => setPaying(true)}
+                className="h-7 rounded-full bg-primary px-3.5 text-caption font-medium text-primary-foreground"
+              >
+                继续支付
+              </button>
+            }
+            onBack={() => setOrderDetailOpen(false)}
+          />
+        )}
+        {paying && <WechatPaySheet amount={payable} onCancel={payCancel} onSuccess={paySuccess} />}
+      </Shell>
+    )
   }
 
   if (submitted) {
@@ -901,7 +1022,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
 
       {researchDocOpen && <ResearchDocSheet onClose={() => setResearchDocOpen(false)} />}
 
-      {paying && <WechatPaySheet amount={payable} onCancel={() => setPaying(false)} onSuccess={paySuccess} />}
+      {paying && <WechatPaySheet amount={payable} onCancel={payCancel} onSuccess={paySuccess} />}
 
       {sheet === 'site' && (
         <SiteListScreen
