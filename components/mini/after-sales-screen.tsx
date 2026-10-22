@@ -149,8 +149,16 @@ export function AfterSalesScreen({
                 className="block w-full text-left"
               >
               <div className="flex items-center gap-1.5">
-                <TypeIcon className="size-3.5 text-primary" aria-hidden="true" />
-                <span className="text-caption tabular-nums text-muted-foreground">{c.id}</span>
+                <span
+                  className={cn(
+                    'inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-tag font-medium',
+                    c.type === 'self' ? 'bg-primary/10 text-primary' : 'bg-success-soft text-success',
+                  )}
+                >
+                  <TypeIcon className="size-3" aria-hidden="true" />
+                  {c.type === 'self' ? '居家自采样' : '定点采样'}
+                </span>
+                <span className="truncate text-caption tabular-nums text-muted-foreground">{c.id}</span>
                 <span
                   className={cn(
                     'ml-auto text-caption font-medium',
