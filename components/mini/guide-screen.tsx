@@ -5,8 +5,6 @@ import Image from 'next/image'
 import {
   BookOpen,
   ChevronRight,
-  Clock,
-  Eye,
   FileSearch,
   Headphones,
   Info,
@@ -41,6 +39,7 @@ type Article = {
   icon: LucideIcon
   minutes: number
   views: number
+  author: string
   updated: string
   cover?: string
   content: Block[]
@@ -70,6 +69,7 @@ const articles: Article[] = [
     icon: TestTube,
     minutes: 3,
     views: 12860,
+    author: '都正生物 采样服务中心',
     updated: '2026-10-10',
     cover: '/images/guide-saliva-sampling.png',
     content: [
@@ -99,6 +99,7 @@ const articles: Article[] = [
     icon: PackageCheck,
     minutes: 2,
     views: 8420,
+    author: '都正生物 客服中心',
     updated: '2026-10-06',
     content: [
       { type: 'p', text: '平台提供心血管、精神神经、儿童安全用药等多种用药基因检测项目，可先通过 AI 咨询描述用药情况，获取项目推荐。' },
@@ -123,6 +124,7 @@ const articles: Article[] = [
     icon: Truck,
     minutes: 2,
     views: 3906,
+    author: '都正生物 采样服务中心',
     updated: '2026-09-28',
     content: [
       { type: 'p', text: '选择定点采样时，下单需指定合作采样机构。支付成功后订单进入「待采样」，并生成到店核销码。' },
@@ -138,6 +140,7 @@ const articles: Article[] = [
     icon: FileSearch,
     minutes: 4,
     views: 10215,
+    author: '都正生物 医学部',
     updated: '2026-10-02',
     content: [
       { type: 'p', text: '实验室收样后约 7–10 个工作日出具报告，出具后将以短信通知，您可在「我的 · 我的报告」查看。' },
@@ -155,6 +158,7 @@ const articles: Article[] = [
     icon: ShieldCheck,
     minutes: 3,
     views: 5132,
+    author: '都正生物 信息安全部',
     updated: '2026-09-20',
     content: [
       { type: 'p', text: '您的基因数据与报告采用加密存储，仅用于为您出具检测报告与提供用药解读服务。' },
@@ -170,6 +174,7 @@ const articles: Article[] = [
     icon: Sparkles,
     minutes: 2,
     views: 4378,
+    author: '都正生物 医学部',
     updated: '2026-09-15',
     content: [
       { type: 'p', text: 'AI 咨询支持在对话顶部切换通俗版与专业版。关联检测人后，AI 会结合其基本信息与历史报告给出个性化回答。' },
@@ -178,26 +183,6 @@ const articles: Article[] = [
     ],
   },
 ]
-
-function formatViews(n: number) {
-  return n >= 10000 ? `${(n / 10000).toFixed(1)}万` : n.toLocaleString('zh-CN')
-}
-
-function ArticleMeta({ article }: { article: Article }) {
-  return (
-    <span className="flex items-center gap-2.5 text-caption text-muted-foreground">
-      <span className="flex items-center gap-0.5">
-        <Clock className="size-3" aria-hidden="true" />
-        <span className="tabular-nums">{article.minutes}</span> 分钟
-      </span>
-      <span className="flex items-center gap-0.5">
-        <Eye className="size-3" aria-hidden="true" />
-        <span className="tabular-nums">{formatViews(article.views)}</span>
-        <span className="sr-only">次阅读</span>
-      </span>
-    </span>
-  )
-}
 
 function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onContact?: () => void }) {
   const [category, setCategory] = useState<Category>('all')
@@ -313,10 +298,10 @@ function GuideDetail({
           <span className="rounded bg-secondary px-1.5 py-0.5 text-caption text-primary">{categoryLabel[article.category]}</span>
           <h2 className="mt-2 text-heading font-semibold leading-snug text-foreground text-balance">{article.title}</h2>
           <div className="mt-2 flex items-center gap-2.5 text-caption text-muted-foreground">
+            <span>{article.author}</span>
             <span>
-              更新于 <span className="tabular-nums">{article.updated}</span>
+              发布于 <time className="tabular-nums" dateTime={article.updated}>{article.updated}</time>
             </span>
-            <ArticleMeta article={article} />
           </div>
 
           {article.cover && (
