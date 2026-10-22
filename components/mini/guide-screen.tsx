@@ -210,9 +210,6 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
     )
   }, [category, keyword])
 
-  const featured = category === 'all' && !keyword.trim() ? articles.find((a) => a.cover) : undefined
-  const rest = featured ? filtered.filter((a) => a.id !== featured.id) : filtered
-
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="shrink-0 bg-white px-3 pb-2 pt-1">
@@ -254,31 +251,9 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
-        {featured && (
-          <button
-            type="button"
-            onClick={() => onOpen(featured.id)}
-            className="block w-full overflow-hidden rounded-2xl bg-white text-left"
-          >
-            <div className="relative aspect-[16/8] w-full bg-secondary">
-              <Image src={featured.cover!} alt="" fill sizes="360px" className="object-cover" />
-              <span className="absolute left-2.5 top-2.5 rounded-full bg-primary px-2 py-0.5 text-tag font-medium text-primary-foreground">
-                新手必读
-              </span>
-            </div>
-            <div className="p-3">
-              <h2 className="text-title font-semibold text-foreground">{featured.title}</h2>
-              <p className="mt-1 line-clamp-2 text-caption leading-relaxed text-muted-foreground">{featured.summary}</p>
-              <div className="mt-2">
-                <ArticleMeta article={featured} />
-              </div>
-            </div>
-          </button>
-        )}
-
-        {rest.length > 0 ? (
-          <ul className={`overflow-hidden rounded-2xl bg-white ${featured ? 'mt-2.5' : ''}`} aria-label="指南文章">
-            {rest.map((a, i) => (
+        {filtered.length > 0 ? (
+          <ul className="overflow-hidden rounded-2xl bg-white" aria-label="指南文章">
+            {filtered.map((a, i) => (
               <li key={a.id} className={i > 0 ? 'border-t border-border' : ''}>
                 <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-start gap-3 p-3 text-left">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
@@ -289,27 +264,19 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
                     <span className="mt-0.5 line-clamp-2 block text-caption leading-relaxed text-muted-foreground">
                       {a.summary}
                     </span>
-                    <span className="mt-1.5 flex items-center gap-2">
-                      <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
-                        {categoryLabel[a.category]}
-                      </span>
-                      <ArticleMeta article={a} />
-                    </span>
                   </span>
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          !featured && (
-            <div className="flex flex-col items-center px-6 pt-16 text-center">
-              <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
-                <BookOpen className="size-7" aria-hidden="true" />
-              </span>
-              <p className="mt-3 text-body font-medium text-foreground">没有找到相关指南</p>
-              <p className="mt-1 text-caption text-muted-foreground">换个关键词试试，或直接联系客服</p>
-            </div>
-          )
+          <div className="flex flex-col items-center px-6 pt-16 text-center">
+            <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
+              <BookOpen className="size-7" aria-hidden="true" />
+            </span>
+            <p className="mt-3 text-body font-medium text-foreground">没有找到相关指南</p>
+            <p className="mt-1 text-caption text-muted-foreground">换个关键词试试，或直接联系客服</p>
+          </div>
         )}
 
         <div className="mt-2.5 flex items-center gap-3 rounded-2xl bg-white p-3">
@@ -331,13 +298,9 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
 function GuideDetail({
   article,
   onOpen,
-  onContact,
-  onAskAi,
 }: {
   article: Article
   onOpen: (id: string) => void
-  onContact?: () => void
-  onAskAi?: (question: string) => void
 }) {
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
   const related = articles.filter((a) => a.id !== article.id && a.category === article.category).slice(0, 2)
@@ -447,25 +410,6 @@ function GuideDetail({
           </ul>
         </section>
       </div>
-
-      <div className="flex shrink-0 gap-2.5 border-t border-border bg-white px-3 pb-6 pt-2.5">
-        <button
-          type="button"
-          onClick={onContact}
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary text-body text-primary"
-        >
-          <Headphones className="size-4" aria-hidden="true" />
-          联系客服
-        </button>
-        <button
-          type="button"
-          onClick={() => onAskAi?.(article.title)}
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-body font-medium text-primary-foreground"
-        >
-          <Sparkles className="size-4" aria-hidden="true" />
-          问问 AI
-        </button>
-      </div>
     </div>
   )
 }
@@ -489,7 +433,7 @@ export function GuideScreen({
   if (article) {
     return (
       <SubPage key={article.id} title="指南详情" titleId="guide-detail-title" onBack={() => setArticleId(null)}>
-        <GuideDetail article={article} onOpen={setArticleId} onContact={onContact} onAskAi={onAskAi} />
+        <GuideDetail article={article} onOpen={setArticleId} />
       </SubPage>
     )
   }
