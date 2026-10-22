@@ -75,7 +75,7 @@ export function VerifyCodeSheet({ orderNo, product, examinees, siteName, onClose
             {siteName}
           </p>
         )}
-        <p className="mt-2 text-caption text-muted-foreground">核销码有效期 30 天，请勿截图转发他人</p>
+        <p className="mt-2 text-caption text-muted-foreground">请勿截图转发他人</p>
       </div>
     </div>
   )

@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleCheck,
+  Clock3,
   FlaskConical,
   House,
   MapPin,
@@ -38,7 +39,7 @@ import { WechatIcon } from '@/components/mini/wechat-icon'
 import { researchDocs } from '@/components/mini/research-sign-flow'
 
 type ResearchItem = { key: string; memberName: string; serviceName: string }
-import { examineeMeta, initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
+import { initialExaminees, sites, type Examinee } from '@/components/mini/checkout-data'
 import { useExaminees } from '@/components/mini/examinee-store'
 import {
   getSampleTypes,
@@ -148,6 +149,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
   const [payMethod, setPayMethod] = useState<PayMethod>('wechat')
   const [submitted, setSubmitted] = useState(false)
   const [paying, setPaying] = useState(false)
+  const [unpaid, setUnpaid] = useState(false)
   const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
   const [resentSms, setResentSms] = useState<string[]>([])
   const [orderDetailOpen, setOrderDetailOpen] = useState(false)
@@ -210,16 +212,135 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
     setPaying(true)
   }
 
-  const paySuccess = () => {
+  const makeOrderInfo = () => {
     const now = new Date()
     const pad = (n: number) => String(n).padStart(2, '0')
-    setPaidInfo({
+    return {
       orderNo: `JY${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${String(now.getTime()).slice(-6)}`,
       time: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
-    })
+    }
+  }
+
+  const paySuccess = () => {
+    const info = makeOrderInfo()
+    setPaidInfo((prev) => (prev ? { orderNo: prev.orderNo, time: info.time } : info))
     setPaying(false)
+    setUnpaid(false)
+    setOrderDetailOpen(false)
     setSubmitted(true)
     onSubmitted()
+  }
+
+  const payCancel = () => {
+    setPaying(false)
+    if (!unpaid) {
+      setPaidInfo((prev) => prev ?? makeOrderInfo())
+      setUnpaid(true)
+      onSubmitted()
+    }
+  }
+
+  const detailGroups = byMember.map((g) => ({
+    id: g.member.id,
+    name: g.member.name,
+    items: g.items.map((s) => ({
+      id: s.id,
+      name: s.name,
+      price: s.price,
+      sampleType: getSampleTypes(s.id, mode).find((t) => t.id === sampleType[s.id])?.label,
+    })),
+  }))
+
+  if (unpaid && !submitted) {
+    return (
+      <Shell title="订单结果" onBack={onDone}>
+        <div className="flex-1 overflow-y-auto px-3 pt-2.5 [scrollbar-width:none]">
+          <section className="flex flex-col items-center rounded-2xl bg-white px-6 pb-6 pt-8 text-center">
+            <span className="flex size-14 items-center justify-center rounded-full bg-warning-soft">
+              <Clock3 className="size-8 text-[#d97706]" strokeWidth={1.8} aria-hidden="true" />
+            </span>
+            <p className="mt-3 text-heading font-semibold text-foreground">订单未支付</p>
+            <p className="mt-1 text-headline font-bold tabular-nums text-foreground">
+              <span className="text-title">¥</span>
+              {payable.toLocaleString('zh-CN')}
+            </p>
+            <p className="mt-2 text-caption leading-5 text-muted-foreground">
+              订单已提交，请在 30 分钟内完成支付，超时订单将自动取消
+            </p>
+            <div className="mt-5 flex w-full gap-2.5">
+              <button
+                type="button"
+                onClick={onDone}
+                className="h-10 flex-1 rounded-full border border-border text-body text-foreground active:bg-muted"
+              >
+                返回检测
+              </button>
+              <button
+                type="button"
+                onClick={() => setOrderDetailOpen(true)}
+                className="h-10 flex-1 rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
+              >
+                查看订单详情
+              </button>
+            </div>
+          </section>
+
+          <section aria-labelledby="unpaid-info" className="mt-2.5 rounded-2xl bg-white p-4">
+            <h2 id="unpaid-info" className="text-title font-semibold text-foreground">
+              订单信息
+            </h2>
+            <dl className="mt-2 flex flex-col gap-2 text-caption">
+              {[
+                ['订单编号', paidInfo?.orderNo ?? '-'],
+                ['下单时间', paidInfo?.time ?? '-'],
+                ['支付状态', '待付款'],
+                ['采样方式', hasSelf ? `居家自采样 · ${address.name} ${address.phone}` : `定点采样 · ${site?.name ?? '-'}`],
+              ].map(([k, v]) => (
+                <div key={k} className="flex gap-3">
+                  <dt className="w-14 shrink-0 text-muted-foreground">{k}</dt>
+                  <dd className="min-w-0 flex-1 text-right tabular-nums text-foreground">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <ul className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+              {byMember.map((g) => (
+                <li key={g.member.id} className="flex items-start justify-between gap-3 text-caption">
+                  <span className="shrink-0 font-medium text-foreground">{g.member.name}</span>
+                  <span className="min-w-0 text-right text-muted-foreground">{g.items.map((s) => s.name).join('、')}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+        {orderDetailOpen && (
+          <OrderDetailScreen
+            orderNo={paidInfo?.orderNo ?? '-'}
+            payTime={paidInfo?.time ?? '-'}
+            mode={mode}
+            receiver={address}
+            site={site ? { name: site.name, address: `${site.district} ${site.detail}`, time: site.time } : null}
+            groups={detailGroups}
+            goodsTotal={goodsTotal}
+            couponOff={couponOff}
+            couponName={coupon?.title}
+            payable={payable}
+            status="待付款"
+            statusDesc="请在 30 分钟内完成支付，超时订单将自动取消"
+            actions={
+              <button
+                type="button"
+                onClick={() => setPaying(true)}
+                className="h-7 rounded-full bg-primary px-3.5 text-caption font-medium text-primary-foreground"
+              >
+                继续支付
+              </button>
+            }
+            onBack={() => setOrderDetailOpen(false)}
+          />
+        )}
+        {paying && <WechatPaySheet amount={payable} onCancel={payCancel} onSuccess={paySuccess} />}
+      </Shell>
+    )
   }
 
   if (submitted) {
@@ -355,7 +476,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 <span className="rounded bg-secondary px-1 text-tag font-normal text-muted-foreground">自愿</span>
               </h2>
               <p className="mt-1 text-caption leading-4 text-muted-foreground">
-                已向以下受检人发送签署短信，受检人点击短信中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
+                已向以下受检人发送签署短信，受检人点击短���中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
               </p>
               <ul className="mt-2">
                 {researchItems.map((it) => {
@@ -602,6 +723,14 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                       </div>
                     </div>
                   </div>
+                  <SampleTypePicker
+                    serviceId={service.id}
+                    serviceName={service.name}
+                    mode={mode}
+                    value={sampleType[service.id]}
+                    warn={sampleWarn}
+                    onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
+                  />
                   <div
                     role="group"
                     aria-label={`${service.name}的受检人`}
@@ -687,43 +816,11 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                       </p>
                     </div>
                   )}
-                  <SampleTypePicker
-                    serviceId={service.id}
-                    serviceName={service.name}
-                    mode={mode}
-                    value={sampleType[service.id]}
-                    warn={sampleWarn}
-                    onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
-                  />
                 </li>
               )
             })}
           </ul>
         </section>
-
-        {byMember.length > 0 && (
-          <section aria-labelledby="member-sum-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
-            <h2 id="member-sum-title" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-              <img src="/images/icons/mine-examinee.png" alt="" aria-hidden="true" width={22} height={22} className="size-[22px] object-contain" />
-              按受检人汇总
-            </h2>
-            <ul className="mt-2.5 flex flex-col gap-2">
-              {byMember.map(({ member, items }) => (
-                <li key={member.id} className="rounded-xl bg-background px-3 py-2.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-note font-medium text-foreground">{member.name}</span>
-                    <span className="rounded bg-white px-1 text-tag text-muted-foreground">{member.relation}</span>
-                    <span className="text-caption text-muted-foreground">{examineeMeta(member)}</span>
-                    <span className="ml-auto text-caption tabular-nums text-primary">{items.length} 项</span>
-                  </div>
-                  <p className="mt-1 text-caption leading-[18px] text-muted-foreground">
-                    {items.map((s) => s.name).join('、')}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
 
         <section aria-label="优惠券" className="mt-2.5 rounded-2xl bg-white px-3.5">
           <button
@@ -925,7 +1022,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
 
       {researchDocOpen && <ResearchDocSheet onClose={() => setResearchDocOpen(false)} />}
 
-      {paying && <WechatPaySheet amount={payable} onCancel={() => setPaying(false)} onSuccess={paySuccess} />}
+      {paying && <WechatPaySheet amount={payable} onCancel={payCancel} onSuccess={paySuccess} />}
 
       {sheet === 'site' && (
         <SiteListScreen
@@ -1014,54 +1111,54 @@ function SampleTypePicker({
   const labelId = `sample-${serviceId}`
 
   return (
-    <div className={cn('mt-2.5 rounded-xl border p-3 transition-colors', warn && !current ? 'border-[#f3b6a3] bg-[#fff7f4]' : 'border-border')}>
-      <p className="flex items-center gap-1.5">
-        <span className="flex size-5 items-center justify-center rounded-md bg-secondary text-primary" aria-hidden="true">
-          <FlaskConical className="size-3" />
-        </span>
-        <span id={labelId} className="text-caption font-medium text-foreground">
+    <div className="mt-2.5">
+      <div
+        className={cn(
+          'flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors',
+          warn && !current ? 'bg-destructive-soft' : 'bg-[#f5f7fb]',
+        )}
+      >
+        <span id={labelId} className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
+          <FlaskConical className="size-3.5 text-primary" aria-hidden="true" />
           样本类型
         </span>
-        <span className="ml-auto text-tag text-muted-foreground">
-          {opts.length > 1 ? `${opts.length} 种可选` : `${samplingLabel[mode]}仅支持此类型`}
-        </span>
-      </p>
-      <div
-        role="radiogroup"
-        aria-labelledby={labelId}
-        aria-label={`${serviceName}的样本类型`}
-        className={cn('mt-2 grid gap-1.5', opts.length > 1 ? 'grid-cols-2' : 'grid-cols-1')}
-      >
-        {opts.map((o) => {
-          const on = o.id === value
-          return (
-            <button
-              key={o.id}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              onClick={() => onChange(o.id)}
-              className={cn(
-                'relative flex flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 text-left transition-colors',
-                on ? 'border-primary bg-secondary' : 'border-transparent bg-[#f5f7fb]',
-              )}
-            >
-              <span className={cn('text-note font-medium', on ? 'text-primary' : 'text-foreground')}>{o.label}</span>
-              <span className="pr-4 text-tag leading-[14px] text-muted-foreground">{o.hint}</span>
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute right-1.5 top-1.5 flex size-3.5 items-center justify-center rounded-full bg-primary text-primary-foreground"
+        {opts.length === 1 ? (
+          <span className="ml-auto text-caption font-medium text-foreground">
+            {opts[0].label}
+            <span className="ml-1 font-normal text-muted-foreground">（{samplingLabel[mode]}仅支持）</span>
+          </span>
+        ) : (
+          <div
+            role="radiogroup"
+            aria-labelledby={labelId}
+            aria-label={`${serviceName}的样本类型`}
+            className="ml-auto flex flex-wrap justify-end gap-1"
+          >
+            {opts.map((o) => {
+              const on = o.id === value
+              return (
+                <button
+                  key={o.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  title={o.hint}
+                  onClick={() => onChange(o.id)}
+                  className={cn(
+                    'flex h-6 items-center gap-0.5 rounded-full border px-2 text-caption transition-colors',
+                    on ? 'border-primary bg-white font-medium text-primary' : 'border-transparent bg-white text-foreground',
+                  )}
                 >
-                  <Check className="size-3" strokeWidth={3} />
-                </span>
-              )}
-            </button>
-          )
-        })}
+                  {on && <Check className="size-3" strokeWidth={3} aria-hidden="true" />}
+                  {o.label}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
       {warn && !current && (
-        <p role="alert" className="mt-1.5 text-caption text-destructive">
+        <p role="alert" className="mt-1 text-caption text-destructive">
           请选择样本类型
         </p>
       )}

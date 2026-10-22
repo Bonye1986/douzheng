@@ -5,8 +5,6 @@ import Image from 'next/image'
 import {
   BookOpen,
   ChevronRight,
-  Clock,
-  Eye,
   FileSearch,
   Headphones,
   Info,
@@ -41,6 +39,7 @@ type Article = {
   icon: LucideIcon
   minutes: number
   views: number
+  author: string
   updated: string
   cover?: string
   content: Block[]
@@ -70,6 +69,7 @@ const articles: Article[] = [
     icon: TestTube,
     minutes: 3,
     views: 12860,
+    author: '都正生物 采样服务中心',
     updated: '2026-10-10',
     cover: '/images/guide-saliva-sampling.png',
     content: [
@@ -99,6 +99,7 @@ const articles: Article[] = [
     icon: PackageCheck,
     minutes: 2,
     views: 8420,
+    author: '都正生物 客服中心',
     updated: '2026-10-06',
     content: [
       { type: 'p', text: '平台提供心血管、精神神经、儿童安全用药等多种用药基因检测项目，可先通过 AI 咨询描述用药情况，获取项目推荐。' },
@@ -123,11 +124,12 @@ const articles: Article[] = [
     icon: Truck,
     minutes: 2,
     views: 3906,
+    author: '都正生物 采样服务中心',
     updated: '2026-09-28',
     content: [
       { type: 'p', text: '选择定点采样时，下单需指定合作采样机构。支付成功后订单进入「待采样」，并生成到店核销码。' },
       { type: 'steps', items: ['在营业时间内到达所选机构', '向工作人员出示订单核销码与受检人身份证件', '由专业人员完成采样，样本由机构统一寄送实验室'] },
-      { type: 'tip', text: '核销码有效期 30 天，过期未核销可在订单中申请改约或退款。' },
+      { type: 'tip', text: '核销码请妥善保管，未核销前可在订单中申请改约或退款。' },
     ],
   },
   {
@@ -138,6 +140,7 @@ const articles: Article[] = [
     icon: FileSearch,
     minutes: 4,
     views: 10215,
+    author: '都正生物 医学部',
     updated: '2026-10-02',
     content: [
       { type: 'p', text: '实验室收样后约 7–10 个工作日出具报告，出具后将以短信通知，您可在「我的 · 我的报告」查看。' },
@@ -155,6 +158,7 @@ const articles: Article[] = [
     icon: ShieldCheck,
     minutes: 3,
     views: 5132,
+    author: '都正生物 信息安全部',
     updated: '2026-09-20',
     content: [
       { type: 'p', text: '您的基因数据与报告采用加密存储，仅用于为您出具检测报告与提供用药解读服务。' },
@@ -170,6 +174,7 @@ const articles: Article[] = [
     icon: Sparkles,
     minutes: 2,
     views: 4378,
+    author: '都正生物 医学部',
     updated: '2026-09-15',
     content: [
       { type: 'p', text: 'AI 咨询支持在对话顶部切换通俗版与专业版。关联检测人后，AI 会结合其基本信息与历史报告给出个性化回答。' },
@@ -178,26 +183,6 @@ const articles: Article[] = [
     ],
   },
 ]
-
-function formatViews(n: number) {
-  return n >= 10000 ? `${(n / 10000).toFixed(1)}万` : n.toLocaleString('zh-CN')
-}
-
-function ArticleMeta({ article }: { article: Article }) {
-  return (
-    <span className="flex items-center gap-2.5 text-caption text-muted-foreground">
-      <span className="flex items-center gap-0.5">
-        <Clock className="size-3" aria-hidden="true" />
-        <span className="tabular-nums">{article.minutes}</span> 分钟
-      </span>
-      <span className="flex items-center gap-0.5">
-        <Eye className="size-3" aria-hidden="true" />
-        <span className="tabular-nums">{formatViews(article.views)}</span>
-        <span className="sr-only">次阅读</span>
-      </span>
-    </span>
-  )
-}
 
 function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onContact?: () => void }) {
   const [category, setCategory] = useState<Category>('all')
@@ -209,9 +194,6 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
       (a) => (category === 'all' || a.category === category) && (!q || a.title.includes(q) || a.summary.includes(q)),
     )
   }, [category, keyword])
-
-  const featured = category === 'all' && !keyword.trim() ? articles.find((a) => a.cover) : undefined
-  const rest = featured ? filtered.filter((a) => a.id !== featured.id) : filtered
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -254,31 +236,9 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
-        {featured && (
-          <button
-            type="button"
-            onClick={() => onOpen(featured.id)}
-            className="block w-full overflow-hidden rounded-2xl bg-white text-left"
-          >
-            <div className="relative aspect-[16/8] w-full bg-secondary">
-              <Image src={featured.cover!} alt="" fill sizes="360px" className="object-cover" />
-              <span className="absolute left-2.5 top-2.5 rounded-full bg-primary px-2 py-0.5 text-tag font-medium text-primary-foreground">
-                新手必读
-              </span>
-            </div>
-            <div className="p-3">
-              <h2 className="text-title font-semibold text-foreground">{featured.title}</h2>
-              <p className="mt-1 line-clamp-2 text-caption leading-relaxed text-muted-foreground">{featured.summary}</p>
-              <div className="mt-2">
-                <ArticleMeta article={featured} />
-              </div>
-            </div>
-          </button>
-        )}
-
-        {rest.length > 0 ? (
-          <ul className={`overflow-hidden rounded-2xl bg-white ${featured ? 'mt-2.5' : ''}`} aria-label="指南文章">
-            {rest.map((a, i) => (
+        {filtered.length > 0 ? (
+          <ul className="overflow-hidden rounded-2xl bg-white" aria-label="指南文章">
+            {filtered.map((a, i) => (
               <li key={a.id} className={i > 0 ? 'border-t border-border' : ''}>
                 <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-start gap-3 p-3 text-left">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
@@ -289,27 +249,19 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
                     <span className="mt-0.5 line-clamp-2 block text-caption leading-relaxed text-muted-foreground">
                       {a.summary}
                     </span>
-                    <span className="mt-1.5 flex items-center gap-2">
-                      <span className="rounded bg-muted px-1.5 py-px text-tag text-muted-foreground">
-                        {categoryLabel[a.category]}
-                      </span>
-                      <ArticleMeta article={a} />
-                    </span>
                   </span>
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          !featured && (
-            <div className="flex flex-col items-center px-6 pt-16 text-center">
-              <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
-                <BookOpen className="size-7" aria-hidden="true" />
-              </span>
-              <p className="mt-3 text-body font-medium text-foreground">没有找到相关指南</p>
-              <p className="mt-1 text-caption text-muted-foreground">换个关键词试试，或直接联系客服</p>
-            </div>
-          )
+          <div className="flex flex-col items-center px-6 pt-16 text-center">
+            <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
+              <BookOpen className="size-7" aria-hidden="true" />
+            </span>
+            <p className="mt-3 text-body font-medium text-foreground">没有找到相关指南</p>
+            <p className="mt-1 text-caption text-muted-foreground">换个关键词试试，或直接联系客服</p>
+          </div>
         )}
 
         <div className="mt-2.5 flex items-center gap-3 rounded-2xl bg-white p-3">
@@ -331,13 +283,9 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
 function GuideDetail({
   article,
   onOpen,
-  onContact,
-  onAskAi,
 }: {
   article: Article
   onOpen: (id: string) => void
-  onContact?: () => void
-  onAskAi?: (question: string) => void
 }) {
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
   const related = articles.filter((a) => a.id !== article.id && a.category === article.category).slice(0, 2)
@@ -350,10 +298,10 @@ function GuideDetail({
           <span className="rounded bg-secondary px-1.5 py-0.5 text-caption text-primary">{categoryLabel[article.category]}</span>
           <h2 className="mt-2 text-heading font-semibold leading-snug text-foreground text-balance">{article.title}</h2>
           <div className="mt-2 flex items-center gap-2.5 text-caption text-muted-foreground">
+            <span>{article.author}</span>
             <span>
-              更新于 <span className="tabular-nums">{article.updated}</span>
+              发布于 <time className="tabular-nums" dateTime={article.updated}>{article.updated}</time>
             </span>
-            <ArticleMeta article={article} />
           </div>
 
           {article.cover && (
@@ -447,25 +395,6 @@ function GuideDetail({
           </ul>
         </section>
       </div>
-
-      <div className="flex shrink-0 gap-2.5 border-t border-border bg-white px-3 pb-6 pt-2.5">
-        <button
-          type="button"
-          onClick={onContact}
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-primary text-body text-primary"
-        >
-          <Headphones className="size-4" aria-hidden="true" />
-          联系客服
-        </button>
-        <button
-          type="button"
-          onClick={() => onAskAi?.(article.title)}
-          className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-body font-medium text-primary-foreground"
-        >
-          <Sparkles className="size-4" aria-hidden="true" />
-          问问 AI
-        </button>
-      </div>
     </div>
   )
 }
@@ -489,7 +418,7 @@ export function GuideScreen({
   if (article) {
     return (
       <SubPage key={article.id} title="指南详情" titleId="guide-detail-title" onBack={() => setArticleId(null)}>
-        <GuideDetail article={article} onOpen={setArticleId} onContact={onContact} onAskAi={onAskAi} />
+        <GuideDetail article={article} onOpen={setArticleId} />
       </SubPage>
     )
   }

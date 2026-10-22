@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Clock, Hospital, LocateFixed, MapPin, Microscope, Navigation, Search, X } from 'lucide-react'
+import { Check, Clock, LocateFixed, MapPin, Navigation, Pill, Search, Stethoscope, X } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { siteTypeLabel, sites } from '@/components/mini/checkout-data'
 import { sampleTypeCatalog } from '@/components/mini/tests-data'
@@ -61,7 +61,7 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
           <ul role="radiogroup" aria-label="定点采样机构" className="flex flex-col gap-2.5">
             {list.map((s) => {
               const active = s.id === selected
-              const TypeIcon = s.type === 'hospital' ? Hospital : Microscope
+              const TypeIcon = s.type === 'clinic' ? Stethoscope : Pill
               return (
                 <li key={s.id}>
                   <button
@@ -79,7 +79,7 @@ export function SiteListScreen({ selected, onBack, onSelect }: Props) {
                         aria-hidden="true"
                         className={cn(
                           'flex size-9 shrink-0 items-center justify-center rounded-xl',
-                          s.type === 'hospital' ? 'bg-secondary text-primary' : 'bg-success-soft text-success',
+                          s.type === 'clinic' ? 'bg-secondary text-primary' : 'bg-success-soft text-success',
                         )}
                       >
                         <TypeIcon className="size-4.5" />

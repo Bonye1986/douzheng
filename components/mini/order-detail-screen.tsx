@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Building2, ChevronUp, Clock, House, MapPin, UserRound } from 'lucide-react'
+import { Building2, ChevronUp, CircleCheck, Clock, House, MapPin } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { cn } from '@/lib/utils'
 
@@ -35,6 +35,8 @@ type Props = {
   sampleCodes?: { name: string; code: string }[]
   /** 客服改价信息，待付款且已改价订单展示改价前后金额 */
   priceAdjust?: { before: number; after: number }
+  /** 定点采样订单核销完成后展示 */
+  verification?: { operator: string; time: string }
   /** 底部操作按钮，与订单列表同状态的操作保持一致 */
   actions?: React.ReactNode
   onBack: () => void
@@ -114,6 +116,7 @@ export function OrderDetailScreen({
   statusDesc: statusDescProp,
   sampleCodes,
   priceAdjust,
+  verification,
   actions,
   onBack,
 }: Props) {
@@ -134,17 +137,12 @@ export function OrderDetailScreen({
           <p className="mt-1 text-caption leading-5 text-primary-foreground/85">{statusDesc}</p>
         </section>
 
-        <section aria-labelledby="od-sampling" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="od-sampling" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-            {isSelf ? (
-              <House className="size-4 text-primary" aria-hidden="true" />
-            ) : (
-              <Building2 className="size-4 text-primary" aria-hidden="true" />
-            )}
-            {isSelf ? '居家自采样' : '定点采样'}
-          </h2>
+        <section
+          aria-label={isSelf ? '收货地址' : '采样机构'}
+          className="mt-2.5 rounded-2xl bg-white p-4"
+        >
           {isSelf && receiver && (
-            <div className="mt-2.5 flex gap-2">
+            <div className="flex gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-note font-medium text-foreground">
@@ -156,7 +154,7 @@ export function OrderDetailScreen({
             </div>
           )}
           {!isSelf && site && (
-            <div className="mt-2.5 flex gap-2">
+            <div className="flex gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-note font-medium text-foreground">{site.name}</p>
@@ -165,6 +163,28 @@ export function OrderDetailScreen({
               </div>
             </div>
           )}
+          {!isSelf && verification && (
+            <dl
+              aria-label="核销信息"
+              className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-caption"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">核销状态</dt>
+                <dd className="flex items-center gap-1 font-medium text-success">
+                  <CircleCheck className="size-3.5" aria-hidden="true" />
+                  已核销
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">核销人员</dt>
+                <dd className="text-foreground">{verification.operator}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">核销时间</dt>
+                <dd className="tabular-nums text-foreground">{verification.time}</dd>
+              </div>
+            </dl>
+          )}
         </section>
 
         <section aria-labelledby="od-items" className="mt-2.5 rounded-2xl bg-white p-4">
@@ -172,32 +192,33 @@ export function OrderDetailScreen({
             检测项目
           </h2>
           <ul className="mt-1">
-            {groups.map((g) => (
-              <li key={g.id} className="border-b border-border py-2.5 last:border-0">
-                <p className="flex items-center gap-1.5 text-note font-medium text-foreground">
-                  <UserRound className="size-3.5 text-primary" aria-hidden="true" />
-                  {g.name}
-                </p>
-                <ul className="mt-1.5 flex flex-col gap-2">
-                  {g.items.map((s) => (
-                    <li key={s.id} className="text-caption">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="min-w-0 truncate text-muted-foreground">{s.name}</span>
-                        <span className="shrink-0 tabular-nums text-foreground">{yuan(s.price)}</span>
+            {groups.flatMap((g) =>
+              g.items.map((s) => (
+                <li key={`${g.id}-${s.id}`} className="border-b border-border py-3 last:border-0">
+                  <dl className="flex flex-col gap-2 text-caption">
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">检测项目</dt>
+                      <dd className="min-w-0 text-right font-medium text-foreground">{s.name}</dd>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">采样方式</dt>
+                      <dd className="text-foreground">{isSelf ? '居家自采样' : '定点采样'}</dd>
+                    </div>
+                    {s.sampleType && (
+                      <div className="flex items-center justify-between gap-4">
+                        <dt className="shrink-0 text-muted-foreground">样本类型</dt>
+                        <dd className="text-foreground">{s.sampleType}</dd>
                       </div>
-                      {s.sampleType && (
-                        <p className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">
-                          样本类型
-                          <span className="rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
-                            {s.sampleType}
-                          </span>
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
+                    )}
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">受检人</dt>
+                      <dd className="text-foreground">{g.name}</dd>
+                    </div>
+                  </dl>
+                </li>
+              )),
+            )}
           </ul>
           <dl className="mt-1 flex flex-col gap-1.5 border-t border-border pt-3 text-caption">
             <div className="flex justify-between">

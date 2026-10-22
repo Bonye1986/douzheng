@@ -384,9 +384,8 @@ const deactivateNotices = [
   '存在待付款、待采样、检测中或售后处理中的订单时，暂不可注销',
 ]
 
-function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: () => void }) {
+function DeactivateView({ onSubmitted }: { onSubmitted: () => void }) {
   const [agreed, setAgreed] = useState(false)
-  const [code, setCode] = useState('')
   const [confirming, setConfirming] = useState(false)
 
   return (
@@ -421,13 +420,6 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
         </p>
       </section>
 
-      <section aria-label="身份验证" className="mt-2.5 rounded-2xl bg-white">
-        <p className="px-3.5 pt-3 text-caption text-muted-foreground">
-          验证码将发送至 <span className="tabular-nums text-foreground">{maskPhone(phone)}</span>
-        </p>
-        <CodeInput id="deactivate-code" code={code} onCode={setCode} canSend />
-      </section>
-
       <label className="mt-3 flex items-start gap-2 px-1.5 text-caption leading-[18px] text-muted-foreground">
         <input
           type="checkbox"
@@ -442,7 +434,7 @@ function DeactivateView({ phone, onSubmitted }: { phone: string; onSubmitted: ()
 
       <button
         type="button"
-        disabled={!agreed || code.length !== 6}
+        disabled={!agreed}
         onClick={() => setConfirming(true)}
         className="mt-auto h-11 w-full shrink-0 rounded-full bg-destructive text-title font-medium text-white disabled:opacity-40"
       >
@@ -694,8 +686,8 @@ export function AccountSettingsScreen({
         />
       )}
       {view === 'deactivate' && (
-        <DeactivateView
-          phone={phone}
+          <DeactivateView
+
           onSubmitted={() => {
             setView('main')
             setToast('注销申请已提交，7 天内登录可撤销')

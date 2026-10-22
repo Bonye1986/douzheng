@@ -17,6 +17,7 @@ const kindTabs: { key: 'all' | AfterKind; label: string }[] = [
 
 export type AfterCase = {
   id: string
+  afterSaleNo: string
   kind: AfterKind
   type: 'self' | 'site'
   status: string
@@ -33,6 +34,7 @@ export type AfterCase = {
 const cases: AfterCase[] = [
   {
     id: 'DZ20261012003',
+    afterSaleNo: 'SH20261014001',
     kind: 'pending',
     type: 'self',
     status: '样本不合格',
@@ -45,6 +47,7 @@ const cases: AfterCase[] = [
   },
   {
     id: 'DZ20261015004',
+    afterSaleNo: 'SH20261015002',
     kind: 'refund',
     type: 'self',
     status: '已退款',
@@ -57,6 +60,7 @@ const cases: AfterCase[] = [
   },
   {
     id: 'DZ20260918002',
+    afterSaleNo: 'SH20260920006',
     kind: 'refund',
     type: 'self',
     status: '已退款',
@@ -69,6 +73,7 @@ const cases: AfterCase[] = [
   },
   {
     id: 'DZ20261001007',
+    afterSaleNo: 'SH20261008003',
     kind: 'resample',
     type: 'site',
     status: '已转重采样',
@@ -149,8 +154,18 @@ export function AfterSalesScreen({
                 className="block w-full text-left"
               >
               <div className="flex items-center gap-1.5">
-                <TypeIcon className="size-3.5 text-primary" aria-hidden="true" />
-                <span className="text-caption tabular-nums text-muted-foreground">{c.id}</span>
+                <span
+                  className={cn(
+                    'inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-tag font-medium',
+                    c.type === 'self' ? 'bg-primary/10 text-primary' : 'bg-success-soft text-success',
+                  )}
+                >
+                  <TypeIcon className="size-3" aria-hidden="true" />
+                  {c.type === 'self' ? '居家自采样' : '定点采样'}
+                </span>
+                <span className="truncate text-caption tabular-nums text-muted-foreground">
+                  售后单号 {c.afterSaleNo}
+                </span>
                 <span
                   className={cn(
                     'ml-auto text-caption font-medium',
@@ -167,6 +182,7 @@ export function AfterSalesScreen({
                   <p className="mt-0.5 text-caption text-muted-foreground">
                     受检人：{c.examinee} · 实付 <span className="tabular-nums">{c.amount}</span>
                   </p>
+                  <p className="mt-0.5 text-caption tabular-nums text-muted-foreground">订单号：{c.id}</p>
                 </div>
                 {c.refund && (
                   <p className="shrink-0 text-right">
