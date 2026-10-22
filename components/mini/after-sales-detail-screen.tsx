@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertTriangle, ArrowRight, Building2, CheckCircle2, Clock, Home, UserRound } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CheckCircle2, Clock } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import type { AfterCase } from '@/components/mini/after-sales-screen'
 import { cn } from '@/lib/utils'
@@ -104,7 +104,6 @@ export function AfterSalesDetailScreen({
   onTerminateResample: () => void
 }) {
   const d = details[item.id]
-  const TypeIcon = item.type === 'self' ? Home : Building2
   const done = d.current >= d.steps.length
   const warn = item.kind === 'pending'
 
@@ -205,20 +204,21 @@ export function AfterSalesDetailScreen({
         )}
 
         <section aria-labelledby="asd-order" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-order" className="flex items-center gap-1.5 text-title font-semibold text-foreground">
-            <TypeIcon className="size-4 text-primary" aria-hidden="true" />
-            关联订单
+          <h2 id="asd-order" className="text-title font-semibold text-foreground">
+            检测项目
           </h2>
-          <div className="mt-2.5 flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-note font-medium text-foreground">{item.product}</p>
-              <p className="mt-1 flex items-center gap-1 text-caption text-muted-foreground">
-                <UserRound className="size-3" aria-hidden="true" />
-                {item.examinee} · {item.type === 'self' ? '居家自采样' : '定点采样'}
-              </p>
-            </div>
-            <span className="shrink-0 text-note tabular-nums text-foreground">{item.amount}</span>
-          </div>
+          <dl className="mt-2 flex flex-col gap-2 text-caption">
+            {[
+              ['检测项目', item.product],
+              ['受检人', item.examinee],
+              ['商品金额', item.amount],
+            ].map(([k, v]) => (
+              <div key={k} className="flex gap-3">
+                <dt className="w-14 shrink-0 text-muted-foreground">{k}</dt>
+                <dd className="min-w-0 flex-1 text-right tabular-nums text-foreground">{v}</dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         <section aria-labelledby="asd-info" className="mt-2.5 rounded-2xl bg-white p-4">
@@ -230,8 +230,9 @@ export function AfterSalesDetailScreen({
               ['售后编号', d.serviceNo],
               ['售后类型', d.serviceType],
               ['售后原因', d.reason],
-                ['售后单号', item.afterSaleNo],
-                ['订单编号', item.id],
+              ['售后单号', item.afterSaleNo],
+              ['订单编号', item.id],
+              ['采样方式', item.type === 'self' ? '居家自采样' : '定点采样'],
               ['申请时间', d.applyTime],
             ].map(([k, v]) => (
               <div key={k} className="flex gap-3">
