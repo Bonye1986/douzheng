@@ -34,7 +34,7 @@ export type AfterCase = {
 const cases: AfterCase[] = [
   {
     id: 'DZ20261012003',
-    afterSaleNo: 'SH20261013001',
+    afterSaleNo: 'SH20261014001',
     kind: 'pending',
     type: 'self',
     status: '样本不合格',
@@ -60,7 +60,7 @@ const cases: AfterCase[] = [
   },
   {
     id: 'DZ20260918002',
-    afterSaleNo: 'SH20260920003',
+    afterSaleNo: 'SH20260920006',
     kind: 'refund',
     type: 'self',
     status: '已退款',
@@ -73,7 +73,7 @@ const cases: AfterCase[] = [
   },
   {
     id: 'DZ20261001007',
-    afterSaleNo: 'SH20261008004',
+    afterSaleNo: 'SH20261008003',
     kind: 'resample',
     type: 'site',
     status: '已转重采样',

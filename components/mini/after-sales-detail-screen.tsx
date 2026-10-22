@@ -230,7 +230,6 @@ export function AfterSalesDetailScreen({
               ['售后编号', d.serviceNo],
               ['售后类型', d.serviceType],
               ['售后原因', d.reason],
-              ['售后单号', item.afterSaleNo],
               ['订单编号', item.id],
               ['采样方式', item.type === 'self' ? '居家自采样' : '定点采样'],
               ['申请时间', d.applyTime],
