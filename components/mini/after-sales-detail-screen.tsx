@@ -230,7 +230,8 @@ export function AfterSalesDetailScreen({
               ['售后编号', d.serviceNo],
               ['售后类型', d.serviceType],
               ['售后原因', d.reason],
-              ['订单编号', item.id],
+                ['售后单号', item.afterSaleNo],
+                ['订单编号', item.id],
               ['申请时间', d.applyTime],
             ].map(([k, v]) => (
               <div key={k} className="flex gap-3">
