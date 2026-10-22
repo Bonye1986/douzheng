@@ -384,7 +384,7 @@ function ReminderFormScreen({
   onSave: (r: Reminder) => void
 }) {
   const editing = !!initial
-  const [memberId, setMemberId] = useState(initial?.memberId ?? members[0]?.id ?? 'self')
+  const [memberId] = useState(initial?.memberId ?? members[0]?.id ?? 'self')
   const [drug, setDrug] = useState(initial?.drug ?? '')
   const [dose, setDose] = useState(initial?.dose ?? '1')
   const [unit, setUnit] = useState<Unit>(initial?.unit ?? '片')
@@ -502,16 +502,6 @@ function ReminderFormScreen({
               已根据药盒照片自动填充，标记「识别」的内容请核对，如有误可直接修改
             </p>
           )}
-
-          <p id="reminder-member-label" className="mt-3 text-caption text-muted-foreground">
-            用药人
-          </p>
-          <ChipGroup
-            labelledBy="reminder-member-label"
-            items={members.map((m) => ({ value: m.id, label: `${m.name}（${m.relation}）` }))}
-            value={memberId}
-            onChange={setMemberId}
-          />
 
           <label className="mt-3 block">
             <span className="flex items-center text-caption text-muted-foreground">
@@ -750,14 +740,6 @@ function ReminderFormScreen({
             value={advance}
             onChange={setAdvance}
           />
-          <div className="mt-3 rounded-xl bg-muted p-2.5">
-            <p className="text-caption text-muted-foreground">短信预览</p>
-            <p className="mt-1 text-caption leading-[18px] text-foreground">
-              【都正生物】{memberName(memberId)}您好，{times[0] ?? '08:00'} 请{meal === '不限' ? '' : meal}服用
-              {drug || '药品'} {dose}
-              {unit}。{note ? `备注：${note}。` : ''}回 TD 退订
-            </p>
-          </div>
         </section>
 
         <section aria-label="备注" className="mt-2.5 rounded-2xl bg-white p-3.5">
