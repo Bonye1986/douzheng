@@ -145,12 +145,6 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
   }, [toast])
 
   const full = list.length >= MAX_REMINDERS
-  const active = list.filter((r) => r.enabled)
-  const todayTimes = active
-    .filter((r) => r.frequency !== '每周' || r.weekdays.includes(4))
-    .flatMap((r) => r.times)
-    .sort()
-  const nextTime = todayTimes.find((t) => t > '10:30') ?? todayTimes[0]
 
   const openAdd = () => {
     if (full) return setToast(`最多设置 ${MAX_REMINDERS} 条提醒`)
@@ -184,35 +178,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
       ) : (
         <>
           <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
-            <section
-              aria-label="今日提醒概览"
-              className="rounded-2xl bg-brand-strong p-4 text-primary-foreground"
-            >
-              <p className="flex items-center gap-1.5 text-caption opacity-90">
-                <MessageSquareText className="size-3.5" aria-hidden="true" />
-                短信提醒 · 发送至 <span className="tabular-nums">{accountPhone}</span> 等
-              </p>
-              <div className="mt-2 flex items-end justify-between">
-                <div>
-                  <p className="text-caption opacity-80">下一次提醒</p>
-                  <p className="text-display font-semibold leading-tight tabular-nums">{nextTime ?? '--:--'}</p>
-                </div>
-                <dl className="flex gap-5 text-right">
-                  <div>
-                    <dt className="text-caption opacity-80">今日提醒</dt>
-                    <dd className="text-heading font-semibold tabular-nums">{todayTimes.length} 次</dd>
-                  </div>
-                  <div>
-                    <dt className="text-caption opacity-80">进行中</dt>
-                    <dd className="text-heading font-semibold tabular-nums">
-                      {active.length}/{list.length}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </section>
-
-            <ul className="mt-2.5 flex flex-col gap-2.5">
+            <ul className="flex flex-col gap-2.5">
               {list.map((r) => (
                 <li key={r.id} className={cn('rounded-2xl bg-white p-3.5', !r.enabled && 'opacity-75')}>
                   <div className="flex items-start gap-3">
