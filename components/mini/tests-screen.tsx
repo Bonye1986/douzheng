@@ -21,12 +21,14 @@ export function TestsScreen({
   initialCartOpen = false,
   initialCheckout,
   initialExamineeFormOpen,
+  initialCheckoutResult,
 }: {
   initialDetailId?: string
   initialCart?: CartItem[]
   initialCartOpen?: boolean
   initialCheckout?: CheckoutLine[]
   initialExamineeFormOpen?: boolean
+  initialCheckoutResult?: 'paying' | 'paid' | 'unpaid'
 }) {
   const [checkout, setCheckout] = useState<{ lines: CheckoutLine[]; fromCart: boolean } | null>(
     initialCheckout ? { lines: initialCheckout, fromCart: false } : null,
@@ -206,6 +208,7 @@ export function TestsScreen({
         <CheckoutScreen
           lines={checkout.lines}
           initialExamineeFormOpen={initialExamineeFormOpen}
+          initialResult={initialCheckoutResult}
           onBack={() => setCheckout(null)}
           onSubmitted={() => {
             if (checkout.fromCart) setCart((c) => c.filter((i) => !i.checked || isOffShelf(i.id)))

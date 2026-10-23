@@ -85,9 +85,17 @@ type Props = {
   onSubmitted: () => void
   onDone: () => void
   initialExamineeFormOpen?: boolean
+  initialResult?: 'paying' | 'paid' | 'unpaid'
 }
 
-export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExamineeFormOpen = false }: Props) {
+export function CheckoutScreen({
+  lines,
+  onBack,
+  onSubmitted,
+  onDone,
+  initialExamineeFormOpen = false,
+  initialResult,
+}: Props) {
   const rows = lines
     .map((l) => ({ line: l, service: testServices.find((s) => s.id === l.id) }))
     .filter((r): r is { line: CheckoutLine; service: TestService } => !!r.service)
@@ -139,7 +147,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
   const [assignWarn, setAssignWarn] = useState(false)
   const [couponId, setCouponId] = useState<string | null>(best?.id ?? null)
   const [couponOpen, setCouponOpen] = useState(false)
-  const [agreed, setAgreed] = useState(false)
+  const [agreed, setAgreed] = useState(Boolean(initialResult))
   const [consentOpen, setConsentOpen] = useState(false)
   const [researchDocOpen, setResearchDocOpen] = useState(false)
   const [research, setResearch] = useState<Record<string, string[]>>({})
@@ -150,10 +158,14 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
     })
   const [warn, setWarn] = useState(false)
   const [payMethod, setPayMethod] = useState<PayMethod>('wechat')
-  const [submitted, setSubmitted] = useState(false)
-  const [paying, setPaying] = useState(false)
-  const [unpaid, setUnpaid] = useState(false)
-  const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
+  const [submitted, setSubmitted] = useState(initialResult === 'paid')
+  const [paying, setPaying] = useState(initialResult === 'paying')
+  const [unpaid, setUnpaid] = useState(initialResult === 'unpaid')
+  const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(
+    initialResult === 'paid' || initialResult === 'unpaid'
+      ? { orderNo: 'JY20261023518806', time: '2026-10-23 14:32' }
+      : null,
+  )
   const [resentSms, setResentSms] = useState<string[]>([])
   const [orderDetailOpen, setOrderDetailOpen] = useState(false)
   const [orderListOpen, setOrderListOpen] = useState(false)
@@ -379,7 +391,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
                 product: o.service.name,
                 examinees: o.member.name,
                 ...splitPricing(o.service.price, couponShares[i]),
-                note: '已支付，实验室将�� 24 小时内寄出采样盒',
+                note: '已支付，实验室将在 24 小时内寄出采样盒',
                 refund: 'cancel',
               },
         )
@@ -479,7 +491,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
                 <span className="rounded bg-secondary px-1 text-tag font-normal text-muted-foreground">自愿</span>
               </h2>
               <p className="mt-1 text-caption leading-4 text-muted-foreground">
-                已向以下受检人发送签署短信，受检人点击短���中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
+                已向以下受检人发送签署短信，受检人点击短信中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
               </p>
               <ul className="mt-2">
                 {researchItems.map((it) => {

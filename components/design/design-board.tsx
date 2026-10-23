@@ -259,25 +259,31 @@ function ScreenNote({
       </div>
 
       <div className="flex flex-col gap-6 px-5 py-5">
-        <NoteBlock title="页面概述">
+        <NoteBlock title="功能描述">
           <p className="text-pretty text-body leading-6 text-muted-foreground">{screen.desc}</p>
         </NoteBlock>
         {note && (
           <>
-            <NoteBlock title="功能说明">
-              <NoteList items={note.features} />
+            <NoteBlock title="页面字段">
+              <NoteList items={note.fields} />
             </NoteBlock>
-            <NoteBlock title="交互逻辑">
-              <NoteList items={note.interactions} numbered />
+            <NoteBlock title="操作流程">
+              <NoteList items={note.flow} numbered />
+              {note.links.length > 0 && (
+                <ul className="mt-3 flex flex-wrap gap-2" aria-label="页面跳转">
+                  {note.links.map((link) => (
+                    <li key={link} className="rounded-lg bg-secondary px-3 py-1.5 text-note text-primary">
+                      {renumber(link)}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </NoteBlock>
-            <NoteBlock title="页面跳转">
-              <ul className="flex flex-wrap gap-2">
-                {note.links.map((link) => (
-                  <li key={link} className="rounded-lg bg-secondary px-3 py-1.5 text-note text-primary">
-                    {renumber(link)}
-                  </li>
-                ))}
-              </ul>
+            <NoteBlock title="业务规则">
+              <NoteList items={note.rules} />
+            </NoteBlock>
+            <NoteBlock title="异常处理">
+              <NoteList items={note.exceptions} />
             </NoteBlock>
           </>
         )}

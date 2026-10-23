@@ -112,6 +112,7 @@ export function AiChatScreen({
   initialQuestion,
   initialSheetOpen = false,
   initialDrawerOpen = false,
+  initialSharing = false,
   request,
   active = true,
   onBack,
@@ -121,6 +122,7 @@ export function AiChatScreen({
   initialQuestion?: string
   initialSheetOpen?: boolean
   initialDrawerOpen?: boolean
+  initialSharing?: boolean
   request?: ChatRequest | null
   active?: boolean
   onBack?: () => void
@@ -139,7 +141,9 @@ export function AiChatScreen({
   )
   const [currentId, setCurrentId] = useState<string | null>(initialQuestion ? 's-init' : null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
-  const [shareIds, setShareIds] = useState<Set<number> | null>(null)
+  const [shareIds, setShareIds] = useState<Set<number> | null>(() =>
+    initialSharing ? new Set(sessions.find((s) => s.id === currentId)?.messages.map((m) => m.id) ?? []) : null,
+  )
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = sessions.find((s) => s.id === currentId)?.messages ?? []

@@ -344,7 +344,7 @@ export const quizArticles: Article[] = [
     ],
     survey: {
       id: 's-q3',
-      title: '��压监测习惯调查',
+      title: '血压监测习惯调查',
       intro: '本问卷面向高血压患者及家属，匿名填写。',
       participants: '1,102',
       minutes: 1,
@@ -354,7 +354,7 @@ export const quizArticles: Article[] = [
           title: '您（或家人）多久测量一次血压？',
           kind: 'single',
           options: [
-            { id: 'a', text: '���天', percent: 31 },
+            { id: 'a', text: '每天', percent: 31 },
             { id: 'b', text: '每周几次', percent: 37 },
             { id: 'c', text: '不舒服时才测', percent: 24 },
             { id: 'd', text: '基本不测', percent: 8 },
