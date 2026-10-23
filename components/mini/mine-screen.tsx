@@ -25,8 +25,8 @@ import { CustomerServiceScreen } from '@/components/mini/customer-service-screen
 import { AccountSettingsScreen, type AccountView } from '@/components/mini/account-settings-screen'
 
 /**
- * 面向用户的 5 个阶段，后台细分状态归并其中：
- * 待使用 = 待发货 / 待收货 / 待核销；待采样 = 待采样 / 待寄样；检测中 = 待收样 / 待检测 / 检测中；
+ * 「我的」页仅展示 4 个阶段快捷入口，后台细分状态归并其中：
+ * 待使用 = 待发货 / 待收货 / 待核销；待采样 = 待采样 / 待寄样；检测中订单不设快捷入口，从「查看全部」查看；
  * 退款/售后为独立页面（样本不合格待处理、退款、重采样）。订单类型（自采样 / 定点采样）与已关闭订单在订单列表中筛选。
  */
 const iconSrc = (name: string) => `/images/icons/mine-${name}.png`
@@ -35,7 +35,6 @@ const orderPhases: { key: Exclude<OrderTabKey, 'all'> | 'after'; label: string; 
   { key: 'toPay', label: '待付款', icon: iconSrc('topay') },
   { key: 'toUse', label: '待使用', icon: iconSrc('guide') },
   { key: 'toSample', label: '待采样', icon: iconSrc('tosample') },
-  { key: 'testing', label: '检测中', icon: iconSrc('testing') },
   { key: 'done', label: '已完成', icon: iconSrc('done') },
   { key: 'after', label: '退款/售后', icon: iconSrc('after') },
 ]
