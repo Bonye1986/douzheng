@@ -307,7 +307,6 @@ export function ServiceCard({
                 <span className="truncate text-tag text-faint line-through">¥{service.originalPrice}</span>
               )}
             </p>
-            <p className="mt-1 text-tag text-muted-foreground">{service.sold}</p>
           </div>
           {onAdd && (
             <button
