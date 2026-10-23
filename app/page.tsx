@@ -4,7 +4,7 @@ import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { HomeFlow } from '@/components/mini/home-flow'
 import { AiChatScreen } from '@/components/mini/ai-chat-screen'
-import { ConsentReaderArtboard, ExamineeFormArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
+import { ConsentReaderArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
 import { MineScreen } from '@/components/mini/mine-screen'
 import {
   AfterSalesArtboard,
@@ -109,6 +109,12 @@ const screens = [
     ),
   },
   {
+    id: '12-empty',
+    title: '检测 · 购物车空状态',
+    desc: '购物车无项目时展示空状态插图与「去逛逛」（返回检测列表），下方为你推荐可快速加购（可在画板内交互）',
+    node: <HomeFlow initialTab="test" initialCartOpen initialCart={[]} />,
+  },
+  {
     id: '13',
     title: '检测 · 确认订单',
     desc: '选择受检人（报告归档至成员档案）、采样盒寄送地址 / 定点采样机构、检测项目清单、优惠券（自动选最优，可切换）、价格明细；须勾选知情同意书后提交；点击提交订单唤起微信支付，支付完成后跳转订单结果页（可在画板内交互）',
@@ -126,7 +132,16 @@ const screens = [
     id: '14',
     title: '确认订单 · 添加受检人',
     desc: '与本人关系（本人仅可添加一次）、姓名、性别、出生日期、手机号、身份证号；必填项实时校验，保存后自动选中为受检人，报告归档至成员档案（可在画板内交互）',
-    node: <ExamineeFormArtboard />,
+    node: (
+      <HomeFlow
+        initialTab="test"
+        initialCheckout={[
+          { id: 'cardio', qty: 1 },
+          { id: 'child', qty: 2 },
+        ]}
+        initialExamineeFormOpen
+      />
+    ),
   },
   {
     id: '15',
@@ -299,7 +314,7 @@ const screens = [
   {
     id: '42',
     title: '我的 · 关于我们',
-    desc: '品牌头部（Logo、口号、版本号），平台数据概览，公司简介、核心优势、资质认证、发展历程，联系我们（拨打 / 复制），协议与资质入口、检查更新，底部公司主体与备案信息（可在画板内交互）',
+    desc: '品牌头部（Logo、口号、版本号），平台数据概览，公司简介、核心优势、资质认证、发展历程，联系我们（拨打 / 复制��，协议与资质入口、检查更新，底部公司主体与备案信息（可在画板内交互）',
     node: <MineScreen initialAboutOpen />,
   },
   {
@@ -515,7 +530,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'order',
     title: '检测下单',
     summary: '检测列表、服务详情、购物车、确认订单（受检人、采样机构、知情同意书）与微信支付',
-    ids: ['10', '11', '12', '13', '14', '15', '17'],
+    ids: ['10', '11', '12', '12-empty', '13', '14', '15', '17'],
   },
   {
     key: 'orders',

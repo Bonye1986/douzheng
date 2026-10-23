@@ -20,11 +20,13 @@ export function TestsScreen({
   initialCart = [],
   initialCartOpen = false,
   initialCheckout,
+  initialExamineeFormOpen,
 }: {
   initialDetailId?: string
   initialCart?: CartItem[]
   initialCartOpen?: boolean
   initialCheckout?: CheckoutLine[]
+  initialExamineeFormOpen?: boolean
 }) {
   const [checkout, setCheckout] = useState<{ lines: CheckoutLine[]; fromCart: boolean } | null>(
     initialCheckout ? { lines: initialCheckout, fromCart: false } : null,
@@ -203,6 +205,7 @@ export function TestsScreen({
       {checkout && (
         <CheckoutScreen
           lines={checkout.lines}
+          initialExamineeFormOpen={initialExamineeFormOpen}
           onBack={() => setCheckout(null)}
           onSubmitted={() => {
             if (checkout.fromCart) setCart((c) => c.filter((i) => !i.checked || isOffShelf(i.id)))

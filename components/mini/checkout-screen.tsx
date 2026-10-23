@@ -84,15 +84,18 @@ type Props = {
   onBack: () => void
   onSubmitted: () => void
   onDone: () => void
+  initialExamineeFormOpen?: boolean
 }
 
-export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
+export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExamineeFormOpen = false }: Props) {
   const rows = lines
     .map((l) => ({ line: l, service: testServices.find((s) => s.id === l.id) }))
     .filter((r): r is { line: CheckoutLine; service: TestService } => !!r.service)
 
   const [examinees, setExaminees] = useExaminees()
-  const [examineeForm, setExamineeForm] = useState<{ serviceId: string | null } | null>(null)
+  const [examineeForm, setExamineeForm] = useState<{ serviceId: string | null } | null>(
+    initialExamineeFormOpen ? { serviceId: null } : null,
+  )
 
   const [assign, setAssign] = useState<Record<string, string[]>>(() =>
     Object.fromEntries(
@@ -376,7 +379,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone }: Props) {
                 product: o.service.name,
                 examinees: o.member.name,
                 ...splitPricing(o.service.price, couponShares[i]),
-                note: '已支付，实验室将在 24 小时内寄出采样盒',
+                note: '已支付，实验室将�� 24 小时内寄出采样盒',
                 refund: 'cancel',
               },
         )
