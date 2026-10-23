@@ -379,7 +379,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
                 product: o.service.name,
                 examinees: o.member.name,
                 ...splitPricing(o.service.price, couponShares[i]),
-                note: '已支付，实验室将�� 24 小时内寄出采样盒',
+                note: '已支付，实验室将在 24 小时内寄出采样盒',
                 refund: 'cancel',
               },
         )
@@ -479,7 +479,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
                 <span className="rounded bg-secondary px-1 text-tag font-normal text-muted-foreground">自愿</span>
               </h2>
               <p className="mt-1 text-caption leading-4 text-muted-foreground">
-                已向以下受检人发送签署短信，受检人点击短���中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
+                已向以下受检人发送签署短信，受检人点击短信中的链接完成 e签宝 人脸认证并签署后生效，签署进度可在「我的 → 授权与同意书」查看
               </p>
               <ul className="mt-2">
                 {researchItems.map((it) => {

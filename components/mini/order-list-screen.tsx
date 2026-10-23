@@ -432,7 +432,7 @@ const siteSeeds: StatusSeed[] = [
   {
     type: 'site',
     phase: 'toSample',
-    status: '待�����样',
+    status: '待采样',
     refund: 'testing',
     notes: ['已核销，都正检测中心（徐汇） 正在为您采样'],
   },
@@ -441,7 +441,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'toSample',
     status: '待寄样',
     refund: 'testing',
-    notes: ['机构已完成采���，将由机构统一寄送至实验室'],
+    notes: ['机构已完成采样，将由机构统一寄送至实验室'],
   },
   {
     type: 'site',
@@ -464,7 +464,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'testing',
     status: '检测中',
     refund: 'testing',
-    notes: ['实验室检测中，预计 5 个工作���内出具报告'],
+    notes: ['实验室检测中，预计 5 个工作日内出具报告'],
     extra: [unqualifiedVariant, resampleTestingVariant],
   },
   {
@@ -741,7 +741,7 @@ export function OrderListScreen({
             ...o,
             phase: 'closed',
             status: '已关闭',
-            note: '超时未支付，订单���自动关闭',
+            note: '超时未支付，订单已自动关闭',
             priceChanged: false,
             originalAmount: undefined,
             refund: undefined,
