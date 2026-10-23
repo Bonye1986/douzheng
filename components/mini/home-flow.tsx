@@ -39,7 +39,7 @@ export function HomeFlow({
   loggedIn = true,
   onRequireLogin,
 }: {
-  /** With initialSurvey, opens the 问卷 already submitted (结果页). */
+  /** Pre-filled answers so the article shows the 问卷 as already submitted. */
   initialSurveyAnswers?: SurveyAnswers
   /** 'list' opens 知识科普 list; an article id opens that article directly. */
   initialKnowledge?: string

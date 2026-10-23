@@ -534,19 +534,6 @@ const screens = [
     node: <LegalDocArtboard kind="privacy" />,
   },
   {
-    id: '09-survey-result',
-    title: '互动问答 · 问卷结果',
-    desc: '提交问卷后展示各题选项占比，高亮本人所选项，可返回文章继续阅读（可在画板内交互）',
-    node: (
-      <HomeFlow
-        initialTab="service"
-        initialQuiz="q1"
-        initialSurvey
-        initialSurveyAnswers={{ 'q1-1': ['b'], 'q1-2': ['a'], 'q1-3': ['a', 'c'], 'q1-4': '' }}
-      />
-    ),
-  },
-  {
     id: '13-pay',
     title: '确认订单 · 微信支付',
     desc: '提交订单后唤起微信支付收银台，展示收款方与应付金额，支付中 → 支付成功（可在画板内交互）',
@@ -619,7 +606,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     summary: 'AI 对话入口与预设问题，通俗 / 专业版切换，关联检测人后的个性化用药解答',
     ids: ['04', '05', '06', '07', '08', '08-r', '08-o', '08-v', '08-share'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey', '09-survey-result'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
   {
     key: 'order',
     title: '检测下单',
@@ -654,7 +641,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'mine',
     title: '我的',
-    summary: '个人中心、我的报告与报告详情、我的优惠券与领券中心',
+    summary: '个人中心、我的报告与报告详情、我的优惠券与领券���心',
     ids: ['18', '18-guest', '18-login', '20', '21', '21-share', '22', '23'],
   },
   {
