@@ -3,14 +3,9 @@
 import { useState } from 'react'
 import {
   Check,
-  Copy,
   Headphones,
   Info,
-  MapPin,
-  Package,
-  PackageOpen,
   Receipt,
-  RotateCcw,
   Truck,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
@@ -26,15 +21,6 @@ const shippedOrder = {
   status: '待收货',
   tracking: '顺丰 SF1407 3382 9015',
 }
-
-const returnAddress = {
-  name: '都正医学检验实验室 售后组',
-  phone: '021-6058 8899',
-  address: '上海市浦东新区张江高科技园区蔡伦路 780 号 5 楼',
-}
-
-type RefundOption = 'return' | 'deduct'
-type Step = 'choose' | 'return' | 'deduct'
 
 function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return <div className={cn('rounded-2xl bg-white p-3.5', className)}>{children}</div>
@@ -129,227 +115,50 @@ function AmountRows({ rows }: { rows: { label: string; value: string; strong?: b
   )
 }
 
-const options = [
-  {
-    key: 'return' as const,
-    icon: RotateCcw,
-    title: '自费寄回采样盒',
-    tag: '全额退款',
-    amount: shippedOrder.paid,
-    desc: '收到采样盒后，未拆封自费寄回实验室，签收确认后全额退款',
-  },
-  {
-    key: 'deduct' as const,
-    icon: Receipt,
-    title: '扣除采样盒费用退款',
-    tag: '无需寄回',
-    amount: shippedOrder.paid - KIT_FEE,
-    desc: `采样盒无需寄回，扣除采样盒费用 ¥${KIT_FEE} 后退款`,
-  },
-]
-
 export function ShippedRefundScreen({ onBack }: { onBack: () => void }) {
-  const [step, setStep] = useState<Step>('choose')
-  const [option, setOption] = useState<RefundOption | null>(null)
-  const [trackingNo, setTrackingNo] = useState('')
-  const [copied, setCopied] = useState(false)
+  const refund = shippedOrder.paid - KIT_FEE
   const success = useRefundSuccess(onBack)
 
-  const titles: Record<Step, string> = {
-    choose: '申请退款',
-    return: '寄回采样盒',
-    deduct: '确认退款',
-  }
-
-  const handleBack = () => {
-    if (step === 'return' || step === 'deduct') setStep('choose')
-    else onBack()
-  }
-
-  const copyAddress = async () => {
-    try {
-      await navigator.clipboard.writeText(`${returnAddress.name} ${returnAddress.phone} ${returnAddress.address}`)
-    } catch {}
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
   return (
-    <SubPage title={titles[step]} titleId="refund-title" onBack={handleBack}>
-      {step === 'choose' && (
-        <>
-          <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <div className="flex gap-2.5 rounded-2xl bg-brand-soft p-3.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary">
-                <Truck className="size-4.5" aria-hidden="true" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-body font-semibold text-foreground">采样盒已发出</p>
-                <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">
-                  {shippedOrder.tracking}，请选择退款方式
-                </p>
-              </div>
-            </div>
-
-            <OrderBrief {...shippedOrder} />
-
-            <fieldset className="rounded-2xl bg-white p-3.5">
-              <legend className="float-left mb-3 text-title font-semibold text-foreground">退款方式</legend>
-              <div className="clear-both space-y-2.5">
-                {options.map((o) => {
-                  const active = option === o.key
-                  return (
-                    <label
-                      key={o.key}
-                      className={cn(
-                        'flex cursor-pointer gap-3 rounded-xl border p-3 transition-colors',
-                        active ? 'border-primary bg-[#f3f8ff]' : 'border-border',
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="refund-option"
-                        value={o.key}
-                        checked={active}
-                        onChange={() => setOption(o.key)}
-                        className="sr-only"
-                      />
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-                        <o.icon className="size-[18px]" aria-hidden="true" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-center gap-1.5 text-body font-medium text-foreground">
-                          {o.title}
-                          <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-tag text-success">{o.tag}</span>
-                        </span>
-                        <span className="mt-1 block text-caption leading-relaxed text-muted-foreground">{o.desc}</span>
-                        <span className="mt-1.5 block text-caption text-muted-foreground">
-                          预计退款{' '}
-                          <span className="text-title font-semibold tabular-nums text-warning">¥{o.amount}</span>
-                        </span>
-                      </span>
-                      <span
-                        className={cn(
-                          'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border',
-                          active ? 'border-primary bg-primary text-primary-foreground' : 'border-[#c9d3e0]',
-                        )}
-                        aria-hidden="true"
-                      >
-                        {active && <Check className="size-3" />}
-                      </span>
-                    </label>
-                  )
-                })}
-              </div>
-            </fieldset>
-
-            <p className="flex gap-1.5 px-1 text-caption leading-relaxed text-muted-foreground">
-              <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-              寄回运费由您自行承担；采样盒已拆封或缺损的，仅支持扣除采样盒费用后退款。
+    <SubPage title="申请退款" titleId="refund-title" onBack={onBack}>
+      <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
+        <div className="flex gap-2.5 rounded-2xl bg-brand-soft p-3.5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-primary">
+            <Truck className="size-4.5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-body font-semibold text-foreground">采样盒已发出</p>
+            <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">
+              {shippedOrder.tracking}，退款需扣除采样盒费用
             </p>
           </div>
-          <BottomBar>
-            <PrimaryButton disabled={!option} onClick={() => option && setStep(option)}>
-              下一步
-            </PrimaryButton>
-          </BottomBar>
-        </>
-      )}
+        </div>
 
-      {step === 'return' && (
-        <>
-          <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <Card>
-              <div className="flex items-center justify-between">
-                <h2 className="text-title font-semibold text-foreground">寄回地址</h2>
-                <button
-                  type="button"
-                  onClick={copyAddress}
-                  className="flex items-center gap-1 text-caption text-primary"
-                >
-                  {copied ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
-                  {copied ? '已复制' : '复制'}
-                </button>
-              </div>
-              <div className="mt-2.5 flex gap-2.5">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                <div className="min-w-0">
-                  <p className="text-note font-medium text-foreground">
-                    {returnAddress.name}{' '}
-                    <span className="font-normal tabular-nums text-muted-foreground">{returnAddress.phone}</span>
-                  </p>
-                  <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">{returnAddress.address}</p>
-                </div>
-              </div>
-            </Card>
+        <OrderBrief {...shippedOrder} />
 
-            <Card>
-              <label htmlFor="return-tracking" className="text-title font-semibold text-foreground">
-                回寄快递单号
-              </label>
-              <input
-                id="return-tracking"
-                value={trackingNo}
-                onChange={(e) => setTrackingNo(e.target.value.replace(/[^\w\s-]/g, '').slice(0, 30))}
-                placeholder="寄出后填写快递单号"
-                className="mt-2 h-10 w-full rounded-xl bg-muted px-3 text-note tabular-nums text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
-              />
-              <ul className="mt-2.5 space-y-1.5 text-caption leading-relaxed text-muted-foreground">
-                <li className="flex gap-1.5">
-                  <PackageOpen className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                  采样盒需保持未拆封、配件齐全
-                </li>
-                <li className="flex gap-1.5">
-                  <Package className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                  运费自理，请勿使用到付
-                </li>
-              </ul>
-            </Card>
-
-            <Card>
-              <AmountRows
-                rows={[
-                  { label: '实付金额', value: `¥${shippedOrder.paid}` },
-                  { label: '退款金额', value: `¥${shippedOrder.paid}`, strong: true },
-                ]}
-              />
-            </Card>
+        <Card>
+          <div className="mb-3 flex items-center gap-1.5">
+            <Receipt className="size-4 text-primary" aria-hidden="true" />
+            <h2 className="text-title font-semibold text-foreground">扣除采样盒费用退款</h2>
+            <span className="rounded bg-[#e6f6ec] px-1.5 py-0.5 text-tag text-success">无需寄回</span>
           </div>
-          <BottomBar>
-            <PrimaryButton disabled={trackingNo.trim().length < 6} onClick={() => success.show(shippedOrder.paid)}>
-              确认退款 ¥{shippedOrder.paid}
-            </PrimaryButton>
-          </BottomBar>
-        </>
-      )}
+          <AmountRows
+            rows={[
+              { label: '实付金额', value: `¥${shippedOrder.paid}` },
+              { label: '扣除采样盒费用', value: `-¥${KIT_FEE}`, minus: true },
+              { label: '实际退款', value: `¥${refund}`, strong: true },
+            ]}
+          />
+        </Card>
 
-      {step === 'deduct' && (
-        <>
-          <div className="flex-1 space-y-2.5 overflow-y-auto p-3 [scrollbar-width:none]">
-            <OrderBrief {...shippedOrder} />
-            <Card>
-              <h2 className="mb-3 text-title font-semibold text-foreground">退款金额</h2>
-              <AmountRows
-                rows={[
-                  { label: '实付金额', value: `¥${shippedOrder.paid}` },
-                  { label: '扣除采样盒费用', value: `-¥${KIT_FEE}`, minus: true },
-                  { label: '实际退款', value: `¥${shippedOrder.paid - KIT_FEE}`, strong: true },
-                ]}
-              />
-            </Card>
-            <p className="flex gap-1.5 px-1 text-caption leading-relaxed text-muted-foreground">
-              <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-              采样盒无需寄回，可自行处理。提交后订单关闭，退款原路退回至微信支付账户。
-            </p>
-          </div>
-          <BottomBar>
-            <PrimaryButton onClick={() => success.show(shippedOrder.paid - KIT_FEE)}>
-              确认退款 ¥{shippedOrder.paid - KIT_FEE}
-            </PrimaryButton>
-          </BottomBar>
-        </>
-      )}
-
+        <p className="flex gap-1.5 px-1 text-caption leading-relaxed text-muted-foreground">
+          <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+          采样盒无需寄回，可自行处理。提交后订单关闭，退款原路退回至微信支付账户。
+        </p>
+      </div>
+      <BottomBar>
+        <PrimaryButton onClick={() => success.show(refund)}>确认退款 ¥{refund}</PrimaryButton>
+      </BottomBar>
       {success.toast}
     </SubPage>
   )
