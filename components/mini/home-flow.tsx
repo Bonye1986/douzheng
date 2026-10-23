@@ -28,6 +28,7 @@ export function HomeFlow({
   initialCart,
   initialCartOpen,
   initialCheckout,
+  initialExamineeFormOpen,
   initialKnowledge,
   initialQuiz,
   initialSurvey,
@@ -52,6 +53,7 @@ export function HomeFlow({
   initialCart?: CartItem[]
   initialCartOpen?: boolean
   initialCheckout?: CheckoutLine[]
+  initialExamineeFormOpen?: boolean
 }) {
   const [tab, setTab] = useState<TabKey>(initialTab)
   const [chatOpen, setChatOpen] = useState(false)
@@ -128,6 +130,7 @@ export function HomeFlow({
             initialCart={initialCart}
             initialCartOpen={initialCartOpen}
             initialCheckout={initialCheckout}
+            initialExamineeFormOpen={initialExamineeFormOpen}
           />
         ) : tab === 'me' ? (
           <MineScreen
