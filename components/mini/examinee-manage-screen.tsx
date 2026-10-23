@@ -51,7 +51,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
   const full = list.length >= MAX_EXAMINEES
 
   const openAdd = () => {
-    if (full) return setToast(`最多添加 ${MAX_EXAMINEES} 位检测人`)
+    if (full) return setToast(`最多添加 ${MAX_EXAMINEES} 位受检人`)
     setForm({})
   }
 
@@ -79,7 +79,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
   const blocked = pendingDelete && (pendingDelete.relation === '本人' || activeOrderIds.has(pendingDelete.id))
 
   return (
-    <SubPage title="检测人管理" titleId="examinee-manage-title" onBack={onBack}>
+    <SubPage title="受检人管理" titleId="examinee-manage-title" onBack={onBack}>
       {list.length === 0 ? (
         <EmptyState onAdd={openAdd} />
       ) : (
@@ -185,7 +185,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                             'flex h-7 items-center gap-1 rounded-full border px-3 text-caption',
                             activeOrderIds.has(m.id) ? 'border-border text-faint' : 'border-border text-foreground',
                           )}
-                          aria-label={`删除检测人 ${m.name}`}
+                          aria-label={`删除受检人 ${m.name}`}
                         >
                           <Trash2 className="size-3.5" aria-hidden="true" />
                           删除
@@ -195,7 +195,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                         type="button"
                         onClick={() => setForm({ target: m })}
                         className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-caption text-primary"
-                        aria-label={`编辑检测人 ${m.name}`}
+                        aria-label={`编辑受检人 ${m.name}`}
                       >
                         <PencilLine className="size-3.5" aria-hidden="true" />
                         编辑
@@ -208,7 +208,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
 
             <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
-              检测人信息仅用于样本登记与报告归档，加密存储。删除后历史报告仍保留在「我的报告」中。
+              受检人信息仅用于样本登记与报告归档，加密存储。删除后历史报告仍保留在「我的报告」中。
             </p>
           </div>
 
@@ -223,7 +223,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               )}
             >
               <Plus className="size-4" aria-hidden="true" />
-              添加检测人
+              添加受检人
             </button>
           </div>
         </>
@@ -248,14 +248,14 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               {blocked ? <AlertTriangle className="size-5" /> : <Trash2 className="size-5" />}
             </span>
             <h2 id="delete-examinee-title" className="mt-3 text-title font-semibold text-foreground">
-              {blocked ? '暂不可删除' : `删除检测人「${pendingDelete.name}」？`}
+              {blocked ? '暂不可删除' : `删除受检人「${pendingDelete.name}」？`}
             </h2>
             <p id="delete-examinee-desc" className="mt-1.5 text-note leading-5 text-muted-foreground">
               {pendingDelete.relation === '本人'
                 ? '「本人」为账号持有人，不可删除，可通过编辑修改信息。'
                 : blocked
-                  ? '该检测人有进行中的检测订单，暂不可删除，可通过「编辑」修改信息；订单完成或取消后可删除。'
-                  : '删除后下单时将无法选择该检测人，已出具的报告仍可在「我的报告」中查看。'}
+                  ? '该受检人有进行中的检测订单，暂不可删除，可通过「编辑」修改信息；订单完成或取消后可删除。'
+                  : '删除后下单时将无法选择该受检人，已出具的报告仍可在「我的报告」中查看。'}
             </p>
             {blocked ? (
               <button
@@ -321,9 +321,9 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
           <UserRound className="size-4 text-primary" />
         </span>
       </span>
-      <h2 className="mt-5 text-title font-semibold text-foreground">还没有检测人</h2>
+      <h2 className="mt-5 text-title font-semibold text-foreground">还没有受检人</h2>
       <p className="mt-1.5 text-note leading-5 text-muted-foreground">
-        添加本人或家人的信息，下单检测时可直接选择，报告也会按检测人归档。
+        添加本人或家人的信息，下单检测时可直接选择，报告也会按受检人归档。
       </p>
       <button
         type="button"
@@ -331,7 +331,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-body font-medium text-primary-foreground active:opacity-90"
       >
         <Plus className="size-4" aria-hidden="true" />
-        添加检测人
+        添加受检人
       </button>
     </div>
   )

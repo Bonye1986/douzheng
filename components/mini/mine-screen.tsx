@@ -40,7 +40,7 @@ const orderPhases: { key: Exclude<OrderTabKey, 'all'> | 'after'; label: string; 
 ]
 
 const tools = [
-  { key: 'examinee', label: '检测人管理', icon: iconSrc('examinee') },
+  { key: 'examinee', label: '受检人管理', icon: iconSrc('examinee') },
   { key: 'address', label: '地址管理', icon: iconSrc('address') },
   { key: 'auth', label: '授权与同意书', icon: iconSrc('auth') },
   { key: 'reminder', label: '用药提醒', icon: iconSrc('reminder') },

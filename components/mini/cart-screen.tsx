@@ -228,7 +228,7 @@ export function CartScreen({ items, onChange, onBack, onCheckout, onOpenService,
                     {total.toLocaleString('zh-CN')}
                   </span>
                 </p>
-                <p className="text-caption text-muted-foreground">最终金额按检测人数计算</p>
+                <p className="text-caption text-muted-foreground">最终金额按受检人数计算</p>
               </div>
               <button
                 type="button"

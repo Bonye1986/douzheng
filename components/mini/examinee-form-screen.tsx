@@ -72,7 +72,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
   const clear = (k: keyof Errors) => setErrors((e) => ({ ...e, [k]: undefined }))
 
   return (
-    <SubPage title={editing ? '编辑检测人' : '添加受检人'} titleId="examinee-title" onBack={onBack}>
+    <SubPage title={editing ? '编辑受检人' : '添加受检人'} titleId="examinee-title" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
         {targetName && (
           <p className="mb-2.5 rounded-xl bg-secondary px-3 py-2 text-caption leading-[18px] text-primary">

@@ -46,29 +46,29 @@ const today = () => {
 }
 
 export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onClose, onDone }: Props) {
-  const [step, setStep] = useState<Step>('doc')
+  const isSign = action === 'sign'
+  const [step, setStep] = useState<Step>(isSign ? 'face' : 'doc')
+  const [faceVerified, setFaceVerified] = useState(false)
   const [agreed, setAgreed] = useState(false)
   const [signed, setSigned] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
 
   const doc = researchDocs[action]
-  const isSign = action === 'sign'
-  const ready = agreed && signed
+  const ready = agreed && signed && (!isSign || faceVerified)
 
   const submit = () => {
     if (!ready) return
-    if (isSign) {
-      setStep('face')
-      return
-    }
     setStep('submitting')
     timer.current = setTimeout(() => setStep('success'), 900)
   }
 
   const startVerify = () => {
     setStep('verifying')
-    timer.current = setTimeout(() => setStep('success'), 1800)
+    timer.current = setTimeout(() => {
+      setFaceVerified(true)
+      setStep('doc')
+    }, 1800)
   }
 
   const pageTitle = isSign ? '签署科研知情同意书' : '撤销科研知情同意书'
@@ -106,6 +106,12 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
       ) : (
         <>
           <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
+            {isSign && faceVerified && (
+              <p className="mb-2.5 flex items-center gap-1.5 rounded-xl bg-success/10 px-3 py-2 text-caption font-medium text-success">
+                <ShieldCheck className="size-3.5 shrink-0" aria-hidden="true" />
+                e签宝 人脸核验已通过，请阅读文书并完成签署
+              </p>
+            )}
             <section className="rounded-2xl bg-white p-3.5">
               <dl className="flex flex-col gap-1.5 text-caption leading-[18px]">
                 <InfoRow label="受检人" value={memberName} />
@@ -146,7 +152,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
             <p className="mt-2.5 flex items-start gap-1 px-1 text-caption leading-4 text-faint">
               <Info className="mt-px size-3 shrink-0" aria-hidden="true" />
               {isSign
-                ? '提交后需通过 e签宝 实名人脸核验，核验信息仅用于本次电子签名；未成年受检人由监护人代为签署'
+                ? '已通过 e签宝 实名人脸核验，核验信息仅用于本次电子签名；未成年受检人由监护人核验并代为签署'
                 : '撤销无需人脸核验，提交手写签名后即刻生效；撤销不影响本次检测与报告'}
             </p>
           </div>
@@ -182,7 +188,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
               )}
             >
               {step === 'submitting' && <Loader2 className="size-4 motion-safe:animate-spin" aria-hidden="true" />}
-              {isSign ? '确认签署' : step === 'submitting' ? '提交中' : '确认撤销'}
+              {step === 'submitting' ? '提交中' : isSign ? '确认签署' : '确认撤销'}
             </button>
             {!ready && (
               <p className="mt-1.5 text-center text-tag text-faint">{signed ? '请勾选同意' : '请先完成手写签名'}</p>
@@ -192,7 +198,7 @@ export function ResearchSignFlow({ action, memberName, serviceName, orderNo, onC
       )}
 
       {(step === 'face' || step === 'verifying') && (
-        <FaceSheet verifying={step === 'verifying'} onStart={startVerify} onClose={() => setStep('doc')} />
+        <FaceSheet verifying={step === 'verifying'} onStart={startVerify} onClose={onClose} />
       )}
     </div>
   )
@@ -271,7 +277,7 @@ function SuccessView({
       <p className="mt-3 text-headline font-semibold text-foreground">{isSign ? '签署成功' : '撤销成功'}</p>
       <p className="mt-1.5 text-note leading-5 text-muted-foreground">
         {isSign
-          ? '人脸核验通过，电子签名已生效，可在「授权与同意书」查看或撤销'
+          ? '电子签名已生效，可在「授权与同意书」查看或撤销'
           : '科研授权已撤销，样本与数据不再用于新的研究'}
       </p>
       <dl className="mt-5 flex w-full flex-col gap-1.5 rounded-2xl bg-white p-3.5 text-left text-caption leading-[18px]">

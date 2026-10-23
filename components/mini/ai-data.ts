@@ -26,7 +26,7 @@ export type Testee = {
   reports: number
 }
 
-/** 由「检测人管理」中的检测人派生，保证 AI 咨询与检测人管理数据一致 */
+/** 由「受检人管理」中的受检人派生，保证 AI 咨询与受检人管理数据一致 */
 export function toTestee(e: Examinee): Testee {
   return {
     id: e.id,
@@ -81,8 +81,8 @@ const answers: Record<string, AnswerSet> = {
     usesReport: true,
     sources: [sourceLib.cpicClopidogrel, sourceLib.cpicStatin, sourceLib.cpicWarfarin],
     needsTestee: {
-      intro: '当前没有关联检测人，我无法读取您的报告。',
-      points: ['点击上方“未选择检测人”，选择已有报告的检测人。', '或通过输入框左侧的附件按钮上传外部机构的检测报告。'],
+      intro: '当前没有关联受检人，我无法读取您的报告。',
+      points: ['点击上方“未选择受检人”，选择已有报告的受检人。', '或通过输入框左侧的附件按钮上传外部机构的检测报告。'],
     },
     plain: {
       intro: '已读取王建国最近一份《心血管用药基因检测报告》，简单来说：',
@@ -127,7 +127,7 @@ const answers: Record<string, AnswerSet> = {
     sources: [sourceLib.cpicClopidogrel, sourceLib.clopidogrelLabel],
     needsTestee: {
       intro: '氯吡格雷是否有效与 CYP2C19 基因密切相关，但我目前没有您的检测结果。',
-      points: ['如已做过检测，请选择检测人以便读取报告。', '如未检测，建议用药前进行 CYP2C19 基因检测。'],
+      points: ['如已做过检测，请选择受检人以便读取报告。', '如未检测，建议用药前进行 CYP2C19 基因检测。'],
     },
     plain: {
       intro: '根据王建国的检测报告，氯吡格雷在您体内的“转化效率偏低”。',

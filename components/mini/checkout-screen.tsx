@@ -447,7 +447,7 @@ export function CheckoutScreen({
             {isSplit ? (
               <div className="mt-3 border-t border-border pt-3">
                 <p className="rounded-lg bg-background px-2.5 py-1.5 text-caption leading-4 text-muted-foreground">
-                  本次合并支付已按检测人及检测项目拆分为 {splitOrders.length} 个订单，可在订单列表分别查看
+                  本次合并支付已按受检人及检测项目拆分为 {splitOrders.length} 个订单，可在订单列表分别查看
                 </p>
                 <ul className="mt-2 flex flex-col gap-2">
                   {splitOrders.map((o, i) => (

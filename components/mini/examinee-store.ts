@@ -3,7 +3,7 @@
 import { useCallback, useState, useSyncExternalStore } from 'react'
 import { initialExaminees, type Examinee } from '@/components/mini/checkout-data'
 
-/** 各检测人名下的历史报告份数（检测人管理、AI 咨询共用） */
+/** 各受检人名下的历史报告份数（受检人管理、AI 咨询共用） */
 export const examineeReportCount: Record<string, number> = { self: 2, spouse: 1, child: 1 }
 
 type Updater = Examinee[] | ((prev: Examinee[]) => Examinee[])
@@ -25,7 +25,7 @@ function setSharedExaminees(next: Updater) {
 }
 
 /**
- * 账号下的检测人列表：检测人管理、检测下单、AI 咨询选择检测人共用同一份数据，任一处增删改即全局同步。
+ * 账号下的受检人列表：受检人管理、检测下单、AI 咨询选择受检人共用同一份数据，任一处增删改即全局同步。
  * `isolated` 用于设计稿中需要独立演示的状态（如空列表），不影响共享数据。
  */
 export function useExaminees(isolated?: Examinee[]) {

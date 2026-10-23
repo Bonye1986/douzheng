@@ -250,7 +250,7 @@ export function ReportDetailScreen({
           <footer className="mt-6 space-y-2 border-t border-border pt-3 text-tag text-[#3a414c]">
             <div className="flex justify-between gap-2">
               <span>
-                检测人：<Blank>陈立</Blank>
+                受检人：<Blank>陈立</Blank>
               </span>
               <span>
                 审核人：<Blank>周敏</Blank>

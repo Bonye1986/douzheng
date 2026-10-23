@@ -361,7 +361,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
 
       <ul className="mt-3 space-y-1 px-1.5 text-caption leading-4 text-muted-foreground">
         <li>· 更换后，登录账号、短信通知（用药提醒、报告出具等）将使用新手机号</li>
-        <li>· 检测人信息中填写的手机号不会自动变更，可在检测人管理中修改</li>
+        <li>· 受检人信息中填写的手机号不会自动变更，可在受检人管理中修改</li>
         <li>· 原手机号无法接收验证码？请联系客服人工处理</li>
       </ul>
 
@@ -378,7 +378,7 @@ function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string
 }
 
 const deactivateNotices = [
-  '账号内的检测人、收货地址、用药提醒、健康档案等个人信息将被永久删除，无法恢复',
+  '账号内的受检人、收货地址、用药提醒、健康档案等个人信息将被永久删除，无法恢复',
   '历史检测报告将无法在小程序内查看，请提前下载保存',
   '未使用的优惠券将作废，已授权的科研知情同意将同步撤回',
   '存在待付款、待采样、检测中或售后处理中的订单时，暂不可注销',
@@ -508,7 +508,7 @@ const textFields = {
     maxLength: 16,
     type: 'nickname',
     placeholder: '请输入昵称',
-    hint: '可使用微信昵称，昵称仅用于展示，不影响检测人信息',
+    hint: '可使用微信昵称，昵称仅用于展示，不影响受检人信息',
   },
   realName: {
     title: '填写真实姓名',

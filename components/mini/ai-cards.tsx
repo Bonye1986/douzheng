@@ -116,7 +116,7 @@ function OrdersCard() {
             <p className="min-w-0 truncate text-note font-medium text-foreground">{o.product}</p>
             <span className="shrink-0 text-note font-semibold tabular-nums text-foreground">{o.amount}</span>
           </div>
-          <p className="text-caption leading-4 text-muted-foreground">检测人：{o.person}</p>
+          <p className="text-caption leading-4 text-muted-foreground">受检人：{o.person}</p>
           <p className="mt-1.5 rounded-lg bg-white px-2 py-1.5 text-caption leading-4 text-secondary-foreground">{o.step}</p>
         </li>
       ))}

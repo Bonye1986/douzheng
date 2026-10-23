@@ -303,7 +303,7 @@ export function AiChatScreen({
 
   const greeting = testee
     ? `你好，${testee.name}。已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
-    : '你好。本次未关联检测人，我会按通用知识回答；你也可以随时选择检测人或上传外部报告。'
+    : '你好。本次未关联受检人，我会按通用知识回答；你也可以随时选择受检人或上传外部报告。'
 
   return (
     <div className="relative flex h-full flex-col bg-brand-page">
@@ -364,7 +364,7 @@ export function AiChatScreen({
             </span>
             <span className="min-w-0 flex-1">
               <strong className="block truncate text-note font-semibold text-foreground">
-                {testee ? testeeLabel(testee) : '未选择检测人'}
+                {testee ? testeeLabel(testee) : '未选择受检人'}
               </strong>
               <span className="block truncate text-caption text-muted-foreground">
                 {testee ? (testee.reports > 0 ? `${testee.reports}份历史报告` : '暂无历史报告') : '按通用知识回答'}
@@ -620,7 +620,7 @@ function TesteeSheet({
         <div className="mt-3 flex items-start justify-between gap-3">
           <div>
             <h2 id="testee-title" className="text-heading font-semibold text-foreground">
-              选择检测人
+              选择受检人
             </h2>
             <p className="mt-1 text-caption text-muted-foreground">关联后 AI 将结合其检测报告作答，可跳过</p>
           </div>
@@ -636,7 +636,7 @@ function TesteeSheet({
 
         <ul
           role="radiogroup"
-          aria-label="检测人"
+          aria-label="受检人"
           className="mt-4 divide-y divide-border/60 overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_#3a82e40d]"
         >
           {list.map((t) => {
@@ -704,7 +704,7 @@ function TesteeSheet({
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-dashed border-primary/40">
                 <Plus className="size-4" />
               </span>
-              添加检测人
+              添加受检人
             </button>
           </li>
         </ul>
