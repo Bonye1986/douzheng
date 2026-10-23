@@ -89,6 +89,7 @@ export function MineScreen({
   initialResampleOpen = false,
   initialReportOpen = false,
   initialReportDetailId,
+  initialReportSharing = false,
   initialCoupon = null,
   initialExamineeView = null,
   initialAddressView = null,
@@ -120,6 +121,7 @@ export function MineScreen({
   initialResampleOpen?: boolean
   initialReportOpen?: boolean
   initialReportDetailId?: string
+  initialReportSharing?: boolean
   initialCoupon?: 'mine' | 'center' | null
   initialExamineeView?: ExamineeView | null
   initialAddressView?: AddressView | null
@@ -378,6 +380,7 @@ export function MineScreen({
           key={reportDetailId ?? 'list'}
           onBack={() => setReportOpen(false)}
           initialDetailId={reportDetailId}
+          initialSharing={initialReportSharing}
         />
       )}
       {authOpen && <AuthorizationScreen initialFlow={initialAuthFlow} empty={initialAuthEmpty} onBack={() => setAuthOpen(false)} />}

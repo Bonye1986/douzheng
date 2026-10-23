@@ -40,7 +40,15 @@ const reports: Report[] = [
 
 export const unreadReportCount = reports.filter((r) => r.unread).length
 
-export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => void; initialDetailId?: string }) {
+export function ReportListScreen({
+  onBack,
+  initialDetailId,
+  initialSharing,
+}: {
+  onBack: () => void
+  initialDetailId?: string
+  initialSharing?: boolean
+}) {
   const examinees = ['全部', ...Array.from(new Set(reports.map((r) => r.examinee)))]
   const [examinee, setExaminee] = useState('全部')
   const [detailId, setDetailId] = useState<string | undefined>(initialDetailId)
@@ -109,7 +117,7 @@ export function ReportListScreen({ onBack, initialDetailId }: { onBack: () => vo
           报告结果仅供临床用药参考，调整用药请遵医嘱
         </li>
       </ul>
-      {detail && <ReportDetailScreen report={detail} onBack={() => setDetailId(undefined)} />}
+      {detail && <ReportDetailScreen report={detail} initialSharing={initialSharing} onBack={() => setDetailId(undefined)} />}
     </SubPage>
   )
 }

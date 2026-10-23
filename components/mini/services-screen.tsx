@@ -175,7 +175,7 @@ function BannerCarousel() {
 const categoryIcons: Record<ServiceCategoryId, string> = {
   tests: '/images/icons/svc-tests.png',
   health: '/images/icons/svc-health.png',
-  knowledge: '/images/icons/sec-knowledge.png',
+  knowledge: '/images/icons/svc-knowledge.png',
   remind: '/images/icons/svc-remind.png',
 }
 

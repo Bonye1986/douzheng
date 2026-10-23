@@ -4,7 +4,7 @@ import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { HomeFlow } from '@/components/mini/home-flow'
 import { AiChatScreen } from '@/components/mini/ai-chat-screen'
-import { ConsentReaderArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
+import { ConsentReaderArtboard, LegalDocArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
 import { MineScreen } from '@/components/mini/mine-screen'
 import {
   AfterSalesArtboard,
@@ -515,22 +515,116 @@ const screens = [
     desc: '左侧滑出抽屉，可搜索、新建、切换会话，「…」菜单内修改名称或删除会话（删除需二次确认）（可在画板内交互）',
     node: <AiChatScreen initialQuestion="我能正常使用氯吡格雷吗？" initialDrawerOpen />,
   },
+  {
+    id: '08-share',
+    title: 'AI咨询 · 分享对话',
+    desc: '长按或点击「分享」进入多选态，按轮次勾选问答，生成分享链接与二维码海报（可在画板内交互）',
+    node: <AiChatScreen initialTesteeId="self" initialQuestion="我能正常使用氯吡格雷吗？" initialSharing />,
+  },
+  {
+    id: '01-terms',
+    title: '登录 · 用户协议',
+    desc: '登录页与账号设置中点击《用户协议》进入，展示版本号与生效日期、分章节条款',
+    node: <LegalDocArtboard kind="terms" />,
+  },
+  {
+    id: '01-privacy',
+    title: '登录 · 隐私政策',
+    desc: '登录页与账号设置中点击《隐私政策》进入，说明个人信息与基因数据的收集、使用、存储与权利',
+    node: <LegalDocArtboard kind="privacy" />,
+  },
+  {
+    id: '09-survey-result',
+    title: '互动问答 · 问卷结果',
+    desc: '提交问卷后展示各题选项占比，高亮本人所选项，可返回文章继续阅读（可在画板内交互）',
+    node: (
+      <HomeFlow
+        initialTab="service"
+        initialQuiz="q1"
+        initialSurvey
+        initialSurveyAnswers={{ 'q1-1': ['b'], 'q1-2': ['a'], 'q1-3': ['a', 'c'], 'q1-4': '' }}
+      />
+    ),
+  },
+  {
+    id: '13-pay',
+    title: '确认订单 · 微信支付',
+    desc: '提交订单后唤起微信支付收银台，展示收款方与应付金额，支付中 → 支付成功（可在画板内交互）',
+    node: (
+      <HomeFlow
+        initialTab="test"
+        initialCheckout={[
+          { id: 'cardio', qty: 1 },
+          { id: 'child', qty: 2 },
+        ]}
+        initialCheckoutResult="paying"
+      />
+    ),
+  },
+  {
+    id: '13-paid',
+    title: '确认订单 · 支付成功',
+    desc: '订单结果页：支付金额、订单编号、下单时间、采样方式与受检人项目，可查看订单或返回首页（可在画板内交互）',
+    node: (
+      <HomeFlow
+        initialTab="test"
+        initialCheckout={[
+          { id: 'cardio', qty: 1 },
+          { id: 'child', qty: 2 },
+        ]}
+        initialCheckoutResult="paid"
+      />
+    ),
+  },
+  {
+    id: '13-unpaid',
+    title: '确认订单 · 待支付',
+    desc: '关闭收银台未完成支付时生成待付款订单，展示支付剩余时间，可继续支付或稍后在订单列表支付（可在画板内交互）',
+    node: (
+      <HomeFlow
+        initialTab="test"
+        initialCheckout={[
+          { id: 'cardio', qty: 1 },
+          { id: 'child', qty: 2 },
+        ]}
+        initialCheckoutResult="unpaid"
+      />
+    ),
+  },
+  {
+    id: '18-login',
+    title: '我的 · 登录拦截弹窗',
+    desc: '未登录状态点击需要账号的功能时弹出，提示登录后使用，可暂不登录或去登录',
+    node: <HomeFlow initialTab="me" loggedIn={false} initialLoginPrompt="检测人管理" />,
+  },
+  {
+    id: '21-share',
+    title: '报告详情 · 分享报告',
+    desc: '报告详情点击「分享」，生成 PDF 报告，可发送给微信好友或保存至手机（可在画板内交互）',
+    node: <MineScreen initialReportOpen initialReportDetailId="BG20261008001" initialReportSharing />,
+  },
+  {
+    id: '36-scan',
+    title: '添加提醒 · 扫码识别药品',
+    desc: '扫描药盒条形码识别药品名称、规格、用法用量，确认后自动回填提醒表单（可在画板内交互）',
+    node: <MineScreen initialReminderView="scan" />,
+  },
 ]
 
 const sectionPlan: { key: string; title: string; summary: string; ids: string[] }[] = [
-  { key: 'login', title: '登录注册', summary: '微信手机号授权登录，拒绝授权的拦截与提示', ids: ['01', '02', '03'] },
+  { key: 'login', title: '登录注册', summary: '微信手机号授权登录，拒绝授权的拦截与提示', ids: ['01', '02', '03', '01-terms', '01-privacy'] },
   {
     key: 'home',
     title: '首页与AI咨询',
     summary: 'AI 对话入口与预设问题，通俗 / 专业版切换，关联检测人后的个性化用药解答',
-    ids: ['04', '05', '06', '07', '08', '08-r', '08-o', '08-v'],
+    ids: ['04', '05', '06', '07', '08', '08-r', '08-o', '08-v', '08-share'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey', '09-survey-result'] },
   {
     key: 'order',
     title: '检测下单',
     summary: '检测列表、服务详情、购物车、确认订单（受检人、采样机构、知情同意书）与微信支付',
-    ids: ['10', '11', '12', '12-empty', '13', '14', '15', '17'],
+    ids: ['10', '11', '12', '12-empty', '13', '14', '15', '17', '13-pay', '13-paid', '13-unpaid'],
   },
   {
     key: 'orders',
@@ -561,7 +655,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'mine',
     title: '我的',
     summary: '个人中心、我的报告与报告详情、我的优惠券与领券中心',
-    ids: ['18', '18-guest', '20', '21', '22', '23'],
+    ids: ['18', '18-guest', '18-login', '20', '21', '21-share', '22', '23'],
   },
   {
     key: 'consent',
@@ -585,7 +679,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'reminder',
     title: '用药提醒',
     summary: '提醒列表、添加 / 编辑 / 删除提醒、暂停开关与空状态，到点短信通知用户',
-    ids: ['35', '36', '37', '38', '39'],
+    ids: ['35', '36', '36-scan', '37', '38', '39'],
   },
   {
     key: 'help',

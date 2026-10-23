@@ -21,7 +21,7 @@ import { DrugScanSheet, type DrugScanResult } from '@/components/mini/drug-scan-
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
-export type ReminderView = 'list' | 'add' | 'edit' | 'delete' | 'empty'
+export type ReminderView = 'list' | 'add' | 'scan' | 'edit' | 'delete' | 'empty'
 
 type Frequency = '每天' | '隔天' | '每周'
 type Meal = '饭前' | '饭后' | '随餐' | '睡前' | '不限'
@@ -131,7 +131,7 @@ type Props = {
 export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props) {
   const [list, setList] = useState<Reminder[]>(initialView === 'empty' ? [] : initialReminders)
   const [form, setForm] = useState<{ target?: Reminder } | null>(
-    initialView === 'add' ? {} : initialView === 'edit' ? { target: initialReminders[1] } : null,
+    initialView === 'add' || initialView === 'scan' ? {} : initialView === 'edit' ? { target: initialReminders[1] } : null,
   )
   const [pendingDelete, setPendingDelete] = useState<Reminder | null>(
     initialView === 'delete' ? initialReminders[1] : null,
@@ -336,7 +336,14 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
         </div>
       )}
 
-      {form && <ReminderFormScreen initial={form.target} onBack={() => setForm(null)} onSave={save} />}
+      {form && (
+        <ReminderFormScreen
+          initial={form.target}
+          initialScanOpen={initialView === 'scan' && !form.target}
+          onBack={() => setForm(null)}
+          onSave={save}
+        />
+      )}
 
       {toast && (
         <p
@@ -376,10 +383,12 @@ type Errors = Partial<Record<'drug' | 'dose' | 'times' | 'weekdays' | 'days' | '
 
 function ReminderFormScreen({
   initial,
+  initialScanOpen = false,
   onBack,
   onSave,
 }: {
   initial?: Reminder
+  initialScanOpen?: boolean
   onBack: () => void
   onSave: (r: Reminder) => void
 }) {
@@ -399,7 +408,7 @@ function ReminderFormScreen({
   const [advance, setAdvance] = useState<Advance>(initial?.advance ?? 0)
   const [note, setNote] = useState(initial?.note ?? '')
   const [errors, setErrors] = useState<Errors>({})
-  const [scanOpen, setScanOpen] = useState(false)
+  const [scanOpen, setScanOpen] = useState(initialScanOpen)
   const [scanned, setScanned] = useState<Set<ScanField>>(new Set())
 
   const clear = (k: keyof Errors) => setErrors((e) => ({ ...e, [k]: undefined }))

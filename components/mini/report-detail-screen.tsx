@@ -109,8 +109,16 @@ function Blank({ children }: { children: React.ReactNode }) {
   return <span className="border-b border-[#c9d0db] px-1 text-[#1f2329]">{children}</span>
 }
 
-export function ReportDetailScreen({ report, onBack }: { report: ReportSummary; onBack: () => void }) {
-  const [sharing, setSharing] = useState(false)
+export function ReportDetailScreen({
+  report,
+  onBack,
+  initialSharing = false,
+}: {
+  report: ReportSummary
+  onBack: () => void
+  initialSharing?: boolean
+}) {
+  const [sharing, setSharing] = useState(initialSharing)
   const profile = examineeProfiles[report.examinee]
 
   return (

@@ -85,9 +85,17 @@ type Props = {
   onSubmitted: () => void
   onDone: () => void
   initialExamineeFormOpen?: boolean
+  initialResult?: 'paying' | 'paid' | 'unpaid'
 }
 
-export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExamineeFormOpen = false }: Props) {
+export function CheckoutScreen({
+  lines,
+  onBack,
+  onSubmitted,
+  onDone,
+  initialExamineeFormOpen = false,
+  initialResult,
+}: Props) {
   const rows = lines
     .map((l) => ({ line: l, service: testServices.find((s) => s.id === l.id) }))
     .filter((r): r is { line: CheckoutLine; service: TestService } => !!r.service)
@@ -139,7 +147,7 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
   const [assignWarn, setAssignWarn] = useState(false)
   const [couponId, setCouponId] = useState<string | null>(best?.id ?? null)
   const [couponOpen, setCouponOpen] = useState(false)
-  const [agreed, setAgreed] = useState(false)
+  const [agreed, setAgreed] = useState(Boolean(initialResult))
   const [consentOpen, setConsentOpen] = useState(false)
   const [researchDocOpen, setResearchDocOpen] = useState(false)
   const [research, setResearch] = useState<Record<string, string[]>>({})
@@ -150,10 +158,14 @@ export function CheckoutScreen({ lines, onBack, onSubmitted, onDone, initialExam
     })
   const [warn, setWarn] = useState(false)
   const [payMethod, setPayMethod] = useState<PayMethod>('wechat')
-  const [submitted, setSubmitted] = useState(false)
-  const [paying, setPaying] = useState(false)
-  const [unpaid, setUnpaid] = useState(false)
-  const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(null)
+  const [submitted, setSubmitted] = useState(initialResult === 'paid')
+  const [paying, setPaying] = useState(initialResult === 'paying')
+  const [unpaid, setUnpaid] = useState(initialResult === 'unpaid')
+  const [paidInfo, setPaidInfo] = useState<{ orderNo: string; time: string } | null>(
+    initialResult === 'paid' || initialResult === 'unpaid'
+      ? { orderNo: 'JY20261023518806', time: '2026-10-23 14:32' }
+      : null,
+  )
   const [resentSms, setResentSms] = useState<string[]>([])
   const [orderDetailOpen, setOrderDetailOpen] = useState(false)
   const [orderListOpen, setOrderListOpen] = useState(false)
