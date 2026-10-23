@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, ClipboardList, FileText, FlaskConical, Sparkles } from 'lucide-react'
+import { ChevronRight, ClipboardList, FileText, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { testServices } from '@/components/mini/tests-data'
 
@@ -148,22 +148,6 @@ function ServicesCard() {
                   )}
                 </p>
               </div>
-            </div>
-            <div className="mt-2 rounded-lg bg-white px-2 py-1.5">
-  <p className="flex items-center gap-1 whitespace-nowrap text-caption font-medium text-foreground">
-  <FlaskConical className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
-  检测项目
-  <span className="truncate font-normal text-muted-foreground">
-                  · {service.genes.length} 个基因位点 · 覆盖 {service.drugCount} 种药物
-                </span>
-              </p>
-              <ul className="mt-1.5 flex flex-wrap gap-1" aria-label={`${service.name}检测项目`}>
-                {service.genes.map((g) => (
-                  <li key={g} className="rounded bg-secondary px-1.5 py-px text-tag font-medium text-secondary-foreground">
-                    {g}
-                  </li>
-                ))}
-              </ul>
             </div>
             <div className="mt-2 flex items-center justify-between gap-2">
               <p className="min-w-0 flex-1 text-caption leading-4 text-muted-foreground">推荐理由：{reason}</p>
