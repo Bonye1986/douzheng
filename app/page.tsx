@@ -332,7 +332,7 @@ const screens = [
   {
     id: '46',
     title: '账号设置 · 注销账号',
-    desc: '注销风险提示、数据清除说明、进行中订单检查、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
+    desc: '注销风险提示、数据清除说明、进行中订单检查、短信验证与须知勾选，弹窗二次确认后立即完成注销（可在画板内交互）',
     node: <MineScreen initialAccountView="deactivate" />,
   },
   {
@@ -641,7 +641,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'consent',
     title: '授权与同意书',
-    summary: '科研知情同意书列表、签署页（手写签名 + e签宝人脸核验）、撤销页（手写签名，免核验）与空状态',
+    summary: '科研知情同意书列表、签署页（手写签名 + e签宝人脸核验）、撤��页（手写签名，免核验）与空状态',
     ids: ['16', '34', '34-withdraw', '16-empty'],
   },
   {

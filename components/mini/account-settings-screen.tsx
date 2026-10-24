@@ -312,7 +312,7 @@ function DeactivateView({ onSubmitted }: { onSubmitted: () => void }) {
         <div>
           <p className="text-body font-semibold text-[#8a5410]">注销账号是不可恢复的操作</p>
           <p className="mt-0.5 text-caption leading-[18px] text-[#8a5410]/80">
-            提交后进入 7 天冷静期，期间重新登录即可撤销注销申请。
+            确认后将立即注销，账号及全部数据会被永久删除且无法撤销。
           </p>
         </div>
       </div>
@@ -355,7 +355,7 @@ function DeactivateView({ onSubmitted }: { onSubmitted: () => void }) {
         onClick={() => setConfirming(true)}
         className="mt-auto h-11 w-full shrink-0 rounded-full bg-destructive text-title font-medium text-white disabled:opacity-40"
       >
-        申请注销
+        确认注销
       </button>
 
       {confirming && (
@@ -363,8 +363,8 @@ function DeactivateView({ onSubmitted }: { onSubmitted: () => void }) {
           id="deactivate-confirm"
           icon={<AlertTriangle className="size-5" />}
           title="确定注销账号？"
-          desc="7 天冷静期结束后账号及全部数据将被永久删除。"
-          confirm="确认注销"
+          desc="注销将立即生效，账号及全部数据将被永久删除，无法恢复。"
+          confirm="立即注销"
           onCancel={() => setConfirming(false)}
           onConfirm={() => {
             setConfirming(false)
@@ -596,7 +596,7 @@ export function AccountSettingsScreen({
 
           onSubmitted={() => {
             setView('main')
-            setToast('注销申请已提交，7 天内登录可撤销')
+            setToast('账号已注销')
           }}
         />
       )}
