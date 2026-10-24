@@ -14,6 +14,9 @@ import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { ExamineeManageScreen } from '@/components/mini/examinee-manage-screen'
 import { MedicationReminderScreen } from '@/components/mini/medication-reminder-screen'
 import { LoginRequiredDialog } from '@/components/mini/login-required-dialog'
+import { RealNameGuideDialog } from '@/components/mini/realname-guide-dialog'
+import { AccountSettingsScreen } from '@/components/mini/account-settings-screen'
+import { useSelfVerified } from '@/components/mini/examinee-store'
 import { KnowledgeScreen, type ArticleKind } from '@/components/mini/knowledge-screen'
 import type { SurveyAnswers } from '@/components/mini/survey-screen'
 import {
@@ -38,7 +41,10 @@ export function HomeFlow({
   initialServiceSection,
   loggedIn = true,
   onRequireLogin,
+  showRealNamePrompt = false,
 }: {
+  /** 登录成功后进入首页时检查实名状态，未认证则弹窗引导 */
+  showRealNamePrompt?: boolean
   /** Pre-filled answers so the article shows the 问卷 as already submitted. */
   initialSurveyAnswers?: SurveyAnswers
   /** 'list' opens 知识科普 list; an article id opens that article directly. */
@@ -65,6 +71,9 @@ export function HomeFlow({
   const [request, setRequest] = useState<ChatRequest | null>(null)
   const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
   const [loginPrompt, setLoginPrompt] = useState<string | null>(initialLoginPrompt ?? null)
+  const selfVerified = useSelfVerified()
+  const [realNamePrompt, setRealNamePrompt] = useState(showRealNamePrompt && loggedIn && !selfVerified)
+  const [verifyOpen, setVerifyOpen] = useState(false)
   const initialArticleEntry = initialQuiz ?? initialKnowledge
   const [knowledgeEntry, setKnowledgeEntry] = useState<{
     key: number
@@ -177,6 +186,24 @@ export function HomeFlow({
           initialArticleId={knowledgeEntry.articleId}
             onBack={() => setKnowledgeEntry(null)}
         />
+      )}
+
+      {realNamePrompt && !selfVerified && (
+        <RealNameGuideDialog
+          desc="登录成功！完成本人实名认证后，即可将本人设为受检人并添加家人，用于下单检测与报告归档。"
+          skipLabel="跳过"
+          onVerify={() => {
+            setRealNamePrompt(false)
+            setVerifyOpen(true)
+          }}
+          onSkip={() => setRealNamePrompt(false)}
+        />
+      )}
+
+      {verifyOpen && (
+        <div className="absolute inset-0 z-50">
+          <AccountSettingsScreen initialView="verify" onBack={() => setVerifyOpen(false)} />
+        </div>
       )}
 
       {loginPrompt && (

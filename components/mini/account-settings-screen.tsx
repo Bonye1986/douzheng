@@ -14,10 +14,12 @@ import {
 import { SubPage } from '@/components/mini/sub-page'
 import { LegalDocScreen, type LegalDocKind } from '@/components/mini/legal-doc-screen'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
-import { genderLabel, initialExaminees, type Gender } from '@/components/mini/checkout-data'
+import { genderLabel, initialExaminees, type Examinee, type Gender } from '@/components/mini/checkout-data'
+import { ExamineeVerifyScreen } from '@/components/mini/examinee-verify-screen'
+import { selfDraft, useSelfVerified, verifySharedSelf } from '@/components/mini/examinee-store'
 import { cn } from '@/lib/utils'
 
-export type AccountView = 'main' | 'deactivate'
+export type AccountView = 'main' | 'deactivate' | 'verify'
 
 const maskPhone = (phone: string) => phone.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
 
@@ -225,11 +227,15 @@ const formatBirth = (birth: string) => {
 function MainView({
   profile,
   phone,
+  verified,
+  onVerify,
   onEdit,
   onDeactivate,
   onLogout,
   onAvatar,
 }: {
+  verified: boolean
+  onVerify: () => void
   onAvatar: () => void
   profile: Profile
   phone: string
@@ -268,6 +274,32 @@ function MainView({
             <span className="mt-0.5 text-caption text-muted-foreground">同步微信绑定手机号，不支持修改</span>
           </div>
           <span className="text-note tabular-nums text-muted-foreground">{maskPhone(phone)}</span>
+        </li>
+      </Card>
+
+      <Card title="账号安全">
+        <li>
+          <button
+            type="button"
+            onClick={onVerify}
+            className="flex min-h-12 w-full items-center gap-2 px-3.5 py-3 text-left"
+          >
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span className="text-body text-foreground">实名认证</span>
+              <span className="mt-0.5 text-caption text-muted-foreground">
+                {verified ? '本人已认证，身份信息已锁定' : '认证后可添加受检人、签署科研同意书'}
+              </span>
+            </span>
+            {verified ? (
+              <span className="flex items-center gap-0.5 rounded bg-success-soft px-1.5 py-px text-caption text-success">
+                <ShieldCheck className="size-3" aria-hidden="true" />
+                已认证
+              </span>
+            ) : (
+              <span className="rounded bg-warning-soft px-1.5 py-px text-caption text-warning">未认证</span>
+            )}
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </button>
         </li>
       </Card>
 
@@ -534,12 +566,21 @@ function BirthSheet({ value, onSave, onClose }: { value: string; onSave: (v: str
 export function AccountSettingsScreen({
   initialView = 'main',
   onBack,
+  verified: verifiedOverride,
+  onVerified,
 }: {
   initialView?: AccountView
   onBack: () => void
+  /** 由调用方（如独立演示的受检人列表）提供实名状态；缺省读取共享数据 */
+  verified?: boolean
+  /** 实名认证成功回调；缺省写入共享受检人列表 */
+  onVerified?: (self: Examinee) => void
 }) {
   const self = initialExaminees[0]
+  const sharedVerified = useSelfVerified()
+  const verified = verifiedOverride ?? sharedVerified
   const [view, setView] = useState<AccountView>(initialView)
+  const verifyOnly = initialView === 'verify'
   const [profile, setProfile] = useState<Profile>({
     nickname: DEFAULT_NICKNAME,
     realName: self.name,
@@ -564,7 +605,16 @@ export function AccountSettingsScreen({
     return () => clearTimeout(timer)
   }, [toast])
 
-  const titles: Record<AccountView, string> = { main: '账号设置', deactivate: '注销账号' }
+  const titles: Record<AccountView, string> = { main: '账号设置', deactivate: '注销账号', verify: '账号设置' }
+
+  const completeVerify = (e: Examinee) => {
+    if (onVerified) onVerified(e)
+    else verifySharedSelf(e)
+    setProfile((p) => ({ ...p, realName: e.name, gender: e.gender, birth: e.birth ?? p.birth }))
+    if (verifyOnly) return onBack()
+    setView('main')
+    setToast('实名认证成功')
+  }
 
   return (
     <SubPage
@@ -572,10 +622,12 @@ export function AccountSettingsScreen({
       titleId="account-settings-title"
       onBack={() => (view === 'main' ? onBack() : setView('main'))}
     >
-      {view === 'main' && (
+      {(view === 'main' || view === 'verify') && (
         <MainView
           profile={profile}
           phone={phone}
+          verified={verified}
+          onVerify={() => (verified ? setToast('已完成实名认证') : setView('verify'))}
           onEdit={setEditing}
           onDeactivate={() => setView('deactivate')}
           onLogout={() => setLogoutOpen(true)}
@@ -598,6 +650,14 @@ export function AccountSettingsScreen({
             setView('main')
             setToast('账号已注销')
           }}
+        />
+      )}
+
+      {view === 'verify' && (
+        <ExamineeVerifyScreen
+          self={{ ...selfDraft, name: profile.realName || selfDraft.name }}
+          onBack={() => (verifyOnly ? onBack() : setView('main'))}
+          onVerified={completeVerify}
         />
       )}
 

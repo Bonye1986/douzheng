@@ -4,15 +4,26 @@ import { useState } from 'react'
 import { WelcomeScreen } from '@/components/mini/welcome-screen'
 import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { HomeFlow } from '@/components/mini/home-flow'
+import { startUnverifiedSession } from '@/components/mini/examinee-store'
 
-type Stage = 'welcome' | 'denied' | 'auth' | 'home' | 'guest'
+type Stage = 'welcome' | 'denied' | 'auth' | 'home' | 'loggedIn' | 'guest'
 
 export function DemoApp({ skipLogin = false }: { skipLogin?: boolean }) {
   const [stage, setStage] = useState<Stage>(skipLogin ? 'home' : 'welcome')
 
   if (stage === 'home') return <HomeFlow />
+  if (stage === 'loggedIn') return <HomeFlow showRealNamePrompt />
   if (stage === 'guest') return <HomeFlow loggedIn={false} onRequireLogin={() => setStage('welcome')} />
-  if (stage === 'auth') return <WechatAuthScreen onAllow={() => setStage('home')} onDeny={() => setStage('denied')} />
+  if (stage === 'auth')
+    return (
+      <WechatAuthScreen
+        onAllow={() => {
+          startUnverifiedSession()
+          setStage('loggedIn')
+        }}
+        onDeny={() => setStage('denied')}
+      />
+    )
   return (
     <WelcomeScreen
       key={stage}
