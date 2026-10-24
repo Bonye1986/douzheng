@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlertTriangle, BadgeCheck, ChevronRight, PencilLine, Phone, Plus, ShieldAlert, ShieldCheck, Trash2, UserRound, Users } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, ChevronRight, PencilLine, Phone, Plus, ShieldAlert, ShieldCheck, Trash2 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { AccountSettingsScreen } from '@/components/mini/account-settings-screen'
@@ -10,7 +10,7 @@ import { examineeMeta, initialExaminees, type Examinee } from '@/components/mini
 import { examineeReportCount, isSelfVerified, useExaminees, withVerifiedSelf } from '@/components/mini/examinee-store'
 import { cn } from '@/lib/utils'
 
-export type ExamineeView = 'list' | 'add' | 'edit' | 'edit-self' | 'delete' | 'empty' | 'unverified' | 'verify'
+export type ExamineeView = 'list' | 'add' | 'edit' | 'edit-self' | 'delete' | 'unverified' | 'verify'
 
 const MAX_EXAMINEES = 10
 
@@ -24,7 +24,7 @@ type Props = {
 
 export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
   const [rawList, setList] = useExaminees(
-    initialView === 'empty' || initialView === 'unverified' || initialView === 'verify' ? [] : undefined,
+    initialView === 'unverified' || initialView === 'verify' ? [] : undefined,
   )
   const selfVerified = isSelfVerified(rawList)
   const list = [...rawList.filter((m) => m.relation === '本人'), ...rawList.filter((m) => m.relation !== '本人')]
@@ -87,10 +87,8 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
 
   return (
     <SubPage title="受检人管理" titleId="examinee-manage-title" onBack={onBack}>
-      {!selfVerified && list.length === 0 ? (
+      {list.length === 0 ? (
         <UnverifiedState onVerify={goVerify} />
-      ) : list.length === 0 ? (
-        <EmptyState onAdd={openAdd} />
       ) : (
         <>
           <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
@@ -343,31 +341,6 @@ function UnverifiedState({ onVerify }: { onVerify: () => void }) {
       >
         <ShieldCheck className="size-4" aria-hidden="true" />
         去实名认证
-      </button>
-    </div>
-  )
-}
-
-function EmptyState({ onAdd }: { onAdd: () => void }) {
-  return (
-    <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
-      <span className="relative flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
-        <Users className="size-11 text-primary" strokeWidth={1.4} />
-        <span className="absolute bottom-1 right-1 flex size-7 items-center justify-center rounded-full bg-white shadow-sm">
-          <UserRound className="size-4 text-primary" />
-        </span>
-      </span>
-      <h2 className="mt-5 text-title font-semibold text-foreground">还没有受检人</h2>
-      <p className="mt-1.5 text-note leading-5 text-muted-foreground">
-        添加本人或家人的信息，下单检测时可直接选择，报告也会按受检人归档。
-      </p>
-      <button
-        type="button"
-        onClick={onAdd}
-        className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-body font-medium text-primary-foreground active:opacity-90"
-      >
-        <Plus className="size-4" aria-hidden="true" />
-        添加受检人
       </button>
     </div>
   )

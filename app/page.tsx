@@ -234,12 +234,6 @@ const screens = [
     node: <MineScreen initialExamineeView="delete" />,
   },
   {
-    id: '28',
-    title: '受检人管理 · 空状态',
-    desc: '尚未添加任何受检人时展示引导插图与说明，点击添加受检人进入添加表单',
-    node: <MineScreen initialExamineeView="empty" />,
-  },
-  {
     id: '29',
     title: '我的 · 地址管理',
     desc: '展示已保存的收货地址（收货人、手机号、标签、省市区与详细地址），默认地址置顶，最多 20 个；每张卡片可设为默认、编辑、删除，底部新增收货地址（可在画板内交互）',
@@ -452,7 +446,7 @@ const screens = [
   {
     id: '47-send',
     title: '订单列表 · 寄样',
-    desc: '自采样待寄样订单点击「寄样」，预约顺丰上门取件：确认寄件地址，提交后订单变为待收样（可在画板内交互）',
+    desc: '自采样待寄样订单点击「寄样」，预约顺丰上���取件：确认寄件地址，提交后订单变为待收样（可在画板内交互）',
     node: <OrderActionArtboard kind="send" />,
   },
   {
@@ -641,7 +635,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'consent',
     title: '授权与同意书',
-    summary: '科研知情同意书列表、签署页（手写签名 + e签宝人脸核验）、撤��页（手写签名，免核验）与空状态',
+    summary: '科研知情同意书列表、签署页（手写签名 + e签宝人脸核验）、����页（手写签名，免核验）与空状态',
     ids: ['16', '34', '34-withdraw', '16-empty'],
   },
   {
