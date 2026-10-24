@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, ClipboardList, FileText, Sparkles } from 'lucide-react'
+import { ChevronRight, ClipboardList, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { testServices } from '@/components/mini/tests-data'
 
@@ -55,7 +55,7 @@ function CardFooter({ label }: { label: string }) {
   )
 }
 
-function ReportsCard({ onAsk }: { onAsk?: (q: string) => void }) {
+function ReportsCard() {
   return (
     <ul className="flex flex-col gap-2">
       {reports.map((r) => (
@@ -84,14 +84,14 @@ function ReportsCard({ onAsk }: { onAsk?: (q: string) => void }) {
             {r.ready ? (
               <button
                 type="button"
-                onClick={() => onAsk?.(`帮我解读一下${r.person.split('（')[0]}的${r.title}报告`)}
-                className="flex items-center gap-0.5 rounded-full bg-primary px-2.5 py-1 text-caption font-medium text-white"
+                aria-label={`查看${r.person.split('（')[0]}的${r.title}报告`}
+                className="flex items-center gap-0.5 rounded-full bg-primary px-3 py-1 text-caption font-medium text-white"
               >
-                <Sparkles className="size-3" aria-hidden="true" />
-                AI 解读
+                查看报告
+                <ChevronRight className="size-3" aria-hidden="true" />
               </button>
             ) : (
-              <span className="text-caption text-faint">出报告后可解读</span>
+              <span className="text-caption text-faint">出报告后可查看</span>
             )}
           </div>
         </li>
@@ -172,7 +172,7 @@ export function ChatCard({ kind, onAsk }: { kind: CardKind; onAsk?: (q: string) 
         {cardKindText[kind]}
         {kind === 'services' ? '，可点击查看详情：' : '：'}
       </p>
-      {kind === 'reports' && <ReportsCard onAsk={onAsk} />}
+      {kind === 'reports' && <ReportsCard />}
       {kind === 'orders' && <OrdersCard />}
       {kind === 'services' && <ServicesCard />}
       {kind === 'services' && (
