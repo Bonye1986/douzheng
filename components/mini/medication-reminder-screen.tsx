@@ -5,7 +5,6 @@ import {
   AlarmClock,
   BellOff,
   Camera,
-  ChevronRight,
   Clock,
   MessageSquareText,
   PencilLine,
@@ -488,23 +487,6 @@ function ReminderFormScreen({
             用药信息
           </h2>
 
-          <button
-            type="button"
-            onClick={() => setScanOpen(true)}
-            className="mt-3 flex w-full items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-3 py-2.5 text-left"
-          >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Camera className="size-4" aria-hidden="true" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-note font-medium text-foreground">
-                {scanned.size ? '重新拍照识别' : '拍照识别药盒'}
-              </span>
-              <span className="block text-caption text-muted-foreground">自动识别药名、剂量与用法，并填入下方</span>
-            </span>
-            <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-          </button>
-
           {scanned.size > 0 && (
             <p role="status" className="mt-2 flex items-start gap-1.5 rounded-lg bg-[#fff8e6] px-2.5 py-2 text-caption leading-relaxed text-[#8a5a00]">
               <Sparkles className="mt-px size-3.5 shrink-0" aria-hidden="true" />
@@ -512,23 +494,34 @@ function ReminderFormScreen({
             </p>
           )}
 
-          <label className="mt-3 block">
-            <span className="flex items-center text-caption text-muted-foreground">
+          <div className="mt-3">
+            <label htmlFor="reminder-drug-input" className="flex items-center text-caption text-muted-foreground">
               药品名称
               {scanned.has('drug') && <ScanBadge />}
-            </span>
-            <input
-              value={drug}
-              onChange={(e) => {
-                setDrug(e.target.value.slice(0, 30))
-                clear('drug')
-                unmark('drug')
-              }}
-              placeholder="请输入药品通用名或商品名"
-              aria-invalid={!!errors.drug}
-              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-body text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
-            />
-          </label>
+            </label>
+            <div className="relative mt-1.5">
+              <input
+                id="reminder-drug-input"
+                value={drug}
+                onChange={(e) => {
+                  setDrug(e.target.value.slice(0, 30))
+                  clear('drug')
+                  unmark('drug')
+                }}
+                placeholder="请输入药品通用名或商品名"
+                aria-invalid={!!errors.drug}
+                className="h-10 w-full rounded-xl bg-muted pl-3 pr-11 text-body text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
+              />
+              <button
+                type="button"
+                onClick={() => setScanOpen(true)}
+                aria-label={scanned.size ? '重新拍照识别药盒' : '拍照识别药盒'}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-primary"
+              >
+                <Camera className="size-5" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
           <FieldError msg={errors.drug} />
           {!drug && (
             <div className="mt-2 flex flex-wrap gap-1.5">
