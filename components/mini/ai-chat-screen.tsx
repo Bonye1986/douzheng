@@ -434,20 +434,6 @@ export function AiChatScreen({
           <p className="mt-1.5 text-caption leading-5 text-muted-foreground">
             回答基于已授权资料和知识来源生成。医疗问题需结合专业人员判断；紧急或严重不适请及时就医。
           </p>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {skills.map((skill) => (
-              <li key={skill.key}>
-                <button
-                  type="button"
-                  onClick={() => ask(skill.question)}
-                  disabled={isReplying}
-                  className="rounded-full bg-secondary px-3 py-1.5 text-caption font-medium text-secondary-foreground transition-colors active:bg-[#d3e6fc] disabled:opacity-50"
-                >
-                  {skill.label}
-                </button>
-              </li>
-            ))}
-          </ul>
         </section>
         )}
 
@@ -539,7 +525,26 @@ export function AiChatScreen({
       {sharing ? (
         <ShareSheet items={shareItems} onClose={() => setShareIds(null)} />
       ) : (
-        <ChatComposer disabled={isReplying} onSend={ask} />
+        <>
+          <ul
+            aria-label="快捷服务"
+            className="flex shrink-0 gap-2 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none]"
+          >
+            {skills.map((skill) => (
+              <li key={skill.key} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => ask(skill.question)}
+                  disabled={isReplying}
+                  className="rounded-full border border-[#d6e6fb] bg-white px-3 py-1.5 text-caption font-medium text-secondary-foreground shadow-[0_2px_8px_#3a82e414] transition-colors active:bg-secondary disabled:opacity-50"
+                >
+                  {skill.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <ChatComposer disabled={isReplying} onSend={ask} />
+        </>
       )}
 
       {drawerOpen && (
