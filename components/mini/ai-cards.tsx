@@ -118,6 +118,16 @@ function OrdersCard() {
           </div>
           <p className="text-caption leading-4 text-muted-foreground">受检人：{o.person}</p>
           <p className="mt-1.5 rounded-lg bg-white px-2 py-1.5 text-caption leading-4 text-secondary-foreground">{o.step}</p>
+          <div className="mt-2 flex justify-end border-t border-border pt-2">
+            <button
+              type="button"
+              aria-label={`查看订单 ${o.id} 详情`}
+              className="flex items-center gap-0.5 rounded-full border border-primary px-3 py-1 text-caption font-medium text-primary active:bg-secondary"
+            >
+              查看详情
+              <ChevronRight className="size-3" aria-hidden="true" />
+            </button>
+          </div>
         </li>
       ))}
     </ul>
