@@ -56,7 +56,7 @@ type Address = { id: string; name: string; phone: string; detail: string; tag?: 
 
 const addresses: Address[] = [
   { id: 'home', name: '王建国', phone: '138****6721', detail: '浙江省杭州市西湖区文三路 478 号华星时代广场 A 座 1206', tag: '默认' },
-  { id: 'work', name: '王建国', phone: '138****6721', detail: '浙江省杭州市滨江区网商路 699 号 3 号楼 5 层', tag: '公司' },
+  { id: 'work', name: '王建国', phone: '138****6721', detail: '浙江省杭州市滨江区网商路 699 号 3 号楼 5 层' },
   { id: 'parent', name: '李秀兰', phone: '139****2048', detail: '浙江省绍兴市越城区中兴中路 128 号 2 单元 302' },
 ]
 
@@ -708,7 +708,7 @@ export function CheckoutScreen({
               检测项目与受检人
             </h2>
             <button type="button" onClick={() => setExamineeForm({ serviceId: null })} className="text-caption text-primary">
-              + 添加受检人
+              + ��加受检人
             </button>
           </div>
           <p className="px-3.5 pt-1 text-caption text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
