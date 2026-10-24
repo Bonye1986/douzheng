@@ -374,7 +374,7 @@ export function ResampleScreen({
                   <span className="text-caption tabular-nums text-muted-foreground">订单号 {newOrderNo}</span>
                 </span>
                 <span className="rounded bg-secondary px-1.5 py-0.5 text-caption font-medium text-primary">
-                  {order.mode === '��点采样' ? '待核销' : '待发货'}
+                  {order.mode === '定点采样' ? '待核销' : '待发货'}
                 </span>
               </div>
               <div className="mt-2.5 flex items-end justify-between">

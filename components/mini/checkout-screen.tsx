@@ -708,7 +708,7 @@ export function CheckoutScreen({
               检测项目与受检人
             </h2>
             <button type="button" onClick={() => setExamineeForm({ serviceId: null })} className="text-caption text-primary">
-              + ��加受检人
+              + 添加受检人
             </button>
           </div>
           <p className="px-3.5 pt-1 text-caption text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
