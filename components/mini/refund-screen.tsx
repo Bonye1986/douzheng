@@ -176,7 +176,6 @@ export type IncurredFee = { label: string; desc: string; amount: number }
 
 const resampleFees: IncurredFee[] = [
   { label: '采样盒及耗材（2 次）', desc: '首次采样盒 + 重采样采样盒', amount: KIT_FEE * 2 },
-  { label: '物流费用', desc: '采样盒寄送及样本回寄（2 次）', amount: 60 },
   { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
 ]
 
@@ -262,10 +261,7 @@ const testingRefundReasons = ['不想检测了', '已在其他机构检测', '�
 function testingFees(o: TestingRefundOrder): IncurredFee[] {
   const fees: IncurredFee[] =
     o.type === 'self'
-      ? [
-          { label: '采样盒及耗材', desc: '已寄出并使用的采样盒', amount: KIT_FEE },
-          { label: '物流费用', desc: '采样盒寄送及样本回寄', amount: 30 },
-        ]
+      ? [{ label: '采样盒及耗材', desc: '已寄出并使用的采样盒', amount: KIT_FEE }]
       : [{ label: '采样服务费', desc: '采样机构现场采样及样本寄送', amount: 100 }]
   if (o.status === '待检测' || o.status === '检测中') {
     fees.push({ label: '样本处理费用', desc: '实验室签收、登记及 DNA 提取', amount: 100 })
@@ -418,7 +414,7 @@ function CancelConfirmDialog({
               <p>该订单尚未支付，取消后订单将关闭</p>
             ) : (
               <p>
-                取消后 <span className="font-medium tabular-nums text-warning">¥{paid}</span> 将全额原路退回
+                取消后 <span className="font-medium tabular-nums text-warning">¥{paid}</span> 将全额���路退回
               </p>
             )}
             <p>订单取消后不可恢复，如需检测请重新下单</p>

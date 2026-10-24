@@ -36,7 +36,6 @@ const refundReasons = ['不想重新采样', '检测需求已变更', '等待时
 
 const unqualifiedFees: IncurredFee[] = [
   { label: '采样盒及耗材', desc: '已寄出的采样盒', amount: 80 },
-  { label: '物流费用', desc: '采样盒寄送及样本回寄', amount: 30 },
   { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
 ]
 
@@ -375,7 +374,7 @@ export function ResampleScreen({
                   <span className="text-caption tabular-nums text-muted-foreground">订单号 {newOrderNo}</span>
                 </span>
                 <span className="rounded bg-secondary px-1.5 py-0.5 text-caption font-medium text-primary">
-                  {order.mode === '定点采样' ? '待核销' : '待发货'}
+                  {order.mode === '��点采样' ? '待核销' : '待发货'}
                 </span>
               </div>
               <div className="mt-2.5 flex items-end justify-between">
