@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, ClipboardList, FileText, Sparkles } from 'lucide-react'
+import { ChevronRight, ClipboardList, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { testServices } from '@/components/mini/tests-data'
 
@@ -55,7 +55,7 @@ function CardFooter({ label }: { label: string }) {
   )
 }
 
-function ReportsCard({ onAsk }: { onAsk?: (q: string) => void }) {
+function ReportsCard() {
   return (
     <ul className="flex flex-col gap-2">
       {reports.map((r) => (
@@ -84,14 +84,14 @@ function ReportsCard({ onAsk }: { onAsk?: (q: string) => void }) {
             {r.ready ? (
               <button
                 type="button"
-                onClick={() => onAsk?.(`帮我解读一下${r.person.split('（')[0]}的${r.title}报告`)}
-                className="flex items-center gap-0.5 rounded-full bg-primary px-2.5 py-1 text-caption font-medium text-white"
+                aria-label={`查看${r.person.split('（')[0]}的${r.title}报告`}
+                className="flex items-center gap-0.5 rounded-full bg-primary px-3 py-1 text-caption font-medium text-white"
               >
-                <Sparkles className="size-3" aria-hidden="true" />
-                AI 解读
+                查看报告
+                <ChevronRight className="size-3" aria-hidden="true" />
               </button>
             ) : (
-              <span className="text-caption text-faint">出报告后可解读</span>
+              <span className="text-caption text-faint">出报告后可查看</span>
             )}
           </div>
         </li>
@@ -116,8 +116,18 @@ function OrdersCard() {
             <p className="min-w-0 truncate text-note font-medium text-foreground">{o.product}</p>
             <span className="shrink-0 text-note font-semibold tabular-nums text-foreground">{o.amount}</span>
           </div>
-          <p className="text-caption leading-4 text-muted-foreground">检测人：{o.person}</p>
+          <p className="text-caption leading-4 text-muted-foreground">受检人：{o.person}</p>
           <p className="mt-1.5 rounded-lg bg-white px-2 py-1.5 text-caption leading-4 text-secondary-foreground">{o.step}</p>
+          <div className="mt-2 flex justify-end border-t border-border pt-2">
+            <button
+              type="button"
+              aria-label={`查看订单 ${o.id} 详情`}
+              className="flex items-center gap-0.5 rounded-full border border-primary px-3 py-1 text-caption font-medium text-primary active:bg-secondary"
+            >
+              查看详情
+              <ChevronRight className="size-3" aria-hidden="true" />
+            </button>
+          </div>
         </li>
       ))}
     </ul>
@@ -172,7 +182,7 @@ export function ChatCard({ kind, onAsk }: { kind: CardKind; onAsk?: (q: string) 
         {cardKindText[kind]}
         {kind === 'services' ? '，可点击查看详情：' : '：'}
       </p>
-      {kind === 'reports' && <ReportsCard onAsk={onAsk} />}
+      {kind === 'reports' && <ReportsCard />}
       {kind === 'orders' && <OrdersCard />}
       {kind === 'services' && <ServicesCard />}
       {kind === 'services' && (

@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils'
 
 export type AddressView = 'list' | 'add' | 'edit' | 'delete' | 'empty'
 
-type Tag = '家' | '公司' | '父母家'
 type Region = [string, string, string]
 
 export type ManagedAddress = {
@@ -16,12 +15,10 @@ export type ManagedAddress = {
   phone: string
   region: Region
   street: string
-  tag?: Tag
   isDefault: boolean
 }
 
 const MAX_ADDRESSES = 20
-const tags: Tag[] = ['家', '公司', '父母家']
 
 const regionTree: Record<string, Record<string, string[]>> = {
   浙江省: { 杭州市: ['西湖区', '滨江区', '上城区', '拱墅区'], 绍兴市: ['越城区', '柯桥区'], 宁波市: ['鄞州区', '海曙区'] },
@@ -37,7 +34,6 @@ const initialAddresses: ManagedAddress[] = [
     phone: '138****6721',
     region: ['浙江省', '杭州市', '西湖区'],
     street: '文三路 478 号华星时代广场 A 座 1206',
-    tag: '家',
     isDefault: true,
   },
   {
@@ -46,7 +42,6 @@ const initialAddresses: ManagedAddress[] = [
     phone: '138****6721',
     region: ['浙江省', '杭州市', '滨江区'],
     street: '网商路 699 号 3 号楼 5 层',
-    tag: '公司',
     isDefault: false,
   },
   {
@@ -55,7 +50,6 @@ const initialAddresses: ManagedAddress[] = [
     phone: '139****2048',
     region: ['浙江省', '绍兴市', '越城区'],
     street: '中兴中路 128 号 2 单元 302',
-    tag: '父母家',
     isDefault: false,
   },
 ]
@@ -159,9 +153,6 @@ export function AddressManageScreen({ onBack, initialView = 'list' }: Props) {
                       <p className="mt-1 flex flex-wrap items-center gap-1">
                         {a.isDefault && (
                           <span className="rounded bg-primary px-1.5 py-px text-caption text-primary-foreground">默认</span>
-                        )}
-                        {a.tag && (
-                          <span className="rounded bg-secondary px-1.5 py-px text-caption text-primary">{a.tag}</span>
                         )}
                         <span className="text-caption text-muted-foreground">{regionText(a.region)}</span>
                       </p>
@@ -366,7 +357,6 @@ function AddressFormScreen({
   const [phone, setPhone] = useState(initial?.phone ?? '')
   const [region, setRegion] = useState<Region | null>(initial?.region ?? null)
   const [street, setStreet] = useState(initial?.street ?? '')
-  const [tag, setTag] = useState<Tag | undefined>(initial?.tag)
   const [isDefault, setIsDefault] = useState(initial?.isDefault ?? forceDefault)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
@@ -388,7 +378,6 @@ function AddressFormScreen({
       phone: masked ? phone : `${phone.slice(0, 3)}****${phone.slice(7)}`,
       region,
       street: street.trim(),
-      tag,
       isDefault,
     })
   }
@@ -459,28 +448,6 @@ function AddressFormScreen({
         </section>
 
         <section aria-label="地址设置" className="mt-2.5 rounded-2xl bg-white px-3.5">
-          <div className="flex h-12 items-center gap-3 border-b border-border">
-            <span id="address-tag-label" className="w-[68px] shrink-0 text-body text-foreground">
-              标签
-            </span>
-            <div role="radiogroup" aria-labelledby="address-tag-label" className="flex gap-2">
-              {tags.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  role="radio"
-                  aria-checked={tag === t}
-                  onClick={() => setTag(tag === t ? undefined : t)}
-                  className={cn(
-                    'h-7 rounded-full border px-3 text-caption transition-colors',
-                    tag === t ? 'border-primary bg-secondary font-medium text-primary' : 'border-border text-foreground',
-                  )}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
           <div className="flex h-14 items-center justify-between">
             <span>
               <span id="address-default-label" className="block text-body text-foreground">

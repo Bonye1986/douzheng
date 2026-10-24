@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import {
   BookOpenCheck,
   Check,
@@ -54,7 +54,7 @@ type Message =
   | { id: number; role: 'assistant'; answers: Answers | null; view: Mode }
   | { id: number; role: 'card'; kind: CardKind; ready: boolean }
 
-type Session = { id: string; title: string; time: string; messages: Message[] }
+type Session = { id: string; title: string; time: string; testeeId: string | null; messages: Message[] }
 
 const modes = [
   { key: 'plain', label: '通俗版' },
@@ -79,11 +79,13 @@ function seedSession(id: string, question: string, time: string): Session {
     id,
     title: question,
     time,
+    testeeId: null,
     messages: [{ id: nextMessageId(), role: 'user', text: question }, buildReply(question, false, 'plain', true)],
   }
 }
 
-function initialSessions(question: string | undefined, mode: Mode, hasTestee: boolean): Session[] {
+function initialSessions(question: string | undefined, mode: Mode, testeeId: string | null): Session[] {
+  const hasTestee = Boolean(testeeId)
   const history = [
     seedSession('s-r', '查看我的报告', '今天 10:26'),
     seedSession('s-1', '高血压用药注意事项', '今天 09:12'),
@@ -98,6 +100,7 @@ function initialSessions(question: string | undefined, mode: Mode, hasTestee: bo
       id: 's-init',
       title: question,
       time: '刚刚',
+      testeeId,
       messages: [{ id: nextMessageId(), role: 'user', text: question }, buildReply(question, hasTestee, mode, true)],
     },
     ...history,
@@ -132,12 +135,11 @@ export function AiChatScreen({
   const testeeList = examinees.map(toTestee)
   const [testeeId, setTesteeId] = useState<string | null>(initialTesteeId ?? null)
   const testee = testeeList.find((t) => t.id === testeeId) ?? null
-  const setTestee = (t: Testee | null) => setTesteeId(t?.id ?? null)
   const [sheetOpen, setSheetOpen] = useState(initialSheetOpen)
   const [addTesteeOpen, setAddTesteeOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(initialDrawerOpen)
   const [sessions, setSessions] = useState<Session[]>(() =>
-    initialSessions(initialQuestion, initialMode, Boolean(initialTesteeId)),
+    initialSessions(initialQuestion, initialMode, initialTesteeId ?? null),
   )
   const [currentId, setCurrentId] = useState<string | null>(initialQuestion ? 's-init' : null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
@@ -147,6 +149,22 @@ export function AiChatScreen({
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = sessions.find((s) => s.id === currentId)?.messages ?? []
+
+  function switchTestee(nextId: string | null) {
+    if (nextId !== testeeId && messages.length > 0) {
+      stopSpeaking()
+      setShareIds(null)
+      setCurrentId(null)
+    }
+    setTesteeId(nextId)
+  }
+
+  function openSession(id: string) {
+    stopSpeaking()
+    setCurrentId(id)
+    setTesteeId(sessions.find((s) => s.id === id)?.testeeId ?? null)
+    setDrawerOpen(false)
+  }
   const isReplying = messages.some(
     (m) => (m.role === 'assistant' && m.answers === null) || (m.role === 'card' && !m.ready),
   )
@@ -208,7 +226,13 @@ export function AiChatScreen({
     let sessionId = startNew ? null : currentId
     if (!sessionId) {
       sessionId = `s-${Date.now()}`
-      const created: Session = { id: sessionId, title: question.slice(0, 20), time: '刚刚', messages: [userMsg, replyMsg] }
+      const created: Session = {
+        id: sessionId,
+        title: question.slice(0, 20),
+        time: '刚刚',
+        testeeId,
+        messages: [userMsg, replyMsg],
+      }
       setSessions((prev) => [created, ...prev])
       setCurrentId(sessionId)
     } else {
@@ -303,7 +327,7 @@ export function AiChatScreen({
 
   const greeting = testee
     ? `你好，${testee.name}。已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
-    : '你好。本次未关联检测人，我会按通用知识回答；你也可以随时选择检测人或上传外部报告。'
+    : '你好。本次未关联受检人，我会按通用知识回答；你也可以随时选择受检人或上传外部报告。'
 
   return (
     <div className="relative flex h-full flex-col bg-brand-page">
@@ -364,7 +388,7 @@ export function AiChatScreen({
             </span>
             <span className="min-w-0 flex-1">
               <strong className="block truncate text-note font-semibold text-foreground">
-                {testee ? testeeLabel(testee) : '未选择检测人'}
+                {testee ? testeeLabel(testee) : '未选择受检人'}
               </strong>
               <span className="block truncate text-caption text-muted-foreground">
                 {testee ? (testee.reports > 0 ? `${testee.reports}份历史报告` : '暂无历史报告') : '按通用知识回答'}
@@ -410,20 +434,6 @@ export function AiChatScreen({
           <p className="mt-1.5 text-caption leading-5 text-muted-foreground">
             回答基于已授权资料和知识来源生成。医疗问题需结合专业人员判断；紧急或严重不适请及时就医。
           </p>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {skills.map((skill) => (
-              <li key={skill.key}>
-                <button
-                  type="button"
-                  onClick={() => ask(skill.question)}
-                  disabled={isReplying}
-                  className="rounded-full bg-secondary px-3 py-1.5 text-caption font-medium text-secondary-foreground transition-colors active:bg-[#d3e6fc] disabled:opacity-50"
-                >
-                  {skill.label}
-                </button>
-              </li>
-            ))}
-          </ul>
         </section>
         )}
 
@@ -515,18 +525,37 @@ export function AiChatScreen({
       {sharing ? (
         <ShareSheet items={shareItems} onClose={() => setShareIds(null)} />
       ) : (
-        <ChatComposer disabled={isReplying} onSend={ask} />
+        <>
+          <ul
+            aria-label="快捷服务"
+            className="flex shrink-0 gap-2 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none]"
+          >
+            {skills.map((skill) => (
+              <li key={skill.key} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => ask(skill.question)}
+                  disabled={isReplying}
+                  className="rounded-full border border-[#d6e6fb] bg-white px-3 py-1.5 text-caption font-medium text-secondary-foreground shadow-[0_2px_8px_#3a82e414] transition-colors active:bg-secondary disabled:opacity-50"
+                >
+                  {skill.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <ChatComposer disabled={isReplying} onSend={ask} />
+        </>
       )}
 
       {drawerOpen && (
         <ChatHistoryDrawer
-          sessions={sessions}
+          sessions={sessions.map((s) => ({
+            ...s,
+            testeeName: testeeList.find((t) => t.id === s.testeeId)?.name,
+          }))}
           currentId={currentId}
           onClose={() => setDrawerOpen(false)}
-          onSelect={(id) => {
-            setCurrentId(id)
-            setDrawerOpen(false)
-          }}
+          onSelect={openSession}
           onNew={startNewChat}
           onRename={(id, title) => setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, title } : s)))}
           onDelete={(id) => {
@@ -543,7 +572,7 @@ export function AiChatScreen({
           onClose={() => setSheetOpen(false)}
           onAdd={() => setAddTesteeOpen(true)}
           onConfirm={(t) => {
-            setTestee(t)
+            switchTestee(t?.id ?? null)
             setSheetOpen(false)
           }}
         />
@@ -555,7 +584,7 @@ export function AiChatScreen({
           onBack={() => setAddTesteeOpen(false)}
           onSave={(e) => {
             setExaminees((list) => [...list, e])
-            setTesteeId(e.id)
+            switchTestee(e.id)
             setAddTesteeOpen(false)
             setSheetOpen(false)
           }}
@@ -620,7 +649,7 @@ function TesteeSheet({
         <div className="mt-3 flex items-start justify-between gap-3">
           <div>
             <h2 id="testee-title" className="text-heading font-semibold text-foreground">
-              选择检测人
+              选择受检人
             </h2>
             <p className="mt-1 text-caption text-muted-foreground">关联后 AI 将结合其检测报告作答，可跳过</p>
           </div>
@@ -636,7 +665,7 @@ function TesteeSheet({
 
         <ul
           role="radiogroup"
-          aria-label="检测人"
+          aria-label="受检人"
           className="mt-4 divide-y divide-border/60 overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_#3a82e40d]"
         >
           {list.map((t) => {
@@ -704,7 +733,7 @@ function TesteeSheet({
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-dashed border-primary/40">
                 <Plus className="size-4" />
               </span>
-              添加检测人
+              添加受检人
             </button>
           </li>
         </ul>
@@ -767,6 +796,17 @@ function AnswerBody({
   onShare: () => void
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false)
+  const [activeCite, setActiveCite] = useState<number | null>(null)
+  const sourceIdPrefix = useId()
+
+  function jumpToSource(n: number) {
+    setSourcesOpen(true)
+    setActiveCite(n)
+    requestAnimationFrame(() => {
+      document.getElementById(`${sourceIdPrefix}-${n}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <p>{answer.intro}</p>
@@ -776,7 +816,20 @@ function AnswerBody({
             <span className="mt-1 flex size-4 shrink-0 items-center justify-center rounded-full bg-secondary text-tag font-semibold text-secondary-foreground">
               {i + 1}
             </span>
-            <span className="text-note leading-[22px]">{point}</span>
+            <span className="text-note leading-[22px]">
+              {point}
+              {answer.cites?.[i]?.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => jumpToSource(n)}
+                  aria-label={`查看引用来源 ${n}：${answer.sources[n - 1]?.title ?? ''}`}
+                  className="ml-0.5 inline-flex h-4 min-w-4 -translate-y-px items-center justify-center rounded bg-secondary px-1 align-middle text-tag font-semibold leading-none text-primary active:opacity-70"
+                >
+                  {n}
+                </button>
+              ))}
+            </span>
           </li>
         ))}
       </ol>
@@ -798,7 +851,14 @@ function AnswerBody({
           {sourcesOpen && (
             <ol className="flex flex-col gap-2 px-3 pb-2.5">
               {answer.sources.map((s, i) => (
-                <li key={s.title} className="flex gap-2 text-caption leading-[18px]">
+                <li
+                  key={s.title}
+                  id={`${sourceIdPrefix}-${i + 1}`}
+                  className={cn(
+                    '-mx-1.5 flex gap-2 rounded-lg px-1.5 py-1 text-caption leading-[18px] transition-colors',
+                    activeCite === i + 1 && 'bg-secondary',
+                  )}
+                >
                   <span className="mt-px shrink-0 font-semibold text-primary">[{i + 1}]</span>
                   <span className="min-w-0">
                     <span className="block text-foreground">{s.title}</span>

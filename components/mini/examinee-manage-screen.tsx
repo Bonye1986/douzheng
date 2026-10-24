@@ -1,21 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlertTriangle, BadgeCheck, ChevronRight, PencilLine, Phone, Plus, ShieldAlert, ShieldCheck, Trash2, UserRound, Users } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, ChevronRight, PencilLine, Phone, Plus, ShieldAlert, ShieldCheck, Trash2 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
-import { ExamineeVerifyScreen } from '@/components/mini/examinee-verify-screen'
+import { AccountSettingsScreen } from '@/components/mini/account-settings-screen'
+import { RealNameGuideDialog } from '@/components/mini/realname-guide-dialog'
 import { examineeMeta, initialExaminees, type Examinee } from '@/components/mini/checkout-data'
-import { examineeReportCount, useExaminees } from '@/components/mini/examinee-store'
+import { examineeReportCount, isSelfVerified, useExaminees, withVerifiedSelf } from '@/components/mini/examinee-store'
 import { cn } from '@/lib/utils'
 
-export type ExamineeView = 'list' | 'add' | 'edit' | 'edit-self' | 'delete' | 'empty' | 'unverified' | 'verify'
+export type ExamineeView = 'list' | 'add' | 'edit' | 'edit-self' | 'delete' | 'unverified' | 'verify'
 
 const MAX_EXAMINEES = 10
 
 const activeOrderIds = new Set(['spouse'])
 const reportCount = examineeReportCount
-const unverifiedList = initialExaminees.map((m) => (m.relation === '本人' ? { ...m, idCard: undefined } : m))
 
 type Props = {
   onBack: () => void
@@ -23,9 +23,13 @@ type Props = {
 }
 
 export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
-  const [list, setList] = useExaminees(
-    initialView === 'empty' ? [] : initialView === 'unverified' || initialView === 'verify' ? unverifiedList : undefined,
+  const [rawList, setList] = useExaminees(
+    initialView === 'unverified' || initialView === 'verify' ? [] : undefined,
   )
+  const selfVerified = isSelfVerified(rawList)
+  const list = [...rawList.filter((m) => m.relation === '本人'), ...rawList.filter((m) => m.relation !== '本人')]
+  const [guideOpen, setGuideOpen] = useState(() => initialView !== 'verify' && !selfVerified)
+  const [verifying, setVerifying] = useState(initialView === 'verify')
   const [form, setForm] = useState<{ target?: Examinee } | null>(
     initialView === 'add'
       ? {}
@@ -35,7 +39,6 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
           ? { target: initialExaminees[0] }
           : null,
   )
-  const [verifying, setVerifying] = useState(initialView === 'verify')
   const [pendingDelete, setPendingDelete] = useState<Examinee | null>(
     initialView === 'delete' ? initialExaminees[2] : null,
   )
@@ -51,7 +54,8 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
   const full = list.length >= MAX_EXAMINEES
 
   const openAdd = () => {
-    if (full) return setToast(`最多添加 ${MAX_EXAMINEES} 位检测人`)
+    if (!selfVerified) return setGuideOpen(true)
+    if (full) return setToast(`最多添加 ${MAX_EXAMINEES} 位受检人`)
     setForm({})
   }
 
@@ -70,18 +74,21 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
   }
 
   const verified = (e: Examinee) => {
-    setList((l) => l.map((m) => (m.id === e.id ? e : m)))
-    setVerifying(false)
-    setToast('实名认证成功')
+    setList((l) => withVerifiedSelf(l, e))
+    setToast('实名认证成功，已添加本人为受检人')
   }
-  const selfMember = list.find((m) => m.relation === '本人')
+
+  const goVerify = () => {
+    setGuideOpen(false)
+    setVerifying(true)
+  }
 
   const blocked = pendingDelete && (pendingDelete.relation === '本人' || activeOrderIds.has(pendingDelete.id))
 
   return (
-    <SubPage title="检测人管理" titleId="examinee-manage-title" onBack={onBack}>
+    <SubPage title="受检人管理" titleId="examinee-manage-title" onBack={onBack}>
       {list.length === 0 ? (
-        <EmptyState onAdd={openAdd} />
+        <UnverifiedState onVerify={goVerify} />
       ) : (
         <>
           <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
@@ -92,17 +99,17 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               <span>下单时可直接选择</span>
             </p>
 
-            {selfMember && !selfMember.idCard && (
+            {!selfVerified && (
               <button
                 type="button"
-                onClick={() => setVerifying(true)}
+                onClick={goVerify}
                 className="mt-2 flex w-full items-center gap-2.5 rounded-2xl bg-warning-soft px-3.5 py-3 text-left"
               >
                 <ShieldAlert className="size-5 shrink-0 text-warning" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
                   <span className="block text-body font-semibold text-foreground">本人尚未实名认证</span>
                   <span className="mt-0.5 block text-caption text-muted-foreground">
-                    认证后可签署科研同意书、查看完整报告
+                    完成实名认证后本人将置顶为受检人，方可添加其他受检人
                   </span>
                 </span>
                 <span className="flex shrink-0 items-center text-caption font-medium text-warning">
@@ -155,22 +162,12 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
 
                   <div className="mt-3 flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-caption text-muted-foreground">
-                      {m.relation === '本人' &&
-                        (m.idCard ? (
-                          <span className="flex items-center gap-0.5 rounded bg-[#e8f7ef] px-1.5 py-px text-[#1f9d55]">
-                            <BadgeCheck className="size-3" aria-hidden="true" />
-                            已认证
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => setVerifying(true)}
-                            className="flex items-center gap-0.5 rounded bg-warning-soft px-1.5 py-px text-warning"
-                          >
-                            未认证 · 去认证
-                            <ChevronRight className="size-3" aria-hidden="true" />
-                          </button>
-                        ))}
+                      {m.relation === '本人' && m.idCard && (
+                        <span className="flex items-center gap-0.5 rounded bg-success-soft px-1.5 py-px text-success">
+                          <BadgeCheck className="size-3" aria-hidden="true" />
+                          已认证
+                        </span>
+                      )}
                       {activeOrderIds.has(m.id) && (
                         <span className="rounded bg-secondary px-1.5 py-px text-primary">进行中订单</span>
                       )}
@@ -185,7 +182,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                             'flex h-7 items-center gap-1 rounded-full border px-3 text-caption',
                             activeOrderIds.has(m.id) ? 'border-border text-faint' : 'border-border text-foreground',
                           )}
-                          aria-label={`删除检测人 ${m.name}`}
+                          aria-label={`删除受检人 ${m.name}`}
                         >
                           <Trash2 className="size-3.5" aria-hidden="true" />
                           删除
@@ -195,7 +192,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                         type="button"
                         onClick={() => setForm({ target: m })}
                         className="flex h-7 items-center gap-1 rounded-full border border-primary px-3 text-caption text-primary"
-                        aria-label={`编辑检测人 ${m.name}`}
+                        aria-label={`编辑受检人 ${m.name}`}
                       >
                         <PencilLine className="size-3.5" aria-hidden="true" />
                         编辑
@@ -208,7 +205,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
 
             <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
-              检测人信息仅用于样本登记与报告归档，加密存储。删除后历史报告仍保留在「我的报告」中。
+              受检人信息仅用于样本登记与报告归档，加密存储。删除后历史报告仍保留在「我的报告」中。
             </p>
           </div>
 
@@ -216,14 +213,14 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
             <button
               type="button"
               onClick={openAdd}
-              aria-disabled={full}
+              aria-disabled={full || !selfVerified}
               className={cn(
                 'flex h-10 w-full items-center justify-center gap-1 rounded-full text-body font-medium',
-                full ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
+                full || !selfVerified ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground active:opacity-90',
               )}
             >
               <Plus className="size-4" aria-hidden="true" />
-              添加检测人
+              添加受检人
             </button>
           </div>
         </>
@@ -248,14 +245,14 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               {blocked ? <AlertTriangle className="size-5" /> : <Trash2 className="size-5" />}
             </span>
             <h2 id="delete-examinee-title" className="mt-3 text-title font-semibold text-foreground">
-              {blocked ? '暂不可删除' : `删除检测人「${pendingDelete.name}」？`}
+              {blocked ? '暂不可删除' : `删除受检人「${pendingDelete.name}」？`}
             </h2>
             <p id="delete-examinee-desc" className="mt-1.5 text-note leading-5 text-muted-foreground">
               {pendingDelete.relation === '本人'
                 ? '「本人」为账号持有人，不可删除，可通过编辑修改信息。'
                 : blocked
-                  ? '该检测人有进行中的检测订单，暂不可删除，可通过「编辑」修改信息；订单完成或取消后可删除。'
-                  : '删除后下单时将无法选择该检测人，已出具的报告仍可在「我的报告」中查看。'}
+                  ? '该受检人有进行中的检测订单，暂不可删除，可通过「编辑」修改信息；订单完成或取消后可删除。'
+                  : '删除后下单时将无法选择该受检人，已出具的报告仍可在「我的报告」中查看。'}
             </p>
             {blocked ? (
               <button
@@ -296,8 +293,23 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
         />
       )}
 
-      {verifying && selfMember && (
-        <ExamineeVerifyScreen self={selfMember} onBack={() => setVerifying(false)} onVerified={verified} />
+      {guideOpen && (
+        <RealNameGuideDialog
+          desc="为保障检测报告归属与信息安全，需先在「账号设置」完成本人实名认证。认证后本人将置顶为受检人，方可添加其他受检人。"
+          onVerify={goVerify}
+          onSkip={() => setGuideOpen(false)}
+        />
+      )}
+
+      {verifying && (
+        <div className="absolute inset-0 z-50">
+          <AccountSettingsScreen
+            initialView="verify"
+            verified={selfVerified}
+            onVerified={verified}
+            onBack={() => setVerifying(false)}
+          />
+        </div>
       )}
 
       {toast && (
@@ -312,26 +324,23 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
   )
 }
 
-function EmptyState({ onAdd }: { onAdd: () => void }) {
+function UnverifiedState({ onVerify }: { onVerify: () => void }) {
   return (
     <div className="flex flex-1 flex-col items-center px-8 pt-20 text-center">
-      <span className="relative flex size-24 items-center justify-center rounded-full bg-secondary" aria-hidden="true">
-        <Users className="size-11 text-primary" strokeWidth={1.4} />
-        <span className="absolute bottom-1 right-1 flex size-7 items-center justify-center rounded-full bg-white shadow-sm">
-          <UserRound className="size-4 text-primary" />
-        </span>
+      <span className="flex size-24 items-center justify-center rounded-full bg-warning-soft" aria-hidden="true">
+        <ShieldAlert className="size-11 text-warning" strokeWidth={1.4} />
       </span>
-      <h2 className="mt-5 text-title font-semibold text-foreground">还没有检测人</h2>
-      <p className="mt-1.5 text-note leading-5 text-muted-foreground">
-        添加本人或家人的信息，下单检测时可直接选择，报告也会按检测人归档。
+      <h2 className="mt-5 text-title font-semibold text-foreground">请先完成本人实名认证</h2>
+      <p className="mt-1.5 text-pretty text-note leading-5 text-muted-foreground">
+        实名认证在「账号设置」中进行。完成后本人将自动置顶为受检人，之后即可添加家人等其他受检人。
       </p>
       <button
         type="button"
-        onClick={onAdd}
+        onClick={onVerify}
         className="mt-6 flex h-10 items-center gap-1 rounded-full bg-primary px-8 text-body font-medium text-primary-foreground active:opacity-90"
       >
-        <Plus className="size-4" aria-hidden="true" />
-        添加检测人
+        <ShieldCheck className="size-4" aria-hidden="true" />
+        去实名认证
       </button>
     </div>
   )

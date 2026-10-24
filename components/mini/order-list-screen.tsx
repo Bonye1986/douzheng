@@ -423,7 +423,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'toSample',
     status: '待核销',
     action: { label: '核销码', primary: true },
-    notes: ['请于 10-18 前往 都正检测中心（徐汇） 出示核销码', '请于 10-20 前往 都正检测中心（浦东） 出示核销码'],
+    notes: ['请于 10-18 前往 都正检测中心（徐汇） ��示核销码', '请于 10-20 前往 都正检测中心（浦东） 出示核销码'],
     extra: [
       { split: true },
       { resample: true, note: '重采样订单，请前往 都正检测中心（徐汇） 出示核销码重新采样' },
@@ -843,7 +843,15 @@ export function OrderListScreen({
 
   return (
     <SubPage title="我的订单" titleId="order-list-title" onBack={onBack}>
-      <OrderFilterBar keyword={keyword} onKeywordChange={setKeyword} type={type} onTypeChange={setType} />
+      <OrderFilterBar
+        keyword={keyword}
+        onKeywordChange={setKeyword}
+        type={type}
+        onTypeChange={setType}
+        status={activeTab.key}
+        statusOptions={statusTabs}
+        onStatusChange={setStatusKey}
+      />
 
       <div
         role="tablist"

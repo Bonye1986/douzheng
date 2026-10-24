@@ -124,48 +124,6 @@ export function AfterSalesDetailScreen({
           <p className="mt-1 text-caption leading-5 text-white/85">{d.headlineDesc}</p>
         </section>
 
-        <section aria-labelledby="asd-progress" className="mt-2.5 rounded-2xl bg-white p-4">
-          <h2 id="asd-progress" className="text-title font-semibold text-foreground">
-            处理进度
-          </h2>
-          <ol className="mt-3">
-            {d.steps.map((s, i) => {
-              const reached = i < d.current
-              const active = i === d.current
-              return (
-                <li key={s.label} className="relative flex gap-3 pb-4 last:pb-0">
-                  {i < d.steps.length - 1 && (
-                    <span
-                      className={cn('absolute left-[5px] top-3.5 h-full w-px', reached ? 'bg-primary' : 'bg-border')}
-                      aria-hidden="true"
-                    />
-                  )}
-                  <span
-                    className={cn(
-                      'relative mt-1 size-[11px] shrink-0 rounded-full border-2',
-                      reached ? 'border-primary bg-primary' : active ? 'border-[#e0651c] bg-white' : 'border-border bg-white',
-                    )}
-                    aria-hidden="true"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={cn(
-                        'text-note',
-                        reached ? 'font-medium text-foreground' : active ? 'font-medium text-warning' : 'text-muted-foreground',
-                      )}
-                    >
-                      {s.label}
-                      {active && <span className="sr-only">（当前步骤）</span>}
-                    </p>
-                    {s.desc && <p className="mt-0.5 text-caption text-muted-foreground">{s.desc}</p>}
-                    {s.time && <p className="mt-0.5 text-caption tabular-nums text-muted-foreground">{s.time}</p>}
-                  </div>
-                </li>
-              )
-            })}
-          </ol>
-        </section>
-
         {d.refundRows && d.refundTotal && (
           <section aria-labelledby="asd-refund" className="mt-2.5 rounded-2xl bg-white p-4">
             <h2 id="asd-refund" className="text-title font-semibold text-foreground">

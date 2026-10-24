@@ -18,7 +18,7 @@ const quickAnswers: Record<string, string> = {
   '报告多久能出？': '实验室收到样本后一般 7–10 个工作日出具报告，出报告后会第一时间短信通知您。',
   '如何申请退款？': '未寄样的订单可在「我的订单」中直接申请退款；已寄样订单请提供订单号，我帮您核实处理。',
   '样本寄回地址': '请使用采样盒内附带的顺丰回寄单寄回，运费已预付，无需填写地址，预约顺丰上门取件即可。',
-  '科研同意书怎么撤回？': '进入「我的 · 授权与同意书 · 科研知情同意书」，找到对应检测人点击「撤回授权」，经人脸核验后即可完成撤回。',
+  '科研同意书怎么撤回？': '进入「我的 · 授权与同意书 · 科研知情同意书」，找到对应受检人点击「撤回授权」，经人脸核验后即可完成撤回。',
 }
 
 const recentOrder: OrderCard = {
@@ -113,7 +113,7 @@ export function CustomerServiceScreen({ onBack }: { onBack: () => void }) {
     if (!text) return
     setMessages((m) => [...m, { id: `u${Date.now()}`, from: 'user', kind: 'text', text, time: nowTime() }])
     setDraft('')
-    agentReply(quickAnswers[text] ?? '收到，正在为您查询，请稍候。如需进一步核实，请提供订单号或检测人姓名。')
+    agentReply(quickAnswers[text] ?? '收到，正在为您查询，请稍候。如需进一步核实，请提供订单号或受检人姓名。')
   }
 
   const sendOrder = () => {

@@ -9,16 +9,17 @@ import {
   ChevronRight,
   LogOut,
   ShieldCheck,
-  Smartphone,
   UserRound,
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { LegalDocScreen, type LegalDocKind } from '@/components/mini/legal-doc-screen'
 import { DEFAULT_NICKNAME, DefaultAvatar } from '@/components/mini/default-avatar'
-import { genderLabel, initialExaminees, type Gender } from '@/components/mini/checkout-data'
+import { genderLabel, initialExaminees, type Examinee, type Gender } from '@/components/mini/checkout-data'
+import { ExamineeVerifyScreen } from '@/components/mini/examinee-verify-screen'
+import { selfDraft, useSelfVerified, verifySharedSelf } from '@/components/mini/examinee-store'
 import { cn } from '@/lib/utils'
 
-export type AccountView = 'main' | 'phone' | 'deactivate'
+export type AccountView = 'main' | 'deactivate' | 'verify'
 
 const maskPhone = (phone: string) => phone.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
 
@@ -226,17 +227,19 @@ const formatBirth = (birth: string) => {
 function MainView({
   profile,
   phone,
+  verified,
+  onVerify,
   onEdit,
-  onPhone,
   onDeactivate,
   onLogout,
   onAvatar,
 }: {
+  verified: boolean
+  onVerify: () => void
   onAvatar: () => void
   profile: Profile
   phone: string
   onEdit: (field: ProfileField) => void
-  onPhone: () => void
   onDeactivate: () => void
   onLogout: () => void
 }) {
@@ -265,7 +268,39 @@ function MainView({
           value={profile.birth ? <span className="tabular-nums">{formatBirth(profile.birth)}</span> : '未填写'}
           onClick={() => onEdit('birth')}
         />
-        <Row label="绑定手机号" value={<span className="tabular-nums">{maskPhone(phone)}</span>} onClick={onPhone} />
+        <li className="flex min-h-12 items-center gap-2 px-3.5 py-3">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="text-body text-foreground">绑定手机号</span>
+            <span className="mt-0.5 text-caption text-muted-foreground">同步微信绑定手机号，不支持修改</span>
+          </div>
+          <span className="text-note tabular-nums text-muted-foreground">{maskPhone(phone)}</span>
+        </li>
+      </Card>
+
+      <Card title="账号安全">
+        <li>
+          <button
+            type="button"
+            onClick={onVerify}
+            className="flex min-h-12 w-full items-center gap-2 px-3.5 py-3 text-left"
+          >
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span className="text-body text-foreground">实名认证</span>
+              <span className="mt-0.5 text-caption text-muted-foreground">
+                {verified ? '本人已认证，身份信息已锁定' : '认证后可添加受检人、签署科研同意书'}
+              </span>
+            </span>
+            {verified ? (
+              <span className="flex items-center gap-0.5 rounded bg-success-soft px-1.5 py-px text-caption text-success">
+                <ShieldCheck className="size-3" aria-hidden="true" />
+                已认证
+              </span>
+            ) : (
+              <span className="rounded bg-warning-soft px-1.5 py-px text-caption text-warning">未认证</span>
+            )}
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </button>
+        </li>
       </Card>
 
       <Card title="隐私与协议">
@@ -291,94 +326,8 @@ function MainView({
   )
 }
 
-function PhoneView({ phone, onDone }: { phone: string; onDone: (newPhone: string) => void }) {
-  const [step, setStep] = useState<'verify' | 'bind'>('verify')
-  const [oldCode, setOldCode] = useState('')
-  const [newPhone, setNewPhone] = useState('')
-  const [newCode, setNewCode] = useState('')
-  const phoneValid = /^1[3-9]\d{9}$/.test(newPhone) && newPhone !== phone
-
-  return (
-    <div className="flex flex-1 flex-col overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:none]">
-      <ol className="flex items-center gap-2 px-1 text-caption" aria-label="更换步骤">
-        {['验证原手机号', '绑定新手机号'].map((s, i) => {
-          const active = (step === 'verify' ? 0 : 1) >= i
-          return (
-            <li key={s} className="flex flex-1 items-center gap-1.5" aria-current={active ? 'step' : undefined}>
-              <span
-                className={cn(
-                  'flex size-5 items-center justify-center rounded-full text-caption font-medium tabular-nums',
-                  active ? 'bg-primary text-primary-foreground' : 'bg-[#e3e8f0] text-muted-foreground',
-                )}
-              >
-                {step === 'bind' && i === 0 ? <Check className="size-3" aria-hidden="true" /> : i + 1}
-              </span>
-              <span className={active ? 'text-foreground' : 'text-muted-foreground'}>{s}</span>
-              {i === 0 && <span className="h-px flex-1 bg-[#dbe2ec]" aria-hidden="true" />}
-            </li>
-          )
-        })}
-      </ol>
-
-      <div className="mt-4 flex flex-col items-center text-center">
-        <span className="flex size-12 items-center justify-center rounded-full bg-[#e8f1ff] text-primary">
-          <Smartphone className="size-6" aria-hidden="true" />
-        </span>
-        <p className="mt-2 text-note text-muted-foreground">
-          {step === 'verify' ? '当前绑定手机号' : '请输入要绑定的新手机号'}
-        </p>
-        {step === 'verify' && (
-          <p className="mt-0.5 text-headline font-semibold tabular-nums text-foreground">{maskPhone(phone)}</p>
-        )}
-      </div>
-
-      <div className="mt-4 divide-y divide-[#eef1f6] rounded-2xl bg-white">
-        {step === 'verify' ? (
-          <CodeInput id="old-code" code={oldCode} onCode={setOldCode} canSend />
-        ) : (
-          <>
-            <div className="flex items-center gap-2 px-3.5 py-3">
-              <label htmlFor="new-phone" className="w-16 shrink-0 text-body text-foreground">
-                新手机号
-              </label>
-              <input
-                id="new-phone"
-                inputMode="numeric"
-                maxLength={11}
-                value={newPhone}
-                onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, ''))}
-                placeholder="请输入 11 位手机号"
-                className="min-w-0 flex-1 bg-transparent text-body tabular-nums outline-none placeholder:text-muted-foreground/70"
-              />
-            </div>
-            <CodeInput id="new-code" code={newCode} onCode={setNewCode} canSend={phoneValid} />
-          </>
-        )}
-      </div>
-      {step === 'bind' && newPhone.length === 11 && newPhone === phone && (
-        <p className="mt-1.5 px-1.5 text-caption text-destructive">新手机号不能与当前手机号相同</p>
-      )}
-
-      <ul className="mt-3 space-y-1 px-1.5 text-caption leading-4 text-muted-foreground">
-        <li>· 更换后，登录账号、短信通知（用药提醒、报告出具等）将使用新手机号</li>
-        <li>· 检测人信息中填写的手机号不会自动变更，可在检测人管理中修改</li>
-        <li>· 原手机号无法接收验证码？请联系客服人工处理</li>
-      </ul>
-
-      <button
-        type="button"
-        disabled={step === 'verify' ? oldCode.length !== 6 : !phoneValid || newCode.length !== 6}
-        onClick={() => (step === 'verify' ? setStep('bind') : onDone(newPhone))}
-        className="mt-auto h-11 w-full shrink-0 rounded-full bg-primary text-title font-medium text-primary-foreground disabled:opacity-40"
-      >
-        {step === 'verify' ? '下一步' : '确认更换'}
-      </button>
-    </div>
-  )
-}
-
 const deactivateNotices = [
-  '账号内的检测人、收货地址、用药提醒、健康档案等个人信息将被永久删除，无法恢复',
+  '账号内的受检人、收货地址、用药提醒、健康档案等个人信息将被永久删除，无法恢复',
   '历史检测报告将无法在小程序内查看，请提前下载保存',
   '未使用的优惠券将作废，已授权的科研知情同意将同步撤回',
   '存在待付款、待采样、检测中或售后处理中的订单时，暂不可注销',
@@ -395,7 +344,7 @@ function DeactivateView({ onSubmitted }: { onSubmitted: () => void }) {
         <div>
           <p className="text-body font-semibold text-[#8a5410]">注销账号是不可恢复的操作</p>
           <p className="mt-0.5 text-caption leading-[18px] text-[#8a5410]/80">
-            提交后进入 7 天冷静期，期间重新登录即可撤销注销申请。
+            确认后将立即注销，账号及全部数据会被永久删除且无法撤销。
           </p>
         </div>
       </div>
@@ -438,7 +387,7 @@ function DeactivateView({ onSubmitted }: { onSubmitted: () => void }) {
         onClick={() => setConfirming(true)}
         className="mt-auto h-11 w-full shrink-0 rounded-full bg-destructive text-title font-medium text-white disabled:opacity-40"
       >
-        申请注销
+        确认注销
       </button>
 
       {confirming && (
@@ -446,8 +395,8 @@ function DeactivateView({ onSubmitted }: { onSubmitted: () => void }) {
           id="deactivate-confirm"
           icon={<AlertTriangle className="size-5" />}
           title="确定注销账号？"
-          desc="7 天冷静期结束后账号及全部数据将被永久删除。"
-          confirm="确认注销"
+          desc="注销将立即生效，账号及全部数据将被永久删除，无法恢复。"
+          confirm="立即注销"
           onCancel={() => setConfirming(false)}
           onConfirm={() => {
             setConfirming(false)
@@ -508,7 +457,7 @@ const textFields = {
     maxLength: 16,
     type: 'nickname',
     placeholder: '请输入昵称',
-    hint: '可使用微信昵称，昵称仅用于展示，不影响检测人信息',
+    hint: '可使用微信昵称，昵称仅用于展示，不影响受检人信息',
   },
   realName: {
     title: '填写真实姓名',
@@ -617,19 +566,28 @@ function BirthSheet({ value, onSave, onClose }: { value: string; onSave: (v: str
 export function AccountSettingsScreen({
   initialView = 'main',
   onBack,
+  verified: verifiedOverride,
+  onVerified,
 }: {
   initialView?: AccountView
   onBack: () => void
+  /** 由调用方（如独立演示的受检人列表）提供实名状态；缺省读取共享数据 */
+  verified?: boolean
+  /** 实名认证成功回调；缺省写入共享受检人列表 */
+  onVerified?: (self: Examinee) => void
 }) {
   const self = initialExaminees[0]
+  const sharedVerified = useSelfVerified()
+  const verified = verifiedOverride ?? sharedVerified
   const [view, setView] = useState<AccountView>(initialView)
+  const verifyOnly = initialView === 'verify'
   const [profile, setProfile] = useState<Profile>({
     nickname: DEFAULT_NICKNAME,
     realName: self.name,
     gender: self.gender,
     birth: self.birth ?? '',
   })
-  const [phone, setPhone] = useState(self.phone ?? '13812345678')
+  const [phone] = useState(self.phone ?? '13812345678')
   const [editing, setEditing] = useState<ProfileField | null>(null)
 
   const saveProfile = <K extends ProfileField>(field: K, value: Profile[K]) => {
@@ -647,7 +605,16 @@ export function AccountSettingsScreen({
     return () => clearTimeout(timer)
   }, [toast])
 
-  const titles: Record<AccountView, string> = { main: '账号设置', phone: '更换手机号', deactivate: '注销账号' }
+  const titles: Record<AccountView, string> = { main: '账号设置', deactivate: '注销账号', verify: '账号设置' }
+
+  const completeVerify = (e: Examinee) => {
+    if (onVerified) onVerified(e)
+    else verifySharedSelf(e)
+    setProfile((p) => ({ ...p, realName: e.name, gender: e.gender, birth: e.birth ?? p.birth }))
+    if (verifyOnly) return onBack()
+    setView('main')
+    setToast('实名认证成功')
+  }
 
   return (
     <SubPage
@@ -655,12 +622,13 @@ export function AccountSettingsScreen({
       titleId="account-settings-title"
       onBack={() => (view === 'main' ? onBack() : setView('main'))}
     >
-      {view === 'main' && (
+      {(view === 'main' || view === 'verify') && (
         <MainView
           profile={profile}
           phone={phone}
+          verified={verified}
+          onVerify={() => (verified ? setToast('已完成实名认证') : setView('verify'))}
           onEdit={setEditing}
-          onPhone={() => setView('phone')}
           onDeactivate={() => setView('deactivate')}
           onLogout={() => setLogoutOpen(true)}
           onAvatar={() => setAvatarOpen(true)}
@@ -675,23 +643,21 @@ export function AccountSettingsScreen({
           }}
         />
       )}
-      {view === 'phone' && (
-        <PhoneView
-          phone={phone}
-          onDone={(p) => {
-            setPhone(p)
-            setView('main')
-            setToast('手机号已更换')
-          }}
-        />
-      )}
       {view === 'deactivate' && (
           <DeactivateView
 
           onSubmitted={() => {
             setView('main')
-            setToast('注销申请已提交，7 天内登录可撤销')
+            setToast('账号已注销')
           }}
+        />
+      )}
+
+      {view === 'verify' && (
+        <ExamineeVerifyScreen
+          self={{ ...selfDraft, name: profile.realName || selfDraft.name }}
+          onBack={() => (verifyOnly ? onBack() : setView('main'))}
+          onVerified={completeVerify}
         />
       )}
 

@@ -25,8 +25,8 @@ import { CustomerServiceScreen } from '@/components/mini/customer-service-screen
 import { AccountSettingsScreen, type AccountView } from '@/components/mini/account-settings-screen'
 
 /**
- * 面向用户的 5 个阶段，后台细分状态归并其中：
- * 待使用 = 待发货 / 待收货 / 待核销；待采样 = 待采样 / 待寄样；检测中 = 待收样 / 待检测 / 检测中；
+ * 「我的」页仅展示 4 个阶段快捷入口，后台细分状态归并其中：
+ * 待使用 = 待发货 / 待收货 / 待核销；待采样 = 待采样 / 待寄样；检测中订单不设快捷入口，从「查看全部」查看；
  * 退款/售后为独立页面（样本不合格待处理、退款、重采样）。订单类型（自采样 / 定点采样）与已关闭订单在订单列表中筛选。
  */
 const iconSrc = (name: string) => `/images/icons/mine-${name}.png`
@@ -35,13 +35,12 @@ const orderPhases: { key: Exclude<OrderTabKey, 'all'> | 'after'; label: string; 
   { key: 'toPay', label: '待付款', icon: iconSrc('topay') },
   { key: 'toUse', label: '待使用', icon: iconSrc('guide') },
   { key: 'toSample', label: '待采样', icon: iconSrc('tosample') },
-  { key: 'testing', label: '检测中', icon: iconSrc('testing') },
   { key: 'done', label: '已完成', icon: iconSrc('done') },
   { key: 'after', label: '退款/售后', icon: iconSrc('after') },
 ]
 
 const tools = [
-  { key: 'examinee', label: '检测人管理', icon: iconSrc('examinee') },
+  { key: 'examinee', label: '受检人管理', icon: iconSrc('examinee') },
   { key: 'address', label: '地址管理', icon: iconSrc('address') },
   { key: 'auth', label: '授权与同意书', icon: iconSrc('auth') },
   { key: 'reminder', label: '用药提醒', icon: iconSrc('reminder') },
@@ -208,7 +207,7 @@ export function MineScreen({
               onAction={guard('我的订单', () => setOrderListPhase('all'))}
             />
           </div>
-          <ul className="mt-4 grid grid-cols-6 px-0.5">
+          <ul className="mt-4 grid grid-cols-5 px-0.5">
             {orderPhases.map((p) => {
               const count = !loggedIn ? 0 : p.key === 'after' ? pendingAfterSalesCount : countOrders(p.key)
               return (
@@ -317,7 +316,7 @@ export function MineScreen({
             <MineIcon src={iconSrc('gift')} className="size-9 shrink-0" />
             <span>
               <span className="block text-body font-medium text-foreground">领券中心</span>
-              <span className="block text-caption text-muted-foreground">新人券待领取</span>
+              <span className="block text-caption text-muted-foreground">满减券待领取</span>
             </span>
           </button>
         </section>

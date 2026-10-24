@@ -56,7 +56,7 @@ type Address = { id: string; name: string; phone: string; detail: string; tag?: 
 
 const addresses: Address[] = [
   { id: 'home', name: '王建国', phone: '138****6721', detail: '浙江省杭州市西湖区文三路 478 号华星时代广场 A 座 1206', tag: '默认' },
-  { id: 'work', name: '王建国', phone: '138****6721', detail: '浙江省杭州市滨江区网商路 699 号 3 号楼 5 层', tag: '公司' },
+  { id: 'work', name: '王建国', phone: '138****6721', detail: '浙江省杭州市滨江区网商路 699 号 3 号楼 5 层' },
   { id: 'parent', name: '李秀兰', phone: '139****2048', detail: '浙江省绍兴市越城区中兴中路 128 号 2 单元 302' },
 ]
 
@@ -76,7 +76,7 @@ type Coupon = { id: string; title: string; threshold: number; amount: number; ex
 const coupons: Coupon[] = [
   { id: 'c100', title: '满 1000 减 100', threshold: 1000, amount: 100, expire: '2026.12.31 到期' },
   { id: 'c50', title: '满 500 减 50', threshold: 500, amount: 50, expire: '2026.11.30 到期' },
-  { id: 'new', title: '新人专享 立减 30', threshold: 0, amount: 30, expire: '2026.10.31 到期' },
+  { id: 'c30', title: '满 300 减 30', threshold: 300, amount: 30, expire: '2026.10.31 到期' },
 ]
 
 type Props = {
@@ -447,7 +447,7 @@ export function CheckoutScreen({
             {isSplit ? (
               <div className="mt-3 border-t border-border pt-3">
                 <p className="rounded-lg bg-background px-2.5 py-1.5 text-caption leading-4 text-muted-foreground">
-                  本次合并支付已按检测人及检测项目拆分为 {splitOrders.length} 个订单，可在订单列表分别查看
+                  本次合并支付已按受检人及检测项目拆分为 {splitOrders.length} 个订单，可在订单列表分别查看
                 </p>
                 <ul className="mt-2 flex flex-col gap-2">
                   {splitOrders.map((o, i) => (
@@ -708,7 +708,7 @@ export function CheckoutScreen({
               检测项目与受检人
             </h2>
             <button type="button" onClick={() => setExamineeForm({ serviceId: null })} className="text-caption text-primary">
-              + 添加受检人
+              + ��加受检人
             </button>
           </div>
           <p className="px-3.5 pt-1 text-caption text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>

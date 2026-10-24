@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   AlarmClock,
   BellOff,
   Camera,
-  ChevronRight,
+  ChevronDown,
   Clock,
   MessageSquareText,
   PencilLine,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { DrugScanSheet, type DrugScanResult } from '@/components/mini/drug-scan-sheet'
+import { DoseUnitSheet } from '@/components/mini/dose-unit-sheet'
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
@@ -25,7 +26,7 @@ export type ReminderView = 'list' | 'add' | 'scan' | 'edit' | 'delete' | 'empty'
 
 type Frequency = '每天' | '隔天' | '每周'
 type Meal = '饭前' | '饭后' | '随餐' | '睡前' | '不限'
-type Unit = '片' | '粒' | '袋' | 'mg' | 'ml'
+type Unit = string
 type Advance = 0 | 5 | 15 | 30
 
 export type Reminder = {
@@ -49,7 +50,6 @@ export type Reminder = {
 
 const MAX_REMINDERS = 20
 const MAX_TIMES = 6
-const units: Unit[] = ['片', '粒', '袋', 'mg', 'ml']
 const meals: Meal[] = ['饭前', '饭后', '随餐', '睡前', '不限']
 const frequencies: Frequency[] = ['每天', '隔天', '每周']
 const advances: Advance[] = [0, 5, 15, 30]
@@ -410,6 +410,8 @@ function ReminderFormScreen({
   const [errors, setErrors] = useState<Errors>({})
   const [scanOpen, setScanOpen] = useState(initialScanOpen)
   const [scanned, setScanned] = useState<Set<ScanField>>(new Set())
+  const [unitOpen, setUnitOpen] = useState(false)
+  const closeUnitSheet = useCallback(() => setUnitOpen(false), [])
 
   const clear = (k: keyof Errors) => setErrors((e) => ({ ...e, [k]: undefined }))
   const unmark = (k: ScanField) =>
@@ -488,23 +490,6 @@ function ReminderFormScreen({
             用药信息
           </h2>
 
-          <button
-            type="button"
-            onClick={() => setScanOpen(true)}
-            className="mt-3 flex w-full items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-3 py-2.5 text-left"
-          >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Camera className="size-4" aria-hidden="true" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-note font-medium text-foreground">
-                {scanned.size ? '重新拍照识别' : '拍照识别药盒'}
-              </span>
-              <span className="block text-caption text-muted-foreground">自动识别药名、剂量与用法，并填入下方</span>
-            </span>
-            <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-          </button>
-
           {scanned.size > 0 && (
             <p role="status" className="mt-2 flex items-start gap-1.5 rounded-lg bg-[#fff8e6] px-2.5 py-2 text-caption leading-relaxed text-[#8a5a00]">
               <Sparkles className="mt-px size-3.5 shrink-0" aria-hidden="true" />
@@ -512,23 +497,34 @@ function ReminderFormScreen({
             </p>
           )}
 
-          <label className="mt-3 block">
-            <span className="flex items-center text-caption text-muted-foreground">
+          <div className="mt-3">
+            <label htmlFor="reminder-drug-input" className="flex items-center text-caption text-muted-foreground">
               药品名称
               {scanned.has('drug') && <ScanBadge />}
-            </span>
-            <input
-              value={drug}
-              onChange={(e) => {
-                setDrug(e.target.value.slice(0, 30))
-                clear('drug')
-                unmark('drug')
-              }}
-              placeholder="请输入药品通用名或商品名"
-              aria-invalid={!!errors.drug}
-              className="mt-1.5 h-10 w-full rounded-xl bg-muted px-3 text-body text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
-            />
-          </label>
+            </label>
+            <div className="relative mt-1.5">
+              <input
+                id="reminder-drug-input"
+                value={drug}
+                onChange={(e) => {
+                  setDrug(e.target.value.slice(0, 30))
+                  clear('drug')
+                  unmark('drug')
+                }}
+                placeholder="请输入药品通用名或商品名"
+                aria-invalid={!!errors.drug}
+                className="h-10 w-full rounded-xl bg-muted pl-3 pr-11 text-body text-foreground outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
+              />
+              <button
+                type="button"
+                onClick={() => setScanOpen(true)}
+                aria-label={scanned.size ? '重新拍照识别药盒' : '拍照识别药盒'}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-primary"
+              >
+                <Camera className="size-5" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
           <FieldError msg={errors.drug} />
           {!drug && (
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -550,7 +546,12 @@ function ReminderFormScreen({
               单次剂量
               {scanned.has('dose') && <ScanBadge />}
             </span>
-            <div className="mt-1.5 flex gap-2">
+            <div
+              className={cn(
+                'mt-1.5 flex h-10 items-center rounded-xl bg-muted focus-within:ring-2 focus-within:ring-primary/30',
+                errors.dose && 'ring-2 ring-destructive/40',
+              )}
+            >
               <input
                 inputMode="decimal"
                 value={dose}
@@ -559,20 +560,22 @@ function ReminderFormScreen({
                   clear('dose')
                   unmark('dose')
                 }}
+                placeholder="数量"
                 aria-labelledby="reminder-dose-label"
                 aria-invalid={!!errors.dose}
-                className="h-9 w-20 rounded-xl bg-muted px-3 text-center text-body tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                className="h-full min-w-0 flex-1 bg-transparent px-3 text-body tabular-nums text-foreground outline-none placeholder:text-faint"
               />
-              <ChipGroup
-                labelledBy="reminder-dose-label"
-                items={units.map((u) => ({ value: u, label: u }))}
-                value={unit}
-                onChange={(u) => {
-                  setUnit(u)
-                  unmark('dose')
-                }}
-                className="mt-0 flex-1"
-              />
+              <span className="h-5 w-px bg-border" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={() => setUnitOpen(true)}
+                aria-haspopup="dialog"
+                aria-label={`剂量单位：${unit}，点击更换`}
+                className="flex h-full items-center gap-1 px-3 text-body font-medium text-foreground"
+              >
+                {unit}
+                <ChevronDown className="size-4 text-muted-foreground" aria-hidden="true" />
+              </button>
             </div>
             <FieldError msg={errors.dose} />
           </div>
@@ -781,6 +784,17 @@ function ReminderFormScreen({
       </div>
 
       {scanOpen && <DrugScanSheet onClose={() => setScanOpen(false)} onApply={applyScan} />}
+      {unitOpen && (
+        <DoseUnitSheet
+          value={unit}
+          onClose={closeUnitSheet}
+          onSelect={(u) => {
+            setUnit(u)
+            unmark('dose')
+            setUnitOpen(false)
+          }}
+        />
+      )}
     </SubPage>
   )
 }

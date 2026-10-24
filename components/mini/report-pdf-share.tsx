@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Download, FileText, Link2, LoaderCircle, Search, ShieldAlert, X } from 'lucide-react'
+import { Check, Download, FileText, LoaderCircle, Search, ShieldAlert, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { WechatIcon } from '@/components/mini/wechat-icon'
 import type { ReportSummary } from '@/components/mini/report-detail-screen'
@@ -17,15 +17,6 @@ const recentChats: Chat[] = [
   { id: 'spouse', name: '王建国', color: 'bg-[#8b5cf6]' },
   { id: 'mom', name: '妈妈', color: 'bg-[#e0567a]' },
 ]
-
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text)
-    return true
-  } catch {
-    return false
-  }
-}
 
 function FileCard({ name, size, className }: { name: string; size: string; className?: string }) {
   return (
@@ -56,7 +47,6 @@ function Avatar({ chat }: { chat: Chat }) {
 export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onClose: () => void }) {
   const fileName = `${report.product}-${report.examinee}-${report.date}.pdf`
   const fileSize = '2.4 MB'
-  const downloadUrl = `https://yaowen.example.com/report/${report.id}.pdf`
 
   const [step, setStep] = useState<Step>('sheet')
   const [loading, setLoading] = useState<string | null>(null)
@@ -104,12 +94,6 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
       icon: <Download className="size-6 text-muted-foreground" />,
       onClick: () => generate('正在生成 PDF 报告...', () => flash('PDF 已保存到手机')),
     },
-    {
-      key: 'link',
-      label: '复制下载链接',
-      icon: <Link2 className="size-6 text-muted-foreground" />,
-      onClick: async () => flash((await copyText(downloadUrl)) ? '下载链接已复制，7 天内有效' : '复制失败，请重试'),
-    },
   ]
 
   return (
@@ -141,17 +125,17 @@ export function ReportPdfShare({ report, onClose }: { report: ReportSummary; onC
             <ShieldAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
             报告包含受检人基因与健康信息，请仅分享给信任的家人或医生。
           </p>
-          <ul className="mt-4 grid grid-cols-3 gap-1">
+          <ul className="mt-4 grid grid-cols-2 gap-3">
             {options.map((o) => (
               <li key={o.key}>
                 <button
                   type="button"
                   onClick={o.onClick}
                   disabled={!!loading}
-                  className="flex w-full flex-col items-center gap-2 rounded-xl py-1 transition-opacity active:opacity-60"
+                  className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-white transition-opacity active:opacity-60"
                 >
-                  <span className="flex size-12 items-center justify-center rounded-full bg-white">{o.icon}</span>
-                  <span className="text-caption text-muted-foreground">{o.label}</span>
+                  {o.icon}
+                  <span className="text-body font-medium text-foreground">{o.label}</span>
                 </button>
               </li>
             ))}
