@@ -16,7 +16,8 @@ export type Source = {
   confidence: Confidence
 }
 
-export type AiAnswer = Answer & { sources: Source[] }
+/** cites[i] 为第 i 条要点引用的来源序号（从 1 开始，对应 sources 顺序） */
+export type AiAnswer = Answer & { sources: Source[]; cites?: number[][] }
 
 export type Testee = {
   id: string
@@ -74,12 +75,25 @@ type AnswerSet = {
   needsTestee?: Answer
   sources: Source[]
   usesReport?: boolean
+  cites?: { plain: Source[][]; pro?: Source[][] }
 }
 
 const answers: Record<string, AnswerSet> = {
   帮我解读一下检测报告: {
     usesReport: true,
     sources: [sourceLib.cpicClopidogrel, sourceLib.cpicStatin, sourceLib.cpicWarfarin],
+    cites: {
+      plain: [
+        [reportSource],
+        [reportSource, sourceLib.cpicClopidogrel],
+        [reportSource, sourceLib.cpicStatin],
+      ],
+      pro: [
+        [reportSource, sourceLib.cpicClopidogrel],
+        [reportSource, sourceLib.cpicStatin],
+        [reportSource, sourceLib.cpicWarfarin],
+      ],
+    },
     needsTestee: {
       intro: '当前没有关联受检人，我无法读取您的报告。',
       points: ['点击上方“未选择受检人”，选择已有报告的受检人。', '或通过输入框左侧的附件按钮上传外部机构的检测报告。'],
@@ -104,6 +118,9 @@ const answers: Record<string, AnswerSet> = {
   },
   我适合做哪种基因检测: {
     sources: [sourceLib.nhcGuide, sourceLib.pharmgkb],
+    cites: {
+      plain: [[sourceLib.nhcGuide], [sourceLib.nhcGuide, sourceLib.pharmgkb], [sourceLib.pharmgkb]],
+    },
     plain: {
       intro: '可以根据您的用药情况来选择：',
       points: [
@@ -125,6 +142,14 @@ const answers: Record<string, AnswerSet> = {
   '我能正常使用氯吡格雷吗？': {
     usesReport: true,
     sources: [sourceLib.cpicClopidogrel, sourceLib.clopidogrelLabel],
+    cites: {
+      plain: [[reportSource, sourceLib.cpicClopidogrel], [sourceLib.clopidogrelLabel], [sourceLib.cpicClopidogrel]],
+      pro: [
+        [reportSource, sourceLib.cpicClopidogrel],
+        [sourceLib.cpicClopidogrel],
+        [sourceLib.cpicClopidogrel, sourceLib.clopidogrelLabel],
+      ],
+    },
     needsTestee: {
       intro: '氯吡格雷是否有效与 CYP2C19 基因密切相关，但我目前没有您的检测结果。',
       points: ['如已做过检测，请选择受检人以便读取报告。', '如未检测，建议用药前进行 CYP2C19 基因检测。'],
@@ -162,20 +187,26 @@ export function getAnswer(question: string, mode: Mode, hasTestee: boolean): AiA
     if (set.usesReport && !hasTestee) {
       return { ...(set.needsTestee ?? set[mode]), sources: set.sources }
     }
-    if (set.usesReport) {
-      return { ...set[mode], sources: [reportSource, ...set.sources] }
-    }
-    return { ...set[mode], sources: set.sources }
+    const sources = set.usesReport ? [reportSource, ...set.sources] : set.sources
+    const citeSources = set.cites ? (mode === 'pro' && set.cites.pro) || set.cites.plain : undefined
+    const cites = citeSources?.map((refs) =>
+      refs.map((ref) => sources.indexOf(ref) + 1).filter((n) => n > 0),
+    )
+    return { ...set[mode], sources, cites }
   }
   const preset = presetQuestions.find((p) => p.question === question)?.answer
   if (preset) {
-    return { ...preset, sources: [sourceLib.dpwg, sourceLib.pharmgkb, sourceLib.drugLabel] }
+    const sources = [sourceLib.dpwg, sourceLib.pharmgkb, sourceLib.drugLabel]
+    return { ...preset, sources, cites: preset.points.map((_, i) => [(i % sources.length) + 1]) }
   }
   return { ...fallbackAnswer, sources: [] }
 }
 
 export function answerToText(answer: AiAnswer) {
-  const lines = [answer.intro, ...answer.points.map((p, i) => `${i + 1}. ${p}`)]
+  const lines = [
+    answer.intro,
+    ...answer.points.map((p, i) => `${i + 1}. ${p}${(answer.cites?.[i] ?? []).map((n) => `[${n}]`).join('')}`),
+  ]
   if (answer.tip) lines.push(answer.tip)
   if (answer.sources.length > 0) {
     lines.push('引用来源：', ...answer.sources.map((s, i) => `[${i + 1}] ${s.title}（${s.org}）`))
