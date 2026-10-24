@@ -316,7 +316,7 @@ export function MineScreen({
             <MineIcon src={iconSrc('gift')} className="size-9 shrink-0" />
             <span>
               <span className="block text-body font-medium text-foreground">领券中心</span>
-              <span className="block text-caption text-muted-foreground">新人券待领取</span>
+              <span className="block text-caption text-muted-foreground">满减券待领取</span>
             </span>
           </button>
         </section>

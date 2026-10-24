@@ -76,7 +76,7 @@ type Coupon = { id: string; title: string; threshold: number; amount: number; ex
 const coupons: Coupon[] = [
   { id: 'c100', title: '满 1000 减 100', threshold: 1000, amount: 100, expire: '2026.12.31 到期' },
   { id: 'c50', title: '满 500 减 50', threshold: 500, amount: 50, expire: '2026.11.30 到期' },
-  { id: 'new', title: '新人专享 立减 30', threshold: 0, amount: 30, expire: '2026.10.31 到期' },
+  { id: 'c30', title: '满 300 减 30', threshold: 300, amount: 30, expire: '2026.10.31 到期' },
 ]
 
 type Props = {
