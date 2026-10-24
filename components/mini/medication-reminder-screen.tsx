@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   AlarmClock,
   BellOff,
   Camera,
+  ChevronDown,
   Clock,
   MessageSquareText,
   PencilLine,
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { DrugScanSheet, type DrugScanResult } from '@/components/mini/drug-scan-sheet'
+import { DoseUnitSheet } from '@/components/mini/dose-unit-sheet'
 import { initialExaminees } from '@/components/mini/checkout-data'
 import { cn } from '@/lib/utils'
 
@@ -24,7 +26,7 @@ export type ReminderView = 'list' | 'add' | 'scan' | 'edit' | 'delete' | 'empty'
 
 type Frequency = '每天' | '隔天' | '每周'
 type Meal = '饭前' | '饭后' | '随餐' | '睡前' | '不限'
-type Unit = '片' | '粒' | '袋' | 'mg' | 'ml'
+type Unit = string
 type Advance = 0 | 5 | 15 | 30
 
 export type Reminder = {
@@ -48,7 +50,6 @@ export type Reminder = {
 
 const MAX_REMINDERS = 20
 const MAX_TIMES = 6
-const units: Unit[] = ['片', '粒', '袋', 'mg', 'ml']
 const meals: Meal[] = ['饭前', '饭后', '随餐', '睡前', '不限']
 const frequencies: Frequency[] = ['每天', '隔天', '每周']
 const advances: Advance[] = [0, 5, 15, 30]
@@ -409,6 +410,8 @@ function ReminderFormScreen({
   const [errors, setErrors] = useState<Errors>({})
   const [scanOpen, setScanOpen] = useState(initialScanOpen)
   const [scanned, setScanned] = useState<Set<ScanField>>(new Set())
+  const [unitOpen, setUnitOpen] = useState(false)
+  const closeUnitSheet = useCallback(() => setUnitOpen(false), [])
 
   const clear = (k: keyof Errors) => setErrors((e) => ({ ...e, [k]: undefined }))
   const unmark = (k: ScanField) =>
@@ -543,7 +546,12 @@ function ReminderFormScreen({
               单次剂量
               {scanned.has('dose') && <ScanBadge />}
             </span>
-            <div className="mt-1.5 flex gap-2">
+            <div
+              className={cn(
+                'mt-1.5 flex h-10 items-center rounded-xl bg-muted focus-within:ring-2 focus-within:ring-primary/30',
+                errors.dose && 'ring-2 ring-destructive/40',
+              )}
+            >
               <input
                 inputMode="decimal"
                 value={dose}
@@ -552,20 +560,22 @@ function ReminderFormScreen({
                   clear('dose')
                   unmark('dose')
                 }}
+                placeholder="数量"
                 aria-labelledby="reminder-dose-label"
                 aria-invalid={!!errors.dose}
-                className="h-9 w-20 rounded-xl bg-muted px-3 text-center text-body tabular-nums text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                className="h-full min-w-0 flex-1 bg-transparent px-3 text-body tabular-nums text-foreground outline-none placeholder:text-faint"
               />
-              <ChipGroup
-                labelledBy="reminder-dose-label"
-                items={units.map((u) => ({ value: u, label: u }))}
-                value={unit}
-                onChange={(u) => {
-                  setUnit(u)
-                  unmark('dose')
-                }}
-                className="mt-0 flex-1"
-              />
+              <span className="h-5 w-px bg-border" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={() => setUnitOpen(true)}
+                aria-haspopup="dialog"
+                aria-label={`剂量单位：${unit}，点击更换`}
+                className="flex h-full items-center gap-1 px-3 text-body font-medium text-foreground"
+              >
+                {unit}
+                <ChevronDown className="size-4 text-muted-foreground" aria-hidden="true" />
+              </button>
             </div>
             <FieldError msg={errors.dose} />
           </div>
@@ -774,6 +784,17 @@ function ReminderFormScreen({
       </div>
 
       {scanOpen && <DrugScanSheet onClose={() => setScanOpen(false)} onApply={applyScan} />}
+      {unitOpen && (
+        <DoseUnitSheet
+          value={unit}
+          onClose={closeUnitSheet}
+          onSelect={(u) => {
+            setUnit(u)
+            unmark('dose')
+            setUnitOpen(false)
+          }}
+        />
+      )}
     </SubPage>
   )
 }
