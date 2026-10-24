@@ -10,7 +10,7 @@ import { examineeMeta, initialExaminees, type Examinee } from '@/components/mini
 import { examineeReportCount, isSelfVerified, useExaminees, withVerifiedSelf } from '@/components/mini/examinee-store'
 import { cn } from '@/lib/utils'
 
-export type ExamineeView = 'list' | 'add' | 'edit' | 'edit-self' | 'delete' | 'unverified' | 'verify'
+export type ExamineeView = 'list' | 'empty' | 'add' | 'edit' | 'edit-self' | 'delete' | 'unverified' | 'verify'
 
 const MAX_EXAMINEES = 10
 
@@ -24,7 +24,7 @@ type Props = {
 
 export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
   const [rawList, setList] = useExaminees(
-    initialView === 'unverified' || initialView === 'verify' ? [] : undefined,
+    initialView === 'unverified' || initialView === 'verify' || initialView === 'empty' ? [] : undefined,
   )
   const selfVerified = isSelfVerified(rawList)
   const list = [...rawList.filter((m) => m.relation === '本人'), ...rawList.filter((m) => m.relation !== '本人')]

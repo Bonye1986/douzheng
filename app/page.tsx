@@ -1,4 +1,5 @@
 import { DesignBoard, type BoardSection } from '@/components/design/design-board'
+import { DemoApp } from '@/components/design/demo-app'
 import { WelcomeScreen } from '@/components/mini/welcome-screen'
 import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
@@ -22,8 +23,8 @@ const screens = [
   {
     id: '01',
     title: '启动登录页',
-    desc: '唯一入口：微信手机号快捷登录，未勾选协议时拦截并提示',
-    node: <WelcomeScreen />,
+    desc: '唯一入口：微信手机号快捷登录，未勾选协议时拦截并提示；点击登录弹出授权，允许后进入首页，暂不登录以游客身份浏览（可在画板内交互）',
+    node: <DemoApp />,
   },
   {
     id: '02',
@@ -176,7 +177,7 @@ const screens = [
   {
     id: '21',
     title: '我的 · 报告详情',
-    desc: '报告信息（项目 / 受检人 / 出具日期 / 编号）、检测结论（需调整 / 谨慎使用 / 正常使用占比）；用药建议按等级筛选，点击���物展开具体建议；基因检测结果展示基因、位点、基因型与表型；底部可将报告以 PDF 格式转发给微信好友或保存到手机（可在画板内交互）',
+    desc: '报告信息（项目 / 受检人 / 出具日期 / 编号）、检测结论（需调整 / 谨慎使用 / 正常使用占比）；用药建议按等级筛选，点击药物展开具体建议；基因检测结果展示基因、位点、基因型与表型；底部可将报告以 PDF 格式转发给微信好友或保存到手机（可在画板内交互）',
     node: <MineScreen initialReportOpen initialReportDetailId="BG20261008001" />,
   },
   {
@@ -210,6 +211,18 @@ const screens = [
     node: <MineScreen initialExamineeView="edit" />,
   },
   {
+    id: '26-self',
+    title: '受检人管理 · 编辑本人（已认证）',
+    desc: '本人完成实名认证后，姓名、性别、出生日期、身份证号锁定只读，仅可修改手机号',
+    node: <MineScreen initialExamineeView="edit-self" />,
+  },
+  {
+    id: '28',
+    title: '受检人管理 · 空状态',
+    desc: '账号下尚无受检人时展示引导插图与说明，点击添加受检人进入表单（可在画板内交互）',
+    node: <MineScreen initialExamineeView="empty" />,
+  },
+  {
     id: '24-unverified',
     title: '受检人管理 · 本人未认证',
     desc: '本人未完成实名认证时，列表顶部展示认证提示条，本人卡片显示「未认证 · 去认证」，点击任一入口进入实名认证页',
@@ -230,13 +243,13 @@ const screens = [
   {
     id: '29',
     title: '我的 · 地址管理',
-    desc: '展示已保存的收货地址（收货人、手机号、标签、省市区与详细地址），默认地址置顶，最多 20 个；每张卡片可设为默认、编辑、删除，底部新增收货地址（可在画板内交互）',
+    desc: '展示已保存的收货地址（收货人、手机号、省市区与详细地址），默认地址置顶，最多 20 个；每张卡片可设为默认、编辑、删除，底部新增收货地址（可在画板内交互）',
     node: <MineScreen initialAddressView="list" />,
   },
   {
     id: '30',
     title: '地址管理 · 新增地址',
-    desc: '填写收货人、手机号、所在地区（省 / 市 / 区三级选择）与详细地址，可选标签与设为默认；首个地址自动设为默认，校验通过后保存',
+    desc: '填写收货人、手机号、所在地区（省 / 市 / 区三级选择）与详细地址，可设为默认；首个地址自动设为默认，校验通过后保存',
     node: <MineScreen initialAddressView="add" />,
   },
   {
@@ -296,19 +309,19 @@ const screens = [
   {
     id: '41',
     title: '使用指南 · 文章详情',
-    desc: '标题、分类、更新时间与阅读信息，封面图，正文段落 / 小标题 / 编号步骤 / 注意事项提示框；底部有帮助反馈、相关指南，联系客服与问问 AI 固定操作栏（可在画板内交互）',
+    desc: '标题、分类、更新时间与阅读信息，封面图，正文段落 / 小标题 / 编号步骤 / 注意事项提示框；底部联系客服与问问 AI 固定操作栏（可在画板内交互）',
     node: <MineScreen initialGuideView="detail" />,
   },
   {
     id: '42',
     title: '我的 · 关于我们',
-    desc: '品牌头部（Logo、口号、版本号），平台数据概览，公司简介、核心优势、资质认证、发展历程，联系我们（拨打 / 复制），协议与���质入口、检���更新，底部公司主体与备案��息（可在画板内交互）',
+    desc: '品牌头部（Logo、版本号），小程序介绍、公司简介，客服联系电话（拨打 / 复制），底部版权信息（可在画板内交互）',
     node: <MineScreen initialAboutOpen />,
   },
   {
     id: '43',
     title: '我的 · 联系客服',
-    desc: '小程序客服会话：人工客服接入提示、消息气泡、订单推荐卡片一键发送、常见问题快捷提问、输入栏与更多功能��板（图片 / 订单 / 报告）（可在画板内交互）',
+    desc: '小程序客服会话：人工客服接入提示、消息气泡、订单推荐卡片一键发送、常见问题快捷提问、输入栏与更多功能面板（图片 / 订单 / 报告）（可在画板内交互）',
     node: <MineScreen initialServiceOpen />,
   },
   {
@@ -440,13 +453,13 @@ const screens = [
   {
     id: '47-send',
     title: '订单列表 · 寄样',
-    desc: '自采样待寄样订单点击「寄样」，预约顺丰上���取件：确认寄件地址，提交后订单变为待收样（可在画板内交互）',
+    desc: '自采样待寄样订单点击「寄样」，预约顺丰上门取件：确认寄件地址，提交后订单变为待收样（可在画板内交互）',
     node: <OrderActionArtboard kind="send" />,
   },
   {
     id: '47-report',
     title: '订单列表 · 查看报告',
-    desc: '已完成订单点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
+    desc: '已完成订��点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
     node: <OrderActionArtboard kind="report" />,
   },
   {
@@ -629,13 +642,13 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'consent',
     title: '授权与同意书',
-    summary: '科研知情同意书列表、签署页（手写签名 + e签宝人脸核验）、����页（手写签名，免核验）与空状态',
+    summary: '科研知情同意书列表、签署页（手写签名 + e签宝人脸核验）、撤销页（手写签名，免核验）与空状态',
     ids: ['16', '34', '34-withdraw', '16-empty'],
   },
   {
     key: 'examinee',
     title: '受检人管理',
-    summary: '受检人列表、本人实名认证、添加 / 编辑 / 删除受检人与空状态',
+    summary: '受检人列表、本人实名认证、添加 / 编辑 / 删除受检��与空状态',
     ids: ['24', '24-unverified', '24-verify', '25', '26', '26-self', '27', '28'],
   },
   {

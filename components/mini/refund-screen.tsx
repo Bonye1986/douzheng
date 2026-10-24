@@ -414,7 +414,7 @@ function CancelConfirmDialog({
               <p>该订单尚未支付，取消后订单将关闭</p>
             ) : (
               <p>
-                取消后 <span className="font-medium tabular-nums text-warning">¥{paid}</span> 将全额���路退回
+                取消后 <span className="font-medium tabular-nums text-warning">¥{paid}</span> 将全额原路退回
               </p>
             )}
             <p>订单取消后不可恢复，如需检测请重新下单</p>
