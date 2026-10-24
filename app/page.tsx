@@ -1,4 +1,5 @@
 import { DesignBoard, type BoardSection } from '@/components/design/design-board'
+import { DemoApp } from '@/components/design/demo-app'
 import { WelcomeScreen } from '@/components/mini/welcome-screen'
 import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
@@ -22,8 +23,8 @@ const screens = [
   {
     id: '01',
     title: '启动登录页',
-    desc: '唯一入口：微信手机号快捷登录，未勾选协议时拦截并提示',
-    node: <WelcomeScreen />,
+    desc: '唯一入口：微信手机号快捷登录，未勾选协议时拦截并提示；点击登录弹出授权，允许后进入首页，暂不登录以游客身份浏览（可在画板内交互）',
+    node: <DemoApp />,
   },
   {
     id: '02',
@@ -308,7 +309,7 @@ const screens = [
   {
     id: '41',
     title: '使用指南 · 文章详情',
-    desc: '标题、分类、更新时间与阅读信息，封面图，正文段落 / 小标题 / 编号步骤 / 注意事项提示框；底部有帮助反馈、相关指南，联系客服与问问 AI 固定操作栏（可在画板内交互）',
+    desc: '标题、分类、更新时间与阅读信息，封面图，正文段落 / 小标题 / 编号步骤 / 注意事项提示框；底部联系客服与问问 AI 固定操作栏（可在画板内交互）',
     node: <MineScreen initialGuideView="detail" />,
   },
   {
@@ -458,7 +459,7 @@ const screens = [
   {
     id: '47-report',
     title: '订单列表 · 查看报告',
-    desc: '已完成订单点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
+    desc: '已完成订��点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
     node: <OrderActionArtboard kind="report" />,
   },
   {
@@ -647,7 +648,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'examinee',
     title: '受检人管理',
-    summary: '受检人列表、本人实名认证、添加 / 编辑 / 删除受检人与空状态',
+    summary: '受检人列表、本人实名认证、添加 / 编辑 / 删除受检��与空状态',
     ids: ['24', '24-unverified', '24-verify', '25', '26', '26-self', '27', '28'],
   },
   {

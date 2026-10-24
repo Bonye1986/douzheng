@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import {
   BookOpen,
-  ChevronRight,
   FileSearch,
   Headphones,
   Info,
@@ -13,8 +12,6 @@ import {
   ShieldCheck,
   Sparkles,
   TestTube,
-  ThumbsDown,
-  ThumbsUp,
   Truck,
   X,
   type LucideIcon,
@@ -280,17 +277,7 @@ function GuideList({ onOpen, onContact }: { onOpen: (id: string) => void; onCont
   )
 }
 
-function GuideDetail({
-  article,
-  onOpen,
-}: {
-  article: Article
-  onOpen: (id: string) => void
-}) {
-  const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
-  const related = articles.filter((a) => a.id !== article.id && a.category === article.category).slice(0, 2)
-  const more = related.length ? related : articles.filter((a) => a.id !== article.id).slice(0, 2)
-
+function GuideDetail({ article }: { article: Article }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto pb-4 [scrollbar-width:none]">
@@ -346,54 +333,7 @@ function GuideDetail({
               )
             })}
           </div>
-
-          <section aria-label="文章反馈" className="mt-6 border-t border-border pt-4 text-center">
-            <p className="text-note text-muted-foreground">
-              {feedback ? '感谢反馈，我们会持续优化内容' : '这篇指南对你有帮助吗？'}
-            </p>
-            <div className="mt-2.5 flex justify-center gap-3">
-              {(
-                [
-                  { key: 'up', label: '有帮助', icon: ThumbsUp },
-                  { key: 'down', label: '没帮助', icon: ThumbsDown },
-                ] as const
-              ).map((f) => {
-                const active = feedback === f.key
-                return (
-                  <button
-                    key={f.key}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setFeedback(active ? null : f.key)}
-                    className={`flex h-8 items-center gap-1.5 rounded-full border px-4 text-caption ${
-                      active ? 'border-primary bg-secondary text-primary' : 'border-[#e3e8f0] text-foreground'
-                    }`}
-                  >
-                    <f.icon className="size-3.5" aria-hidden="true" />
-                    {f.label}
-                  </button>
-                )
-              })}
-            </div>
-          </section>
         </article>
-
-        <section aria-labelledby="guide-related" className="mt-2.5 bg-white px-4 py-3">
-          <h3 id="guide-related" className="text-body font-semibold text-foreground">
-            相关指南
-          </h3>
-          <ul className="mt-1">
-            {more.map((a) => (
-              <li key={a.id}>
-                <button type="button" onClick={() => onOpen(a.id)} className="flex w-full items-center gap-2.5 py-2.5 text-left">
-                  <a.icon className="size-4 shrink-0 text-primary" aria-hidden="true" />
-                  <span className="flex-1 truncate text-note text-foreground">{a.title}</span>
-                  <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
       </div>
     </div>
   )
@@ -418,7 +358,7 @@ export function GuideScreen({
   if (article) {
     return (
       <SubPage key={article.id} title="指南详情" titleId="guide-detail-title" onBack={() => setArticleId(null)}>
-        <GuideDetail article={article} onOpen={setArticleId} />
+        <GuideDetail article={article} />
       </SubPage>
     )
   }
