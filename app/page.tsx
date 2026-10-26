@@ -459,7 +459,7 @@ const screens = [
   {
     id: '47-report',
     title: '订单列表 · 查看报告',
-    desc: '已完成订��点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
+    desc: '已完成订单，点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
     node: <OrderActionArtboard kind="report" />,
   },
   {
@@ -648,7 +648,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'examinee',
     title: '受检人管理',
-    summary: '受检人列表、本人实名认证、添加 / 编辑 / 删除受检��与空状态',
+    summary: '受检人列表、本人实名认证、添加 / 编辑 / 删除受检人与空状态',
     ids: ['24', '24-unverified', '24-verify', '25', '26', '26-self', '27', '28'],
   },
   {
