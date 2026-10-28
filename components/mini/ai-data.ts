@@ -17,7 +17,23 @@ export type Source = {
 }
 
 /** cites[i] 为第 i 条要点引用的来源序号（从 1 开始，对应 sources 顺序） */
-export type AiAnswer = Answer & { sources: Source[]; cites?: number[][] }
+export type AiAnswer = Answer & { sources: Source[]; cites?: number[][]; recommend?: Recommend }
+
+export type Recommend = { serviceId: string; reason: string }
+
+const recommendRules: { pattern: RegExp; serviceId: string; reason: string }[] = [
+  { pattern: /氯吡格雷|他汀|华法林|心脑|冠心|支架/, serviceId: 'cardio', reason: '可明确 CYP2C19、SLCO1B1、VKORC1 等相关基因型' },
+  { pattern: /高血压|降压/, serviceId: 'hypertension', reason: '评估常用降压药的敏感性与不良反应风险' },
+  { pattern: /抑郁|焦虑|精神|失眠/, serviceId: 'mental', reason: '辅助选择更适合的精神类药物与剂量' },
+  { pattern: /癫痫/, serviceId: 'epilepsy', reason: '评估抗癫痫药物的严重皮肤不良反应风险' },
+  { pattern: /糖尿病|降糖|二甲双胍/, serviceId: 'diabetes', reason: '评估降糖药疗效差异' },
+  { pattern: /CYP2C19|代谢/, serviceId: 'full', reason: '一次覆盖多个药物代谢基因' },
+]
+
+function recommendFor(question: string): Recommend | undefined {
+  const rule = recommendRules.find((r) => r.pattern.test(question))
+  return rule && { serviceId: rule.serviceId, reason: rule.reason }
+}
 
 export type Testee = {
   id: string
@@ -43,6 +59,7 @@ export function testeeLabel(t: Testee) {
 }
 
 export const skills = [
+  { key: 'guide', label: 'AI引导下单', question: '帮我选择合适的检测并引导下单' },
   { key: 'report', label: '报告解读', question: '帮我解读一下检测报告' },
   { key: 'recommend', label: '推荐检测', question: '推荐适合我的检测服务' },
   { key: 'myReports', label: '我的报告', question: '查看我的报告' },
@@ -181,6 +198,12 @@ export const confidenceMeta: Record<Confidence, { label: string }> = {
 }
 
 export function getAnswer(question: string, mode: Mode, hasTestee: boolean): AiAnswer {
+  const answer = resolveAnswer(question, mode, hasTestee)
+  const recommend = recommendFor(question)
+  return recommend ? { ...answer, recommend } : answer
+}
+
+function resolveAnswer(question: string, mode: Mode, hasTestee: boolean): AiAnswer {
   const key = question.replace(/[？?]$/, '')
   const set = answers[question] ?? answers[key]
   if (set) {

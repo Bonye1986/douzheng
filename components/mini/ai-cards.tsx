@@ -1,12 +1,14 @@
 'use client'
 
-import { ChevronRight, ClipboardList, FileText } from 'lucide-react'
+import { useState } from 'react'
+import { Check, ChevronRight, ClipboardList, FileText, Loader2, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { testServices } from '@/components/mini/tests-data'
 
-export type CardKind = 'reports' | 'orders' | 'services'
+export type CardKind = 'reports' | 'orders' | 'services' | 'guide'
 
 export function detectCardKind(question: string): CardKind | null {
+  if (/下单|购买|怎么买|引导/.test(question)) return 'guide'
   if (/我的报告|查看.*报告|报告列表|报告进度/.test(question)) return 'reports'
   if (/订单/.test(question)) return 'orders'
   if (/推荐.*(检测|服务)|适合做哪种|做什么检测/.test(question)) return 'services'
@@ -17,6 +19,7 @@ export const cardKindText: Record<CardKind, string> = {
   reports: '已为你找到 3 份检测报告',
   orders: '你有 3 笔进行中的订单',
   services: '为你推荐以下检测服务',
+  guide: '已为你智能匹配检测套餐，并生成下单指引',
 }
 
 const reports = [
@@ -175,7 +178,198 @@ function ServicesCard() {
   )
 }
 
-export function ChatCard({ kind, onAsk }: { kind: CardKind; onAsk?: (q: string) => void }) {
+const guideMatches = [
+  { id: 'cardio', match: 96, reason: '覆盖氯吡格雷、他汀、华法林等你咨询过的药物' },
+  { id: 'hypertension', match: 88, reason: '长期服用降压药，评估药物敏感性' },
+  { id: 'full', match: 82, reason: '多药联用，一次覆盖更全面' },
+]
+
+type GuideStep = { key: string; title: string; desc: string; action: string; done: string }
+
+function GuideOrderCard({
+  question,
+  loggedIn,
+  testeeName,
+}: {
+  question?: string
+  loggedIn: boolean
+  testeeName?: string
+}) {
+  const named = testServices.find((s) => question?.includes(s.name) || question?.includes(s.name.split(' ')[0]))
+  const matches = guideMatches
+    .map((m) => ({ ...m, service: testServices.find((s) => s.id === m.id && !s.offShelf) }))
+    .filter((m): m is typeof m & { service: NonNullable<typeof m.service> } => Boolean(m.service))
+    .sort((a, b) => (a.id === named?.id ? -1 : b.id === named?.id ? 1 : 0))
+  const [selectedId, setSelectedId] = useState(matches[0]?.id)
+  const selected = matches.find((m) => m.id === selectedId)?.service
+  const [doneCount, setDoneCount] = useState(loggedIn ? 1 : 0)
+  const [pending, setPending] = useState(false)
+
+  if (!selected) return null
+
+  const steps: GuideStep[] = [
+    { key: 'login', title: '注册 / 登录', desc: '使用微信手机号一键登录，新用户自动注册', action: '微信一键登录', done: '已登录 · 138****6621' },
+    { key: 'verify', title: '实名认证', desc: '基因报告属于个人隐私，需完成实名认证', action: '去实名认证', done: '王** · 已认证' },
+    {
+      key: 'confirm',
+      title: '确认订单',
+      desc: `${selected.name} · 受检人 ${testeeName ?? '本人'} · ${selected.sampleType}`,
+      action: '确认订单信息',
+      done: `受检人 ${testeeName ?? '本人'} · 采样方式已选择`,
+    },
+    { key: 'pay', title: '下单支付', desc: '支持微信支付，未采样前可申请全额退款', action: `微信支付 ¥${selected.price}`, done: `已支付 ¥${selected.price}` },
+  ]
+  const finished = doneCount >= steps.length
+  const locked = doneCount >= 3
+
+  function advance() {
+    if (pending) return
+    setPending(true)
+    window.setTimeout(() => {
+      setDoneCount((n) => n + 1)
+      setPending(false)
+    }, 700)
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <section aria-labelledby="guide-match-title">
+        <h4 id="guide-match-title" className="mb-1.5 flex items-center gap-1 text-caption font-medium text-muted-foreground">
+          <Sparkles className="size-3.5 text-primary" aria-hidden="true" />
+          智能匹配套餐
+        </h4>
+        <div role="radiogroup" aria-label="选择检测套餐" className="flex flex-col gap-1.5">
+          {matches.map(({ id, match, reason, service }) => {
+            const checked = id === selectedId
+            return (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={checked}
+                disabled={locked}
+                onClick={() => setSelectedId(id)}
+                className={cn(
+                  'flex items-center gap-2.5 rounded-xl border p-2 text-left transition-colors disabled:opacity-60',
+                  checked ? 'border-primary bg-secondary/60' : 'border-border bg-background/60',
+                )}
+              >
+                <img src={service.image} alt="" className="size-11 shrink-0 rounded-lg bg-secondary object-cover" />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1">
+                    <span className="truncate text-note font-medium leading-5 text-foreground">{service.name}</span>
+                    <span className="shrink-0 rounded bg-primary/10 px-1 text-tag font-medium tabular-nums text-primary">
+                      匹配 {match}%
+                    </span>
+                  </span>
+                  <span className="block truncate text-caption leading-4 text-muted-foreground">{reason}</span>
+                </span>
+                <span className="flex shrink-0 flex-col items-end gap-1">
+                  <span className="text-note font-semibold tabular-nums text-destructive">¥{service.price}</span>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'flex size-4 items-center justify-center rounded-full border',
+                      checked ? 'border-primary bg-primary text-white' : 'border-border bg-white',
+                    )}
+                  >
+                    {checked && <Check className="size-3" strokeWidth={3} />}
+                  </span>
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section aria-labelledby="guide-steps-title" className="rounded-xl bg-background/60 p-2.5">
+        <h4 id="guide-steps-title" className="flex items-center justify-between text-caption font-medium text-muted-foreground">
+          <span>下单指引</span>
+          <span className="tabular-nums text-primary">
+            {Math.min(doneCount, steps.length)}/{steps.length}
+          </span>
+        </h4>
+        <ol className="mt-2 flex flex-col">
+          {steps.map((step, i) => {
+            const state = i < doneCount ? 'done' : i === doneCount ? 'current' : 'todo'
+            const last = i === steps.length - 1
+            return (
+              <li key={step.key} className="flex gap-2.5" aria-current={state === 'current' ? 'step' : undefined}>
+                <div className="flex flex-col items-center">
+                  <span
+                    className={cn(
+                      'flex size-5 shrink-0 items-center justify-center rounded-full text-tag font-semibold',
+                      state === 'done' && 'bg-primary text-white',
+                      state === 'current' && 'border-2 border-primary bg-white text-primary',
+                      state === 'todo' && 'border border-border bg-white text-faint',
+                    )}
+                  >
+                    {state === 'done' ? <Check className="size-3" strokeWidth={3} aria-hidden="true" /> : i + 1}
+                  </span>
+                  {!last && <span className={cn('w-px flex-1', i < doneCount ? 'bg-primary' : 'bg-border')} />}
+                </div>
+                <div className={cn('min-w-0 flex-1', !last && 'pb-3')}>
+                  <p
+                    className={cn(
+                      'text-note font-medium leading-5',
+                      state === 'todo' ? 'text-muted-foreground' : 'text-foreground',
+                    )}
+                  >
+                    {step.title}
+                  </p>
+                  <p className="text-caption leading-4 text-muted-foreground">
+                    {state === 'done' ? step.done : step.desc}
+                  </p>
+                  {state === 'current' && (
+                    <button
+                      type="button"
+                      onClick={advance}
+                      disabled={pending}
+                      className="mt-1.5 flex h-7 items-center gap-1 rounded-full bg-primary px-3 text-caption font-medium text-white disabled:opacity-70"
+                    >
+                      {pending && <Loader2 className="size-3 animate-spin" aria-hidden="true" />}
+                      {pending ? '处理中' : step.action}
+                    </button>
+                  )}
+                </div>
+              </li>
+            )
+          })}
+        </ol>
+      </section>
+
+      {finished && (
+        <div role="status" className="rounded-xl bg-success-soft px-3 py-2 text-caption leading-5 text-success">
+          下单成功！采样盒将在 48 小时内寄出，可在「我的订单」查看物流与采样指引。
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function ChatCard({
+  kind,
+  question,
+  loggedIn = false,
+  testeeName,
+}: {
+  kind: CardKind
+  question?: string
+  loggedIn?: boolean
+  testeeName?: string
+  onAsk?: (q: string) => void
+}) {
+  if (kind === 'guide') {
+    return (
+      <div>
+        <p className="mb-2 text-body leading-6 text-foreground">
+          {cardKindText.guide}，按步骤操作即可完成购买：
+        </p>
+        <GuideOrderCard question={question} loggedIn={loggedIn} testeeName={testeeName} />
+        <p className="mt-2 text-caption leading-4 text-muted-foreground">推荐仅供参考，具体检测项目请结合医生建议选择。</p>
+      </div>
+    )
+  }
   return (
     <div>
       <p className="mb-2 text-body leading-6 text-foreground">

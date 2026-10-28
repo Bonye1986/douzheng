@@ -165,7 +165,7 @@ const screens = [
   {
     id: '18-guest',
     title: '我的 · 未登录',
-    desc: '未登录时展示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及受检人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
+    desc: '未登录时展示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、���惠券、领券中心及受检人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
     node: <HomeFlow initialTab="me" loggedIn={false} />,
   },
   {
@@ -505,6 +505,12 @@ const screens = [
     node: <AiChatScreen initialTesteeId="self" initialQuestion="推荐适合我的检测服务" />,
   },
   {
+    id: '08-guide',
+    title: 'AI咨询 · AI引导下单',
+    desc: 'AI 智能匹配检测套餐（匹配度 + 推荐理由，可切换），并通过「注册登录 → 实名认证 → 确认订单 → 下单支付」分步指引完成购买；普通回答末尾也会关联推荐检测并提供「AI 引导下单」入口（可在画板内交互）',
+    node: <AiChatScreen initialQuestion="帮我选择合适的检测并引导下单" />,
+  },
+  {
     id: '06',
     title: 'AI咨询 · 历史对话抽屉',
     desc: '左侧滑出抽屉，可搜索、新建、切换会话，「…」菜单内修改名称或删除会话（删除需二次确认）（可在画板内交互）',
@@ -599,7 +605,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     key: 'home',
     title: '首页与AI咨询',
     summary: 'AI 对话入口与预设问题，通俗 / 专业版切换，关联受检人后的个性化用药解答',
-    ids: ['04', '05', '06', '07', '08', '08-r', '08-o', '08-v', '08-share'],
+    ids: ['04', '05', '06', '07', '08', '08-r', '08-o', '08-v', '08-guide', '08-share'],
   },
   { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
   {
@@ -654,7 +660,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   {
     key: 'address',
     title: '地址管理',
-    summary: '收货地址列表、新增 / 编辑 / 删除地址、设为默认与空状态',
+    summary: '收货地址列表、新增 / 编辑 / 删除地址、设为默��与空状态',
     ids: ['29', '30', '31', '32', '33'],
   },
   {
