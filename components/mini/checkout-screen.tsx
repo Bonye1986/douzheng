@@ -199,6 +199,7 @@ export function CheckoutScreen({
   const [siteId, setSiteId] = useState<string | null>(null)
   const [sheet, setSheet] = useState<'address' | 'site' | null>(null)
   const [sampleWarn, setSampleWarn] = useState(false)
+  const [fieldSheet, setFieldSheet] = useState<{ kind: 'sample' | 'examinee'; serviceId: string } | null>(null)
 
   const chosenTypeOf = (serviceId: string) => getSampleTypes(serviceId).find((t) => t.id === sampleType[serviceId])
   const untyped = rows.filter((r) => !chosenTypeOf(r.service.id))
@@ -654,65 +655,36 @@ export function CheckoutScreen({
                       </div>
                     </div>
                   </div>
-                  <div className="mt-2.5 flex flex-col gap-2 rounded-xl bg-background p-2">
-                  <SampleTypePicker
-                    serviceId={service.id}
-                    serviceName={service.name}
-                    value={sampleType[service.id]}
-                    warn={sampleWarn}
-                    onChange={(id) => changeSampleType(service.id, id)}
-                  />
-
-                  <div className="flex items-start gap-2">
-                  <span
-                    id={`examinee-${service.id}`}
-                    className={cn(
-                      'flex w-12 shrink-0 flex-col pt-1.5 text-caption leading-4',
-                      missing ? 'text-destructive' : 'text-muted-foreground',
-                    )}
-                  >
-                    <span className="flex items-center gap-0.5">
-                      <UserRound className="size-3 shrink-0" aria-hidden="true" />
-                      受检人
-                    </span>
-                    {missing && (
-                      <span role="alert" className="text-tag">
-                        请选择
-                      </span>
-                    )}
-                  </span>
-                  <div
-                    role="group"
-                    aria-labelledby={`examinee-${service.id}`}
-                    className="flex min-w-0 flex-1 flex-wrap gap-1.5"
-                  >
-                    {examinees.map((e) => {
-                      const on = selected.includes(e.id)
-                      return (
-                        <button
-                          key={e.id}
-                          type="button"
-                          role="checkbox"
-                          aria-checked={on}
-                          onClick={() => toggleAssign(service.id, e.id)}
-                          className={cn(
-                            'flex h-7 items-center gap-1 rounded-full border px-2.5 text-caption transition-colors',
-                            on ? 'border-primary bg-secondary text-primary' : 'border-border bg-white text-muted-foreground',
-                          )}
-                        >
-                          {on ? (
-                            <Check className="size-3" strokeWidth={3} aria-hidden="true" />
-                          ) : (
-                            <UserRound className="size-3" aria-hidden="true" />
-                          )}
-                          {e.name}
-                          <span className="text-tag opacity-70">{e.relation}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                  </div>
-                  </div>
+                  {(() => {
+                    const type = getSampleTypes(service.id).find((t) => t.id === sampleType[service.id])
+                    const people = examinees.filter((e) => selected.includes(e.id))
+                    return (
+                      <div className="mt-2.5 divide-y divide-border rounded-xl bg-background">
+                        <FieldRow
+                          icon={FlaskConical}
+                          label="样本类型"
+                          value={type?.label}
+                          hint={type ? sampleModesText(type.modes) : undefined}
+                          warn={sampleWarn && !type}
+                          onClick={() => setFieldSheet({ kind: 'sample', serviceId: service.id })}
+                        />
+                        <FieldRow
+                          icon={UserRound}
+                          label="受检人"
+                          value={
+                            people.length === 0
+                              ? undefined
+                              : people.length <= 2
+                                ? people.map((p) => p.name).join('、')
+                                : `${people.slice(0, 2).map((p) => p.name).join('、')} 等`
+                          }
+                          hint={people.length > 0 ? `${people.length} 人` : undefined}
+                          warn={missing}
+                          onClick={() => setFieldSheet({ kind: 'examinee', serviceId: service.id })}
+                        />
+                      </div>
+                    )
+                  })()}
                   {selected.length > 0 && (
                     <div className="mt-2.5 rounded-xl bg-background px-3 py-2.5">
                       <p className="flex items-center gap-1 text-caption text-foreground">
@@ -1110,6 +1082,37 @@ export function CheckoutScreen({
         />
       )}
 
+      {fieldSheet?.kind === 'sample' && (
+        <PickerSheet
+          title="选择样本类型"
+          items={getSampleTypes(fieldSheet.serviceId).map((t) => ({
+            id: t.id,
+            title: t.label,
+            aside: sampleModesText(t.modes),
+            lines: [],
+          }))}
+          selected={sampleType[fieldSheet.serviceId] ?? null}
+          onSelect={(id) => {
+            changeSampleType(fieldSheet.serviceId, id)
+            setFieldSheet(null)
+          }}
+          onClose={() => setFieldSheet(null)}
+        />
+      )}
+
+      {fieldSheet?.kind === 'examinee' && (
+        <ExamineeSheet
+          examinees={examinees}
+          selected={assign[fieldSheet.serviceId] ?? []}
+          onToggle={(id) => toggleAssign(fieldSheet.serviceId, id)}
+          onAdd={() => {
+            setExamineeForm({ serviceId: fieldSheet.serviceId })
+            setFieldSheet(null)
+          }}
+          onClose={() => setFieldSheet(null)}
+        />
+      )}
+
       {researchDocOpen && <ResearchDocSheet onClose={() => setResearchDocOpen(false)} />}
 
       {paying && <WechatPaySheet amount={payable} onCancel={payCancel} onSuccess={paySuccess} />}
@@ -1168,74 +1171,133 @@ function Shell({ title, onBack, children }: { title: string; onBack: () => void;
   )
 }
 
-function SampleTypePicker({
-  serviceId,
-  serviceName,
-  value,
-  warn,
-  onChange,
-}: {
-  serviceId: string
-  serviceName: string
-  value?: string
-  warn: boolean
-  onChange: (id: string) => void
-}) {
-  const opts = getSampleTypes(serviceId)
-  const current = opts.find((o) => o.id === value)
-  const labelId = `sample-${serviceId}`
+function sampleModesText(modes: SamplingMode[]) {
+  return modes.length > 1 ? '居家/机构采样' : `仅${samplingLabel[modes[0]]}`
+}
 
+function FieldRow({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  warn,
+  onClick,
+}: {
+  icon: typeof UserRound
+  label: string
+  value?: string
+  hint?: string
+  warn: boolean
+  onClick: () => void
+}) {
   return (
-    <div className="flex items-start gap-2">
-      <span
-        id={labelId}
-        className={cn(
-          'flex w-12 shrink-0 flex-col pt-1.5 text-caption leading-4',
-          warn && !current ? 'text-destructive' : 'text-muted-foreground',
-        )}
-      >
-        <span className="flex items-center gap-0.5">
-          <FlaskConical className="size-3 shrink-0" aria-hidden="true" />
-          样本
-        </span>
-        {warn && !current && (
-          <span role="alert" className="text-tag">
+    <button type="button" onClick={onClick} className="flex h-11 w-full items-center gap-2 px-3 text-left">
+      <Icon className={cn('size-4 shrink-0', warn ? 'text-destructive' : 'text-muted-foreground')} aria-hidden="true" />
+      <span className={cn('w-16 shrink-0 text-caption', warn ? 'text-destructive' : 'text-muted-foreground')}>{label}</span>
+      <span className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
+        {value ? (
+          <>
+            <span className="truncate text-note font-medium text-foreground">{value}</span>
+            {hint && <span className="shrink-0 text-tag text-muted-foreground">{hint}</span>}
+          </>
+        ) : (
+          <span role={warn ? 'alert' : undefined} className={cn('text-note', warn ? 'text-destructive' : 'text-faint')}>
             请选择
           </span>
         )}
       </span>
+      <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
+    </button>
+  )
+}
+
+function ExamineeSheet({
+  examinees,
+  selected,
+  onToggle,
+  onAdd,
+  onClose,
+}: {
+  examinees: Examinee[]
+  selected: string[]
+  onToggle: (id: string) => void
+  onAdd: () => void
+  onClose: () => void
+}) {
+  return (
+    <div className="absolute inset-0 z-30 flex flex-col justify-end">
+      <button type="button" aria-label="关闭" onClick={onClose} className="absolute inset-0 bg-black/40" />
       <div
-        role="radiogroup"
-        aria-labelledby={labelId}
-        aria-label={`${serviceName}的样本类型`}
-        className={cn(
-          'grid min-w-0 flex-1 auto-cols-fr grid-flow-col gap-0.5 rounded-lg border bg-white p-0.5 transition-colors',
-          warn && !current ? 'border-destructive' : 'border-border',
-        )}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="examinee-sheet-title"
+        className="relative flex max-h-[75%] flex-col rounded-t-2xl bg-background motion-safe:animate-in motion-safe:slide-in-from-bottom"
       >
-        {opts.map((o) => {
-          const on = o.id === value
-          const modesText = o.modes.length > 1 ? '居家/机构' : `仅${samplingLabel[o.modes[0]]}`
-          return (
+        <div className="relative flex h-12 shrink-0 items-center justify-center">
+          <h2 id="examinee-sheet-title" className="text-title font-semibold text-foreground">
+            选择受检人
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="关闭"
+            className="absolute right-3 flex size-8 items-center justify-center text-muted-foreground"
+          >
+            <X className="size-5" aria-hidden="true" />
+          </button>
+        </div>
+        <p className="-mt-1 px-4 pb-2 text-caption text-muted-foreground">可多选，每位受检人一份检测</p>
+        <ul aria-label="受检人" className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 [scrollbar-width:none]">
+          {examinees.map((e) => {
+            const on = selected.includes(e.id)
+            return (
+              <li key={e.id}>
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={on}
+                  onClick={() => onToggle(e.id)}
+                  className={cn(
+                    'flex w-full items-center gap-2.5 rounded-xl border bg-white px-3 py-3 text-left',
+                    on ? 'border-primary' : 'border-transparent',
+                  )}
+                >
+                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                    <span className="truncate text-note font-medium text-foreground">{e.name}</span>
+                    <span className="shrink-0 rounded bg-secondary px-1 text-tag text-primary">{e.relation}</span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'flex size-[18px] shrink-0 items-center justify-center rounded border',
+                      on ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60',
+                    )}
+                  >
+                    {on && <Check className="size-3" strokeWidth={3} />}
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+          <li>
             <button
-              key={o.id}
               type="button"
-              role="radio"
-              aria-checked={on}
-              aria-description={modesText}
-              onClick={() => onChange(o.id)}
-              className={cn(
-                'flex min-w-0 flex-col items-center justify-center rounded-md px-1 py-1 transition-colors',
-                on ? 'bg-primary-soft text-primary' : 'text-foreground',
-              )}
+              onClick={onAdd}
+              className="flex h-11 w-full items-center justify-center rounded-xl border border-dashed border-border bg-white text-note text-primary"
             >
-              <span className={cn('truncate text-caption leading-4', on && 'font-medium')}>{o.label}</span>
-              <span className={cn('truncate text-tag leading-3', on ? 'text-primary/80' : 'text-muted-foreground')}>
-                {modesText}
-              </span>
+              + 添加受检人
             </button>
-          )
-        })}
+          </li>
+        </ul>
+        <div className="shrink-0 px-3 pb-6 pt-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-11 w-full rounded-full bg-primary text-body font-medium text-primary-foreground"
+          >
+            确定{selected.length > 0 ? `（已选 ${selected.length} 人）` : ''}
+          </button>
+        </div>
       </div>
     </div>
   )
