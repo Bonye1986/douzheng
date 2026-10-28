@@ -234,6 +234,21 @@ const statusTabs: StatusTab[] = [
   { key: 'closed', label: '已关闭', match: byStatuses('已关闭') },
 ]
 
+/** 筛选弹窗按细分状态过滤，与列表 Tab 的归组口径互补 */
+const detailStatusOptions = [
+  { key: 'all', label: '全部', statuses: [] },
+  { key: 'toShip', label: '待发货', statuses: ['待发货'] },
+  { key: 'shipped', label: '已发货', statuses: ['待收货'] },
+  { key: 'toVerify', label: '待核销', statuses: ['待核销'] },
+  { key: 'toSample', label: '待采样', statuses: ['待采样', '待寄样'] },
+  { key: 'sampleSent', label: '已寄样', statuses: ['待收样'] },
+  { key: 'sampleReceived', label: '已收样', statuses: ['待检测'] },
+  { key: 'testing', label: '检测中', statuses: ['检测中'] },
+  { key: 'done', label: '已完成', statuses: ['已完成'] },
+  { key: 'closed', label: '已关闭', statuses: ['已关闭'] },
+] as const satisfies readonly { key: string; label: string; statuses: readonly string[] }[]
+type DetailStatusKey = (typeof detailStatusOptions)[number]['key']
+
 const phaseToTab: Record<OrderPhase, StatusTabKey> = {
   all: 'all',
   toPay: 'toPay',
@@ -423,7 +438,7 @@ const siteSeeds: StatusSeed[] = [
     phase: 'toSample',
     status: '待核销',
     action: { label: '核销码', primary: true },
-    notes: ['请于 10-18 前往 都正检测中心（徐汇） 出示核销码', '请于 10-20 前往 都正检测中心（浦东） 出示核销码'],
+    notes: ['请于 10-18 前往 都正检测中心（徐汇） ��示核销码', '请于 10-20 前往 都正检测中心（浦东） 出示核销码'],
     extra: [
       { split: true },
       { resample: true, note: '重采样订单，请前往 都正检测中心（徐汇） 出示核销码重新采样' },
@@ -595,6 +610,7 @@ export function OrderListScreen({
 }) {
   const [type, setType] = useState<OrderType>(initialType)
   const [statusKey, setStatusKey] = useState<StatusTabKey>(initialTab ?? phaseToTab[initialPhase])
+  const [detailStatus, setDetailStatus] = useState<DetailStatusKey>('all')
   const [keyword, setKeyword] = useState('')
   const [guideOpen, setGuideOpen] = useState(initialGuideOpen)
   const [detailId, setDetailId] = useState<string | null>(initialDetailStatus ? initialDetailKey : null)
@@ -827,7 +843,10 @@ export function OrderListScreen({
   const activeTab = statusTabs.find((t) => t.key === statusKey) ?? statusTabs[0]
   const trimmedKeyword = keyword.trim()
   const filtered = orders.filter((o) => (type === 'all' || o.type === type) && matchesKeyword(o, trimmedKeyword))
-  const visible = filtered.filter(activeTab.match)
+  const activeDetail = detailStatusOptions.find((d) => d.key === detailStatus) ?? detailStatusOptions[0]
+  const visible = filtered.filter(
+    (o) => activeTab.match(o) && (activeDetail.key === 'all' || (activeDetail.statuses as readonly string[]).includes(o.status)),
+  )
 
   if (orders.length === 0) {
     return (
@@ -838,7 +857,8 @@ export function OrderListScreen({
   }
 
   const typeLabel = type === 'self' ? '自采样' : type === 'site' ? '定点采样' : ''
-  const tabLabel = activeTab.key === 'all' ? '' : activeTab.label
+  const tabLabel =
+    activeDetail.key !== 'all' ? activeDetail.label : activeTab.key === 'all' ? '' : activeTab.label
   const filteredLabel = [typeLabel, tabLabel].filter(Boolean).join(' · ')
 
   return (
@@ -848,9 +868,12 @@ export function OrderListScreen({
         onKeywordChange={setKeyword}
         type={type}
         onTypeChange={setType}
-        status={activeTab.key}
-        statusOptions={statusTabs}
-        onStatusChange={setStatusKey}
+        status={detailStatus}
+        statusOptions={[...detailStatusOptions]}
+        onStatusChange={(key) => {
+          setDetailStatus(key)
+          if (key !== 'all') setStatusKey('all')
+        }}
       />
 
       <div
@@ -867,7 +890,10 @@ export function OrderListScreen({
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => setStatusKey(t.key)}
+              onClick={() => {
+                setStatusKey(t.key)
+                setDetailStatus('all')
+              }}
               className={cn(
                 'relative flex h-10 shrink-0 items-center justify-center gap-0.5 whitespace-nowrap px-2.5 text-note transition-colors',
                 active ? 'font-semibold text-foreground' : 'text-muted-foreground',
