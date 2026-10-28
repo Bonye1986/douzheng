@@ -543,7 +543,7 @@ export function CheckoutScreen({
             </h2>
             <ol className="mt-3 flex flex-col gap-3">
               {(hasSelf
-                ? ['收到采样盒��，按说明采集唾液样本', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
+                ? ['收到采样盒���，按说明采集唾液样本', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
                 : ['按预约时间前往采样点', '出示订单码完成采样', '7 个工作日左右出具报告']
               ).map((step, i) => (
                 <li key={step} className="flex items-start gap-2.5 text-note leading-5 text-foreground">
@@ -654,6 +654,7 @@ export function CheckoutScreen({
                       </div>
                     </div>
                   </div>
+                  <div className="mt-2.5 flex flex-col gap-2 rounded-xl bg-background p-2">
                   <SampleTypePicker
                     serviceId={service.id}
                     serviceName={service.name}
@@ -662,10 +663,28 @@ export function CheckoutScreen({
                     onChange={(id) => changeSampleType(service.id, id)}
                   />
 
+                  <div className="flex items-start gap-2">
+                  <span
+                    id={`examinee-${service.id}`}
+                    className={cn(
+                      'flex w-12 shrink-0 flex-col pt-1.5 text-caption leading-4',
+                      missing ? 'text-destructive' : 'text-muted-foreground',
+                    )}
+                  >
+                    <span className="flex items-center gap-0.5">
+                      <UserRound className="size-3 shrink-0" aria-hidden="true" />
+                      受检人
+                    </span>
+                    {missing && (
+                      <span role="alert" className="text-tag">
+                        请选择
+                      </span>
+                    )}
+                  </span>
                   <div
                     role="group"
-                    aria-label={`${service.name}的受检人`}
-                    className={cn('mt-2.5 flex flex-wrap gap-1.5 rounded-xl p-0.5', missing && 'bg-destructive-soft')}
+                    aria-labelledby={`examinee-${service.id}`}
+                    className="flex min-w-0 flex-1 flex-wrap gap-1.5"
                   >
                     {examinees.map((e) => {
                       const on = selected.includes(e.id)
@@ -692,11 +711,8 @@ export function CheckoutScreen({
                       )
                     })}
                   </div>
-                  {missing && (
-                    <p role="alert" className="mt-1 text-caption text-destructive">
-                      请至少选择一位受检人
-                    </p>
-                  )}
+                  </div>
+                  </div>
                   {selected.length > 0 && (
                     <div className="mt-2.5 rounded-xl bg-background px-3 py-2.5">
                       <p className="flex items-center gap-1 text-caption text-foreground">
@@ -1170,58 +1186,56 @@ function SampleTypePicker({
   const labelId = `sample-${serviceId}`
 
   return (
-    <div className="mt-2">
-      <div
+    <div className="flex items-start gap-2">
+      <span
+        id={labelId}
         className={cn(
-          'flex items-center gap-2 rounded-lg px-1 py-0.5 transition-colors',
-          warn && !current && 'bg-destructive-soft',
+          'flex w-12 shrink-0 flex-col pt-1.5 text-caption leading-4',
+          warn && !current ? 'text-destructive' : 'text-muted-foreground',
         )}
       >
-        <span id={labelId} className="flex shrink-0 items-center gap-0.5 text-caption text-muted-foreground">
-          <FlaskConical className="size-3.5 text-primary" aria-hidden="true" />
+        <span className="flex items-center gap-0.5">
+          <FlaskConical className="size-3 shrink-0" aria-hidden="true" />
           样本
         </span>
-        <div
-          role="radiogroup"
-          aria-labelledby={labelId}
-          aria-label={`${serviceName}的样本类型`}
-          className="flex min-w-0 flex-1 flex-wrap gap-1"
-        >
-          {opts.map((o) => {
-            const on = o.id === value
-            const modesText = o.modes.length > 1 ? '居家 / 机构均可' : `仅${samplingLabel[o.modes[0]]}`
-            return (
-              <button
-                key={o.id}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                aria-description={modesText}
-                title={modesText}
-                onClick={() => onChange(o.id)}
-                className={cn(
-                  'h-6 rounded-full border px-2.5 text-caption leading-none transition-colors',
-                  on
-                    ? 'border-primary bg-primary-soft font-medium text-primary'
-                    : 'border-border bg-white text-foreground',
-                )}
-              >
-                {o.label}
-              </button>
-            )
-          })}
-        </div>
-        {current ? (
-          <span className="shrink-0 text-tag text-muted-foreground">
-            {current.modes.length > 1 ? '居家/机构' : `仅${samplingLabel[current.modes[0]]}`}
+        {warn && !current && (
+          <span role="alert" className="text-tag">
+            请选择
           </span>
-        ) : (
-          warn && (
-            <span role="alert" className="shrink-0 text-tag text-destructive">
-              请选择
-            </span>
-          )
         )}
+      </span>
+      <div
+        role="radiogroup"
+        aria-labelledby={labelId}
+        aria-label={`${serviceName}的样本类型`}
+        className={cn(
+          'grid min-w-0 flex-1 auto-cols-fr grid-flow-col gap-0.5 rounded-lg border bg-white p-0.5 transition-colors',
+          warn && !current ? 'border-destructive' : 'border-border',
+        )}
+      >
+        {opts.map((o) => {
+          const on = o.id === value
+          const modesText = o.modes.length > 1 ? '居家/机构' : `仅${samplingLabel[o.modes[0]]}`
+          return (
+            <button
+              key={o.id}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              aria-description={modesText}
+              onClick={() => onChange(o.id)}
+              className={cn(
+                'flex min-w-0 flex-col items-center justify-center rounded-md px-1 py-1 transition-colors',
+                on ? 'bg-primary-soft text-primary' : 'text-foreground',
+              )}
+            >
+              <span className={cn('truncate text-caption leading-4', on && 'font-medium')}>{o.label}</span>
+              <span className={cn('truncate text-tag leading-3', on ? 'text-primary/80' : 'text-muted-foreground')}>
+                {modesText}
+              </span>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
