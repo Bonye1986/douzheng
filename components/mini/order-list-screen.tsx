@@ -249,6 +249,17 @@ const detailStatusOptions = [
 ] as const satisfies readonly { key: string; label: string; statuses: readonly string[] }[]
 type DetailStatusKey = (typeof detailStatusOptions)[number]['key']
 
+/** 自采样不经过核销；定点采样不经过发货/收货 */
+const detailStatusOnlyFor: Partial<Record<DetailStatusKey, Order['type']>> = {
+  toShip: 'self',
+  shipped: 'self',
+  toVerify: 'site',
+}
+const isDetailStatusAvailable = (key: DetailStatusKey, type: OrderTypeFilter) => {
+  const onlyFor = detailStatusOnlyFor[key]
+  return type === 'all' || !onlyFor || onlyFor === type
+}
+
 const phaseToTab: Record<OrderPhase, StatusTabKey> = {
   all: 'all',
   toPay: 'toPay',
@@ -870,6 +881,7 @@ export function OrderListScreen({
         onTypeChange={setType}
         status={detailStatus}
         statusOptions={[...detailStatusOptions]}
+        isStatusAvailable={isDetailStatusAvailable}
         onStatusChange={(key) => {
           setDetailStatus(key)
           if (key !== 'all') setStatusKey('all')
