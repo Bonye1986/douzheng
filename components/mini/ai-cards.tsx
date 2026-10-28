@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ChevronRight, ClipboardList, FileText, Loader2, Sparkles } from 'lucide-react'
+import { Check, ChevronRight, ClipboardList, FileText, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { testServices } from '@/components/mini/tests-data'
 
@@ -202,34 +202,32 @@ function GuideOrderCard({
     .sort((a, b) => (a.id === named?.id ? -1 : b.id === named?.id ? 1 : 0))
   const [selectedId, setSelectedId] = useState(matches[0]?.id)
   const selected = matches.find((m) => m.id === selectedId)?.service
-  const [doneCount, setDoneCount] = useState(loggedIn ? 1 : 0)
-  const [pending, setPending] = useState(false)
-
   if (!selected) return null
 
   const steps: GuideStep[] = [
-    { key: 'login', title: '注册 / 登录', desc: '使用微信手机号一键登录，新用户自动注册', action: '微信一键登录', done: '已登录 · 138****6621' },
-    { key: 'verify', title: '实名认证', desc: '基因报告属于个人隐私，需完成实名认证', action: '去实名认证', done: '王** · 已认证' },
     {
-      key: 'confirm',
-      title: '确认订单',
-      desc: `${selected.name} · 受检人 ${testeeName ?? '本人'} · ${selected.sampleType}`,
-      action: '确认订单信息',
-      done: `受检人 ${testeeName ?? '本人'} · 采样方式已选择`,
+      key: 'login',
+      title: '注册 / 登录',
+      desc: '前往登录页，微信手机号一键登录，新用户自动注册',
+      action: '去登录',
+      done: '已登录 · 138****6621',
     },
-    { key: 'pay', title: '下单支付', desc: '支持微信支付，未采样前可申请全额退款', action: `微信支付 ¥${selected.price}`, done: `已支付 ¥${selected.price}` },
+    {
+      key: 'verify',
+      title: '实名认证',
+      desc: '前往实名认证页，完成身份证 + 人脸核验',
+      action: '去认证',
+      done: '王** · 已认证',
+    },
+    {
+      key: 'checkout',
+      title: '确认订单并支付',
+      desc: `前往确认订单页，选择受检人与采样方式后微信支付 ¥${selected.price}`,
+      action: '去下单',
+      done: '',
+    },
   ]
-  const finished = doneCount >= steps.length
-  const locked = doneCount >= 3
-
-  function advance() {
-    if (pending) return
-    setPending(true)
-    window.setTimeout(() => {
-      setDoneCount((n) => n + 1)
-      setPending(false)
-    }, 700)
-  }
+  const doneCount = loggedIn ? 1 : 0
 
   return (
     <div className="flex flex-col gap-3">
@@ -247,7 +245,6 @@ function GuideOrderCard({
                 type="button"
                 role="radio"
                 aria-checked={checked}
-                disabled={locked}
                 onClick={() => setSelectedId(id)}
                 className={cn(
                   'flex items-center gap-2.5 rounded-xl border p-2 text-left transition-colors disabled:opacity-60',
@@ -323,12 +320,10 @@ function GuideOrderCard({
                   {state === 'current' && (
                     <button
                       type="button"
-                      onClick={advance}
-                      disabled={pending}
-                      className="mt-1.5 flex h-7 items-center gap-1 rounded-full bg-primary px-3 text-caption font-medium text-white disabled:opacity-70"
+                      className="mt-1.5 flex h-7 items-center gap-0.5 rounded-full bg-primary pl-3 pr-2 text-caption font-medium text-white"
                     >
-                      {pending && <Loader2 className="size-3 animate-spin" aria-hidden="true" />}
-                      {pending ? '处理中' : step.action}
+                      {step.action}
+                      <ChevronRight className="size-3.5" aria-hidden="true" />
                     </button>
                   )}
                 </div>
@@ -336,13 +331,10 @@ function GuideOrderCard({
             )
           })}
         </ol>
+        <p className="mt-2.5 border-t border-border pt-2 text-caption leading-4 text-muted-foreground">
+          每一步将跳转至对应页面完成，完成后可返回 AI 咨询继续下一步。
+        </p>
       </section>
-
-      {finished && (
-        <div role="status" className="rounded-xl bg-success-soft px-3 py-2 text-caption leading-5 text-success">
-          下单成功！采样盒将在 48 小时内寄出，可在「我的订单」查看物流与采样指引。
-        </div>
-      )}
     </div>
   )
 }
