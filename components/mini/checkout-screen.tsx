@@ -191,10 +191,17 @@ export function CheckoutScreen({
       }),
     )
 
-  const [mode, setMode] = useState<SamplingMode>(() =>
-    rows.every((r) => getSampleTypes(r.service.id, 'self').length > 0) ? 'self' : 'site',
+  const [pickedMode, setMode] = useState<SamplingMode | null>(() =>
+    initialResult
+      ? rows.every((r) => getSampleTypes(r.service.id, 'self').length > 0)
+        ? 'self'
+        : 'site'
+      : null,
   )
-  const [sampleType, setSampleType] = useState<Record<string, string>>(() => pickTypes(mode))
+  const mode: SamplingMode = pickedMode ?? 'self'
+  const [sampleType, setSampleType] = useState<Record<string, string>>(() =>
+    pickedMode ? pickTypes(pickedMode) : {},
+  )
   const [addressId, setAddressId] = useState(addresses[0].id)
   const [siteId, setSiteId] = useState<string | null>(null)
   const [sheet, setSheet] = useState<'address' | 'site' | null>(null)
@@ -219,7 +226,7 @@ export function CheckoutScreen({
       setAssignWarn(true)
       return
     }
-    if (unsupported.length > 0 || (mode === 'site' && !site)) {
+    if (!pickedMode || unsupported.length > 0 || (mode === 'site' && !site)) {
       setSampleWarn(true)
       return
     }
@@ -641,14 +648,16 @@ export function CheckoutScreen({
                       </div>
                     </div>
                   </div>
-                  <SampleTypePicker
-                    serviceId={service.id}
-                    serviceName={service.name}
-                    mode={mode}
-                    value={sampleType[service.id]}
-                    warn={sampleWarn}
-                    onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
-                  />
+                  {pickedMode && (
+                    <SampleTypePicker
+                      serviceId={service.id}
+                      serviceName={service.name}
+                      mode={pickedMode}
+                      value={sampleType[service.id]}
+                      warn={sampleWarn}
+                      onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
+                    />
+                  )}
                   <div
                     role="group"
                     aria-label={`${service.name}的受检人`}
@@ -744,10 +753,15 @@ export function CheckoutScreen({
           <h2 id="sampling-title" className="text-title font-semibold text-foreground">
             采样方式
           </h2>
-          <p className="mt-0.5 text-caption text-muted-foreground">根据所选检测项目支持的样本类型自动判断可选方式</p>
-          <div role="radiogroup" aria-labelledby="sampling-title" className="mt-2.5 grid grid-cols-2 gap-2">
+          <p className="mt-0.5 text-caption text-muted-foreground">请选择采样方式，不可选的方式由所选检测项目支持的样本类型决定</p>
+          <div
+            role="radiogroup"
+            aria-labelledby="sampling-title"
+            aria-required="true"
+            className={cn('mt-2.5 grid grid-cols-2 gap-2 rounded-xl', sampleWarn && !pickedMode && 'bg-destructive-soft p-1')}
+          >
             {samplingModes.map(({ key, icon: Icon, desc }) => {
-              const on = mode === key
+              const on = pickedMode === key
               const blockers = blockersOf(key)
               const disabled = blockers.length > 0
               const reason = disabled
@@ -801,6 +815,13 @@ export function CheckoutScreen({
             })}
           </div>
 
+          {!pickedMode ? (
+            sampleWarn ? (
+              <p role="alert" className="mt-1.5 text-caption text-destructive">
+                请选择采样方式
+              </p>
+            ) : null
+          ) : (
           <div className="mt-3 border-t border-border pt-3">
             {hasSelf ? (
               <>
@@ -863,6 +884,7 @@ export function CheckoutScreen({
               </>
             )}
           </div>
+          )}
         </section>
 
         <section aria-label="优惠券" className="mt-2.5 rounded-2xl bg-white px-3.5">
