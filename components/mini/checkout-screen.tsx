@@ -61,8 +61,8 @@ const addresses: Address[] = [
 ]
 
 const samplingModes: { key: SamplingMode; icon: typeof House; desc: string }[] = [
-  { key: 'self', icon: House, desc: '采样盒寄到家，仅支持唾液样本' },
-  { key: 'site', icon: Building2, desc: '前往合作机构，支持全部样本类型' },
+  { key: 'self', icon: House, desc: '采样盒寄到家，自行采集样本' },
+  { key: 'site', icon: Building2, desc: '前往合作机构，由医护人员采样' },
 ]
 
 type PayMethod = 'wechat'
@@ -182,41 +182,58 @@ export function CheckoutScreen({
   const couponOff = coupon?.amount ?? 0
   const payable = Math.max(goodsTotal - couponOff, 0)
 
-  const pickTypes = (m: SamplingMode, prev: Record<string, string> = {}) =>
-    Object.fromEntries(
-      rows.map((r) => {
-        const opts = getSampleTypes(r.service.id, m)
-        const keep = opts.some((o) => o.id === prev[r.service.id])
-        return [r.service.id, keep ? prev[r.service.id] : (opts[0]?.id ?? '')]
-      }),
-    )
-
-  const [mode, setMode] = useState<SamplingMode>(() =>
-    rows.every((r) => getSampleTypes(r.service.id, 'self').length > 0) ? 'self' : 'site',
+  const [pickedMode, setMode] = useState<SamplingMode | null>(() =>
+    initialResult
+      ? rows.every((r) => getSampleTypes(r.service.id, 'self').length > 0)
+        ? 'self'
+        : 'site'
+      : null,
   )
-  const [sampleType, setSampleType] = useState<Record<string, string>>(() => pickTypes(mode))
+  const mode: SamplingMode = pickedMode ?? 'self'
+  const [sampleType, setSampleType] = useState<Record<string, string>>(() =>
+    pickedMode
+      ? Object.fromEntries(rows.map((r) => [r.service.id, getSampleTypes(r.service.id, pickedMode)[0]?.id ?? '']))
+      : {},
+  )
   const [addressId, setAddressId] = useState(addresses[0].id)
   const [siteId, setSiteId] = useState<string | null>(null)
   const [sheet, setSheet] = useState<'address' | 'site' | null>(null)
   const [sampleWarn, setSampleWarn] = useState(false)
+  const [fieldSheet, setFieldSheet] = useState<{ kind: 'sample' | 'examinee'; serviceId: string } | null>(null)
+
+  const chosenTypeOf = (serviceId: string) => getSampleTypes(serviceId).find((t) => t.id === sampleType[serviceId])
+  const untyped = rows.filter((r) => !chosenTypeOf(r.service.id))
+  const blockersOf = (m: SamplingMode) =>
+    rows.flatMap((r) => {
+      const t = chosenTypeOf(r.service.id)
+      return t && !t.modes.includes(m) ? [{ service: r.service, type: t }] : []
+    })
+
+  const changeSampleType = (serviceId: string, id: string) => {
+    const next = { ...sampleType, [serviceId]: id }
+    setSampleType(next)
+    const t = getSampleTypes(serviceId).find((o) => o.id === id)
+    if (pickedMode && t && !t.modes.includes(pickedMode)) setMode(null)
+    setSampleWarn(false)
+  }
 
   const changeMode = (m: SamplingMode) => {
+    if (untyped.length > 0 || blockersOf(m).length > 0) return
     setMode(m)
-    setSampleType((prev) => pickTypes(m, prev))
     setSampleWarn(false)
   }
 
   const hasSelf = mode === 'self'
   const address = addresses.find((a) => a.id === addressId)!
   const site = sites.find((s) => s.id === siteId) ?? null
-  const unsupported = rows.filter((r) => getSampleTypes(r.service.id, mode).length === 0)
+  const unsupported = blockersOf(mode)
 
   const submit = () => {
     if (unassigned.length > 0) {
       setAssignWarn(true)
       return
     }
-    if (unsupported.length > 0 || (mode === 'site' && !site)) {
+    if (untyped.length > 0 || !pickedMode || unsupported.length > 0 || (mode === 'site' && !site)) {
       setSampleWarn(true)
       return
     }
@@ -601,30 +618,187 @@ export function CheckoutScreen({
   return (
     <Shell title="确认订单" onBack={onBack}>
       <div className="flex-1 overflow-y-auto px-3 pb-4 pt-2.5 [scrollbar-width:none]">
-        <section aria-labelledby="sampling-title" className="rounded-2xl bg-white p-3.5">
+
+        <section aria-labelledby="goods-title" className="mt-2.5 rounded-2xl bg-white">
+          <div className="flex items-center justify-between px-3.5 pt-3.5">
+            <h2 id="goods-title" className="text-title font-semibold text-foreground">
+              检测项目与受检人
+            </h2>
+            <button type="button" onClick={() => setExamineeForm({ serviceId: null })} className="text-caption text-primary">
+              + 添加受检人
+            </button>
+          </div>
+          <p className="px-3.5 pt-1 text-caption text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
+          <ul>
+            {rows.map(({ service }) => {
+              const selected = assign[service.id] ?? []
+              const missing = assignWarn && selected.length === 0
+              return (
+                <li key={service.id} className="border-b border-border px-3.5 py-3 last:border-0">
+                  <div className="flex gap-2.5">
+                    <Image
+                      src={service.image}
+                      alt=""
+                      width={56}
+                      height={56}
+                      className="size-14 shrink-0 rounded-xl bg-secondary object-cover"
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <p className="line-clamp-1 text-note font-medium leading-[18px] text-foreground">{service.name}</p>
+                      <p className="mt-0.5 text-caption text-muted-foreground">{service.turnaround}出报告</p>
+                      <div className="mt-auto flex items-baseline justify-between">
+                        <span className="text-body font-semibold text-foreground">
+                          <span className="text-caption">¥</span>
+                          {service.price}
+                        </span>
+                        <span className="text-caption tabular-nums text-muted-foreground">×{selected.length}</span>
+                      </div>
+                    </div>
+                  </div>
+                  {(() => {
+                    const type = getSampleTypes(service.id).find((t) => t.id === sampleType[service.id])
+                    const people = examinees.filter((e) => selected.includes(e.id))
+                    return (
+                      <div className="mt-2.5 divide-y divide-border rounded-xl bg-background">
+                        <FieldRow
+                          icon={FlaskConical}
+                          label="样本类型"
+                          value={type?.label}
+                          hint={type ? sampleModesText(type.modes) : undefined}
+                          warn={sampleWarn && !type}
+                          onClick={() => setFieldSheet({ kind: 'sample', serviceId: service.id })}
+                        />
+                        <FieldRow
+                          icon={UserRound}
+                          label="受检人"
+                          value={
+                            people.length === 0
+                              ? undefined
+                              : people.length <= 2
+                                ? people.map((p) => p.name).join('、')
+                                : `${people.slice(0, 2).map((p) => p.name).join('、')} 等`
+                          }
+                          hint={people.length > 0 ? `${people.length} 人` : undefined}
+                          warn={missing}
+                          onClick={() => setFieldSheet({ kind: 'examinee', serviceId: service.id })}
+                        />
+                      </div>
+                    )
+                  })()}
+                  {selected.length > 0 && (
+                    <div className="mt-2.5 rounded-xl bg-background px-3 py-2.5">
+                      <p className="flex items-center gap-1 text-caption text-foreground">
+                        科研授权
+                        <span className="rounded bg-white px-1 py-px text-tag text-muted-foreground">可选</span>
+                        <button
+                          type="button"
+                          onClick={() => setResearchDocOpen(true)}
+                          className="ml-auto flex items-center text-caption text-primary"
+                        >
+                          《科研知情同意书》
+                          <ChevronRight className="size-3" aria-hidden="true" />
+                        </button>
+                      </p>
+                      <ul className="mt-2 flex flex-col gap-1.5">
+                        {examinees
+                          .filter((e) => selected.includes(e.id))
+                          .map((e) => {
+                            const on = research[service.id]?.includes(e.id) ?? false
+                            return (
+                              <li key={e.id}>
+                                <button
+                                  type="button"
+                                  role="checkbox"
+                                  aria-checked={on}
+                                  onClick={() => toggleResearch(service.id, e.id)}
+                                  className="flex w-full items-center gap-2 text-left"
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    className={cn(
+                                      'flex size-4 shrink-0 items-center justify-center rounded border',
+                                      on ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60 bg-white',
+                                    )}
+                                  >
+                                    {on && <Check className="size-3" strokeWidth={3} />}
+                                  </span>
+                                  <span className="text-caption leading-[18px] text-muted-foreground">
+                                    同意<span className="mx-0.5 font-medium text-foreground">{e.name}</span>的样本用于医学研究
+                                  </span>
+                                </button>
+                              </li>
+                            )
+                          })}
+                      </ul>
+                      <p className="mt-2 text-tag leading-4 text-muted-foreground">
+                        选填，不影响检测；勾选后将发送短信给受检人，受检人通过短信内链接完成人脸认证与签署，可随时在「我的 → 授权与同意书」撤回
+                      </p>
+                    </div>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
+        <section aria-labelledby="sampling-title" className="mt-2.5 rounded-2xl bg-white p-3.5">
           <h2 id="sampling-title" className="text-title font-semibold text-foreground">
             采样方式
           </h2>
-          <div role="radiogroup" aria-labelledby="sampling-title" className="mt-2.5 grid grid-cols-2 gap-2">
+          <p className="mt-0.5 text-caption text-muted-foreground">
+            {untyped.length > 0 ? '请先为每个检测项目选择样本类型，再选择采样方式' : '可选的采样方式由您所选的样本类型决定'}
+          </p>
+          <div
+            role="radiogroup"
+            aria-labelledby="sampling-title"
+            aria-required="true"
+            className={cn('mt-2.5 grid grid-cols-2 gap-2 rounded-xl', sampleWarn && !pickedMode && 'bg-destructive-soft p-1')}
+          >
             {samplingModes.map(({ key, icon: Icon, desc }) => {
-              const on = mode === key
+              const on = pickedMode === key
+              const blockers = blockersOf(key)
+              const waiting = untyped.length > 0
+              const disabled = waiting || blockers.length > 0
+              const reason = waiting
+                ? '请先选择样本类型'
+                : blockers.length > 0
+                  ? `${[...new Set(blockers.map((b) => b.type.label))].join('、')}样本不支持该方式`
+                  : desc
               return (
                 <button
                   key={key}
                   type="button"
                   role="radio"
                   aria-checked={on}
+                  aria-disabled={disabled}
+                  disabled={disabled}
                   onClick={() => changeMode(key)}
                   className={cn(
                     'relative flex flex-col items-start rounded-xl border px-3 py-2.5 text-left transition-colors',
                     on ? 'border-primary bg-secondary' : 'border-border bg-white',
+                    disabled && 'cursor-not-allowed border-dashed bg-muted',
                   )}
                 >
-                  <span className={cn('flex items-center gap-1.5 text-note font-medium', on ? 'text-primary' : 'text-foreground')}>
+                  <span
+                    className={cn(
+                      'flex items-center gap-1.5 text-note font-medium',
+                      on ? 'text-primary' : disabled ? 'text-faint' : 'text-foreground',
+                    )}
+                  >
                     <Icon className="size-4" aria-hidden="true" />
                     {samplingLabel[key]}
+                    {disabled && (
+                      <span className="rounded bg-white px-1 py-px text-tag font-normal text-muted-foreground">不可选</span>
+                    )}
                   </span>
-                  <span className="mt-1 text-caption leading-4 text-muted-foreground">{desc}</span>
+                  <span
+                    className={cn(
+                      'mt-1 line-clamp-2 text-caption leading-4',
+                      disabled ? 'text-faint' : 'text-muted-foreground',
+                    )}
+                  >
+                    {reason}
+                  </span>
                   {on && (
                     <span
                       aria-hidden="true"
@@ -638,6 +812,13 @@ export function CheckoutScreen({
             })}
           </div>
 
+          {!pickedMode ? (
+            sampleWarn ? (
+              <p role="alert" className="mt-1.5 text-caption text-destructive">
+                请选择采样方式
+              </p>
+            ) : null
+          ) : (
           <div className="mt-3 border-t border-border pt-3">
             {hasSelf ? (
               <>
@@ -700,141 +881,7 @@ export function CheckoutScreen({
               </>
             )}
           </div>
-        </section>
-
-        <section aria-labelledby="goods-title" className="mt-2.5 rounded-2xl bg-white">
-          <div className="flex items-center justify-between px-3.5 pt-3.5">
-            <h2 id="goods-title" className="text-title font-semibold text-foreground">
-              检测项目与受检人
-            </h2>
-            <button type="button" onClick={() => setExamineeForm({ serviceId: null })} className="text-caption text-primary">
-              + 添加受检人
-            </button>
-          </div>
-          <p className="px-3.5 pt-1 text-caption text-muted-foreground">每个项目可选多位受检人，一人一份，报告分别归档</p>
-          <ul>
-            {rows.map(({ service }) => {
-              const selected = assign[service.id] ?? []
-              const missing = assignWarn && selected.length === 0
-              return (
-                <li key={service.id} className="border-b border-border px-3.5 py-3 last:border-0">
-                  <div className="flex gap-2.5">
-                    <Image
-                      src={service.image}
-                      alt=""
-                      width={56}
-                      height={56}
-                      className="size-14 shrink-0 rounded-xl bg-secondary object-cover"
-                    />
-                    <div className="flex min-w-0 flex-1 flex-col">
-                      <p className="line-clamp-1 text-note font-medium leading-[18px] text-foreground">{service.name}</p>
-                      <p className="mt-0.5 text-caption text-muted-foreground">{service.turnaround}出报告</p>
-                      <div className="mt-auto flex items-baseline justify-between">
-                        <span className="text-body font-semibold text-foreground">
-                          <span className="text-caption">¥</span>
-                          {service.price}
-                        </span>
-                        <span className="text-caption tabular-nums text-muted-foreground">×{selected.length}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <SampleTypePicker
-                    serviceId={service.id}
-                    serviceName={service.name}
-                    mode={mode}
-                    value={sampleType[service.id]}
-                    warn={sampleWarn}
-                    onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
-                  />
-                  <div
-                    role="group"
-                    aria-label={`${service.name}的受检人`}
-                    className={cn('mt-2.5 flex flex-wrap gap-1.5 rounded-xl p-0.5', missing && 'bg-destructive-soft')}
-                  >
-                    {examinees.map((e) => {
-                      const on = selected.includes(e.id)
-                      return (
-                        <button
-                          key={e.id}
-                          type="button"
-                          role="checkbox"
-                          aria-checked={on}
-                          onClick={() => toggleAssign(service.id, e.id)}
-                          className={cn(
-                            'flex h-7 items-center gap-1 rounded-full border px-2.5 text-caption transition-colors',
-                            on ? 'border-primary bg-secondary text-primary' : 'border-border bg-white text-muted-foreground',
-                          )}
-                        >
-                          {on ? (
-                            <Check className="size-3" strokeWidth={3} aria-hidden="true" />
-                          ) : (
-                            <UserRound className="size-3" aria-hidden="true" />
-                          )}
-                          {e.name}
-                          <span className="text-tag opacity-70">{e.relation}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                  {missing && (
-                    <p role="alert" className="mt-1 text-caption text-destructive">
-                      请至少选择一位受检人
-                    </p>
-                  )}
-                  {selected.length > 0 && (
-                    <div className="mt-2.5 rounded-xl bg-background px-3 py-2.5">
-                      <p className="flex items-center gap-1 text-caption text-foreground">
-                        科研授权
-                        <span className="rounded bg-white px-1 py-px text-tag text-muted-foreground">可选</span>
-                        <button
-                          type="button"
-                          onClick={() => setResearchDocOpen(true)}
-                          className="ml-auto flex items-center text-caption text-primary"
-                        >
-                          《科研知情同意书》
-                          <ChevronRight className="size-3" aria-hidden="true" />
-                        </button>
-                      </p>
-                      <ul className="mt-2 flex flex-col gap-1.5">
-                        {examinees
-                          .filter((e) => selected.includes(e.id))
-                          .map((e) => {
-                            const on = research[service.id]?.includes(e.id) ?? false
-                            return (
-                              <li key={e.id}>
-                                <button
-                                  type="button"
-                                  role="checkbox"
-                                  aria-checked={on}
-                                  onClick={() => toggleResearch(service.id, e.id)}
-                                  className="flex w-full items-center gap-2 text-left"
-                                >
-                                  <span
-                                    aria-hidden="true"
-                                    className={cn(
-                                      'flex size-4 shrink-0 items-center justify-center rounded border',
-                                      on ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60 bg-white',
-                                    )}
-                                  >
-                                    {on && <Check className="size-3" strokeWidth={3} />}
-                                  </span>
-                                  <span className="text-caption leading-[18px] text-muted-foreground">
-                                    同意<span className="mx-0.5 font-medium text-foreground">{e.name}</span>的样本用于医学研究
-                                  </span>
-                                </button>
-                              </li>
-                            )
-                          })}
-                      </ul>
-                      <p className="mt-2 text-tag leading-4 text-muted-foreground">
-                        选填，不影响检测；勾选后将发送短信给受检人，受检人通过短信内链接完成人脸认证与签署，可随时在「我的 → 授权与同意书」撤回
-                      </p>
-                    </div>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
+          )}
         </section>
 
         <section aria-label="优惠券" className="mt-2.5 rounded-2xl bg-white px-3.5">
@@ -1035,6 +1082,37 @@ export function CheckoutScreen({
         />
       )}
 
+      {fieldSheet?.kind === 'sample' && (
+        <PickerSheet
+          title="选择样本类型"
+          items={getSampleTypes(fieldSheet.serviceId).map((t) => ({
+            id: t.id,
+            title: t.label,
+            aside: sampleModesText(t.modes),
+            lines: [],
+          }))}
+          selected={sampleType[fieldSheet.serviceId] ?? null}
+          onSelect={(id) => {
+            changeSampleType(fieldSheet.serviceId, id)
+            setFieldSheet(null)
+          }}
+          onClose={() => setFieldSheet(null)}
+        />
+      )}
+
+      {fieldSheet?.kind === 'examinee' && (
+        <ExamineeSheet
+          examinees={examinees}
+          selected={assign[fieldSheet.serviceId] ?? []}
+          onToggle={(id) => toggleAssign(fieldSheet.serviceId, id)}
+          onAdd={() => {
+            setExamineeForm({ serviceId: fieldSheet.serviceId })
+            setFieldSheet(null)
+          }}
+          onClose={() => setFieldSheet(null)}
+        />
+      )}
+
       {researchDocOpen && <ResearchDocSheet onClose={() => setResearchDocOpen(false)} />}
 
       {paying && <WechatPaySheet amount={payable} onCancel={payCancel} onSuccess={paySuccess} />}
@@ -1093,90 +1171,134 @@ function Shell({ title, onBack, children }: { title: string; onBack: () => void;
   )
 }
 
-function SampleTypePicker({
-  serviceId,
-  serviceName,
-  mode,
+function sampleModesText(modes: SamplingMode[]) {
+  return modes.length > 1 ? '居家/机构采样' : `仅${samplingLabel[modes[0]]}`
+}
+
+function FieldRow({
+  icon: Icon,
+  label,
   value,
+  hint,
   warn,
-  onChange,
+  onClick,
 }: {
-  serviceId: string
-  serviceName: string
-  mode: SamplingMode
+  icon: typeof UserRound
+  label: string
   value?: string
+  hint?: string
   warn: boolean
-  onChange: (id: string) => void
+  onClick: () => void
 }) {
-  const all = getSampleTypes(serviceId)
-  const opts = getSampleTypes(serviceId, mode)
-  const current = opts.find((o) => o.id === value)
-
-  if (opts.length === 0) {
-    return (
-      <p
-        role={warn ? 'alert' : undefined}
-        className={cn('mt-2.5 rounded-lg px-2.5 py-1.5 text-caption', warn ? 'bg-destructive-soft text-destructive' : 'bg-[#fff7ec] text-[#c27a1a]')}
-      >
-        该项目需采集{all.map((t) => t.label).join(' / ')}，仅支持{samplingLabel.site}
-      </p>
-    )
-  }
-
-  const labelId = `sample-${serviceId}`
-
   return (
-    <div className="mt-2.5">
-      <div
-        className={cn(
-          'flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors',
-          warn && !current ? 'bg-destructive-soft' : 'bg-[#f5f7fb]',
-        )}
-      >
-        <span id={labelId} className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
-          <FlaskConical className="size-3.5 text-primary" aria-hidden="true" />
-          样本类型
-        </span>
-        {opts.length === 1 ? (
-          <span className="ml-auto text-caption font-medium text-foreground">
-            {opts[0].label}
-            <span className="ml-1 font-normal text-muted-foreground">（{samplingLabel[mode]}仅支持）</span>
-          </span>
+    <button type="button" onClick={onClick} className="flex h-11 w-full items-center gap-2 px-3 text-left">
+      <Icon className={cn('size-4 shrink-0', warn ? 'text-destructive' : 'text-muted-foreground')} aria-hidden="true" />
+      <span className={cn('w-16 shrink-0 text-caption', warn ? 'text-destructive' : 'text-muted-foreground')}>{label}</span>
+      <span className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
+        {value ? (
+          <>
+            <span className="truncate text-note font-medium text-foreground">{value}</span>
+            {hint && <span className="shrink-0 text-tag text-muted-foreground">{hint}</span>}
+          </>
         ) : (
-          <div
-            role="radiogroup"
-            aria-labelledby={labelId}
-            aria-label={`${serviceName}的样本类型`}
-            className="ml-auto flex flex-wrap justify-end gap-1"
+          <span role={warn ? 'alert' : undefined} className={cn('text-note', warn ? 'text-destructive' : 'text-faint')}>
+            请选择
+          </span>
+        )}
+      </span>
+      <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
+    </button>
+  )
+}
+
+function ExamineeSheet({
+  examinees,
+  selected,
+  onToggle,
+  onAdd,
+  onClose,
+}: {
+  examinees: Examinee[]
+  selected: string[]
+  onToggle: (id: string) => void
+  onAdd: () => void
+  onClose: () => void
+}) {
+  return (
+    <div className="absolute inset-0 z-30 flex flex-col justify-end">
+      <button type="button" aria-label="关闭" onClick={onClose} className="absolute inset-0 bg-black/40" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="examinee-sheet-title"
+        className="relative flex max-h-[75%] flex-col rounded-t-2xl bg-background motion-safe:animate-in motion-safe:slide-in-from-bottom"
+      >
+        <div className="relative flex h-12 shrink-0 items-center justify-center">
+          <h2 id="examinee-sheet-title" className="text-title font-semibold text-foreground">
+            选择受检人
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="关闭"
+            className="absolute right-3 flex size-8 items-center justify-center text-muted-foreground"
           >
-            {opts.map((o) => {
-              const on = o.id === value
-              return (
+            <X className="size-5" aria-hidden="true" />
+          </button>
+        </div>
+        <p className="-mt-1 px-4 pb-2 text-caption text-muted-foreground">可多选，每位受检人一份检测</p>
+        <ul aria-label="受检人" className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 [scrollbar-width:none]">
+          {examinees.map((e) => {
+            const on = selected.includes(e.id)
+            return (
+              <li key={e.id}>
                 <button
-                  key={o.id}
                   type="button"
-                  role="radio"
+                  role="checkbox"
                   aria-checked={on}
-                  title={o.hint}
-                  onClick={() => onChange(o.id)}
+                  onClick={() => onToggle(e.id)}
                   className={cn(
-                    'flex h-6 items-center gap-0.5 rounded-full border px-2 text-caption transition-colors',
-                    on ? 'border-primary bg-white font-medium text-primary' : 'border-transparent bg-white text-foreground',
+                    'flex w-full items-center gap-2.5 rounded-xl border bg-white px-3 py-3 text-left',
+                    on ? 'border-primary' : 'border-transparent',
                   )}
                 >
-                  {on && <Check className="size-3" strokeWidth={3} aria-hidden="true" />}
-                  {o.label}
+                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                    <span className="truncate text-note font-medium text-foreground">{e.name}</span>
+                    <span className="shrink-0 rounded bg-secondary px-1 text-tag text-primary">{e.relation}</span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'flex size-[18px] shrink-0 items-center justify-center rounded border',
+                      on ? 'border-primary bg-primary text-primary-foreground' : 'border-faint/60',
+                    )}
+                  >
+                    {on && <Check className="size-3" strokeWidth={3} />}
+                  </span>
                 </button>
-              )
-            })}
-          </div>
-        )}
+              </li>
+            )
+          })}
+          <li>
+            <button
+              type="button"
+              onClick={onAdd}
+              className="flex h-11 w-full items-center justify-center rounded-xl border border-dashed border-border bg-white text-note text-primary"
+            >
+              + 添加受检人
+            </button>
+          </li>
+        </ul>
+        <div className="shrink-0 px-3 pb-6 pt-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-11 w-full rounded-full bg-primary text-body font-medium text-primary-foreground"
+          >
+            确定{selected.length > 0 ? `（已选 ${selected.length} 人）` : ''}
+          </button>
+        </div>
       </div>
-      {warn && !current && (
-        <p role="alert" className="mt-1 text-caption text-destructive">
-          请选择样本类型
-        </p>
-      )}
     </div>
   )
 }

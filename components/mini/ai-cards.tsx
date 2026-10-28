@@ -1,12 +1,14 @@
 'use client'
 
-import { ChevronRight, ClipboardList, FileText } from 'lucide-react'
+import { useState } from 'react'
+import { Check, ChevronRight, ClipboardList, FileText, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { testServices } from '@/components/mini/tests-data'
 
-export type CardKind = 'reports' | 'orders' | 'services'
+export type CardKind = 'reports' | 'orders' | 'services' | 'guide'
 
 export function detectCardKind(question: string): CardKind | null {
+  if (/下单|购买|怎么买|引导/.test(question)) return 'guide'
   if (/我的报告|查看.*报告|报告列表|报告进度/.test(question)) return 'reports'
   if (/订单/.test(question)) return 'orders'
   if (/推荐.*(检测|服务)|适合做哪种|做什么检测/.test(question)) return 'services'
@@ -17,6 +19,7 @@ export const cardKindText: Record<CardKind, string> = {
   reports: '已为你找到 3 份检测报告',
   orders: '你有 3 笔进行中的订单',
   services: '为你推荐以下检测服务',
+  guide: '已为你智能匹配检测套餐，并生成下单指引',
 }
 
 const reports = [
@@ -175,7 +178,190 @@ function ServicesCard() {
   )
 }
 
-export function ChatCard({ kind, onAsk }: { kind: CardKind; onAsk?: (q: string) => void }) {
+const guideMatches = [
+  { id: 'cardio', match: 96, reason: '覆盖氯吡格雷、他汀、华法林等你咨询过的药物' },
+  { id: 'hypertension', match: 88, reason: '长期服用降压药，评估药物敏感性' },
+  { id: 'full', match: 82, reason: '多药联用，一次覆盖更全面' },
+]
+
+type GuideStep = { key: string; title: string; desc: string; action: string; done: string }
+
+function GuideOrderCard({
+  question,
+  loggedIn,
+  testeeName,
+}: {
+  question?: string
+  loggedIn: boolean
+  testeeName?: string
+}) {
+  const named = testServices.find((s) => question?.includes(s.name) || question?.includes(s.name.split(' ')[0]))
+  const matches = guideMatches
+    .map((m) => ({ ...m, service: testServices.find((s) => s.id === m.id && !s.offShelf) }))
+    .filter((m): m is typeof m & { service: NonNullable<typeof m.service> } => Boolean(m.service))
+    .sort((a, b) => (a.id === named?.id ? -1 : b.id === named?.id ? 1 : 0))
+  const [selectedId, setSelectedId] = useState(matches[0]?.id)
+  const selected = matches.find((m) => m.id === selectedId)?.service
+  if (!selected) return null
+
+  const steps: GuideStep[] = [
+    {
+      key: 'login',
+      title: '注册 / 登录',
+      desc: '前往登录页，微信手机号一键登录，新用户自动注册',
+      action: '去登录',
+      done: '已登录 · 138****6621',
+    },
+    {
+      key: 'verify',
+      title: '实名认证',
+      desc: '前往实名认证页，完成身份证 + 人脸核验',
+      action: '去认证',
+      done: '王** · 已认证',
+    },
+    {
+      key: 'checkout',
+      title: '确认订单并支付',
+      desc: `前往确认订单页，选择受检人与采样方式后微信支付 ¥${selected.price}`,
+      action: '去下单',
+      done: '',
+    },
+  ]
+  const doneCount = loggedIn ? 1 : 0
+
+  return (
+    <div className="flex flex-col gap-3">
+      <section aria-labelledby="guide-match-title">
+        <h4 id="guide-match-title" className="mb-1.5 flex items-center gap-1 text-caption font-medium text-muted-foreground">
+          <Sparkles className="size-3.5 text-primary" aria-hidden="true" />
+          智能匹配套餐
+        </h4>
+        <div role="radiogroup" aria-label="选择检测套餐" className="flex flex-col gap-1.5">
+          {matches.map(({ id, match, reason, service }) => {
+            const checked = id === selectedId
+            return (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={checked}
+                onClick={() => setSelectedId(id)}
+                className={cn(
+                  'flex items-center gap-2.5 rounded-xl border p-2 text-left transition-colors disabled:opacity-60',
+                  checked ? 'border-primary bg-secondary/60' : 'border-border bg-background/60',
+                )}
+              >
+                <img src={service.image} alt="" className="size-11 shrink-0 rounded-lg bg-secondary object-cover" />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1">
+                    <span className="truncate text-note font-medium leading-5 text-foreground">{service.name}</span>
+                    <span className="shrink-0 rounded bg-primary/10 px-1 text-tag font-medium tabular-nums text-primary">
+                      匹配 {match}%
+                    </span>
+                  </span>
+                  <span className="block truncate text-caption leading-4 text-muted-foreground">{reason}</span>
+                </span>
+                <span className="flex shrink-0 flex-col items-end gap-1">
+                  <span className="text-note font-semibold tabular-nums text-destructive">¥{service.price}</span>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'flex size-4 items-center justify-center rounded-full border',
+                      checked ? 'border-primary bg-primary text-white' : 'border-border bg-white',
+                    )}
+                  >
+                    {checked && <Check className="size-3" strokeWidth={3} />}
+                  </span>
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section aria-labelledby="guide-steps-title" className="rounded-xl bg-background/60 p-2.5">
+        <h4 id="guide-steps-title" className="flex items-center justify-between text-caption font-medium text-muted-foreground">
+          <span>下单指引</span>
+          <span className="tabular-nums text-primary">
+            {Math.min(doneCount, steps.length)}/{steps.length}
+          </span>
+        </h4>
+        <ol className="mt-2 flex flex-col">
+          {steps.map((step, i) => {
+            const state = i < doneCount ? 'done' : i === doneCount ? 'current' : 'todo'
+            const last = i === steps.length - 1
+            return (
+              <li key={step.key} className="flex gap-2.5" aria-current={state === 'current' ? 'step' : undefined}>
+                <div className="flex flex-col items-center">
+                  <span
+                    className={cn(
+                      'flex size-5 shrink-0 items-center justify-center rounded-full text-tag font-semibold',
+                      state === 'done' && 'bg-primary text-white',
+                      state === 'current' && 'border-2 border-primary bg-white text-primary',
+                      state === 'todo' && 'border border-border bg-white text-faint',
+                    )}
+                  >
+                    {state === 'done' ? <Check className="size-3" strokeWidth={3} aria-hidden="true" /> : i + 1}
+                  </span>
+                  {!last && <span className={cn('w-px flex-1', i < doneCount ? 'bg-primary' : 'bg-border')} />}
+                </div>
+                <div className={cn('min-w-0 flex-1', !last && 'pb-3')}>
+                  <p
+                    className={cn(
+                      'text-note font-medium leading-5',
+                      state === 'todo' ? 'text-muted-foreground' : 'text-foreground',
+                    )}
+                  >
+                    {step.title}
+                  </p>
+                  <p className="text-caption leading-4 text-muted-foreground">
+                    {state === 'done' ? step.done : step.desc}
+                  </p>
+                  {state === 'current' && (
+                    <button
+                      type="button"
+                      className="mt-1.5 flex h-7 items-center gap-0.5 rounded-full bg-primary pl-3 pr-2 text-caption font-medium text-white"
+                    >
+                      {step.action}
+                      <ChevronRight className="size-3.5" aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              </li>
+            )
+          })}
+        </ol>
+        <p className="mt-2.5 border-t border-border pt-2 text-caption leading-4 text-muted-foreground">
+          每一步将跳转至对应页面完成，完成后可返回 AI 咨询继续下一步。
+        </p>
+      </section>
+    </div>
+  )
+}
+
+export function ChatCard({
+  kind,
+  question,
+  loggedIn = false,
+  testeeName,
+}: {
+  kind: CardKind
+  question?: string
+  loggedIn?: boolean
+  testeeName?: string
+  onAsk?: (q: string) => void
+}) {
+  if (kind === 'guide') {
+    return (
+      <div>
+        <p className="mb-2 text-body leading-6 text-foreground">
+          {cardKindText.guide}，按步骤操作即可完成购买：
+        </p>
+        <GuideOrderCard question={question} loggedIn={loggedIn} testeeName={testeeName} />
+        <p className="mt-2 text-caption leading-4 text-muted-foreground">推荐仅供参考，具体检测项目请结合医生建议选择。</p>
+      </div>
+    )
+  }
   return (
     <div>
       <p className="mb-2 text-body leading-6 text-foreground">

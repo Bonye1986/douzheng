@@ -14,8 +14,10 @@ export type ExamineeView = 'list' | 'empty' | 'add' | 'edit' | 'edit-self' | 'de
 
 const MAX_EXAMINEES = 10
 
-const activeOrderIds = new Set(['spouse'])
+const examineeOrderCount: Record<string, number> = { self: 2, spouse: 2, child: 1 }
 const reportCount = examineeReportCount
+const orderCountOf = (id: string) => examineeOrderCount[id] ?? 0
+const hasOrders = (id: string) => orderCountOf(id) > 0
 
 type Props = {
   onBack: () => void
@@ -83,7 +85,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
     setVerifying(true)
   }
 
-  const blocked = pendingDelete && (pendingDelete.relation === '本人' || activeOrderIds.has(pendingDelete.id))
+  const blocked = pendingDelete && (pendingDelete.relation === '本人' || hasOrders(pendingDelete.id))
 
   return (
     <SubPage title="受检人管理" titleId="examinee-manage-title" onBack={onBack}>
@@ -168,8 +170,12 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                           已认证
                         </span>
                       )}
-                      {activeOrderIds.has(m.id) && (
-                        <span className="rounded bg-secondary px-1.5 py-px text-primary">进行中订单</span>
+                      {hasOrders(m.id) ? (
+                        <span className="rounded bg-secondary px-1.5 py-px text-primary">
+                          已有 <span className="tabular-nums">{orderCountOf(m.id)}</span> 笔订单
+                        </span>
+                      ) : (
+                        m.relation !== '本人' && <span>暂无订单，可删除</span>
                       )}
                     </span>
                     <div className="flex gap-2">
@@ -177,10 +183,10 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
                         <button
                           type="button"
                           onClick={() => setPendingDelete(m)}
-                          aria-disabled={activeOrderIds.has(m.id)}
+                          aria-disabled={hasOrders(m.id)}
                           className={cn(
                             'flex h-7 items-center gap-1 rounded-full border px-3 text-caption',
-                            activeOrderIds.has(m.id) ? 'border-border text-faint' : 'border-border text-foreground',
+                            hasOrders(m.id) ? 'border-border text-faint' : 'border-border text-foreground',
                           )}
                           aria-label={`删除受检人 ${m.name}`}
                         >
@@ -205,7 +211,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
 
             <p className="mt-3 flex items-start gap-1.5 px-1 text-caption leading-[18px] text-muted-foreground">
               <ShieldCheck className="mt-px size-3.5 shrink-0 text-primary" aria-hidden="true" />
-              受检人信息仅用于样本登记与报告归档，加密存储。删除后历史报告仍保留在「我的报告」中。
+              受检人信息仅用于样本登记与报告归档，加密存储。仅未下过订单的受检人可删除。
             </p>
           </div>
 
@@ -251,7 +257,7 @@ export function ExamineeManageScreen({ onBack, initialView = 'list' }: Props) {
               {pendingDelete.relation === '本人'
                 ? '「本人」为账号持有人，不可删除，可通过编辑修改信息。'
                 : blocked
-                  ? '该受检人有进行中的检测订单，暂不可删除，可通过「编辑」修改信息；订单完成或取消后可删除。'
+                  ? `该受检人已关联 ${orderCountOf(pendingDelete.id)} 笔检测订单，为保证订单与报告可追溯，不可删除，可通过「编辑」修改信息。`
                   : '删除后下单时将无法选择该受检人，已出具的报告仍可在「我的报告」中查看。'}
             </p>
             {blocked ? (

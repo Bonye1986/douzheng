@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Share2,
   ShieldCheck,
+  Sparkles,
   Square,
   UserRound,
   UserRoundCheck,
@@ -32,6 +33,7 @@ import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { useExaminees } from '@/components/mini/examinee-store'
 import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/components/mini/chat-share'
 import { ChatCard, cardKindText, detectCardKind, type CardKind } from '@/components/mini/ai-cards'
+import { testServices } from '@/components/mini/tests-data'
 import {
   answerToText,
   confidenceMeta,
@@ -52,7 +54,7 @@ type Answers = Record<Mode, AiAnswer>
 type Message =
   | { id: number; role: 'user'; text: string; attachments?: Attachment[] }
   | { id: number; role: 'assistant'; answers: Answers | null; view: Mode }
-  | { id: number; role: 'card'; kind: CardKind; ready: boolean }
+  | { id: number; role: 'card'; kind: CardKind; ready: boolean; question: string }
 
 type Session = { id: string; title: string; time: string; testeeId: string | null; messages: Message[] }
 
@@ -70,7 +72,7 @@ function buildAnswers(question: string, hasTestee: boolean): Answers {
 
 function buildReply(question: string, hasTestee: boolean, mode: Mode, ready: boolean): Message {
   const kind = detectCardKind(question)
-  if (kind) return { id: nextMessageId(), role: 'card', kind, ready }
+  if (kind) return { id: nextMessageId(), role: 'card', kind, ready, question }
   return { id: nextMessageId(), role: 'assistant', answers: ready ? buildAnswers(question, hasTestee) : null, view: mode }
 }
 
@@ -459,7 +461,17 @@ export function AiChatScreen({
                 <div className="flex gap-2">
                   <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
                   <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-white px-3 py-3 text-left shadow-[0_4px_14px_#3a82e40d]">
-                    {m.ready ? <ChatCard kind={m.kind} onAsk={(q) => ask(q)} /> : <TypingDots />}
+                    {m.ready ? (
+                      <ChatCard
+                        kind={m.kind}
+                        question={m.question}
+                        loggedIn={Boolean(testee)}
+                        testeeName={testee?.name}
+                        onAsk={(q) => ask(q)}
+                      />
+                    ) : (
+                      <TypingDots />
+                    )}
                   </div>
                 </div>
               ) : (
@@ -475,6 +487,7 @@ export function AiChatScreen({
                         onToggleSpeak={() => m.answers && toggleSpeak(m.id, m.answers[mode])}
                         onRegenerate={() => regenerate(m.id)}
                         onShare={startShare}
+                        onGuideOrder={(name) => ask(`帮我下单${name}`)}
                       />
                     ) : (
                       <TypingDots />
@@ -786,6 +799,7 @@ function AnswerBody({
   onToggleSpeak,
   onRegenerate,
   onShare,
+  onGuideOrder,
 }: {
   answer: AiAnswer
   speaking: boolean
@@ -794,7 +808,11 @@ function AnswerBody({
   onToggleSpeak: () => void
   onRegenerate: () => void
   onShare: () => void
+  onGuideOrder?: (serviceName: string) => void
 }) {
+  const recommended = answer.recommend
+    ? testServices.find((s) => s.id === answer.recommend?.serviceId && !s.offShelf)
+    : undefined
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const [activeCite, setActiveCite] = useState<number | null>(null)
   const sourceIdPrefix = useId()
@@ -835,6 +853,33 @@ function AnswerBody({
       </ol>
       {answer.tip && (
         <p className="rounded-xl bg-[#eefaf8] px-3 py-2 text-caption leading-5 text-[#2f8f86]">{answer.tip}</p>
+      )}
+      {recommended && answer.recommend && (
+        <div className="rounded-xl border border-[#d6e6fb] bg-[#f5f8fd] p-2.5">
+          <p className="flex items-center gap-1 text-caption font-medium text-primary">
+            <Sparkles className="size-3.5" aria-hidden="true" />
+            相关检测推荐
+          </p>
+          <div className="mt-1.5 flex items-center gap-2.5">
+            <img src={recommended.image} alt="" className="size-11 shrink-0 rounded-lg bg-secondary object-cover" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-note font-medium leading-5 text-foreground">{recommended.name}</p>
+              <p className="line-clamp-1 text-caption leading-4 text-muted-foreground">{answer.recommend.reason}</p>
+              <p className="text-note font-semibold tabular-nums text-destructive">¥{recommended.price}</p>
+            </div>
+          </div>
+          {!hideActions && onGuideOrder && (
+            <button
+              type="button"
+              onClick={() => onGuideOrder(recommended.name)}
+              disabled={regenerateDisabled}
+              className="mt-2 flex h-8 w-full items-center justify-center gap-1 rounded-full bg-primary text-caption font-medium text-white disabled:opacity-60"
+            >
+              AI 引导下单
+              <ChevronRight className="size-3.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
       )}
       {answer.sources.length > 0 ? (
         <div className="rounded-xl bg-[#f5f8fd]">
