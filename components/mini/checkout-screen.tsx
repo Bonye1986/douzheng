@@ -182,15 +182,6 @@ export function CheckoutScreen({
   const couponOff = coupon?.amount ?? 0
   const payable = Math.max(goodsTotal - couponOff, 0)
 
-  const pickTypes = (m: SamplingMode, prev: Record<string, string> = {}) =>
-    Object.fromEntries(
-      rows.map((r) => {
-        const opts = getSampleTypes(r.service.id, m)
-        const keep = opts.some((o) => o.id === prev[r.service.id])
-        return [r.service.id, keep ? prev[r.service.id] : (opts[0]?.id ?? '')]
-      }),
-    )
-
   const [pickedMode, setMode] = useState<SamplingMode | null>(() =>
     initialResult
       ? rows.every((r) => getSampleTypes(r.service.id, 'self').length > 0)
@@ -200,33 +191,48 @@ export function CheckoutScreen({
   )
   const mode: SamplingMode = pickedMode ?? 'self'
   const [sampleType, setSampleType] = useState<Record<string, string>>(() =>
-    pickedMode ? pickTypes(pickedMode) : {},
+    pickedMode
+      ? Object.fromEntries(rows.map((r) => [r.service.id, getSampleTypes(r.service.id, pickedMode)[0]?.id ?? '']))
+      : {},
   )
   const [addressId, setAddressId] = useState(addresses[0].id)
   const [siteId, setSiteId] = useState<string | null>(null)
   const [sheet, setSheet] = useState<'address' | 'site' | null>(null)
   const [sampleWarn, setSampleWarn] = useState(false)
 
-  const blockersOf = (m: SamplingMode) => rows.filter((r) => getSampleTypes(r.service.id, m).length === 0)
+  const chosenTypeOf = (serviceId: string) => getSampleTypes(serviceId).find((t) => t.id === sampleType[serviceId])
+  const untyped = rows.filter((r) => !chosenTypeOf(r.service.id))
+  const blockersOf = (m: SamplingMode) =>
+    rows.flatMap((r) => {
+      const t = chosenTypeOf(r.service.id)
+      return t && !t.modes.includes(m) ? [{ service: r.service, type: t }] : []
+    })
+
+  const changeSampleType = (serviceId: string, id: string) => {
+    const next = { ...sampleType, [serviceId]: id }
+    setSampleType(next)
+    const t = getSampleTypes(serviceId).find((o) => o.id === id)
+    if (pickedMode && t && !t.modes.includes(pickedMode)) setMode(null)
+    setSampleWarn(false)
+  }
 
   const changeMode = (m: SamplingMode) => {
-    if (blockersOf(m).length > 0) return
+    if (untyped.length > 0 || blockersOf(m).length > 0) return
     setMode(m)
-    setSampleType((prev) => pickTypes(m, prev))
     setSampleWarn(false)
   }
 
   const hasSelf = mode === 'self'
   const address = addresses.find((a) => a.id === addressId)!
   const site = sites.find((s) => s.id === siteId) ?? null
-  const unsupported = rows.filter((r) => getSampleTypes(r.service.id, mode).length === 0)
+  const unsupported = blockersOf(mode)
 
   const submit = () => {
     if (unassigned.length > 0) {
       setAssignWarn(true)
       return
     }
-    if (!pickedMode || unsupported.length > 0 || (mode === 'site' && !site)) {
+    if (untyped.length > 0 || !pickedMode || unsupported.length > 0 || (mode === 'site' && !site)) {
       setSampleWarn(true)
       return
     }
@@ -648,16 +654,14 @@ export function CheckoutScreen({
                       </div>
                     </div>
                   </div>
-                  {pickedMode && (
-                    <SampleTypePicker
-                      serviceId={service.id}
-                      serviceName={service.name}
-                      mode={pickedMode}
-                      value={sampleType[service.id]}
-                      warn={sampleWarn}
-                      onChange={(id) => setSampleType((s) => ({ ...s, [service.id]: id }))}
-                    />
-                  )}
+                  <SampleTypePicker
+                    serviceId={service.id}
+                    serviceName={service.name}
+                    value={sampleType[service.id]}
+                    warn={sampleWarn}
+                    onChange={(id) => changeSampleType(service.id, id)}
+                  />
+
                   <div
                     role="group"
                     aria-label={`${service.name}的受检人`}
@@ -753,7 +757,9 @@ export function CheckoutScreen({
           <h2 id="sampling-title" className="text-title font-semibold text-foreground">
             采样方式
           </h2>
-          <p className="mt-0.5 text-caption text-muted-foreground">请选择采样方式，不可选的方式由所选检测项目支持的样本类型决定</p>
+          <p className="mt-0.5 text-caption text-muted-foreground">
+            {untyped.length > 0 ? '请先为每个检测项目选择样本类型，再选择采样方式' : '可选的采样方式由您所选的样本类型决定'}
+          </p>
           <div
             role="radiogroup"
             aria-labelledby="sampling-title"
@@ -763,10 +769,13 @@ export function CheckoutScreen({
             {samplingModes.map(({ key, icon: Icon, desc }) => {
               const on = pickedMode === key
               const blockers = blockersOf(key)
-              const disabled = blockers.length > 0
-              const reason = disabled
-                ? `${blockers.map((r) => r.service.name).join('、')}不支持该方式`
-                : desc
+              const waiting = untyped.length > 0
+              const disabled = waiting || blockers.length > 0
+              const reason = waiting
+                ? '请先选择样本类型'
+                : blockers.length > 0
+                  ? `${[...new Set(blockers.map((b) => b.type.label))].join('、')}样本不支持该方式`
+                  : desc
               return (
                 <button
                   key={key}
@@ -1146,81 +1155,63 @@ function Shell({ title, onBack, children }: { title: string; onBack: () => void;
 function SampleTypePicker({
   serviceId,
   serviceName,
-  mode,
   value,
   warn,
   onChange,
 }: {
   serviceId: string
   serviceName: string
-  mode: SamplingMode
   value?: string
   warn: boolean
   onChange: (id: string) => void
 }) {
-  const all = getSampleTypes(serviceId)
-  const opts = getSampleTypes(serviceId, mode)
+  const opts = getSampleTypes(serviceId)
   const current = opts.find((o) => o.id === value)
-
-  if (opts.length === 0) {
-    return (
-      <p
-        role={warn ? 'alert' : undefined}
-        className={cn('mt-2.5 rounded-lg px-2.5 py-1.5 text-caption', warn ? 'bg-destructive-soft text-destructive' : 'bg-[#fff7ec] text-[#c27a1a]')}
-      >
-        该项目需采集{all.map((t) => t.label).join(' / ')}，仅支持{samplingLabel.site}
-      </p>
-    )
-  }
-
   const labelId = `sample-${serviceId}`
 
   return (
     <div className="mt-2.5">
       <div
         className={cn(
-          'flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors',
+          'rounded-lg px-2.5 py-2 transition-colors',
           warn && !current ? 'bg-destructive-soft' : 'bg-[#f5f7fb]',
         )}
       >
-        <span id={labelId} className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
+        <span id={labelId} className="flex items-center gap-1 text-caption text-muted-foreground">
           <FlaskConical className="size-3.5 text-primary" aria-hidden="true" />
           样本类型
+          <span className="text-tag text-faint">（必选）</span>
         </span>
-        {opts.length === 1 ? (
-          <span className="ml-auto text-caption font-medium text-foreground">
-            {opts[0].label}
-            <span className="ml-1 font-normal text-muted-foreground">（{samplingLabel[mode]}仅支持）</span>
-          </span>
-        ) : (
-          <div
-            role="radiogroup"
-            aria-labelledby={labelId}
-            aria-label={`${serviceName}的样本类型`}
-            className="ml-auto flex flex-wrap justify-end gap-1"
-          >
-            {opts.map((o) => {
-              const on = o.id === value
-              return (
-                <button
-                  key={o.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  title={o.hint}
-                  onClick={() => onChange(o.id)}
-                  className={cn(
-                    'flex h-6 items-center gap-0.5 rounded-full border px-2 text-caption transition-colors',
-                    on ? 'border-primary bg-white font-medium text-primary' : 'border-transparent bg-white text-foreground',
-                  )}
-                >
+        <div
+          role="radiogroup"
+          aria-labelledby={labelId}
+          aria-label={`${serviceName}的样本类型`}
+          className="mt-1.5 grid grid-cols-2 gap-1.5"
+        >
+          {opts.map((o) => {
+            const on = o.id === value
+            const modesText = o.modes.length > 1 ? '居家 / 机构均可' : `仅${samplingLabel[o.modes[0]]}`
+            return (
+              <button
+                key={o.id}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => onChange(o.id)}
+                className={cn(
+                  'flex flex-col items-start rounded-lg border bg-white px-2 py-1.5 text-left transition-colors',
+                  on ? 'border-primary' : 'border-transparent',
+                )}
+              >
+                <span className={cn('flex items-center gap-0.5 text-caption', on ? 'font-medium text-primary' : 'text-foreground')}>
                   {on && <Check className="size-3" strokeWidth={3} aria-hidden="true" />}
                   {o.label}
-                </button>
-              )
-            })}
-          </div>
-        )}
+                </span>
+                <span className="mt-0.5 text-tag leading-4 text-muted-foreground">{modesText}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
       {warn && !current && (
         <p role="alert" className="mt-1 text-caption text-destructive">
