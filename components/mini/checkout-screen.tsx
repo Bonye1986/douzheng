@@ -543,7 +543,7 @@ export function CheckoutScreen({
             </h2>
             <ol className="mt-3 flex flex-col gap-3">
               {(hasSelf
-                ? ['收到采样盒后，按说明采集唾液样本', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
+                ? ['收到采样盒��，按说明采集唾液样本', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
                 : ['按预约时间前往采样点', '出示订单码完成采样', '7 个工作日左右出具报告']
               ).map((step, i) => (
                 <li key={step} className="flex items-start gap-2.5 text-note leading-5 text-foreground">
@@ -1170,23 +1170,22 @@ function SampleTypePicker({
   const labelId = `sample-${serviceId}`
 
   return (
-    <div className="mt-2.5">
+    <div className="mt-2">
       <div
         className={cn(
-          'rounded-lg px-2.5 py-2 transition-colors',
-          warn && !current ? 'bg-destructive-soft' : 'bg-[#f5f7fb]',
+          'flex items-center gap-2 rounded-lg px-1 py-0.5 transition-colors',
+          warn && !current && 'bg-destructive-soft',
         )}
       >
-        <span id={labelId} className="flex items-center gap-1 text-caption text-muted-foreground">
+        <span id={labelId} className="flex shrink-0 items-center gap-0.5 text-caption text-muted-foreground">
           <FlaskConical className="size-3.5 text-primary" aria-hidden="true" />
-          样本类型
-          <span className="text-tag text-faint">（必选）</span>
+          样本
         </span>
         <div
           role="radiogroup"
           aria-labelledby={labelId}
           aria-label={`${serviceName}的样本类型`}
-          className="mt-1.5 grid grid-cols-2 gap-1.5"
+          className="flex min-w-0 flex-1 flex-wrap gap-1"
         >
           {opts.map((o) => {
             const on = o.id === value
@@ -1197,27 +1196,33 @@ function SampleTypePicker({
                 type="button"
                 role="radio"
                 aria-checked={on}
+                aria-description={modesText}
+                title={modesText}
                 onClick={() => onChange(o.id)}
                 className={cn(
-                  'flex flex-col items-start rounded-lg border bg-white px-2 py-1.5 text-left transition-colors',
-                  on ? 'border-primary' : 'border-transparent',
+                  'h-6 rounded-full border px-2.5 text-caption leading-none transition-colors',
+                  on
+                    ? 'border-primary bg-primary-soft font-medium text-primary'
+                    : 'border-border bg-white text-foreground',
                 )}
               >
-                <span className={cn('flex items-center gap-0.5 text-caption', on ? 'font-medium text-primary' : 'text-foreground')}>
-                  {on && <Check className="size-3" strokeWidth={3} aria-hidden="true" />}
-                  {o.label}
-                </span>
-                <span className="mt-0.5 text-tag leading-4 text-muted-foreground">{modesText}</span>
+                {o.label}
               </button>
             )
           })}
         </div>
+        {current ? (
+          <span className="shrink-0 text-tag text-muted-foreground">
+            {current.modes.length > 1 ? '居家/机构' : `仅${samplingLabel[current.modes[0]]}`}
+          </span>
+        ) : (
+          warn && (
+            <span role="alert" className="shrink-0 text-tag text-destructive">
+              请选择
+            </span>
+          )
+        )}
       </div>
-      {warn && !current && (
-        <p role="alert" className="mt-1 text-caption text-destructive">
-          请选择样本类型
-        </p>
-      )}
     </div>
   )
 }
