@@ -544,7 +544,7 @@ export function CheckoutScreen({
             </h2>
             <ol className="mt-3 flex flex-col gap-3">
               {(hasSelf
-                ? ['收到采样盒���，按说明采集唾液样本', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
+                ? ['收到采样盒后，按说明采集唾液样本', '在小程序内绑定采样盒编号', '预约顺丰上门取件，免费寄回', '7 个工作日左右出具报告']
                 : ['按预约时间前往采样点', '出示订单码完成采样', '7 个工作日左右出具报告']
               ).map((step, i) => (
                 <li key={step} className="flex items-start gap-2.5 text-note leading-5 text-foreground">
