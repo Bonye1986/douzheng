@@ -22,6 +22,7 @@ export function OrderFilterBar<S extends string>({
   status,
   statusOptions,
   onStatusChange,
+  isStatusAvailable,
 }: {
   keyword: string
   onKeywordChange: (value: string) => void
@@ -30,6 +31,7 @@ export function OrderFilterBar<S extends string>({
   status: S
   statusOptions: Option<S>[]
   onStatusChange: (value: S) => void
+  isStatusAvailable?: (status: S, type: OrderTypeFilter) => boolean
 }) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const defaultStatus = statusOptions[0].key
@@ -85,6 +87,7 @@ export function OrderFilterBar<S extends string>({
           type={type}
           status={status}
           statusOptions={statusOptions}
+          isStatusAvailable={isStatusAvailable}
           onClose={() => setSheetOpen(false)}
           onApply={(nextType, nextStatus) => {
             onTypeChange(nextType)
@@ -101,17 +104,24 @@ function OrderFilterSheet<S extends string>({
   type,
   status,
   statusOptions,
+  isStatusAvailable = () => true,
   onClose,
   onApply,
 }: {
   type: OrderTypeFilter
   status: S
   statusOptions: Option<S>[]
+  isStatusAvailable?: (status: S, type: OrderTypeFilter) => boolean
   onClose: () => void
   onApply: (type: OrderTypeFilter, status: S) => void
 }) {
   const [draftType, setDraftType] = useState(type)
   const [draftStatus, setDraftStatus] = useState(status)
+  const visibleStatusOptions = statusOptions.filter((o) => isStatusAvailable(o.key, draftType))
+  const changeDraftType = (nextType: OrderTypeFilter) => {
+    setDraftType(nextType)
+    if (!isStatusAvailable(draftStatus, nextType)) setDraftStatus(statusOptions[0].key)
+  }
   const closeRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -146,8 +156,8 @@ function OrderFilterSheet<S extends string>({
         </header>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4 [scrollbar-width:none]">
-          <FilterGroup title="采样方式" options={typeOptions} value={draftType} onChange={setDraftType} />
-          <FilterGroup title="订单状态" options={statusOptions} value={draftStatus} onChange={setDraftStatus} />
+          <FilterGroup title="采样方式" options={typeOptions} value={draftType} onChange={changeDraftType} />
+          <FilterGroup title="订单状态" options={visibleStatusOptions} value={draftStatus} onChange={setDraftStatus} />
         </div>
 
         <footer className="flex shrink-0 gap-2.5 border-t border-border px-4 pb-[max(env(safe-area-inset-bottom),12px)] pt-3">
