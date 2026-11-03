@@ -58,7 +58,6 @@ const drugSuggestions = ['氯吡格雷', '阿托伐他汀', '华法林', '二甲
 const accountPhone = initialExaminees[0]?.phone ?? '138****6721'
 
 const members = initialExaminees.map((e) => ({ id: e.id, name: e.name, relation: e.relation }))
-const memberName = (id: string) => members.find((m) => m.id === id)?.name ?? '本人'
 
 const initialReminders: Reminder[] = [
   {
@@ -192,12 +191,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
                       <Pill className="size-4.5" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-title font-semibold text-foreground">{r.drug}</span>
-                        <span className="rounded bg-secondary px-1.5 py-px text-caption text-primary">
-                          {memberName(r.memberId)}
-                        </span>
-                      </p>
+                      <p className="text-title font-semibold text-foreground">{r.drug}</p>
                       <p className="mt-1 text-caption text-muted-foreground">
                         每次 {r.dose} {r.unit} · {r.meal} · {scheduleText(r)}
                       </p>
@@ -307,7 +301,7 @@ export function MedicationReminderScreen({ onBack, initialView = 'list' }: Props
               确定删除该提醒？
             </h2>
             <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-left text-caption leading-[18px] text-foreground">
-              {pendingDelete.drug} · {memberName(pendingDelete.memberId)}
+              {pendingDelete.drug}
               <br />
               <span className="text-muted-foreground">
                 {scheduleText(pendingDelete)} <span className="tabular-nums">{pendingDelete.times.join('、')}</span>
@@ -779,7 +773,7 @@ function ReminderFormScreen({
           onClick={save}
           className="h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
         >
-          {editing ? '保存修改' : '保存并开启提醒'}
+          {editing ? '保存修改' : '保存并开启提��'}
         </button>
       </div>
 
