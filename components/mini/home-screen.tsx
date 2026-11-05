@@ -45,21 +45,16 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
 
         <section aria-labelledby="hot-q" className="mt-8">
           <SectionHeading id="hot-q" title="大家都在问" icon="/images/icons/sec-hot.png" className="mb-3" />
-          <ul className="grid grid-cols-2 gap-2.5">
+          <ul className="flex flex-wrap gap-2">
             {presetQuestions.map((item) => (
-              <li key={item.id}>
+              <li key={item.id} className="min-w-0 max-w-full">
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex h-full min-h-[76px] w-full flex-col justify-between gap-2 rounded-2xl border border-border/60 bg-white p-3 text-left shadow-[0_2px_10px_#3a82e40d] transition-colors active:bg-brand-page"
+                  className="flex h-9 max-w-full items-center gap-1 rounded-full border border-border/60 bg-white px-3.5 text-left transition-colors active:bg-brand-page"
                 >
-                  <span className="line-clamp-2 text-body font-medium leading-snug text-foreground">
-                    {item.question}
-                  </span>
-                  <span className="flex items-center gap-0.5 text-caption text-primary">
-                    问问 AI
-                    <ChevronRight className="size-3" />
-                  </span>
+                  <span className="truncate text-body text-foreground">{item.question}</span>
+                  <ChevronRight className="size-3.5 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
             ))}
