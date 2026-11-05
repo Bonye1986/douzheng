@@ -70,9 +70,21 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </p>
         </section>
 
+        <button
+          type="button"
+          onClick={() => onOpenChat?.()}
+          className="mt-6 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
+        >
+          <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
+          <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <ArrowUp className="size-4" aria-hidden="true" />
+          </span>
+        </button>
+
         <section
           aria-labelledby="guess-q"
-          className="mt-7 rounded-[28px] border border-white bg-white/50 p-3 shadow-[0_8px_28px_#3a82e414]"
+          className="mt-5 rounded-[28px] border border-white bg-white/50 p-3 shadow-[0_8px_28px_#3a82e414]"
         >
           <div className="flex items-center justify-between pb-3 pl-1.5 pt-1">
             <h2 id="guess-q" className="flex items-center gap-2 text-body font-semibold text-foreground">
@@ -112,18 +124,6 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             ))}
           </ul>
         </section>
-
-        <button
-          type="button"
-          onClick={() => onOpenChat?.()}
-          className="mt-5 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
-        >
-          <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
-          <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <ArrowUp className="size-4" aria-hidden="true" />
-          </span>
-        </button>
       </div>
     </div>
   )
