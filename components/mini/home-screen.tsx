@@ -18,10 +18,8 @@ import {
 } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
-import { presetQuestions } from '@/components/mini/home-data'
 
 const PAGE_SIZE = 3
-const categories = Array.from(new Set(presetQuestions.map((q) => q.category)))
 
 const personalizedSuggestions = [
   { id: 'p1', icon: FileText, reason: '您有 1 份新报告', question: '帮我解读报告里的高风险药物' },
@@ -114,32 +112,11 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             ))}
           </ul>
         </section>
-      </div>
 
-      <div className="shrink-0 px-4 pb-5 pt-2">
-        <ul
-          aria-label="快捷提问"
-          className="-mx-4 mb-2.5 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]"
-        >
-          {categories.map((category) => {
-            const question = presetQuestions.find((q) => q.category === category)?.question
-            return (
-              <li key={category} className="shrink-0">
-                <button
-                  type="button"
-                  onClick={() => onOpenChat?.(question)}
-                  className="h-8 rounded-full bg-white px-3 text-caption text-foreground shadow-[0_2px_8px_#3a82e40f]"
-                >
-                  {category}
-                </button>
-              </li>
-            )
-          })}
-        </ul>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="flex h-12 w-full items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
+          className="mt-5 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
