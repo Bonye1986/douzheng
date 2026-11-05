@@ -1,7 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowUp, ChevronRight, Circle, Ellipsis, RefreshCw, Sparkles } from 'lucide-react'
+import {
+  ArrowUp,
+  Baby,
+  ChevronRight,
+  Circle,
+  Clock,
+  Ellipsis,
+  FileText,
+  PackageCheck,
+  Pill,
+  RefreshCw,
+  Sparkles,
+  UserRound,
+} from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
 import { presetQuestions } from '@/components/mini/home-data'
@@ -10,18 +23,19 @@ const PAGE_SIZE = 3
 const categories = Array.from(new Set(presetQuestions.map((q) => q.category)))
 
 const personalizedSuggestions = [
-  { id: 'p1', reason: '您有 1 份新报告', question: '帮我解读报告里的高风险药物' },
-  { id: 'p2', reason: '订单检测中', question: '我的报告大概什么时候出？' },
-  { id: 'p3', reason: '正在服用 华法林', question: '华法林的剂量需要调整吗？' },
-  { id: 'p4', reason: '家人 李秀兰 · 58 岁', question: '老人适合做哪项基因检测？' },
-  { id: 'p5', reason: '样本待寄回', question: '采样后多久内需要寄回？' },
-  { id: 'p6', reason: '近期浏览 儿童用药', question: '孩子用药前需要做基因检测吗？' },
+  { id: 'p1', icon: FileText, reason: '您有 1 份新报告', question: '帮我解读报告里的高风险药物' },
+  { id: 'p2', icon: Clock, reason: '订单检测中', question: '我的报告大概什么时候出？' },
+  { id: 'p3', icon: Pill, reason: '正在服用 华法林', question: '华法林的剂量需要调整吗？' },
+  { id: 'p4', icon: UserRound, reason: '家人 李秀兰 · 58 岁', question: '老人适合做哪项基因检测？' },
+  { id: 'p5', icon: PackageCheck, reason: '样本待寄回', question: '采样后多久内需要寄回？' },
+  { id: 'p6', icon: Baby, reason: '近期浏览 儿童用药', question: '孩子用药前需要做基因检测吗？' },
 ]
 const suggestionPageCount = Math.ceil(personalizedSuggestions.length / PAGE_SIZE)
 
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
   const [page, setPage] = useState(0)
   const visibleSuggestions = personalizedSuggestions.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
+  const [featured, ...rest] = visibleSuggestions
 
   return (
     <div className="flex h-full flex-col bg-brand-page">
@@ -58,53 +72,72 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </p>
         </section>
 
-        <section aria-labelledby="guess-q" className="mt-7 flex gap-2.5">
-          <span
-            aria-hidden="true"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_4px_12px_#3a82e433]"
-          >
-            <Sparkles className="size-4" />
-          </span>
-
-          <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
-            <h2
-              id="guess-q"
-              className="rounded-2xl rounded-tl-sm bg-white px-3.5 py-2.5 text-body leading-relaxed text-foreground shadow-[0_4px_14px_#3a82e40f]"
-            >
-              根据您的近况，您可能想了解：
+        <section
+          aria-labelledby="guess-q"
+          className="mt-7 overflow-hidden rounded-3xl bg-white shadow-[0_8px_28px_#3a82e414]"
+        >
+          <div className="flex items-center justify-between px-4 pb-1 pt-3.5">
+            <h2 id="guess-q" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
+              <Sparkles className="size-4 text-primary" aria-hidden="true" />
+              猜你想问
             </h2>
-
-            <ul key={page} className="flex w-full flex-col gap-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
-              {visibleSuggestions.map((item) => (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    onClick={() => onOpenChat?.(item.question)}
-                    className="flex w-full items-center gap-2 rounded-2xl rounded-tl-sm border border-primary/15 bg-white px-3.5 py-2.5 text-left transition-transform active:scale-[0.99] active:bg-brand-page"
-                  >
-                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <span className="flex items-center gap-1 text-caption text-muted-foreground">
-                        <span className="size-1.5 shrink-0 rounded-full bg-primary/60" aria-hidden="true" />
-                        <span className="truncate">{item.reason}</span>
-                      </span>
-                      <span className="truncate text-body font-medium text-foreground">{item.question}</span>
-                    </span>
-                    <ChevronRight className="size-4 shrink-0 text-primary" aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-
             {suggestionPageCount > 1 && (
               <button
                 type="button"
                 onClick={() => setPage((p) => (p + 1) % suggestionPageCount)}
-                className="-ml-2 flex h-7 items-center gap-1 rounded-full px-2 text-caption text-muted-foreground active:bg-white"
+                className="-mr-2 flex h-7 items-center gap-1 rounded-full px-2 text-caption text-muted-foreground active:bg-brand-page"
               >
                 <RefreshCw className="size-3" aria-hidden="true" />
                 换一批
               </button>
             )}
+          </div>
+
+          <div key={page} className="flex flex-col animate-in fade-in slide-in-from-bottom-1 duration-300">
+            {featured && (
+              <button
+                type="button"
+                onClick={() => onOpenChat?.(featured.question)}
+                className="mx-3 mt-2 flex flex-col items-start gap-2 rounded-2xl bg-brand-page px-3.5 py-3 text-left transition-transform active:scale-[0.99]"
+              >
+                <span className="flex items-center gap-1.5 rounded-full bg-white px-2 py-0.5 text-caption text-primary">
+                  <featured.icon className="size-3.5" aria-hidden="true" />
+                  {featured.reason}
+                </span>
+                <span className="flex w-full items-center gap-2">
+                  <span className="min-w-0 flex-1 text-pretty text-[17px] font-semibold leading-snug text-foreground">
+                    {featured.question}
+                  </span>
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <ArrowUp className="size-4 rotate-45" aria-hidden="true" />
+                  </span>
+                </span>
+              </button>
+            )}
+
+            <ul className="flex flex-col px-4 pb-1.5 pt-1">
+              {rest.map((item) => (
+                <li key={item.id} className="border-b border-border/60 last:border-b-0">
+                  <button
+                    type="button"
+                    onClick={() => onOpenChat?.(item.question)}
+                    className="flex w-full items-center gap-3 py-3 text-left active:opacity-70"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+                    >
+                      <item.icon className="size-4" />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-body font-medium text-foreground">{item.question}</span>
+                      <span className="truncate text-caption text-muted-foreground">{item.reason}</span>
+                    </span>
+                    <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       </div>
