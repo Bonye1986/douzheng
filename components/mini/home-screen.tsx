@@ -73,7 +73,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-6 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
+          className="mt-14 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
@@ -103,13 +103,13 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             )}
           </div>
 
-          <ul key={page} className="flex flex-col gap-2.5 animate-in fade-in slide-in-from-bottom-1 duration-300">
+          <ul key={page} className="flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
             {visibleSuggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex h-14 w-full items-center gap-3 rounded-2xl bg-white px-4 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
+                  className="flex h-11 w-full items-center gap-3 rounded-2xl bg-white px-4 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
                 >
                   <span
                     aria-hidden="true"
