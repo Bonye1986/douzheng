@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight, Circle, Ellipsis, RefreshCw, Sparkles } from 'lucide-react'
+import { ArrowUp, ChevronRight, Circle, Ellipsis, RefreshCw, Sparkles } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
 import { presetQuestions } from '@/components/mini/home-data'
@@ -29,7 +29,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
       </div>
 
       <div className="flex flex-1 flex-col overflow-y-auto px-5 pb-4 [scrollbar-width:none]">
-        <section className="flex flex-col items-center pt-8 text-center">
+        <section className="flex flex-col items-start pt-6">
           <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
           <Image
             src="/images/drugene-logo.png"
@@ -37,28 +37,28 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             width={436}
             height={147}
             priority
-            className="h-auto w-[200px]"
+            className="h-auto w-[120px]"
           />
+          <p className="mt-5 text-balance text-[26px] font-semibold leading-tight text-foreground">
+            Hi，我是您的
+            <br />
+            <span className="text-primary">精准用药助手</span>
+          </p>
+          <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
+            用药疑问、基因检测、报告解读，随时问我
+          </p>
         </section>
 
-        <section
-          aria-labelledby="guess-q"
-          className="mt-8 rounded-3xl rounded-tl-md bg-white p-4 shadow-[0_8px_24px_#3a82e414]"
-        >
-          <p className="text-title font-semibold text-foreground">Hi，我是您的精准用药助手</p>
-          <p className="mt-1 text-caption leading-relaxed text-muted-foreground">
-            用药疑问、基因检测、报告解读，都可以问我
-          </p>
-
-          <div className="mt-4 flex items-center justify-between">
+        <section aria-labelledby="guess-q" className="mt-7 flex flex-col">
+          <div className="flex items-center justify-between">
             <h2 id="guess-q" className="text-caption font-medium text-muted-foreground">
-              猜你想问
+              你可以这样问我
             </h2>
             {pageCount > 1 && (
               <button
                 type="button"
                 onClick={() => setPage((p) => (p + 1) % pageCount)}
-                className="flex items-center gap-1 text-caption text-primary"
+                className="flex h-7 items-center gap-1 rounded-full px-2 text-caption text-muted-foreground active:bg-white"
               >
                 <RefreshCw className="size-3" aria-hidden="true" />
                 换一换
@@ -66,15 +66,18 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             )}
           </div>
 
-          <ul className="mt-1 flex flex-col">
+          <ul className="mt-2.5 flex flex-col items-start gap-2.5">
             {visible.map((item) => (
-              <li key={item.id} className="border-b border-border/50 last:border-b-0">
+              <li key={item.id} className="max-w-full">
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex h-11 w-full items-center gap-2 text-left"
+                  className="flex max-w-full items-center gap-2 rounded-2xl rounded-tl-md bg-white py-2.5 pl-3 pr-2.5 text-left shadow-[0_4px_16px_#3a82e412] transition-transform active:scale-[0.98]"
                 >
-                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
+                  <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-primary">
+                    {item.category}
+                  </span>
+                  <span className="min-w-0 truncate text-body text-foreground">{item.question}</span>
                   <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
@@ -109,7 +112,10 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           className="flex h-12 w-full items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
-          <span className="min-w-0 flex-1 truncate text-body text-faint">输入您的用药或基因问题</span>
+          <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <ArrowUp className="size-4" aria-hidden="true" />
+          </span>
         </button>
       </div>
     </div>
