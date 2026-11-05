@@ -49,16 +49,20 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </p>
         </section>
 
-        <section aria-labelledby="guess-q" className="mt-7 flex flex-col">
+        <section
+          aria-labelledby="guess-q"
+          className="mt-7 flex flex-col rounded-3xl rounded-tl-lg bg-white px-4 pb-1 pt-3.5 shadow-[0_6px_20px_#3a82e414]"
+        >
           <div className="flex items-center justify-between">
-            <h2 id="guess-q" className="text-caption font-medium text-muted-foreground">
-              你可以这样问我
+            <h2 id="guess-q" className="flex items-center gap-1.5 text-body font-medium text-foreground">
+              <Sparkles className="size-4 text-primary" aria-hidden="true" />
+              猜你想问
             </h2>
             {pageCount > 1 && (
               <button
                 type="button"
                 onClick={() => setPage((p) => (p + 1) % pageCount)}
-                className="flex h-7 items-center gap-1 rounded-full px-2 text-caption text-muted-foreground active:bg-white"
+                className="-mr-2 flex h-7 items-center gap-1 rounded-full px-2 text-caption text-muted-foreground active:bg-brand-page"
               >
                 <RefreshCw className="size-3" aria-hidden="true" />
                 换一换
@@ -66,18 +70,18 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             )}
           </div>
 
-          <ul className="mt-2.5 flex flex-col items-start gap-2.5">
+          <ul
+            key={page}
+            className="mt-1 flex flex-col divide-y divide-border animate-in fade-in slide-in-from-bottom-1 duration-300"
+          >
             {visible.map((item) => (
-              <li key={item.id} className="max-w-full">
+              <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex max-w-full items-center gap-2 rounded-2xl rounded-tl-md bg-white py-2.5 pl-3 pr-2.5 text-left shadow-[0_4px_16px_#3a82e412] transition-transform active:scale-[0.98]"
+                  className="flex w-full items-center gap-2 py-3 text-left active:opacity-60"
                 >
-                  <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-primary">
-                    {item.category}
-                  </span>
-                  <span className="min-w-0 truncate text-body text-foreground">{item.question}</span>
+                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
                   <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
