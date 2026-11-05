@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import {
+  ArrowRight,
   ArrowUp,
   Baby,
-  ChevronRight,
   Circle,
   Clock,
   Ellipsis,
   FileText,
+  Hash,
   PackageCheck,
   Pill,
   RefreshCw,
@@ -35,7 +36,6 @@ const suggestionPageCount = Math.ceil(personalizedSuggestions.length / PAGE_SIZE
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
   const [page, setPage] = useState(0)
   const visibleSuggestions = personalizedSuggestions.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
-  const [featured, ...rest] = visibleSuggestions
 
   return (
     <div className="flex h-full flex-col bg-brand-page">
@@ -74,71 +74,45 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
 
         <section
           aria-labelledby="guess-q"
-          className="mt-7 overflow-hidden rounded-3xl bg-white shadow-[0_8px_28px_#3a82e414]"
+          className="mt-7 rounded-[28px] border border-white bg-white/50 p-3 shadow-[0_8px_28px_#3a82e414]"
         >
-          <div className="flex items-center justify-between px-4 pb-1 pt-3.5">
-            <h2 id="guess-q" className="flex items-center gap-1.5 text-body font-semibold text-foreground">
-              <Sparkles className="size-4 text-primary" aria-hidden="true" />
+          <div className="flex items-center justify-between pb-3 pl-1.5 pt-1">
+            <h2 id="guess-q" className="flex items-center gap-2 text-body font-semibold text-foreground">
+              <span aria-hidden="true" className="h-3.5 w-1 rounded-full bg-primary" />
               猜你想问
             </h2>
             {suggestionPageCount > 1 && (
               <button
                 type="button"
                 onClick={() => setPage((p) => (p + 1) % suggestionPageCount)}
-                className="-mr-2 flex h-7 items-center gap-1 rounded-full px-2 text-caption text-muted-foreground active:bg-brand-page"
+                className="flex h-7 items-center gap-1 rounded-full bg-white px-3 text-caption text-muted-foreground active:opacity-70"
               >
-                <RefreshCw className="size-3" aria-hidden="true" />
                 换一批
+                <RefreshCw className="size-3" aria-hidden="true" />
               </button>
             )}
           </div>
 
-          <div key={page} className="flex flex-col animate-in fade-in slide-in-from-bottom-1 duration-300">
-            {featured && (
-              <button
-                type="button"
-                onClick={() => onOpenChat?.(featured.question)}
-                className="mx-3 mt-2 flex flex-col items-start gap-2 rounded-2xl bg-brand-page px-3.5 py-3 text-left transition-transform active:scale-[0.99]"
-              >
-                <span className="flex items-center gap-1.5 rounded-full bg-white px-2 py-0.5 text-caption text-primary">
-                  <featured.icon className="size-3.5" aria-hidden="true" />
-                  {featured.reason}
-                </span>
-                <span className="flex w-full items-center gap-2">
-                  <span className="min-w-0 flex-1 text-pretty text-[17px] font-semibold leading-snug text-foreground">
-                    {featured.question}
-                  </span>
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                    <ArrowUp className="size-4 rotate-45" aria-hidden="true" />
-                  </span>
-                </span>
-              </button>
-            )}
-
-            <ul className="flex flex-col px-4 pb-1.5 pt-1">
-              {rest.map((item) => (
-                <li key={item.id} className="border-b border-border/60 last:border-b-0">
-                  <button
-                    type="button"
-                    onClick={() => onOpenChat?.(item.question)}
-                    className="flex w-full items-center gap-3 py-3 text-left active:opacity-70"
+          <ul key={page} className="flex flex-col gap-2.5 animate-in fade-in slide-in-from-bottom-1 duration-300">
+            {visibleSuggestions.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  onClick={() => onOpenChat?.(item.question)}
+                  className="flex h-14 w-full items-center gap-3 rounded-2xl bg-white px-4 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[0_4px_10px_#3a82e440]"
                   >
-                    <span
-                      aria-hidden="true"
-                      className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
-                    >
-                      <item.icon className="size-4" />
-                    </span>
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate text-body font-medium text-foreground">{item.question}</span>
-                      <span className="truncate text-caption text-muted-foreground">{item.reason}</span>
-                    </span>
-                    <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+                    <Hash className="size-4" strokeWidth={2.5} />
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
+                  <ArrowRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
 
