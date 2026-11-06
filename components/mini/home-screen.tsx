@@ -1,12 +1,40 @@
 'use client'
 
-import { ChevronRight, Circle, Ellipsis, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import {
+  ArrowRight,
+  ArrowUp,
+  Baby,
+  Circle,
+  Clock,
+  Ellipsis,
+  FileText,
+  Hash,
+  PackageCheck,
+  Pill,
+  RefreshCw,
+  Sparkles,
+  UserRound,
+} from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
-import { presetQuestions } from '@/components/mini/home-data'
-import { SectionHeading } from '@/components/mini/section-heading'
+
+const PAGE_SIZE = 3
+
+const personalizedSuggestions = [
+  { id: 'p1', icon: FileText, reason: '您有 1 份新报告', question: '帮我解读报告里的高风险药物' },
+  { id: 'p2', icon: Clock, reason: '订单检测中', question: '我的报告大概什么时候出？' },
+  { id: 'p3', icon: Pill, reason: '正在服用 华法林', question: '华法林的剂量需要调整吗？' },
+  { id: 'p4', icon: UserRound, reason: '家人 李秀兰 · 58 岁', question: '老人适合做哪项基因检测？' },
+  { id: 'p5', icon: PackageCheck, reason: '样本待寄回', question: '采样后多久内需要寄回？' },
+  { id: 'p6', icon: Baby, reason: '近期浏览 儿童用药', question: '孩子用药前需要做基因检测吗？' },
+]
+const suggestionPageCount = Math.ceil(personalizedSuggestions.length / PAGE_SIZE)
 
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
+  const [page, setPage] = useState(0)
+  const visibleSuggestions = personalizedSuggestions.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
+
   return (
     <div className="flex h-full flex-col bg-brand-page">
       <StatusBar />
@@ -22,7 +50,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
       </div>
 
       <div className="flex flex-1 flex-col overflow-y-auto px-5 pb-4 [scrollbar-width:none]">
-        <section className="flex flex-col items-center pt-10 text-center">
+        <section className="flex flex-col items-start pt-6">
           <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
           <Image
             src="/images/drugene-logo.png"
@@ -30,36 +58,67 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             width={436}
             height={147}
             priority
-            className="h-auto w-[220px]"
+            className="h-auto w-[120px]"
           />
+          <p className="mt-5 text-balance text-[26px] font-semibold leading-tight text-foreground">
+            Hi，我是您的
+            <br />
+            <span className="text-primary">精准用药助手</span>
+          </p>
+          <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
+            用药疑问、基因检测、报告解读，随时问我
+          </p>
         </section>
 
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-8 flex h-14 w-full items-center gap-3 rounded-2xl border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
+          className="mt-14 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
-          <Sparkles className="size-5 shrink-0 text-primary" />
-          <span className="min-w-0 flex-1 truncate text-title text-faint">输入您的用药或基因问题</span>
+          <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
+          <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <ArrowUp className="size-4" aria-hidden="true" />
+          </span>
         </button>
 
-        <section aria-labelledby="hot-q" className="mt-8">
-          <SectionHeading id="hot-q" title="大家都在问" icon="/images/icons/sec-hot.png" className="mb-3" />
-          <ul className="grid grid-cols-2 gap-2.5">
-            {presetQuestions.map((item) => (
+        <section
+          aria-labelledby="guess-q"
+          className="mt-5 rounded-[28px] border border-white bg-white/50 p-3 shadow-[0_8px_28px_#3a82e414]"
+        >
+          <div className="flex items-center justify-between pb-3 pl-1.5 pt-1">
+            <h2 id="guess-q" className="flex items-center gap-2 text-body font-semibold text-foreground">
+              <span aria-hidden="true" className="h-3.5 w-1 rounded-full bg-primary" />
+              猜你想问
+            </h2>
+            {suggestionPageCount > 1 && (
+              <button
+                type="button"
+                onClick={() => setPage((p) => (p + 1) % suggestionPageCount)}
+                className="flex h-7 items-center gap-1 rounded-full bg-white px-3 text-caption text-muted-foreground active:opacity-70"
+              >
+                换一批
+                <RefreshCw className="size-3" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+
+          <ul key={page} className="flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
+            {visibleSuggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex h-full min-h-[76px] w-full flex-col justify-between gap-2 rounded-2xl border border-border/60 bg-white p-3 text-left shadow-[0_2px_10px_#3a82e40d] transition-colors active:bg-brand-page"
+                  className="flex h-11 w-full items-center gap-3 rounded-2xl bg-white px-4 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
                 >
-                  <span className="line-clamp-2 text-body font-medium leading-snug text-foreground">
-                    {item.question}
+                  <span
+                    aria-hidden="true"
+                    className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[0_4px_10px_#3a82e440]"
+                  >
+                    <Hash className="size-4" strokeWidth={2.5} />
                   </span>
-                  <span className="flex items-center gap-0.5 text-caption text-primary">
-                    问问 AI
-                    <ChevronRight className="size-3" />
-                  </span>
+                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
+                  <ArrowRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
             ))}
