@@ -332,7 +332,7 @@ export function AiChatScreen({
   }
 
   const greeting = testee
-    ? `你好��${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
+    ? `你好���${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
     : '你好。本次未关联受检人，我会按通用知识回答；你也可以随时选择受检人或上传外部报告。'
 
   const welcome = embedded && !sharing && messages.length === 0
@@ -827,7 +827,7 @@ function TesteeSheet({
 
         <p className="mt-3 flex items-center justify-center gap-1 text-caption text-faint">
           <LockKeyhole className="size-3" />
-          仅在授权范围内读取，信���加密保护
+          仅在授权范围内读取，信息加密保护
         </p>
 
         <div className="mt-4 flex gap-3">
