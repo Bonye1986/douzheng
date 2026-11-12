@@ -103,15 +103,15 @@ export function HomeWelcome({
                   type="button"
                   disabled={disabled}
                   onClick={() => onAsk(question)}
-                  className="flex w-[156px] flex-col gap-1 rounded-[18px] bg-white px-3.5 py-3 text-left shadow-[0_4px_16px_#3a82e40d] ring-1 ring-[#eef3fc] transition-colors active:bg-secondary/60 disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-xl bg-white py-2 pl-2 pr-3 text-left shadow-[0_2px_10px_#3a82e40a] ring-1 ring-[#eef3fc] transition-colors active:bg-secondary/60 disabled:opacity-50"
                 >
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="whitespace-nowrap text-[15px] font-semibold text-foreground">{title}</span>
-                    <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-                      <Icon className="size-4" strokeWidth={2} />
-                    </span>
+                  <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+                    <Icon className="size-3.5" strokeWidth={2} />
                   </span>
-                  <span className="whitespace-nowrap text-[12px] text-muted-foreground">{desc}</span>
+                  <span className="flex flex-col">
+                    <span className="whitespace-nowrap text-[13px] font-semibold leading-[18px] text-foreground">{title}</span>
+                    <span className="whitespace-nowrap text-[11px] leading-4 text-muted-foreground">{desc}</span>
+                  </span>
                 </button>
               </li>
             ))}
