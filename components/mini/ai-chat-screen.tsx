@@ -332,8 +332,10 @@ export function AiChatScreen({
   }
 
   const greeting = testee
-    ? `你好，${testee.name}。已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
+    ? `你好，${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
     : '你好。本次未关联受检人，我会按通用知识回答；你也可以随时选择受检人或上传外部报告。'
+
+  const welcome = embedded && !sharing && messages.length === 0
 
   return (
     <div className="relative flex h-full flex-col bg-brand-page">
@@ -366,7 +368,7 @@ export function AiChatScreen({
             <Menu className="size-5" />
           </button>
         </div>
-        <h2 className="text-title font-medium">{embedded ? '药问AI' : 'AI咨询'}</h2>
+        {!welcome && <h2 className="text-title font-medium">{embedded ? '药问AI' : 'AI咨询'}</h2>}
         <div
           aria-hidden="true"
           className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
@@ -378,7 +380,7 @@ export function AiChatScreen({
       </header>
       )}
 
-      {!sharing && (
+      {!sharing && !welcome && (
       <div className="shrink-0 px-4 pb-3 pt-2">
         <div className="flex items-center rounded-2xl bg-white py-1.5 pl-1.5 pr-2 shadow-[0_4px_14px_#3a82e40d]">
           <button
@@ -431,8 +433,52 @@ export function AiChatScreen({
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-3 [scrollbar-width:none]">
-        {embedded && !sharing && messages.length === 0 ? (
-          <HomeWelcome onAsk={(q) => ask(q)} disabled={isReplying} />
+        {welcome ? (
+          <HomeWelcome
+            onAsk={(q) => ask(q)}
+            disabled={isReplying}
+            composer={<ChatComposer variant="card" disabled={isReplying} onSend={ask} />}
+            context={
+              <div className="flex items-center justify-between gap-2 px-1">
+                <button
+                  type="button"
+                  onClick={() => setSheetOpen(true)}
+                  className="flex min-w-0 items-center gap-1.5 rounded-full py-1 text-[13px] text-muted-foreground active:opacity-70"
+                >
+                  {testee ? (
+                    <UserRoundCheck className="size-4 shrink-0 text-primary" aria-hidden="true" />
+                  ) : (
+                    <UserRound className="size-4 shrink-0" aria-hidden="true" />
+                  )}
+                  <span className="truncate">
+                    {testee ? `为 ${testeeLabel(testee)} 解答` : '未选择受检人 · 按通用知识回答'}
+                  </span>
+                  <ChevronRight className="size-3.5 shrink-0 text-faint" aria-hidden="true" />
+                </button>
+                <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-white/80 p-0.5 ring-1 ring-[#e6eefb]">
+                  {answerStyles.map((s) => {
+                    const selected = s.key === mode
+                    return (
+                      <button
+                        key={s.key}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        aria-label={`${s.label}：${s.desc}`}
+                        onClick={() => setMode(s.key)}
+                        className={cn(
+                          'h-6 rounded-full px-2.5 text-[12px] font-medium transition-colors',
+                          selected ? 'bg-primary text-white' : 'text-muted-foreground',
+                        )}
+                      >
+                        {s.short}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            }
+          />
         ) : (
         <>
         {sharing ? (
@@ -551,7 +597,7 @@ export function AiChatScreen({
         <ShareSheet items={shareItems} onClose={() => setShareIds(null)} />
       ) : (
         <>
-          {!(embedded && messages.length === 0) && (
+          {!welcome && (
           <ul
             aria-label="快捷服务"
             className="flex shrink-0 gap-2 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none]"
@@ -570,7 +616,7 @@ export function AiChatScreen({
             ))}
           </ul>
           )}
-          <ChatComposer disabled={isReplying} onSend={ask} compact={embedded} />
+          {!welcome && <ChatComposer disabled={isReplying} onSend={ask} compact={embedded} />}
         </>
       )}
 

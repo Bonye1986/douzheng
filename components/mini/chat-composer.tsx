@@ -9,8 +9,10 @@ import {
   Keyboard,
   Mic,
   Plus,
+  Sparkles,
   X,
 } from 'lucide-react'
+import type React from 'react'
 import { cn } from '@/lib/utils'
 
 export type Attachment = { id: string; name: string; kind: 'image' | 'pdf'; url?: string }
@@ -30,7 +32,10 @@ export function ChatComposer({
   disabled,
   onSend,
   compact = false,
+  variant = 'bar',
 }: {
+  /** bar：底部输入栏；card：首页大输入卡 */
+  variant?: 'bar' | 'card'
   /** 底部有 TabBar 时不再预留 home indicator 安全区 */
   compact?: boolean
   disabled: boolean
@@ -86,8 +91,145 @@ export function ChatComposer({
     })
   }
 
+  const attachmentList = attachments.length > 0 && (
+    <ul aria-label="待发送附件" className="mb-2.5 flex gap-2 overflow-x-auto px-1 pt-1.5 [scrollbar-width:none]">
+      {attachments.map((a) => (
+        <li key={a.id} className="relative shrink-0">
+          {a.kind === 'image' && a.url ? (
+            <img src={a.url} alt={a.name} className="size-14 rounded-xl border border-border object-cover" />
+          ) : (
+            <span className="flex h-14 w-32 items-center gap-2 rounded-xl border border-border bg-[#f6f9fd] px-2.5">
+              <FileText className="size-6 shrink-0 text-destructive" />
+              <span className="line-clamp-2 text-caption leading-4 text-foreground">{a.name}</span>
+            </span>
+          )}
+          <button
+            type="button"
+            aria-label={`移除 ${a.name}`}
+            onClick={() => setAttachments((prev) => prev.filter((x) => x.id !== a.id))}
+            className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-[#1e2a3d]/70 text-white"
+          >
+            <X className="size-3" strokeWidth={3} />
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
+
+  const holdToTalkProps = {
+    type: 'button' as const,
+    disabled,
+    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.currentTarget.setPointerCapture(e.pointerId)
+      startY.current = e.clientY
+      setRecording({ cancel: false })
+    },
+    onPointerMove: (e: React.PointerEvent) => {
+      if (!recording) return
+      const cancel = startY.current - e.clientY > CANCEL_DISTANCE
+      if (cancel !== recording.cancel) setRecording({ cancel })
+    },
+    onPointerUp: () => {
+      if (!recording) return
+      const cancelled = recording.cancel
+      setRecording(null)
+      if (!cancelled) {
+        send(voiceSamples[voiceIndex.current % voiceSamples.length])
+        voiceIndex.current++
+      }
+    },
+    onPointerCancel: () => setRecording(null),
+  }
+
+  const attachDisabled = disabled || attachments.length >= MAX_ATTACHMENTS
+  const toolBtn =
+    'flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary disabled:opacity-40'
+
+  const card = (
+    <div className="relative rounded-[24px] border-[1.5px] border-[#d3e0f7] bg-white px-4 pb-3 pt-4 shadow-[0_10px_28px_#3a82e41a]">
+      {attachmentList}
+      {inputMode === 'keyboard' ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            send(draft)
+          }}
+          className="flex items-center gap-2.5"
+        >
+          <Sparkles className="size-5 shrink-0 text-primary" strokeWidth={1.8} aria-hidden="true" />
+          <label htmlFor="ai-ask-card" className="sr-only">
+            输入想咨询的问题
+          </label>
+          <input
+            ref={inputRef}
+            id="ai-ask-card"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.nativeEvent.isComposing || e.keyCode === 229)) e.preventDefault()
+            }}
+            placeholder="有问题，尽管问我～"
+            enterKeyHint="send"
+            className="h-8 min-w-0 flex-1 bg-transparent text-[16px] text-foreground outline-none placeholder:text-faint"
+          />
+        </form>
+      ) : (
+        <button
+          {...holdToTalkProps}
+          className={cn(
+            'h-10 w-full touch-none select-none rounded-full text-title font-semibold transition-colors disabled:opacity-50',
+            recording ? 'bg-[#dfeafb] text-primary' : 'bg-muted text-foreground',
+          )}
+        >
+          {recording ? '松开 发送' : '按住 说话'}
+        </button>
+      )}
+
+      <div className="mt-3 flex items-center gap-1">
+        <button
+          type="button"
+          onClick={toggleInputMode}
+          aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
+          className={toolBtn}
+        >
+          {inputMode === 'keyboard' ? <Mic className="size-5" /> : <Keyboard className="size-5" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => cameraRef.current?.click()}
+          disabled={attachDisabled}
+          aria-label="拍照提问"
+          className={toolBtn}
+        >
+          <Camera className="size-5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setSheetOpen(true)}
+          disabled={attachDisabled}
+          aria-label="上传附件"
+          className={toolBtn}
+        >
+          <Plus className="size-5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
+        </button>
+        <span className="ml-1 text-[12px] text-faint">支持文字、语音、图片</span>
+        <button
+          type="button"
+          onClick={() => send(draft)}
+          disabled={!canSend}
+          aria-label="发送"
+          className="ml-auto flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[0_6px_14px_#3a82e440] transition-opacity disabled:opacity-40 disabled:shadow-none"
+        >
+          <ArrowUp className="size-5" strokeWidth={2.4} />
+        </button>
+      </div>
+    </div>
+  )
+
   return (
     <>
+      {variant === 'card' ? card : (
       <div className={cn('relative shrink-0 border-t border-border bg-white px-3 pt-2', compact ? 'pb-2' : 'pb-7')}>
         {attachments.length > 0 && (
           <ul aria-label="待发送附件" className="mb-2.5 flex gap-2 overflow-x-auto px-1 pt-1.5 [scrollbar-width:none]">
@@ -216,6 +358,7 @@ export function ChatComposer({
           )}
         </div>
       </div>
+      )}
 
       {recording && <RecordingOverlay cancel={recording.cancel} />}
 
