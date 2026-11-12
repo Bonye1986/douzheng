@@ -81,7 +81,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(question)}
-                  className="flex h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl border border-border/70 bg-white text-[12px] font-medium leading-4 text-foreground transition-colors active:bg-primary/5"
+                  className="flex h-14 w-full flex-col items-center justify-center gap-1 rounded-[14px] border border-border/70 bg-white text-[12px] font-medium leading-4 text-foreground transition-colors active:bg-primary/5"
                 >
                   <Icon className="size-[18px] shrink-0 text-primary" strokeWidth={2} aria-hidden="true" />
                   <span className="whitespace-nowrap">{label}</span>
@@ -94,7 +94,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-2 flex h-[104px] w-full shrink-0 flex-col justify-between rounded-2xl border-2 border-primary/25 bg-white p-4 text-left shadow-[0_12px_32px_#3a82e426] transition-transform active:scale-[0.99]"
+          className="mt-2 flex h-[104px] w-full shrink-0 flex-col justify-between rounded-[26px] border-2 border-primary/25 bg-white p-4 text-left shadow-[0_12px_32px_#3a82e426] transition-transform active:scale-[0.99]"
         >
           <span className="flex items-start gap-2">
             <Sparkles className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
