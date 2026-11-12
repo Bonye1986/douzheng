@@ -22,7 +22,7 @@ const personalizedSuggestions = [
   { id: 'q5', question: '每天多杯咖啡，需要额外补钙吗？' },
 ]
 const quickActions = [
-  { id: 'report', icon: FileText, label: '查报告', question: '帮我查看并解读我的检测报告' },
+  { id: 'report', icon: FileText, label: '报告查询', question: '帮我查看并解读我的检测报告' },
   { id: 'package', icon: PackageSearch, label: '推荐套餐', question: '根据我的情况推荐合适的检测套餐' },
   { id: 'medication', icon: Pill, label: '用药咨询', question: '我想咨询一下用药问题' },
   { id: 'health', icon: HeartPulse, label: '健康管理', question: '帮我制定健康管理与用药提醒计划' },
