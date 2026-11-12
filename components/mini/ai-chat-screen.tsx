@@ -439,44 +439,49 @@ export function AiChatScreen({
             onAsk={(q) => ask(q)}
             disabled={isReplying}
             composer={<ChatComposer variant="pill" disabled={isReplying} onSend={ask} />}
-            context={
-              <div className="flex items-center justify-between gap-2 px-1">
-                <button
-                  type="button"
-                  onClick={() => setSheetOpen(true)}
-                  className="flex min-w-0 items-center gap-1.5 rounded-full py-1 text-[13px] text-muted-foreground active:opacity-70"
+            subject={
+              <button
+                type="button"
+                onClick={() => setSheetOpen(true)}
+                className="flex max-w-full items-center gap-1 self-start rounded-full bg-white/70 py-1 pl-1 pr-2 text-[12px] text-muted-foreground ring-1 ring-[#e6eefb] active:opacity-70"
+              >
+                <span
+                  className={cn(
+                    'flex size-5 shrink-0 items-center justify-center rounded-full',
+                    testee ? 'bg-primary text-white' : 'bg-secondary text-secondary-foreground',
+                  )}
                 >
                   {testee ? (
-                    <UserRoundCheck className="size-4 shrink-0 text-primary" aria-hidden="true" />
+                    <UserRoundCheck className="size-3" aria-hidden="true" />
                   ) : (
-                    <UserRound className="size-4 shrink-0" aria-hidden="true" />
+                    <UserRound className="size-3" aria-hidden="true" />
                   )}
-                  <span className="truncate">
-                    {testee ? `为 ${testeeLabel(testee)} 解答` : '未选择受检人 · 按通用知识回答'}
-                  </span>
-                  <ChevronRight className="size-3.5 shrink-0 text-faint" aria-hidden="true" />
-                </button>
-                <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-white/80 p-0.5 ring-1 ring-[#e6eefb]">
-                  {answerStyles.map((s) => {
-                    const selected = s.key === mode
-                    return (
-                      <button
-                        key={s.key}
-                        type="button"
-                        role="radio"
-                        aria-checked={selected}
-                        aria-label={`${s.label}：${s.desc}`}
-                        onClick={() => setMode(s.key)}
-                        className={cn(
-                          'h-6 rounded-full px-2.5 text-[12px] font-medium transition-colors',
-                          selected ? 'bg-primary text-white' : 'text-muted-foreground',
-                        )}
-                      >
-                        {s.short}
-                      </button>
-                    )
-                  })}
-                </div>
+                </span>
+                <span className="truncate">{testee ? `为 ${testeeLabel(testee)} 解答` : '选择受检人'}</span>
+                <ChevronRight className="size-3 shrink-0 text-faint" aria-hidden="true" />
+              </button>
+            }
+            styleToggle={
+              <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-muted p-0.5">
+                {answerStyles.map((s) => {
+                  const selected = s.key === mode
+                  return (
+                    <button
+                      key={s.key}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      aria-label={`${s.label}：${s.desc}`}
+                      onClick={() => setMode(s.key)}
+                      className={cn(
+                        'h-6 rounded-full px-2.5 text-[12px] font-medium transition-colors',
+                        selected ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground',
+                      )}
+                    >
+                      {s.short}
+                    </button>
+                  )
+                })}
               </div>
             }
           />

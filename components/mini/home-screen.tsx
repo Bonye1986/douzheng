@@ -33,14 +33,17 @@ export function HomeWelcome({
   onAsk,
   disabled,
   composer,
-  context,
+  subject,
+  styleToggle,
 }: {
   onAsk: (question: string) => void
   disabled?: boolean
   /** 胶囊输入（ChatComposer pill 版） */
   composer: ReactNode
-  /** 受检人选择 + 通俗/专业切换 */
-  context: ReactNode
+  /** 受检人选择（问候语下方） */
+  subject: ReactNode
+  /** 通俗/专业切换（「你可以这样问」卡片标题右侧） */
+  styleToggle: ReactNode
 }) {
   const { hello, line } = greetingByHour(new Date().getHours())
 
@@ -48,15 +51,15 @@ export function HomeWelcome({
     <div className="flex min-h-full flex-col">
       <section className="relative pt-1">
         <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
-        <div className="mb-3">{context}</div>
         <div className="relative z-0 flex items-end justify-between">
-          <div className="flex flex-col gap-1.5 pb-5 pl-2" suppressHydrationWarning>
+          <div className="flex min-w-0 flex-col gap-1.5 pb-5 pl-2" suppressHydrationWarning>
             <p className="text-[20px] font-semibold leading-tight text-primary" suppressHydrationWarning>
               {hello}
             </p>
             <p className="text-pretty text-[18px] font-semibold leading-snug text-foreground" suppressHydrationWarning>
               {line}
             </p>
+            <div className="mt-1.5 flex">{subject}</div>
           </div>
           <div aria-hidden="true" className="relative -mb-6 mr-2 h-[112px] w-[84px] shrink-0">
             <div className="relative size-full animate-[robot-float_4s_ease-in-out_infinite] motion-reduce:animate-none">
@@ -73,7 +76,10 @@ export function HomeWelcome({
         </div>
 
         <div className="relative z-10 rounded-[24px] border border-white bg-white/55 p-4 shadow-[0_10px_30px_#3a82e40f] backdrop-blur-md">
-          <h2 className="px-1 text-[14px] text-muted-foreground">你可以这样问</h2>
+          <div className="flex items-center justify-between gap-2 px-1">
+            <h2 className="text-[14px] text-muted-foreground">你可以这样问</h2>
+            {styleToggle}
+          </div>
           <ul className="mt-3 flex flex-col gap-2.5">
             {suggestions.map((item) => (
               <li key={item.id}>
