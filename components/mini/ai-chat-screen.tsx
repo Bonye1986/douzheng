@@ -367,6 +367,7 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
+          {welcome && <span className="ml-1.5 text-[18px] font-semibold text-foreground">药问AI</span>}
         </div>
         {!welcome && <h2 className="text-title font-medium">{embedded ? '药问AI' : 'AI咨询'}</h2>}
         <div
@@ -437,7 +438,7 @@ export function AiChatScreen({
           <HomeWelcome
             onAsk={(q) => ask(q)}
             disabled={isReplying}
-            composer={<ChatComposer variant="card" disabled={isReplying} onSend={ask} />}
+            composer={<ChatComposer variant="pill" disabled={isReplying} onSend={ask} />}
             context={
               <div className="flex items-center justify-between gap-2 px-1">
                 <button
