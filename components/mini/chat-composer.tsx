@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, type ChangeEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import {
   ArrowUp,
   Camera,
@@ -56,7 +56,28 @@ export function ChatComposer({
   const albumRef = useRef<HTMLInputElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
+  const [expanded, setExpanded] = useState(false)
+  const expandedRef = useRef<HTMLDivElement>(null)
+
   const canSend = !disabled && (draft.trim().length > 0 || attachments.length > 0)
+
+  // 首页 pill：聚焦输入框时展开为带受检人选择的卡片；点到卡片外且未输入内容时收起
+  useEffect(() => {
+    if (!expanded) return
+    function handlePointerDown(e: PointerEvent) {
+      if (expandedRef.current?.contains(e.target as Node)) return
+      if (sheetOpen || draft.trim() || attachments.length > 0) return
+      setExpanded(false)
+    }
+    document.addEventListener('pointerdown', handlePointerDown)
+    return () => document.removeEventListener('pointerdown', handlePointerDown)
+  }, [expanded, sheetOpen, draft, attachments.length])
+
+  function expandPill() {
+    if (!accessory || expanded) return
+    setExpanded(true)
+    requestAnimationFrame(() => inputRef.current?.focus())
+  }
 
   function send(text: string) {
     if (disabled || (!text.trim() && attachments.length === 0)) return
@@ -257,7 +278,10 @@ export function ChatComposer({
   )
 
   const pillWithAccessory = (
-    <div className="relative rounded-[24px] bg-white px-4 pb-3 pt-3.5 shadow-[0_6px_20px_#3a82e414] ring-1 ring-[#e6eefb] focus-within:ring-primary/50">
+    <div
+      ref={expandedRef}
+      className="relative rounded-[24px] bg-white px-4 pb-3 pt-3.5 shadow-[0_6px_20px_#3a82e414] ring-1 ring-[#e6eefb] animate-in fade-in zoom-in-[0.98] duration-150 focus-within:ring-primary/50"
+    >
       {attachmentList}
       <div className="flex h-9 items-center">
         {inputMode === 'keyboard' ? (
@@ -280,34 +304,34 @@ export function ChatComposer({
           type="button"
           onClick={toggleInputMode}
           aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
+          className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
         >
-          {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
+          {inputMode === 'keyboard' ? <Mic className="size-[18px]" /> : <Keyboard className="size-[18px]" />}
         </button>
         <button
           type="button"
           onClick={() => setSheetOpen(true)}
           disabled={attachDisabled}
           aria-label="拍照或上传报告"
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
+          className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
         >
-          <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
+          <Plus className="size-[18px] rounded-full border-[1.5px] border-current p-px" strokeWidth={2.2} />
         </button>
         {inputMode === 'keyboard' && canSend && (
           <button
             type="button"
             onClick={() => send(draft)}
             aria-label="发送"
-            className="ml-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
+            className="ml-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
           >
-            <ArrowUp className="size-4.5" strokeWidth={2.4} />
+            <ArrowUp className="size-4" strokeWidth={2.4} />
           </button>
         )}
       </div>
     </div>
   )
 
-  const pill = accessory ? pillWithAccessory : (
+  const pill = accessory && expanded ? pillWithAccessory : (
     <div className="relative">
       {attachmentList}
       <div className="flex items-center gap-2.5">
@@ -316,9 +340,9 @@ export function ChatComposer({
             type="button"
             onClick={toggleInputMode}
             aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
+            className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
           >
-            {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
+            {inputMode === 'keyboard' ? <Mic className="size-[18px]" /> : <Keyboard className="size-[18px]" />}
           </button>
           {inputMode === 'keyboard' ? (
             <form
@@ -336,6 +360,7 @@ export function ChatComposer({
                 id="ai-ask-pill"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                onFocus={expandPill}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && (e.nativeEvent.isComposing || e.keyCode === 229)) e.preventDefault()
                 }}
@@ -360,9 +385,9 @@ export function ChatComposer({
               type="button"
               onClick={() => send(draft)}
               aria-label="发送"
-              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
+              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
             >
-              <ArrowUp className="size-4.5" strokeWidth={2.4} />
+              <ArrowUp className="size-4" strokeWidth={2.4} />
             </button>
           )}
           <button
@@ -370,9 +395,9 @@ export function ChatComposer({
             onClick={() => setSheetOpen(true)}
             disabled={attachDisabled}
             aria-label="拍照或上传报告"
-            className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
+            className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
           >
-            <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
+            <Plus className="size-[18px] rounded-full border-[1.5px] border-current p-px" strokeWidth={2.2} />
           </button>
         </div>
       </div>
