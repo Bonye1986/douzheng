@@ -1,13 +1,14 @@
 'use client'
 
 import {
-  ArrowRight,
   ArrowUp,
+  ChevronRight,
   Circle,
   Ellipsis,
   FileText,
   Hash,
   HeartPulse,
+  Lightbulb,
   PackageSearch,
   Pill,
   Sparkles,
@@ -118,21 +119,30 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </span>
         </button>
 
-        <section aria-labelledby="guess-q" className="mt-5">
-          <h2 id="guess-q" className="px-1 pb-1.5 text-caption font-medium text-muted-foreground">
-            猜你想问
-          </h2>
-          <ul className="flex flex-col">
+        <section
+          aria-labelledby="guess-q"
+          className="mt-5 rounded-2xl border border-white bg-white/60 px-3.5 pb-1 pt-3 shadow-[0_4px_16px_#3a82e40d] backdrop-blur"
+        >
+          <div className="flex items-center gap-1.5 pb-1">
+            <span className="flex size-5 items-center justify-center rounded-md bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
+              <Lightbulb className="size-3" strokeWidth={2.5} aria-hidden="true" />
+            </span>
+            <h2 id="guess-q" className="text-[13px] font-semibold text-foreground">
+              猜你想问
+            </h2>
+            <span className="ml-auto text-[11px] text-faint">大家都在问</span>
+          </div>
+          <ul className="flex flex-col divide-y divide-border/60">
             {personalizedSuggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex w-full items-center gap-2 rounded-lg px-1 py-1.5 text-left transition-colors active:bg-white/60"
+                  className="group flex w-full items-center gap-2 py-2.5 text-left transition-colors active:opacity-70"
                 >
-                  <Hash className="size-3.5 shrink-0 text-primary/70" strokeWidth={2.5} aria-hidden="true" />
-                  <span className="min-w-0 flex-1 truncate text-[13px] leading-5 text-foreground/80">{item.question}</span>
-                  <ArrowRight className="size-3.5 shrink-0 text-faint" aria-hidden="true" />
+                  <Hash className="size-3 shrink-0 text-primary" strokeWidth={3} aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate text-[13px] leading-5 text-foreground/85">{item.question}</span>
+                  <ChevronRight className="size-3.5 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
             ))}
