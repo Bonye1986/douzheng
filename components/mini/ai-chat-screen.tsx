@@ -649,6 +649,7 @@ export function AiChatScreen({
 
       {drawerOpen && (
         <ChatHistoryDrawer
+          className={embedded ? '-bottom-[75px]' : undefined}
           sessions={sessions.map((s) => ({
             ...s,
             testeeName: testeeList.find((t) => t.id === s.testeeId)?.name,
@@ -857,7 +858,7 @@ function TesteeSheet({
             onClick={() => onConfirm(list.find((t) => t.id === selected) ?? null)}
             className="h-11 flex-[1.4] rounded-full bg-primary text-title font-semibold text-white shadow-[0_6px_16px_#3a82e433] transition-opacity disabled:opacity-40 disabled:shadow-none"
           >
-            确认选择
+            确认���择
           </button>
         </div>
       </div>
