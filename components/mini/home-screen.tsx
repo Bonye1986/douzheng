@@ -62,8 +62,8 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
       </div>
 
       <div className="flex flex-1 flex-col overflow-y-auto px-5 pb-4 [scrollbar-width:none]">
-        <section className="flex items-end justify-between gap-2 pt-4">
-          <div className="flex min-w-0 flex-1 flex-col items-start pb-2">
+  <section className="flex items-center justify-between gap-2 pt-4">
+  <div className="flex min-w-0 flex-1 flex-col items-start justify-center">
             <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
             <p className="text-balance text-[24px] font-semibold leading-tight text-foreground">
               Hi，我是您的
