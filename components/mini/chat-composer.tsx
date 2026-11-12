@@ -231,7 +231,15 @@ export function ChatComposer({
     <div className="relative">
       {attachmentList}
       <div className="flex items-center gap-2.5">
-        <div className="flex h-12 min-w-0 flex-1 items-center rounded-full bg-white pl-5 pr-1.5 shadow-[0_6px_20px_#3a82e414] ring-1 ring-[#e6eefb] focus-within:ring-primary/50">
+        <div className="flex h-12 min-w-0 flex-1 items-center gap-1 rounded-full bg-white px-1.5 shadow-[0_6px_20px_#3a82e414] ring-1 ring-[#e6eefb] focus-within:ring-primary/50">
+          <button
+            type="button"
+            onClick={toggleInputMode}
+            aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
+          >
+            {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
+          </button>
           {inputMode === 'keyboard' ? (
             <form
               onSubmit={(e) => {
@@ -253,7 +261,7 @@ export function ChatComposer({
                 }}
                 placeholder="说说您或家人的用药问题"
                 enterKeyHint="send"
-                className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-faint"
+                className="h-full min-w-0 flex-1 bg-transparent px-1 text-[15px] text-foreground outline-none placeholder:text-faint"
               />
             </form>
           ) : (
@@ -267,7 +275,7 @@ export function ChatComposer({
               {recording ? '松开 发送' : '按住 说话'}
             </button>
           )}
-          {inputMode === 'keyboard' && canSend ? (
+          {inputMode === 'keyboard' && canSend && (
             <button
               type="button"
               onClick={() => send(draft)}
@@ -275,15 +283,6 @@ export function ChatComposer({
               className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
             >
               <ArrowUp className="size-4.5" strokeWidth={2.4} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={toggleInputMode}
-              aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
-              className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
-            >
-              {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
             </button>
           )}
           <button
