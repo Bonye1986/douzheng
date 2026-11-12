@@ -10,7 +10,9 @@ import {
   Ellipsis,
   FileText,
   Hash,
+  HeartPulse,
   PackageCheck,
+  PackageSearch,
   Pill,
   RefreshCw,
   Sparkles,
@@ -28,6 +30,12 @@ const personalizedSuggestions = [
   { id: 'p4', icon: UserRound, reason: '家人 李秀兰 · 58 岁', question: '老人适合做哪项基因检测？' },
   { id: 'p5', icon: PackageCheck, reason: '样本待寄回', question: '采样后多久内需要寄回？' },
   { id: 'p6', icon: Baby, reason: '近期浏览 儿童用药', question: '孩子用药前需要做基因检测吗？' },
+]
+const quickActions = [
+  { id: 'report', icon: FileText, label: '查报告', question: '帮我查看并解读我的检测报告' },
+  { id: 'package', icon: PackageSearch, label: '推荐套餐', question: '根据我的情况推荐合适的检测套餐' },
+  { id: 'medication', icon: Pill, label: '用药咨询', question: '我想咨询一下用药问题' },
+  { id: 'health', icon: HeartPulse, label: '健康管理', question: '帮我制定健康管理与用药提醒计划' },
 ]
 const suggestionPageCount = Math.ceil(personalizedSuggestions.length / PAGE_SIZE)
 
@@ -70,10 +78,26 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </p>
         </section>
 
+        <nav aria-label="快捷功能" className="mt-10 grid grid-cols-4 gap-2">
+          {quickActions.map(({ id, icon: Icon, label, question }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onOpenChat?.(question)}
+              className="flex flex-col items-center gap-1.5 rounded-2xl border border-white bg-white/60 py-2.5 transition-transform active:scale-[0.97]"
+            >
+              <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Icon className="size-[18px]" aria-hidden="true" />
+              </span>
+              <span className="text-caption text-foreground">{label}</span>
+            </button>
+          ))}
+        </nav>
+
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-14 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
+          className="mt-3 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
