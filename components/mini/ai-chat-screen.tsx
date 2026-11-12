@@ -29,6 +29,7 @@ import { StatusBar } from '@/components/mini/phone-frame'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { ChatComposer, answerStyles, type Attachment } from '@/components/mini/chat-composer'
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
+import { HomeWelcome } from '@/components/mini/home-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { useExaminees } from '@/components/mini/examinee-store'
 import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/components/mini/chat-share'
@@ -121,7 +122,10 @@ export function AiChatScreen({
   request,
   active = true,
   onBack,
+  embedded = false,
 }: {
+  /** 首页内嵌模式：无返回键，空状态展示首页欢迎区，底部为 TabBar 预留空间 */
+  embedded?: boolean
   initialMode?: Mode
   initialTesteeId?: string
   initialQuestion?: string
@@ -342,15 +346,17 @@ export function AiChatScreen({
         />
       ) : (
       <header className="relative flex h-11 items-center justify-center px-2 text-foreground">
-        <div className="absolute left-1 flex items-center">
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="返回"
-            className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
-          >
-            <ChevronLeft className="size-5" />
-          </button>
+        <div className={cn('absolute flex items-center', embedded ? 'left-2' : 'left-1')}>
+          {!embedded && (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="返回"
+              className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -360,7 +366,7 @@ export function AiChatScreen({
             <Menu className="size-5" />
           </button>
         </div>
-        <h2 className="text-title font-medium">AI咨询</h2>
+        <h2 className="text-title font-medium">{embedded ? '药问AI' : 'AI咨询'}</h2>
         <div
           aria-hidden="true"
           className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
@@ -425,6 +431,10 @@ export function AiChatScreen({
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-3 [scrollbar-width:none]">
+        {embedded && !sharing && messages.length === 0 ? (
+          <HomeWelcome onAsk={(q) => ask(q)} disabled={isReplying} />
+        ) : (
+        <>
         {sharing ? (
           <p className="py-2 text-center text-caption text-muted-foreground">内容由 AI 生成</p>
         ) : (
@@ -533,6 +543,8 @@ export function AiChatScreen({
             ))}
           </ul>
         )}
+        </>
+        )}
       </div>
 
       {sharing ? (
@@ -556,7 +568,7 @@ export function AiChatScreen({
               </li>
             ))}
           </ul>
-          <ChatComposer disabled={isReplying} onSend={ask} />
+          <ChatComposer disabled={isReplying} onSend={ask} compact={embedded} />
         </>
       )}
 

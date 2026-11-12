@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { HomeScreen } from '@/components/mini/home-screen'
 import { AiChatScreen, type ChatRequest } from '@/components/mini/ai-chat-screen'
 import { TabBar, type TabKey } from '@/components/mini/tab-bar'
 import { TabPlaceholderScreen } from '@/components/mini/tab-placeholder-screen'
@@ -66,8 +65,6 @@ export function HomeFlow({
   initialLoginPrompt?: string
 }) {
   const [tab, setTab] = useState<TabKey>(initialTab)
-  const [chatOpen, setChatOpen] = useState(false)
-  const [chatMounted, setChatMounted] = useState(false)
   const [request, setRequest] = useState<ChatRequest | null>(null)
   const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
   const [loginPrompt, setLoginPrompt] = useState<string | null>(initialLoginPrompt ?? null)
@@ -101,10 +98,10 @@ export function HomeFlow({
     setTab('test')
   }
 
+  // 首页即 AI 页：其它页面的 AI 入口直接切回首页对话，不再叠加跳转页。
   const openChat = (question?: string) => {
     if (question) setRequest({ question, id: Date.now() })
-    setChatMounted(true)
-    setChatOpen(true)
+    setTab('home')
   }
 
   const handleCategory = (id: ServiceCategoryId) => {
@@ -121,10 +118,11 @@ export function HomeFlow({
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden">
-      <div className="min-h-0 flex-1" inert={chatOpen}>
-        {tab === 'home' ? (
-          <HomeScreen onOpenChat={openChat} />
-        ) : tab === 'service' ? (
+      <div className="relative min-h-0 flex-1">
+        <div className={cn('h-full', tab !== 'home' && 'hidden')}>
+          <AiChatScreen embedded request={request} active={tab === 'home'} />
+        </div>
+        {tab === 'home' ? null : tab === 'service' ? (
           <ServicesScreen
             onOpenChat={openChat}
             onCategory={handleCategory}
@@ -157,23 +155,8 @@ export function HomeFlow({
           <TabPlaceholderScreen tab={tab} />
         )}
       </div>
-      <div inert={chatOpen}>
-        <TabBar active={tab} onSelect={setTab} />
-      </div>
-      {!chatOpen && tab !== 'home' && <FloatingAiButton onClick={() => openChat()} />}
-
-      {chatMounted && (
-        <div
-          aria-hidden={!chatOpen}
-          inert={!chatOpen}
-          className={cn(
-            'absolute inset-0 z-40 transition-transform duration-300 ease-out motion-reduce:transition-none',
-            chatOpen ? 'translate-x-0' : 'pointer-events-none translate-x-full',
-          )}
-        >
-          <AiChatScreen request={request} active={chatOpen} onBack={() => setChatOpen(false)} />
-        </div>
-      )}
+      <TabBar active={tab} onSelect={setTab} />
+      {tab !== 'home' && <FloatingAiButton onClick={() => openChat()} />}
 
       {subPage === 'examinee' && <ExamineeManageScreen onBack={() => setSubPage(null)} />}
       {subPage === 'reminder' && <MedicationReminderScreen onBack={() => setSubPage(null)} />}

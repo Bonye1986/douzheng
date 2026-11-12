@@ -29,7 +29,10 @@ export const answerStyles: { key: AnswerStyle; label: string; short: string; des
 export function ChatComposer({
   disabled,
   onSend,
+  compact = false,
 }: {
+  /** 底部有 TabBar 时不再预留 home indicator 安全区 */
+  compact?: boolean
   disabled: boolean
   onSend: (text: string, attachments: Attachment[]) => void
 }) {
@@ -85,7 +88,7 @@ export function ChatComposer({
 
   return (
     <>
-      <div className="relative shrink-0 border-t border-border bg-white px-3 pb-7 pt-2">
+      <div className={cn('relative shrink-0 border-t border-border bg-white px-3 pt-2', compact ? 'pb-2' : 'pb-7')}>
         {attachments.length > 0 && (
           <ul aria-label="待发送附件" className="mb-2.5 flex gap-2 overflow-x-auto px-1 pt-1.5 [scrollbar-width:none]">
             {attachments.map((a) => (
@@ -176,6 +179,18 @@ export function ChatComposer({
               )}
             >
               {recording ? '松开 发送' : '按住 说话'}
+            </button>
+          )}
+
+          {!(inputMode === 'keyboard' && canSend) && (
+            <button
+              type="button"
+              onClick={() => cameraRef.current?.click()}
+              disabled={disabled || attachments.length >= MAX_ATTACHMENTS}
+              aria-label="拍照提问"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
+            >
+              <Camera className="size-6" />
             </button>
           )}
 
