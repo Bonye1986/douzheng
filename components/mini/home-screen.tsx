@@ -4,21 +4,17 @@ import { useState } from 'react'
 import {
   ArrowRight,
   ArrowUp,
-  Baby,
   Circle,
-  Clock,
   Ellipsis,
   FileText,
   Hash,
   HeartPulse,
-  PackageCheck,
   PackageSearch,
   Pill,
   RefreshCw,
   Sparkles,
   TestTube,
   Truck,
-  UserRound,
 } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
@@ -26,12 +22,11 @@ import Image from 'next/image'
 const PAGE_SIZE = 3
 
 const personalizedSuggestions = [
-  { id: 'p1', icon: FileText, reason: '您有 1 份新报告', question: '帮我解读报告里的高风险药物' },
-  { id: 'p2', icon: Clock, reason: '订单检测中', question: '我的报告大概什么时候出？' },
-  { id: 'p3', icon: Pill, reason: '正在服用 华法林', question: '华法林的剂量需要调整吗？' },
-  { id: 'p4', icon: UserRound, reason: '家人 李秀兰 · 58 岁', question: '老人适合做哪项基因检测？' },
-  { id: 'p5', icon: PackageCheck, reason: '样本待寄回', question: '采样后多久内需要寄回？' },
-  { id: 'p6', icon: Baby, reason: '近期浏览 儿童用药', question: '孩子用药前需要做基因检测吗？' },
+  { id: 'q1', question: '孩子生病，成人药掰开减半喂，可以吗？' },
+  { id: 'q2', question: '症状好转就能停药吗？吃药没效果，能自行加量吗？' },
+  { id: 'q3', question: '减肥针听说副作用不少，普通人适合打吗？' },
+  { id: 'q4', question: '同样的药别人吃效果好，我却副作用大，是什么原因？' },
+  { id: 'q5', question: '每天多杯咖啡，需要额外补钙吗？' },
 ]
 const quickActions = [
   { id: 'report', icon: FileText, label: '查报告', question: '帮我查看并解读我的检测报告' },
@@ -80,7 +75,6 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             aria-hidden="true"
             className="relative flex h-[168px] w-[132px] shrink-0 items-end justify-center"
           >
-            <span className="absolute bottom-3 left-1/2 size-[124px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_50%_40%,#ffffff_0%,#dfeafc_55%,#c9dbf8_100%)] shadow-[inset_0_-6px_14px_#3a82e41f,0_10px_24px_#3a82e41a]" />
             <span className="absolute bottom-2 left-1/2 h-3 w-20 -translate-x-1/2 rounded-[50%] bg-[#1e3a8a]/15 blur-[6px]" />
             <div className="relative h-[156px] w-[100px] animate-[robot-float_4s_ease-in-out_infinite] motion-reduce:animate-none">
               <Image
@@ -156,7 +150,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex h-11 w-full items-center gap-3 rounded-2xl bg-white px-4 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
+                  className="flex min-h-11 w-full items-center gap-3 rounded-2xl bg-white px-4 py-2.5 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
                 >
                   <span
                     aria-hidden="true"
@@ -164,7 +158,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
                   >
                     <Hash className="size-4" strokeWidth={2.5} />
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
+                  <span className="min-w-0 flex-1 line-clamp-2 text-pretty text-body leading-snug text-foreground">{item.question}</span>
                   <ArrowRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
