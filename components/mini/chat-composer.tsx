@@ -34,7 +34,7 @@ export function ChatComposer({
   compact = false,
   variant = 'bar',
 }: {
-  /** bar：底部输入栏；card：大输入卡；pill：首页胶囊输入 + 独立拍照按钮 */
+  /** bar：底部输入栏；card：大输入卡；pill：首页一体式胶囊输入（语音 / 加号上传） */
   variant?: 'bar' | 'card' | 'pill'
   /** 底部有 TabBar 时不再预留 home indicator 安全区 */
   compact?: boolean
@@ -286,16 +286,16 @@ export function ChatComposer({
               {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => setSheetOpen(true)}
+            disabled={attachDisabled}
+            aria-label="拍照或上传报告"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
+          >
+            <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setSheetOpen(true)}
-          disabled={attachDisabled}
-          aria-label="拍照或上传报告"
-          className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-foreground shadow-[0_6px_20px_#3a82e414] ring-1 ring-[#e6eefb] active:bg-secondary disabled:opacity-40"
-        >
-          <Camera className="size-5.5" />
-        </button>
       </div>
     </div>
   )
