@@ -82,20 +82,20 @@ export function HomeWelcome({
             <h2 className="text-[14px] text-muted-foreground">你可以这样问</h2>
             {styleToggle}
           </div>
-          <ul className="mt-3 flex flex-col gap-2">
+          <ul className="mt-2.5 flex flex-col gap-1.5">
             {suggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onAsk(item.question)}
-                  className="group flex h-11 w-full items-center gap-2.5 rounded-full bg-white pl-2 pr-3.5 text-left shadow-[0_2px_8px_#3a82e40a] transition-colors active:bg-secondary/60 disabled:opacity-50"
+                  className="group flex h-9 w-full items-center gap-2 rounded-full bg-white pl-1.5 pr-3 text-left shadow-[0_2px_8px_#3a82e40a] transition-colors active:bg-secondary/60 disabled:opacity-50"
                 >
-                  <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_3px_8px_#3a82e44d]">
-                    <Hash className="size-3.5" strokeWidth={2.6} />
+                  <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_2px_6px_#3a82e44d]">
+                    <Hash className="size-3" strokeWidth={2.6} />
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-[14px] text-foreground">{item.question}</span>
-                  <ChevronRight className="size-4 shrink-0 text-faint transition-transform group-active:translate-x-0.5" aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate text-[13px] text-foreground">{item.question}</span>
+                  <ChevronRight className="size-3.5 shrink-0 text-faint transition-transform group-active:translate-x-0.5" aria-hidden="true" />
                 </button>
               </li>
             ))}
