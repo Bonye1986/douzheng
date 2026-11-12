@@ -6,14 +6,10 @@ import {
   Circle,
   Ellipsis,
   FileText,
-  Hash,
   HeartPulse,
-  Lightbulb,
   PackageSearch,
   Pill,
   Sparkles,
-  TestTube,
-  Truck,
 } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
@@ -30,8 +26,6 @@ const quickActions = [
   { id: 'package', icon: PackageSearch, label: '推荐套餐', question: '根据我的情况推荐合适的检测套餐' },
   { id: 'medication', icon: Pill, label: '用药咨询', question: '我想咨询一下用药问题' },
   { id: 'health', icon: HeartPulse, label: '健康管理', question: '帮我制定健康管理与用药提醒计划' },
-  { id: 'order', icon: Truck, label: '订单进度', question: '帮我查一下我的订单进度' },
-  { id: 'sampling', icon: TestTube, label: '采样指引', question: '口腔拭子应该怎么正确采样？' },
 ]
 
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
@@ -80,22 +74,17 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </div>
         </section>
 
-        <nav
-          aria-label="快捷功能"
-          className="-mx-5 mt-10 shrink-0 [mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-28px),transparent)]"
-        >
-          <ul className="flex snap-x snap-mandatory scroll-px-5 gap-2 overflow-x-auto px-5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav aria-label="快捷功能" className="mt-10 shrink-0">
+          <ul className="grid grid-cols-4 gap-2">
             {quickActions.map(({ id, icon: Icon, label, question }) => (
-              <li key={id} className="shrink-0 snap-start">
+              <li key={id}>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(question)}
-                  className="flex h-9 items-center gap-1.5 rounded-full border border-white bg-white/80 pl-1.5 pr-3.5 text-caption font-medium text-foreground shadow-[0_2px_8px_#3a82e40f] backdrop-blur transition-transform active:scale-[0.96]"
+                  className="flex h-14 w-full flex-col items-center justify-center gap-1 rounded-lg border border-border/70 bg-white text-[12px] font-medium leading-4 text-foreground transition-colors active:bg-primary/5"
                 >
-                  <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Icon className="size-3.5" strokeWidth={2.2} aria-hidden="true" />
-                  </span>
-                  {label}
+                  <Icon className="size-[18px] shrink-0 text-primary" strokeWidth={2} aria-hidden="true" />
+                  <span className="whitespace-nowrap">{label}</span>
                 </button>
               </li>
             ))}
@@ -105,7 +94,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-3 flex h-[104px] w-full shrink-0 flex-col justify-between rounded-3xl border-2 border-primary/25 bg-white p-4 text-left shadow-[0_12px_32px_#3a82e426] transition-transform active:scale-[0.99]"
+          className="mt-2 flex h-[104px] w-full shrink-0 flex-col justify-between rounded-3xl border-2 border-primary/25 bg-white p-4 text-left shadow-[0_12px_32px_#3a82e426] transition-transform active:scale-[0.99]"
         >
           <span className="flex items-start gap-2">
             <Sparkles className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
@@ -119,29 +108,22 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </span>
         </button>
 
-        <section
-          aria-labelledby="guess-q"
-          className="mt-5 rounded-2xl border border-white bg-white/60 px-3.5 pb-1 pt-3 shadow-[0_4px_16px_#3a82e40d] backdrop-blur"
-        >
-          <div className="flex items-center gap-1.5 pb-1">
-            <span className="flex size-5 items-center justify-center rounded-md bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
-              <Lightbulb className="size-3" strokeWidth={2.5} aria-hidden="true" />
-            </span>
-            <h2 id="guess-q" className="text-[13px] font-semibold text-foreground">
-              猜你想问
-            </h2>
-            <span className="ml-auto text-[11px] text-faint">大家都在问</span>
-          </div>
-          <ul className="flex flex-col divide-y divide-border/60">
+        <section aria-labelledby="guess-q" className="mt-6 px-1">
+          <h2 id="guess-q" className="pb-1 text-[12px] font-medium text-faint">
+            猜你想问
+          </h2>
+          <ul className="flex flex-col">
             {personalizedSuggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="group flex w-full items-center gap-2 py-2.5 text-left transition-colors active:opacity-70"
+                  className="flex w-full items-center gap-2 py-1.5 text-left transition-opacity active:opacity-60"
                 >
-                  <Hash className="size-3 shrink-0 text-primary" strokeWidth={3} aria-hidden="true" />
-                  <span className="min-w-0 flex-1 truncate text-[13px] leading-5 text-foreground/85">{item.question}</span>
+                  <span aria-hidden="true" className="size-1 shrink-0 rounded-full bg-primary/60" />
+                  <span className="min-w-0 flex-1 truncate text-[13px] leading-5 text-muted-foreground">
+                    {item.question}
+                  </span>
                   <ChevronRight className="size-3.5 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
