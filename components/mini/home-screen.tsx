@@ -78,18 +78,19 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </p>
         </section>
 
-        <nav aria-label="快捷功能" className="mt-10 grid grid-cols-4 gap-2">
+        <nav
+          aria-label="快捷功能"
+          className="-mx-5 mt-10 flex shrink-0 gap-2 overflow-x-auto px-5 [scrollbar-width:none]"
+        >
           {quickActions.map(({ id, icon: Icon, label, question }) => (
             <button
               key={id}
               type="button"
               onClick={() => onOpenChat?.(question)}
-              className="flex flex-col items-center gap-1.5 rounded-2xl border border-white bg-white/60 py-2.5 transition-transform active:scale-[0.97]"
+              className="flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-white bg-white/70 px-3 text-caption text-foreground transition-transform active:scale-[0.97]"
             >
-              <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Icon className="size-[18px]" aria-hidden="true" />
-              </span>
-              <span className="text-caption text-foreground">{label}</span>
+              <Icon className="size-4" aria-hidden="true" />
+              {label}
             </button>
           ))}
         </nav>
@@ -97,7 +98,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-3 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
+          className="mt-2.5 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
         >
           <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
