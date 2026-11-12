@@ -99,7 +99,25 @@ export function HomeWelcome({
         </div>
       </section>
 
-      <div className="sticky bottom-0 mt-auto flex flex-col gap-3 pt-6">
+      <div className="sticky bottom-0 mt-auto pt-6">
+        <HomeDock onAsk={onAsk} disabled={disabled} composer={composer} />
+      </div>
+    </div>
+  )
+}
+
+/** 首页底部区：功能入口 → 胶囊输入卡 → 免责声明。首页欢迎态与对话态共用。 */
+export function HomeDock({
+  onAsk,
+  disabled,
+  composer,
+}: {
+  onAsk: (question: string) => void
+  disabled?: boolean
+  composer: ReactNode
+}) {
+  return (
+      <div className="flex flex-col gap-3">
         <nav aria-label="常用功能" className="-mx-4">
           <ul className="flex gap-1.5 px-4">
             {features.map(({ id, icon: Icon, title, question }) => (
@@ -122,6 +140,5 @@ export function HomeWelcome({
 
         <p className="text-center text-[11px] leading-4 text-faint">内容由 AI 生成，仅供参考，不替代医生诊断</p>
       </div>
-    </div>
   )
 }
