@@ -369,23 +369,35 @@ export function AiChatScreen({
     </button>
   )
 
-  const currentStyle = answerStyles.find((s) => s.key === mode) ?? answerStyles[0]
-  const nextStyle = answerStyles.find((s) => s.key !== mode) ?? answerStyles[0]
   const modeChip = (
-    <button
-      type="button"
-      onClick={() => setMode(nextStyle.key)}
-      aria-label={`回答风格：${currentStyle.label}，点击切换为${nextStyle.label}`}
-      title={currentStyle.desc}
-      className={cn(
-        'flex h-8 shrink-0 items-center rounded-full px-3 text-[13px] transition-colors active:opacity-70',
-        mode === 'pro'
-          ? 'bg-secondary font-medium text-primary ring-1 ring-primary/20'
-          : 'bg-muted/60 text-foreground ring-1 ring-[#e3e9f3]',
-      )}
+    <div
+      role="radiogroup"
+      aria-label="回答风格"
+      className="flex h-8 shrink-0 items-center rounded-full bg-muted/60 p-0.5 ring-1 ring-[#e3e9f3]"
     >
-      {currentStyle.short}
-    </button>
+      {answerStyles.map((s) => {
+        const active = s.key === mode
+        return (
+          <button
+            key={s.key}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={s.label}
+            title={s.desc}
+            onClick={() => setMode(s.key)}
+            className={cn(
+              'flex h-full items-center rounded-full px-2.5 text-[13px] transition-all',
+              active
+                ? 'bg-card font-medium text-primary shadow-sm'
+                : 'text-muted-foreground active:opacity-70',
+            )}
+          >
+            {s.short}
+          </button>
+        )
+      })}
+    </div>
   )
 
   const homeComposer = (
