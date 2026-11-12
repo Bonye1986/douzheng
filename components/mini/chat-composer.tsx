@@ -34,9 +34,12 @@ export function ChatComposer({
   compact = false,
   variant = 'bar',
   accessory,
+  pinned = false,
 }: {
   /** pill 版底部左侧附加内容（如受检人选择）；传入后变为上输入、下工具栏的两行卡片 */
   accessory?: React.ReactNode
+  /** pill 版始终保持展开（如已选择受检人时常驻显示） */
+  pinned?: boolean
   /** bar：底部输入栏；card：大输入卡；pill：首页一体式胶囊输入（语音 / 加号上传） */
   variant?: 'bar' | 'card' | 'pill'
   /** 底部有 TabBar 时不再预留 home indicator 安全区 */
@@ -331,7 +334,7 @@ export function ChatComposer({
     </div>
   )
 
-  const pill = accessory && expanded ? pillWithAccessory : (
+  const pill = accessory && (expanded || pinned) ? pillWithAccessory : (
     <div className="relative">
       {attachmentList}
       <div className="flex items-center gap-2.5">
@@ -394,7 +397,7 @@ export function ChatComposer({
             type="button"
             onClick={() => setSheetOpen(true)}
             disabled={attachDisabled}
-            aria-label="拍照或上传报告"
+            aria-label="拍照或��传报告"
             className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
           >
             <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />

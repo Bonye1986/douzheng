@@ -442,8 +442,9 @@ export function AiChatScreen({
               <ChatComposer
                 variant="pill"
                 disabled={isReplying}
-                onSend={ask}
-                accessory={
+                    onSend={ask}
+                    pinned={!!testee}
+                    accessory={
                   <button
                     type="button"
                     onClick={() => setSheetOpen(true)}
@@ -823,7 +824,7 @@ function TesteeSheet({
 
         <p className="mt-3 flex items-center justify-center gap-1 text-caption text-faint">
           <LockKeyhole className="size-3" />
-          仅在授权范围内读取，信息加密保护
+          仅在授权范围内读取，信���加密保护
         </p>
 
         <div className="mt-4 flex gap-3">
