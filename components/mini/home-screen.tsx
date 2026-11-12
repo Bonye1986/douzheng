@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import {
   ArrowRight,
   ArrowUp,
@@ -11,15 +10,12 @@ import {
   HeartPulse,
   PackageSearch,
   Pill,
-  RefreshCw,
   Sparkles,
   TestTube,
   Truck,
 } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
 import Image from 'next/image'
-
-const PAGE_SIZE = 3
 
 const personalizedSuggestions = [
   { id: 'q1', question: '孩子生病，成人药掰开减半喂，可以吗？' },
@@ -36,12 +32,8 @@ const quickActions = [
   { id: 'order', icon: Truck, label: '订单进度', question: '帮我查一下我的订单进度' },
   { id: 'sampling', icon: TestTube, label: '采样指引', question: '口腔拭子应该怎么正确采样？' },
 ]
-const suggestionPageCount = Math.ceil(personalizedSuggestions.length / PAGE_SIZE)
 
 export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
-  const [page, setPage] = useState(0)
-  const visibleSuggestions = personalizedSuggestions.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
-
   return (
     <div className="flex h-full flex-col bg-brand-page">
       <StatusBar />
@@ -63,7 +55,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
             <p className="text-balance text-[24px] font-semibold leading-tight text-foreground">
               Hi，我是您的
               <br />
-              <span className="text-primary">精准用药助手</span>
+              <span className="text-primary">用药助手</span>
             </p>
             <p className="mt-2 text-pretty text-caption leading-relaxed text-muted-foreground">
               用药疑问、基因检测、报告解读，随时问我
@@ -112,52 +104,35 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <button
           type="button"
           onClick={() => onOpenChat?.()}
-          className="mt-2.5 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
+          className="mt-3 flex h-[104px] w-full shrink-0 flex-col justify-between rounded-3xl border-2 border-primary/25 bg-white p-4 text-left shadow-[0_12px_32px_#3a82e426] transition-transform active:scale-[0.99]"
         >
-          <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
-          <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <ArrowUp className="size-4" aria-hidden="true" />
+          <span className="flex items-start gap-2">
+            <Sparkles className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+            <span className="min-w-0 flex-1 text-[16px] leading-6 text-faint">有问题，尽管问我～</span>
+          </span>
+          <span className="flex items-center justify-between">
+            <span className="text-caption text-faint">支持文字、语音、图片提问</span>
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_4px_12px_#3a82e459]">
+              <ArrowUp className="size-[18px]" aria-hidden="true" />
+            </span>
           </span>
         </button>
 
-        <section
-          aria-labelledby="guess-q"
-          className="mt-5 rounded-[28px] border border-white bg-white/50 p-3 shadow-[0_8px_28px_#3a82e414]"
-        >
-          <div className="flex items-center justify-between pb-3 pl-1.5 pt-1">
-            <h2 id="guess-q" className="flex items-center gap-2 text-body font-semibold text-foreground">
-              <span aria-hidden="true" className="h-3.5 w-1 rounded-full bg-primary" />
-              猜你想问
-            </h2>
-            {suggestionPageCount > 1 && (
-              <button
-                type="button"
-                onClick={() => setPage((p) => (p + 1) % suggestionPageCount)}
-                className="flex h-7 items-center gap-1 rounded-full bg-white px-3 text-caption text-muted-foreground active:opacity-70"
-              >
-                换一批
-                <RefreshCw className="size-3" aria-hidden="true" />
-              </button>
-            )}
-          </div>
-
-          <ul key={page} className="flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
-            {visibleSuggestions.map((item) => (
+        <section aria-labelledby="guess-q" className="mt-5">
+          <h2 id="guess-q" className="px-1 pb-1.5 text-caption font-medium text-muted-foreground">
+            猜你想问
+          </h2>
+          <ul className="flex flex-col">
+            {personalizedSuggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(item.question)}
-                  className="flex min-h-11 w-full items-center gap-3 rounded-2xl bg-white px-4 py-2.5 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
+                  className="flex w-full items-center gap-2 rounded-lg px-1 py-1.5 text-left transition-colors active:bg-white/60"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[0_4px_10px_#3a82e440]"
-                  >
-                    <Hash className="size-4" strokeWidth={2.5} />
-                  </span>
-                  <span className="min-w-0 flex-1 line-clamp-2 text-pretty text-body leading-snug text-foreground">{item.question}</span>
-                  <ArrowRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
+                  <Hash className="size-3.5 shrink-0 text-primary/70" strokeWidth={2.5} aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate text-[13px] leading-5 text-foreground/80">{item.question}</span>
+                  <ArrowRight className="size-3.5 shrink-0 text-faint" aria-hidden="true" />
                 </button>
               </li>
             ))}
