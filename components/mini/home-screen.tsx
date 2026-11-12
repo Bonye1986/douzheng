@@ -81,9 +81,9 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
                 <button
                   type="button"
                   onClick={() => onOpenChat?.(question)}
-                  className="flex h-14 w-full flex-col items-center justify-center gap-1 rounded-[14px] border border-border/70 bg-white text-[12px] font-medium leading-4 text-foreground transition-colors active:bg-primary/5"
+                  className="flex h-9 w-full items-center justify-center gap-1 rounded-[9px] border border-border/70 bg-white text-[12px] font-medium leading-4 text-foreground transition-colors active:bg-primary/5"
                 >
-                  <Icon className="size-[18px] shrink-0 text-primary" strokeWidth={2} aria-hidden="true" />
+                  <Icon className="size-3.5 shrink-0 text-primary" strokeWidth={2} aria-hidden="true" />
                   <span className="whitespace-nowrap">{label}</span>
                 </button>
               </li>

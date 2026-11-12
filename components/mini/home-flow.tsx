@@ -160,7 +160,7 @@ export function HomeFlow({
       <div inert={chatOpen}>
         <TabBar active={tab} onSelect={setTab} />
       </div>
-      {!chatOpen && <FloatingAiButton onClick={() => openChat()} />}
+      {!chatOpen && tab !== 'home' && <FloatingAiButton onClick={() => openChat()} />}
 
       {chatMounted && (
         <div
