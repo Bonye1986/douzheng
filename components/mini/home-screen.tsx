@@ -5,9 +5,11 @@ import { ChevronRight, FileText, HeartPulse, Pill, PackageSearch, Hash } from 'l
 import Image from 'next/image'
 
 const suggestions = [
-  { id: 'q1', question: '孩子生病，成人药掰开减半喂可以吗？' },
+  { id: 'q1', question: '孩子生病，成人药能减半喂吗？' },
   { id: 'q2', question: '症状好转了，能自己停药吗？' },
-  { id: 'q3', question: '每天多杯咖啡，需要额外补钙吗？' },
+  { id: 'q3', question: '吃药没效果，能自行加量吗？' },
+  { id: 'q4', question: '同样的药，为何我副作用更大？' },
+  { id: 'q5', question: '每天多杯咖啡，需要补钙吗？' },
 ]
 
 const features = [
@@ -80,20 +82,20 @@ export function HomeWelcome({
             <h2 className="text-[14px] text-muted-foreground">你可以这样问</h2>
             {styleToggle}
           </div>
-          <ul className="mt-3 flex flex-col gap-2.5">
+          <ul className="mt-3 flex flex-col divide-y divide-[#eef3fc] overflow-hidden rounded-2xl bg-white">
             {suggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onAsk(item.question)}
-                  className="flex h-12 w-full items-center gap-3 rounded-full bg-white pl-3.5 pr-3 text-left transition-colors active:bg-secondary/60 disabled:opacity-50"
+                  className="group flex h-11 w-full items-center gap-2.5 px-3.5 text-left transition-colors active:bg-secondary/60 disabled:opacity-50"
                 >
-                  <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
-                    <Hash className="size-3.5" strokeWidth={2.6} />
+                  <span aria-hidden="true" className="flex size-[18px] shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <Hash className="size-3" strokeWidth={2.4} />
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-[15px] text-foreground">{item.question}</span>
-                  <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate text-[14px] text-foreground">{item.question}</span>
+                  <ChevronRight className="size-3.5 shrink-0 text-faint transition-transform group-active:translate-x-0.5" aria-hidden="true" />
                 </button>
               </li>
             ))}
