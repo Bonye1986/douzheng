@@ -45,6 +45,54 @@ const screens = [
     node: <HomeFlow />,
   },
   {
+    id: '04-sheet',
+    title: '首页 · 选择受检人',
+    desc: '首页版式下，点击输入框内「未关联受检人」弹出底部弹层选择受检人（可跳过），关联后按受检人基因信息个性化回答',
+    node: <HomeFlow ai={{ initialSheetOpen: true }} />,
+  },
+  {
+    id: '04-pro',
+    title: '首页 · 专业版对话',
+    desc: '首页发起提问后原位进入对话态，已关联受检人，专业版回答展示基因型、代谢类型与指南证据来源；底部仍为首页胶囊输入框与 TabBar',
+    node: <HomeFlow ai={{ initialMode: 'pro', initialTesteeId: 'self', initialQuestion: '我能正常使用氯吡格雷吗？' }} />,
+  },
+  {
+    id: '04-report',
+    title: '首页 · 报告查询',
+    desc: '点击首页「报告查询」入口，以卡片列出各受检人报告状态，已出报告可一键发起 AI 解读',
+    node: <HomeFlow ai={{ initialTesteeId: 'self', initialQuestion: '查看我的报告' }} />,
+  },
+  {
+    id: '04-order',
+    title: '首页 · 订单查询',
+    desc: '首页对话中识别订单查询意图，卡片展示进行中订单的状态、金额与当前进度',
+    node: <HomeFlow ai={{ initialTesteeId: 'self', initialQuestion: '我的订单进度' }} />,
+  },
+  {
+    id: '04-package',
+    title: '首页 · 推荐套餐',
+    desc: '点击首页「推荐套餐」入口，推荐卡片附带检测项目（基因位点、覆盖药物数）、价格与推荐理由',
+    node: <HomeFlow ai={{ initialTesteeId: 'self', initialQuestion: '推荐适合我的检测服务' }} />,
+  },
+  {
+    id: '04-guide',
+    title: '首页 · AI引导下单',
+    desc: '首页对话中 AI 智能匹配检测套餐，并通过「注册登录 → 实名认证 → 确认订单并支付」分步指引完成购买（可在画板内交互）',
+    node: <HomeFlow ai={{ initialQuestion: '帮我选择合适的检测并引导下单' }} />,
+  },
+  {
+    id: '04-drawer',
+    title: '首页 · 历史对话抽屉',
+    desc: '点击首页左上角菜单，左侧滑出历史对话抽屉，可搜索、新建、切换、重命名或删除会话（可在画板内交互）',
+    node: <HomeFlow ai={{ initialQuestion: '我能正常使用氯吡格雷吗？', initialDrawerOpen: true }} />,
+  },
+  {
+    id: '04-share',
+    title: '首页 · 分享对话',
+    desc: '首页对话中长按或点击「分享」进入多选态，按轮次勾选问答，生成分享链接与二维码海报（可在画板内交互）',
+    node: <HomeFlow ai={{ initialTesteeId: 'self', initialQuestion: '我能正常使用氯吡格雷吗？', initialSharing: true }} />,
+  },
+  {
     id: '09',
     title: '服务',
     desc: '轮播图、服务分类、推荐检测、知识科普、互动问答；用药咨询 / 报告解读与问答结果可一键带入 AI 咨询（可在画板内交互）',
@@ -165,7 +213,7 @@ const screens = [
   {
     id: '18-guest',
     title: '我的 · 未登录',
-    desc: '未登录时展示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及受检人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
+    desc: '未登录时���示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及受检人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
     node: <HomeFlow initialTab="me" loggedIn={false} />,
   },
   {
@@ -601,7 +649,12 @@ const screens = [
 
 const sectionPlan: { key: string; title: string; summary: string; ids: string[] }[] = [
   { key: 'login', title: '登录注册', summary: '微信手机号授权登录，拒绝授权的拦截与提示', ids: ['01', '02', '03', '01-terms', '01-privacy'] },
-  { key: 'home', title: '首页', summary: '品牌首页、服务入口与 AI 咨询入口', ids: ['04'] },
+  {
+    key: 'home',
+    title: '首页',
+    summary: '首页即 AI 对话页：问候与预设问题、功能入口、受检人选择、通俗 / 专业对话、报告与订单查询、推荐套餐、AI 引导下单、历史对话与分享',
+    ids: ['04', '04-sheet', '04-pro', '04-report', '04-order', '04-package', '04-guide', '04-drawer', '04-share'],
+  },
   {
     key: 'ai',
     title: 'AI咨询',

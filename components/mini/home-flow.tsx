@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ComponentProps } from 'react'
 import { AiChatScreen, type ChatRequest } from '@/components/mini/ai-chat-screen'
 import { TabBar, type TabKey } from '@/components/mini/tab-bar'
 import { TabPlaceholderScreen } from '@/components/mini/tab-placeholder-screen'
@@ -41,7 +41,13 @@ export function HomeFlow({
   loggedIn = true,
   onRequireLogin,
   showRealNamePrompt = false,
+  ai,
 }: {
+  /** 首页内嵌 AI 对话的初始状态（用于画板展示首页版式下的各 AI 状态） */
+  ai?: Pick<
+    ComponentProps<typeof AiChatScreen>,
+    'initialMode' | 'initialTesteeId' | 'initialQuestion' | 'initialSheetOpen' | 'initialDrawerOpen' | 'initialSharing'
+  >
   /** 登录成功后进入首页时检查实名状态，未认证则弹窗引导 */
   showRealNamePrompt?: boolean
   /** Pre-filled answers so the article shows the 问卷 as already submitted. */
@@ -120,7 +126,7 @@ export function HomeFlow({
     <div className="relative flex h-full flex-col overflow-hidden">
       <div className="relative min-h-0 flex-1">
         <div className={cn('h-full', tab !== 'home' && 'hidden')}>
-          <AiChatScreen embedded request={request} active={tab === 'home'} />
+          <AiChatScreen {...ai} embedded request={request} active={tab === 'home'} />
         </div>
         {tab === 'home' ? null : tab === 'service' ? (
           <ServicesScreen
