@@ -551,6 +551,7 @@ export function AiChatScreen({
         <ShareSheet items={shareItems} onClose={() => setShareIds(null)} />
       ) : (
         <>
+          {!(embedded && messages.length === 0) && (
           <ul
             aria-label="快捷服务"
             className="flex shrink-0 gap-2 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none]"
@@ -568,6 +569,7 @@ export function AiChatScreen({
               </li>
             ))}
           </ul>
+          )}
           <ChatComposer disabled={isReplying} onSend={ask} compact={embedded} />
         </>
       )}
