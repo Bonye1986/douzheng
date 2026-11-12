@@ -427,8 +427,33 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
-          {embedded && <span className="ml-1.5 text-[18px] font-semibold text-foreground">药问AI</span>}
-          {embedded && !welcome && <div className="ml-2.5">{styleToggle}</div>}
+          {embedded && !welcome && (
+            <div
+              role="radiogroup"
+              aria-label="回答风格"
+              className="ml-2 flex h-8 items-center rounded-full border border-border bg-white/80 p-0.5"
+            >
+              {answerStyles.map((s) => {
+                const selected = s.key === mode
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    aria-label={`${s.label}：${s.desc}`}
+                    onClick={() => setMode(s.key)}
+                    className={cn(
+                      'flex h-full items-center rounded-full px-3 text-[13px] transition-colors',
+                      selected ? 'bg-primary font-medium text-white' : 'text-muted-foreground active:text-foreground',
+                    )}
+                  >
+                    {s.short}
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
         {!embedded && <h2 className="text-title font-medium">AI咨询</h2>}
         <div
