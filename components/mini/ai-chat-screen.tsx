@@ -332,7 +332,7 @@ export function AiChatScreen({
   }
 
   const greeting = testee
-    ? `你好，${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
+    ? `你好��${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
     : '你好。本次未关联受检人，我会按通用知识回答；你也可以随时选择受检人或上传外部报告。'
 
   const welcome = embedded && !sharing && messages.length === 0
@@ -369,36 +369,7 @@ export function AiChatScreen({
     </button>
   )
 
-  const modeChip = (
-    <div
-      role="radiogroup"
-      aria-label="回答风格"
-      className="flex h-8 shrink-0 items-center rounded-full bg-muted/60 p-0.5 ring-1 ring-[#e3e9f3]"
-    >
-      {answerStyles.map((s) => {
-        const active = s.key === mode
-        return (
-          <button
-            key={s.key}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            aria-label={s.label}
-            title={s.desc}
-            onClick={() => setMode(s.key)}
-            className={cn(
-              'flex h-full items-center rounded-full px-2.5 text-[13px] transition-all',
-              active
-                ? 'bg-card font-medium text-primary shadow-sm'
-                : 'text-muted-foreground active:opacity-70',
-            )}
-          >
-            {s.short}
-          </button>
-        )
-      })}
-    </div>
-  )
+  const modeChip = <ModeSelect mode={mode} onChange={setMode} />
 
   const homeComposer = (
     <ChatComposer
@@ -1143,5 +1114,94 @@ function TypingDots() {
         />
       ))}
     </span>
+  )
+}
+
+function ModeSelect({
+  mode,
+  onChange,
+}: {
+  mode: (typeof answerStyles)[number]['key']
+  onChange: (mode: (typeof answerStyles)[number]['key']) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const menuId = useId()
+  const current = answerStyles.find((s) => s.key === mode) ?? answerStyles[0]
+
+  useEffect(() => {
+    if (!open) return
+    const handlePointerDown = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false)
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open])
+
+  return (
+    <div ref={rootRef} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={menuId}
+        aria-label={`回答风格：${current.label}，点击切换`}
+        className={cn(
+          'flex h-8 items-center gap-1 rounded-full bg-muted/60 pl-3 pr-2 text-[13px] text-foreground ring-1 ring-[#e3e9f3] transition-colors active:opacity-70',
+          open && 'bg-secondary text-primary ring-primary/30',
+        )}
+      >
+        {current.short}
+        <ChevronDown
+          className={cn('size-3.5 text-muted-foreground transition-transform', open && 'rotate-180 text-primary')}
+          aria-hidden="true"
+        />
+      </button>
+      {open && (
+        <ul
+          id={menuId}
+          role="listbox"
+          aria-label="回答风格"
+          className="absolute bottom-full right-0 z-30 mb-2 w-52 rounded-2xl bg-card p-1.5 shadow-[0_10px_30px_#1b2a4a26] ring-1 ring-[#e6eefb] animate-in fade-in slide-in-from-bottom-1 duration-150"
+        >
+          {answerStyles.map((s) => {
+            const selected = s.key === mode
+            return (
+              <li key={s.key}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => {
+                    onChange(s.key)
+                    setOpen(false)
+                  }}
+                  className={cn(
+                    'flex w-full items-start gap-2 rounded-xl px-3 py-2.5 text-left active:bg-secondary',
+                    selected && 'bg-secondary/70',
+                  )}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className={cn('block text-note font-medium', selected ? 'text-primary' : 'text-foreground')}>
+                      {s.label}
+                    </span>
+                    <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground">{s.desc}</span>
+                  </span>
+                  {selected && <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
   )
 }

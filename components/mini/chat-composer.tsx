@@ -300,6 +300,16 @@ export function ChatComposer({
             {recording ? '松开 发送' : '按住 说话'}
           </button>
         )}
+        {inputMode === 'keyboard' && canSend && (
+          <button
+            type="button"
+            onClick={() => send(draft)}
+            aria-label="发送"
+            className="-mr-1 ml-2 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150 active:opacity-80"
+          >
+            <ArrowUp className="size-4" strokeWidth={2.4} />
+          </button>
+        )}
       </div>
       <div className="mt-2 flex items-center gap-1">
         <div className="min-w-0 flex-1">{accessory}</div>
@@ -320,18 +330,6 @@ export function ChatComposer({
         >
           <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
         </button>
-        {inputMode === 'keyboard' && canSend && (
-          <button
-            type="button"
-            onClick={() => send(draft)}
-            aria-label="发送"
-            className="flex size-9 shrink-0 items-center justify-center rounded-full animate-in zoom-in-75 duration-150"
-          >
-            <span className="flex size-5.5 items-center justify-center rounded-full bg-primary text-white">
-              <ArrowUp className="size-3.5" strokeWidth={2.4} />
-            </span>
-          </button>
-        )}
       </div>
     </div>
   )
