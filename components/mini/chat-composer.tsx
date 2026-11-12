@@ -304,18 +304,18 @@ export function ChatComposer({
           type="button"
           onClick={toggleInputMode}
           aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
-          className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
         >
-          {inputMode === 'keyboard' ? <Mic className="size-[18px]" /> : <Keyboard className="size-[18px]" />}
+          {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
         </button>
         <button
           type="button"
           onClick={() => setSheetOpen(true)}
           disabled={attachDisabled}
           aria-label="拍照或上传报告"
-          className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
         >
-          <Plus className="size-[18px] rounded-full border-[1.5px] border-current p-px" strokeWidth={2.2} />
+          <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
         </button>
         {inputMode === 'keyboard' && canSend && (
           <button
@@ -340,9 +340,9 @@ export function ChatComposer({
             type="button"
             onClick={toggleInputMode}
             aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
-            className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
           >
-            {inputMode === 'keyboard' ? <Mic className="size-[18px]" /> : <Keyboard className="size-[18px]" />}
+            {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
           </button>
           {inputMode === 'keyboard' ? (
             <form
@@ -395,9 +395,9 @@ export function ChatComposer({
             onClick={() => setSheetOpen(true)}
             disabled={attachDisabled}
             aria-label="拍照或上传报告"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
           >
-            <Plus className="size-[18px] rounded-full border-[1.5px] border-current p-px" strokeWidth={2.2} />
+            <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
           </button>
         </div>
       </div>
