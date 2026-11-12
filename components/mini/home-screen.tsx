@@ -78,16 +78,20 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </div>
           <div
             aria-hidden="true"
-            className="relative mr-2 h-[160px] w-[108px] shrink-0 drop-shadow-[0_12px_16px_rgba(37,78,180,0.18)]"
+            className="relative flex h-[168px] w-[132px] shrink-0 items-end justify-center"
           >
-            <Image
-              src="/images/drugene-robot.png"
-              alt=""
-              fill
-              sizes="108px"
-              priority
-              className="object-contain"
-            />
+            <span className="absolute bottom-3 left-1/2 size-[124px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_50%_40%,#ffffff_0%,#dfeafc_55%,#c9dbf8_100%)] shadow-[inset_0_-6px_14px_#3a82e41f,0_10px_24px_#3a82e41a]" />
+            <span className="absolute bottom-2 left-1/2 h-3 w-20 -translate-x-1/2 rounded-[50%] bg-[#1e3a8a]/15 blur-[6px]" />
+            <div className="relative h-[156px] w-[100px] animate-[robot-float_4s_ease-in-out_infinite] motion-reduce:animate-none">
+              <Image
+                src="/images/drugene-robot.png"
+                alt=""
+                fill
+                sizes="100px"
+                priority
+                className="object-contain object-bottom drop-shadow-[0_8px_10px_rgba(30,58,138,0.18)]"
+              />
+            </div>
           </div>
         </section>
 
