@@ -773,7 +773,7 @@ function ReminderFormScreen({
           onClick={save}
           className="h-10 w-full rounded-full bg-primary text-body font-medium text-primary-foreground active:opacity-90"
         >
-          {editing ? '保存修改' : '保存并开启提��'}
+          {editing ? '保存修改' : '保存并开启提醒'}
         </button>
       </div>
 
