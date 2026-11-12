@@ -337,30 +337,6 @@ export function AiChatScreen({
 
   const welcome = embedded && !sharing && messages.length === 0
 
-  const styleToggle = (
-    <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-muted p-0.5">
-      {answerStyles.map((s) => {
-        const selected = s.key === mode
-        return (
-          <button
-            key={s.key}
-            type="button"
-            role="radio"
-            aria-checked={selected}
-            aria-label={`${s.label}：${s.desc}`}
-            onClick={() => setMode(s.key)}
-            className={cn(
-              'h-6 rounded-full px-2.5 text-[12px] font-medium transition-colors',
-              selected ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground',
-            )}
-          >
-            {s.short}
-          </button>
-        )
-      })}
-    </div>
-  )
-
   const testeeChip = testee ? (
     <span className="flex h-8 w-fit max-w-full items-center rounded-full bg-secondary text-[13px] text-primary ring-1 ring-primary/20">
       <button
@@ -427,7 +403,7 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
-          {embedded && !welcome && (
+          {embedded && (
             <div
               role="radiogroup"
               aria-label="回答风格"
@@ -524,8 +500,7 @@ export function AiChatScreen({
           <HomeWelcome
             onAsk={(q) => ask(q)}
             disabled={isReplying}
-            composer={homeComposer}
-            styleToggle={styleToggle}
+              composer={homeComposer}
           />
         ) : (
         <>

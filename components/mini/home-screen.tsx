@@ -35,14 +35,11 @@ export function HomeWelcome({
   onAsk,
   disabled,
   composer,
-  styleToggle,
 }: {
   onAsk: (question: string) => void
   disabled?: boolean
   /** 输入卡（ChatComposer pill 版，内含受检人选择） */
   composer: ReactNode
-  /** 通俗/专业切换（「你可以这样问」卡片标题右侧） */
-  styleToggle: ReactNode
 }) {
   const { hello, line } = greetingByHour(new Date().getHours())
 
@@ -74,10 +71,7 @@ export function HomeWelcome({
         </div>
 
         <div className="relative z-10 rounded-[24px] border border-white bg-white/55 p-4 shadow-[0_10px_30px_#3a82e40f] backdrop-blur-md">
-          <div className="flex items-center justify-between gap-2 px-1">
-            <h2 className="text-[14px] text-muted-foreground">你可以这样问</h2>
-            {styleToggle}
-          </div>
+          <h2 className="px-1 text-[14px] text-muted-foreground">你可以这样问</h2>
           <ul className="mt-2.5 flex flex-col gap-1.5">
             {suggestions.map((item) => (
               <li key={item.id}>
