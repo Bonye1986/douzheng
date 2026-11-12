@@ -65,15 +65,7 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
         <section className="flex items-end justify-between gap-2 pt-4">
           <div className="flex min-w-0 flex-1 flex-col items-start pb-2">
             <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
-            <Image
-              src="/images/drugene-logo.png"
-              alt="DRUGENE 临床精准用药助手"
-              width={436}
-              height={147}
-              priority
-              className="h-auto w-[104px]"
-            />
-            <p className="mt-4 text-balance text-[24px] font-semibold leading-tight text-foreground">
+            <p className="text-balance text-[24px] font-semibold leading-tight text-foreground">
               Hi，我是您的
               <br />
               <span className="text-primary">精准用药助手</span>
