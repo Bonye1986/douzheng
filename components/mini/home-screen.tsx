@@ -16,6 +16,8 @@ import {
   Pill,
   RefreshCw,
   Sparkles,
+  TestTube,
+  Truck,
   UserRound,
 } from 'lucide-react'
 import { StatusBar } from '@/components/mini/phone-frame'
@@ -36,6 +38,8 @@ const quickActions = [
   { id: 'package', icon: PackageSearch, label: '推荐套餐', question: '根据我的情况推荐合适的检测套餐' },
   { id: 'medication', icon: Pill, label: '用药咨询', question: '我想咨询一下用药问题' },
   { id: 'health', icon: HeartPulse, label: '健康管理', question: '帮我制定健康管理与用药提醒计划' },
+  { id: 'order', icon: Truck, label: '订单进度', question: '帮我查一下我的订单进度' },
+  { id: 'sampling', icon: TestTube, label: '采样指引', question: '口腔拭子应该怎么正确采样？' },
 ]
 const suggestionPageCount = Math.ceil(personalizedSuggestions.length / PAGE_SIZE)
 
@@ -58,41 +62,63 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
       </div>
 
       <div className="flex flex-1 flex-col overflow-y-auto px-5 pb-4 [scrollbar-width:none]">
-        <section className="flex flex-col items-start pt-6">
-          <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
-          <Image
-            src="/images/drugene-logo.png"
-            alt="DRUGENE 临床精准用药助手"
-            width={436}
-            height={147}
-            priority
-            className="h-auto w-[120px]"
-          />
-          <p className="mt-5 text-balance text-[26px] font-semibold leading-tight text-foreground">
-            Hi，我是您的
-            <br />
-            <span className="text-primary">精准用药助手</span>
-          </p>
-          <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
-            用药疑问、基因检测、报告解读，随时问我
-          </p>
+        <section className="flex items-end justify-between gap-2 pt-4">
+          <div className="flex min-w-0 flex-1 flex-col items-start pb-2">
+            <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
+            <Image
+              src="/images/drugene-logo.png"
+              alt="DRUGENE 临床精准用药助手"
+              width={436}
+              height={147}
+              priority
+              className="h-auto w-[104px]"
+            />
+            <p className="mt-4 text-balance text-[24px] font-semibold leading-tight text-foreground">
+              Hi，我是您的
+              <br />
+              <span className="text-primary">精准用药助手</span>
+            </p>
+            <p className="mt-2 text-pretty text-caption leading-relaxed text-muted-foreground">
+              用药疑问、基因检测、
+              <br />
+              报告解读，随时问我
+            </p>
+          </div>
+          <div
+            aria-hidden="true"
+            className="relative h-[168px] w-[136px] shrink-0 overflow-hidden [mask-image:linear-gradient(to_bottom,black_75%,transparent)]"
+          >
+            <Image
+              src="/images/ai-assistant-mascot.png"
+              alt=""
+              fill
+              sizes="136px"
+              priority
+              className="object-contain object-top"
+            />
+          </div>
         </section>
 
         <nav
           aria-label="快捷功能"
-          className="-mx-5 mt-10 flex shrink-0 gap-2 overflow-x-auto px-5 [scrollbar-width:none]"
+          className="-mx-5 mt-10 shrink-0 [mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-28px),transparent)]"
         >
-          {quickActions.map(({ id, icon: Icon, label, question }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onOpenChat?.(question)}
-              className="flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-white bg-white/70 px-3 text-caption text-foreground transition-transform active:scale-[0.97]"
-            >
-              <Icon className="size-4" aria-hidden="true" />
-              {label}
-            </button>
-          ))}
+          <ul className="flex snap-x snap-mandatory scroll-px-5 gap-2 overflow-x-auto px-5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {quickActions.map(({ id, icon: Icon, label, question }) => (
+              <li key={id} className="shrink-0 snap-start">
+                <button
+                  type="button"
+                  onClick={() => onOpenChat?.(question)}
+                  className="flex h-9 items-center gap-1.5 rounded-full border border-white bg-white/80 pl-1.5 pr-3.5 text-caption font-medium text-foreground shadow-[0_2px_8px_#3a82e40f] backdrop-blur transition-transform active:scale-[0.96]"
+                >
+                  <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Icon className="size-3.5" strokeWidth={2.2} aria-hidden="true" />
+                  </span>
+                  {label}
+                </button>
+              </li>
+            ))}
+          </ul>
         </nav>
 
         <button
