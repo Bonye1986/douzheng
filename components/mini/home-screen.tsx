@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { ChevronRight, FileText, HeartPulse, Pill, Dna, Hash } from 'lucide-react'
+import { ChevronRight, FileText, HeartPulse, Pill, PackageSearch, Hash } from 'lucide-react'
 import Image from 'next/image'
 
 const suggestions = [
@@ -11,10 +11,10 @@ const suggestions = [
 ]
 
 const features = [
-  { id: 'report', icon: FileText, title: '传报告·秒解读', desc: '基因报告·用药建议', question: '帮我查看并解读我的检测报告' },
-  { id: 'medication', icon: Pill, title: '问用药·查禁忌', desc: '相互作用·剂量提醒', question: '我想咨询一下用药问题' },
-  { id: 'package', icon: Dna, title: '测基因·选套餐', desc: '按需推荐·精准用药', question: '根据我的情况推荐合适的检测套餐' },
-  { id: 'health', icon: HeartPulse, title: '管健康·定提醒', desc: '慢病管理·全家适用', question: '帮我制定健康管理与用药提醒计划' },
+  { id: 'report', icon: FileText, title: '报告查询', question: '帮我查看并解读我的检测报告' },
+  { id: 'package', icon: PackageSearch, title: '推荐套餐', question: '根据我的情况推荐合适的检测套餐' },
+  { id: 'medication', icon: Pill, title: '用药咨询', question: '我想咨询一下用药问题' },
+  { id: 'health', icon: HeartPulse, title: '健康管理', question: '帮我制定健康管理与用药提醒计划' },
 ]
 
 function greetingByHour(hour: number) {
@@ -96,22 +96,17 @@ export function HomeWelcome({
 
       <div className="sticky bottom-0 mt-auto flex flex-col gap-3 pt-6">
         <nav aria-label="常用功能" className="-mx-4">
-          <ul className="flex gap-2.5 overflow-x-auto px-4 [scrollbar-width:none]">
-            {features.map(({ id, icon: Icon, title, desc, question }) => (
-              <li key={id} className="shrink-0">
+          <ul className="flex gap-1.5 px-4">
+            {features.map(({ id, icon: Icon, title, question }) => (
+              <li key={id} className="min-w-0 flex-auto">
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onAsk(question)}
-                  className="flex items-center gap-2 rounded-xl bg-white py-2 pl-2 pr-3 text-left shadow-[0_2px_10px_#3a82e40a] ring-1 ring-[#eef3fc] transition-colors active:bg-secondary/60 disabled:opacity-50"
+                  className="flex h-9 w-full items-center justify-center gap-0.5 rounded-xl bg-white px-1 shadow-[0_2px_10px_#3a82e40a] ring-1 ring-[#eef3fc] transition-colors active:bg-secondary/60 disabled:opacity-50"
                 >
-                  <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
-                    <Icon className="size-3.5" strokeWidth={2} />
-                  </span>
-                  <span className="flex flex-col">
-                    <span className="whitespace-nowrap text-[13px] font-semibold leading-[18px] text-foreground">{title}</span>
-                    <span className="whitespace-nowrap text-[11px] leading-4 text-muted-foreground">{desc}</span>
-                  </span>
+                  <Icon className="size-3.5 shrink-0 text-primary" strokeWidth={1.8} aria-hidden="true" />
+                  <span className="whitespace-nowrap text-[13px] font-medium text-foreground">{title}</span>
                 </button>
               </li>
             ))}
