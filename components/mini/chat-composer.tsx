@@ -33,7 +33,10 @@ export function ChatComposer({
   onSend,
   compact = false,
   variant = 'bar',
+  accessory,
 }: {
+  /** pill 版底部左侧附加内容（如受检人选择）；传入后变为上输入、下工具栏的两行卡片 */
+  accessory?: React.ReactNode
   /** bar：底部输入栏；card：大输入卡；pill：首页一体式胶囊输入（语音 / 加号上传） */
   variant?: 'bar' | 'card' | 'pill'
   /** 底部有 TabBar 时不再预留 home indicator 安全区 */
@@ -227,7 +230,84 @@ export function ChatComposer({
     </div>
   )
 
-  const pill = (
+  const textInput = (id: string, className: string) => (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        send(draft)
+      }}
+      className="flex h-full min-w-0 flex-1 items-center"
+    >
+      <label htmlFor={id} className="sr-only">
+        输入想咨询的问题
+      </label>
+      <input
+        ref={inputRef}
+        id={id}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && (e.nativeEvent.isComposing || e.keyCode === 229)) e.preventDefault()
+        }}
+        placeholder="说说您或家人的用药问题"
+        enterKeyHint="send"
+        className={className}
+      />
+    </form>
+  )
+
+  const pillWithAccessory = (
+    <div className="relative rounded-[24px] bg-white px-4 pb-3 pt-3.5 shadow-[0_6px_20px_#3a82e414] ring-1 ring-[#e6eefb] focus-within:ring-primary/50">
+      {attachmentList}
+      <div className="flex h-9 items-center">
+        {inputMode === 'keyboard' ? (
+          textInput('ai-ask-pill', 'h-full min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-faint')
+        ) : (
+          <button
+            {...holdToTalkProps}
+            className={cn(
+              'h-9 min-w-0 flex-1 touch-none select-none rounded-full text-[15px] font-semibold transition-colors disabled:opacity-50',
+              recording ? 'bg-[#dfeafb] text-primary' : 'bg-muted text-foreground',
+            )}
+          >
+            {recording ? '松开 发送' : '按住 说话'}
+          </button>
+        )}
+      </div>
+      <div className="mt-2 flex items-center gap-1">
+        <div className="min-w-0 flex-1">{accessory}</div>
+        <button
+          type="button"
+          onClick={toggleInputMode}
+          aria-label={inputMode === 'keyboard' ? '切换为语音输入' : '切换为键盘输入'}
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary"
+        >
+          {inputMode === 'keyboard' ? <Mic className="size-5.5" /> : <Keyboard className="size-5.5" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => setSheetOpen(true)}
+          disabled={attachDisabled}
+          aria-label="拍照或上传报告"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
+        >
+          <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
+        </button>
+        {inputMode === 'keyboard' && canSend && (
+          <button
+            type="button"
+            onClick={() => send(draft)}
+            aria-label="发送"
+            className="ml-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
+          >
+            <ArrowUp className="size-4.5" strokeWidth={2.4} />
+          </button>
+        )}
+      </div>
+    </div>
+  )
+
+  const pill = accessory ? pillWithAccessory : (
     <div className="relative">
       {attachmentList}
       <div className="flex items-center gap-2.5">

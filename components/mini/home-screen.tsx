@@ -35,15 +35,12 @@ export function HomeWelcome({
   onAsk,
   disabled,
   composer,
-  subject,
   styleToggle,
 }: {
   onAsk: (question: string) => void
   disabled?: boolean
-  /** 胶囊输入（ChatComposer pill 版） */
+  /** 输入卡（ChatComposer pill 版，内含受检人选择） */
   composer: ReactNode
-  /** 受检人选择（问候语下方） */
-  subject: ReactNode
   /** 通俗/专业切换（「你可以这样问」卡片标题右侧） */
   styleToggle: ReactNode
 }) {
@@ -61,7 +58,6 @@ export function HomeWelcome({
             <p className="text-pretty text-[18px] font-semibold leading-snug text-foreground" suppressHydrationWarning>
               {line}
             </p>
-            <div className="mt-1.5 flex">{subject}</div>
           </div>
           <div aria-hidden="true" className="relative -mb-6 mr-2 h-[112px] w-[84px] shrink-0">
             <div className="relative size-full animate-[robot-float_4s_ease-in-out_infinite] motion-reduce:animate-none">

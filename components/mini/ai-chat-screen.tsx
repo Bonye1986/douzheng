@@ -438,28 +438,32 @@ export function AiChatScreen({
           <HomeWelcome
             onAsk={(q) => ask(q)}
             disabled={isReplying}
-            composer={<ChatComposer variant="pill" disabled={isReplying} onSend={ask} />}
-            subject={
-              <button
-                type="button"
-                onClick={() => setSheetOpen(true)}
-                className="flex max-w-full items-center gap-1 self-start rounded-full bg-white/70 py-1 pl-1 pr-2 text-[12px] text-muted-foreground ring-1 ring-[#e6eefb] active:opacity-70"
-              >
-                <span
-                  className={cn(
-                    'flex size-5 shrink-0 items-center justify-center rounded-full',
-                    testee ? 'bg-primary text-white' : 'bg-secondary text-secondary-foreground',
-                  )}
-                >
-                  {testee ? (
-                    <UserRoundCheck className="size-3" aria-hidden="true" />
-                  ) : (
-                    <UserRound className="size-3" aria-hidden="true" />
-                  )}
-                </span>
-                <span className="truncate">{testee ? `为 ${testeeLabel(testee)} 解答` : '选择受检人'}</span>
-                <ChevronRight className="size-3 shrink-0 text-faint" aria-hidden="true" />
-              </button>
+            composer={
+              <ChatComposer
+                variant="pill"
+                disabled={isReplying}
+                onSend={ask}
+                accessory={
+                  <button
+                    type="button"
+                    onClick={() => setSheetOpen(true)}
+                    aria-label={testee ? `当前受检人：${testeeLabel(testee)}，点击切换` : '未关联受检人，点击选择'}
+                    className={cn(
+                      'flex h-8 max-w-full items-center gap-1.5 rounded-full px-3 text-[13px] ring-1 transition-colors active:opacity-70',
+                      testee
+                        ? 'bg-secondary text-primary ring-primary/20'
+                        : 'bg-muted/60 text-foreground ring-[#e3e9f3]',
+                    )}
+                  >
+                    {testee ? (
+                      <UserRoundCheck className="size-4 shrink-0" aria-hidden="true" />
+                    ) : (
+                      <UserRound className="size-4 shrink-0" aria-hidden="true" />
+                    )}
+                    <span className="truncate">{testee ? testeeLabel(testee) : '未关联受检人'}</span>
+                  </button>
+                }
+              />
             }
             styleToggle={
               <div role="radiogroup" aria-label="回答风格" className="flex shrink-0 rounded-full bg-muted p-0.5">
