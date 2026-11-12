@@ -89,7 +89,7 @@ export function HomeWelcome({
                   type="button"
                   disabled={disabled}
                   onClick={() => onAsk(item.question)}
-                  className="group flex h-9 w-full items-center gap-2 rounded-full bg-white pl-1.5 pr-3 text-left shadow-[0_2px_8px_#3a82e40a] transition-colors active:bg-secondary/60 disabled:opacity-50"
+                  className="group flex h-10 w-full items-center gap-2 rounded-full bg-white pl-1.5 pr-3 text-left shadow-[0_2px_8px_#3a82e40a] transition-colors active:bg-secondary/60 disabled:opacity-50"
                 >
                   <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_2px_6px_#3a82e44d]">
                     <Hash className="size-3" strokeWidth={2.6} />
