@@ -78,15 +78,15 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
           </div>
           <div
             aria-hidden="true"
-            className="relative h-[168px] w-[136px] shrink-0 overflow-hidden [mask-image:linear-gradient(to_bottom,black_75%,transparent)]"
+            className="relative mr-2 h-[160px] w-[108px] shrink-0 drop-shadow-[0_12px_16px_rgba(37,78,180,0.18)]"
           >
             <Image
-              src="/images/ai-assistant-mascot.png"
+              src="/images/drugene-robot.png"
               alt=""
               fill
-              sizes="136px"
+              sizes="108px"
               priority
-              className="object-contain object-top"
+              className="object-contain"
             />
           </div>
         </section>
