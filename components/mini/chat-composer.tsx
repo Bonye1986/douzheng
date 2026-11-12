@@ -325,9 +325,11 @@ export function ChatComposer({
             type="button"
             onClick={() => send(draft)}
             aria-label="发送"
-            className="ml-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full animate-in zoom-in-75 duration-150"
           >
-            <ArrowUp className="size-3.5" strokeWidth={2.4} />
+            <span className="flex size-5.5 items-center justify-center rounded-full bg-primary text-white">
+              <ArrowUp className="size-3.5" strokeWidth={2.4} />
+            </span>
           </button>
         )}
       </div>
