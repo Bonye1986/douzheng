@@ -72,7 +72,7 @@ export function HomeWelcome({
                 type="button"
                 disabled={disabled}
                 onClick={() => onAsk(question)}
-                className="flex h-10 w-full items-center justify-center gap-1 rounded-xl bg-white text-[13px] font-medium text-foreground shadow-[0_2px_10px_#3a82e40f] ring-1 ring-[#e6eefb] transition-colors active:bg-secondary/60 disabled:opacity-50"
+                className="flex h-8 w-full items-center justify-center gap-1 rounded-lg bg-white text-[13px] font-medium text-foreground shadow-[0_2px_10px_#3a82e40f] ring-1 ring-[#e6eefb] transition-colors active:bg-secondary/60 disabled:opacity-50"
               >
                 <Icon className="size-4 shrink-0 text-primary" strokeWidth={1.9} aria-hidden="true" />
                 <span className="whitespace-nowrap">{label}</span>
