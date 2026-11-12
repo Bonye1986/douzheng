@@ -20,7 +20,7 @@ const quickActions = [
 
 /**
  * 首页即 AI 页：未开始对话时的欢迎区。
- * 版式：助手形象 → 快捷入口 → 受检人/回答风格 → 大输入卡（语音/拍照/附件/发送）→ 猜你想问。
+ * 版式：助手形象 → 快捷入口 → 大输入卡（语音/拍照/附件/发送）→ 受检人/回答风格 → 猜你想问。
  */
 export function HomeWelcome({
   onAsk,
@@ -83,8 +83,8 @@ export function HomeWelcome({
       </nav>
 
       <div className="flex flex-col gap-2">
-        {context}
         {composer}
+        {context}
       </div>
 
       <section aria-labelledby="guess-q" className="mt-1 flex flex-col gap-1 px-1">
