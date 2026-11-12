@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { createPortal } from 'react-dom'
 import {
   ArrowUp,
   Camera,
@@ -51,6 +52,7 @@ export function ChatComposer({
   const [draft, setDraft] = useState('')
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [sheetHost, setSheetHost] = useState<HTMLElement | null>(null)
   const [recording, setRecording] = useState<{ cancel: boolean } | null>(null)
   const startY = useRef(0)
   const voiceIndex = useRef(0)
@@ -75,6 +77,12 @@ export function ChatComposer({
     document.addEventListener('pointerdown', handlePointerDown)
     return () => document.removeEventListener('pointerdown', handlePointerDown)
   }, [expanded, sheetOpen, draft, attachments.length])
+
+  // 弹窗挂到手机屏幕容器上，避免被输入区/底部 TabBar 的层级遮挡
+  function openSheet(e: React.MouseEvent<HTMLElement>) {
+    setSheetHost(e.currentTarget.closest<HTMLElement>('[role="region"]') ?? document.body)
+    setSheetOpen(true)
+  }
 
   function expandPill() {
     if (!accessory || expanded) return
@@ -233,7 +241,7 @@ export function ChatComposer({
         </button>
         <button
           type="button"
-          onClick={() => setSheetOpen(true)}
+          onClick={openSheet}
           disabled={attachDisabled}
           aria-label="上传附件"
           className={toolBtn}
@@ -300,16 +308,6 @@ export function ChatComposer({
             {recording ? '松开 发送' : '按住 说话'}
           </button>
         )}
-        {inputMode === 'keyboard' && canSend && (
-          <button
-            type="button"
-            onClick={() => send(draft)}
-            aria-label="发送"
-            className="-mr-1 ml-2 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-white animate-in zoom-in-75 duration-150 active:opacity-80"
-          >
-            <ArrowUp className="size-4" strokeWidth={2.4} />
-          </button>
-        )}
       </div>
       <div className="mt-2 flex items-center gap-1">
         <div className="min-w-0 flex-1">{accessory}</div>
@@ -323,13 +321,25 @@ export function ChatComposer({
         </button>
         <button
           type="button"
-          onClick={() => setSheetOpen(true)}
+          onClick={openSheet}
           disabled={attachDisabled}
           aria-label="拍照或上传报告"
           className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
         >
           <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
         </button>
+        {inputMode === 'keyboard' && canSend && (
+          <button
+            type="button"
+            onClick={() => send(draft)}
+            aria-label="发送"
+            className="-mr-1 flex size-9 shrink-0 items-center justify-center rounded-full animate-in zoom-in-75 duration-150 active:opacity-80"
+          >
+            <span className="flex size-5.5 items-center justify-center rounded-full bg-primary text-white">
+              <ArrowUp className="size-3.5" strokeWidth={2.8} />
+            </span>
+          </button>
+        )}
       </div>
     </div>
   )
@@ -395,7 +405,7 @@ export function ChatComposer({
           )}
           <button
             type="button"
-            onClick={() => setSheetOpen(true)}
+            onClick={openSheet}
             disabled={attachDisabled}
             aria-label="拍照或��传报告"
             className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
@@ -518,7 +528,7 @@ export function ChatComposer({
 
           <button
             type="button"
-            onClick={() => setSheetOpen(true)}
+            onClick={openSheet}
             disabled={disabled || attachments.length >= MAX_ATTACHMENTS}
             aria-label="上传附件"
             className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
@@ -542,51 +552,65 @@ export function ChatComposer({
 
       {recording && <RecordingOverlay cancel={recording.cancel} />}
 
-      {sheetOpen && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-end">
-          <button
-            type="button"
-            aria-label="关闭"
-            onClick={() => setSheetOpen(false)}
-            className="absolute inset-0 bg-[#1e2a3d]/35"
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="上传附件"
-            className="relative rounded-t-3xl bg-white px-4 pb-8 pt-5 animate-in slide-in-from-bottom duration-300"
-          >
-            <p className="text-center text-caption text-muted-foreground">支持上传图片和 PDF 文件，最多 {MAX_ATTACHMENTS} 个</p>
-            <ul className="mt-4 grid grid-cols-3 gap-3">
-              {[
-                { label: '拍照', icon: Camera, ref: cameraRef },
-                { label: '相册', icon: Images, ref: albumRef },
-                { label: '文件', icon: FileText, ref: fileRef },
-              ].map(({ label, icon: Icon, ref }) => (
-                <li key={label}>
-                  <button
-                    type="button"
-                    onClick={() => ref.current?.click()}
-                    className="flex w-full flex-col items-center gap-2 rounded-2xl py-3 active:bg-secondary"
-                  >
-                    <span className="flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
-                      <Icon className="size-6" />
-                    </span>
-                    <span className="text-note text-foreground">{label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+      {sheetOpen &&
+        sheetHost &&
+        createPortal(
+          <div className="absolute inset-0 z-50 flex flex-col justify-end">
             <button
               type="button"
+              aria-label="关闭"
               onClick={() => setSheetOpen(false)}
-              className="mt-4 h-11 w-full rounded-full bg-muted text-title font-medium text-foreground"
+              className="absolute inset-0 bg-black/45 animate-in fade-in duration-200"
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="attach-sheet-title"
+              className="relative rounded-t-2xl bg-white pt-4 animate-in slide-in-from-bottom duration-300"
             >
-              取消
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="px-4">
+                <h2 id="attach-sheet-title" className="text-center text-title font-semibold text-foreground">
+                  添加附件
+                </h2>
+                <p className="mt-1 text-center text-caption text-muted-foreground">
+                  支持图片和 PDF，最多 {MAX_ATTACHMENTS} 个
+                </p>
+                <ul className="mt-5 grid grid-cols-3 gap-2">
+                  {[
+                    { label: '拍照', icon: Camera, ref: cameraRef },
+                    { label: '从相册选择', icon: Images, ref: albumRef },
+                    { label: 'PDF 文件', icon: FileText, ref: fileRef },
+                  ].map(({ label, icon: Icon, ref }) => (
+                    <li key={label}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSheetOpen(false)
+                          ref.current?.click()
+                        }}
+                        className="flex w-full flex-col items-center gap-2 rounded-xl py-2 active:bg-muted"
+                      >
+                        <span className="flex size-12 items-center justify-center rounded-full bg-secondary text-primary">
+                          <Icon className="size-5.5" />
+                        </span>
+                        <span className="text-note text-foreground">{label}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-4 h-2 bg-muted" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={() => setSheetOpen(false)}
+                className="mb-6 flex h-13 w-full items-center justify-center text-title text-foreground active:bg-muted"
+              >
+                取消
+              </button>
+            </div>
+          </div>,
+          sheetHost,
+        )}
 
       <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={handleFiles} />
       <input ref={albumRef} type="file" accept="image/*" multiple hidden onChange={handleFiles} />
