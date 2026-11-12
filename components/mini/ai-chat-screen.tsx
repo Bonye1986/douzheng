@@ -369,8 +369,38 @@ export function AiChatScreen({
     </button>
   )
 
+  const currentStyle = answerStyles.find((s) => s.key === mode) ?? answerStyles[0]
+  const nextStyle = answerStyles.find((s) => s.key !== mode) ?? answerStyles[0]
+  const modeChip = (
+    <button
+      type="button"
+      onClick={() => setMode(nextStyle.key)}
+      aria-label={`回答风格：${currentStyle.label}，点击切换为${nextStyle.label}`}
+      title={currentStyle.desc}
+      className={cn(
+        'flex h-8 shrink-0 items-center rounded-full px-3 text-[13px] transition-colors active:opacity-70',
+        mode === 'pro'
+          ? 'bg-secondary font-medium text-primary ring-1 ring-primary/20'
+          : 'bg-muted/60 text-foreground ring-1 ring-[#e3e9f3]',
+      )}
+    >
+      {currentStyle.short}
+    </button>
+  )
+
   const homeComposer = (
-    <ChatComposer variant="pill" disabled={isReplying} onSend={ask} pinned={!!testee} accessory={testeeChip} />
+    <ChatComposer
+      variant="pill"
+      disabled={isReplying}
+      onSend={ask}
+      pinned={!!testee}
+      accessory={
+        <div className="flex min-w-0 items-center gap-2 [&>*:first-child]:min-w-0">
+          {testeeChip}
+          {modeChip}
+        </div>
+      }
+    />
   )
 
   return (
@@ -403,33 +433,6 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
-          {embedded && (
-            <div
-              role="radiogroup"
-              aria-label="回答风格"
-              className="ml-2 flex h-8 items-center rounded-full border border-border bg-white/80 p-0.5"
-            >
-              {answerStyles.map((s) => {
-                const selected = s.key === mode
-                return (
-                  <button
-                    key={s.key}
-                    type="button"
-                    role="radio"
-                    aria-checked={selected}
-                    aria-label={`${s.label}：${s.desc}`}
-                    onClick={() => setMode(s.key)}
-                    className={cn(
-                      'flex h-full items-center rounded-full px-3 text-[13px] transition-colors',
-                      selected ? 'bg-primary font-medium text-white' : 'text-muted-foreground active:text-foreground',
-                    )}
-                  >
-                    {s.short}
-                  </button>
-                )
-              })}
-            </div>
-          )}
         </div>
         {!embedded && <h2 className="text-title font-medium">AI咨询</h2>}
         <div
