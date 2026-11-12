@@ -332,7 +332,7 @@ export function AiChatScreen({
   }
 
   const greeting = testee
-    ? `你好���${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
+    ? `你好，${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
     : '你好。本次未关联受检人，我会按通用知识回答；你也可以随时选择受检人或上传外部报告。'
 
   const welcome = embedded && !sharing && messages.length === 0
@@ -844,7 +844,7 @@ function TesteeSheet({
             onClick={() => onConfirm(list.find((t) => t.id === selected) ?? null)}
             className="h-11 flex-[1.4] rounded-full bg-primary text-title font-semibold text-white shadow-[0_6px_16px_#3a82e433] transition-opacity disabled:opacity-40 disabled:shadow-none"
           >
-            确认���择
+            确认选择
           </button>
         </div>
       </div>

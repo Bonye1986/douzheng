@@ -425,7 +425,7 @@ export function ChatComposer({
             type="button"
             onClick={openSheet}
             disabled={attachDisabled}
-            aria-label="拍照或��传报告"
+            aria-label="拍照或上传报告"
             className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground active:bg-secondary disabled:opacity-40"
           >
             <Plus className="size-5.5 rounded-full border-[1.6px] border-current p-px" strokeWidth={2.4} />
