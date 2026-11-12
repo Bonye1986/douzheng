@@ -27,7 +27,7 @@ function greetingByHour(hour: number) {
 
 /**
  * 首页即 AI 页（未开始对话）。
- * 版式：问候 + 助手形象 → 「你可以这样问」卡 → 留白 → 底部（功能卡横滑 → 胶囊输入 + 拍照 → 受检人/回答风格）。
+ * 版式：受检人/回答风格（与对话页同位）→ 问候 + 助手形象 → 「你可以这样问」卡 → 留白 → 底部（功能入口 → 胶囊输入）。
  */
 export function HomeWelcome({
   onAsk,
@@ -46,8 +46,9 @@ export function HomeWelcome({
 
   return (
     <div className="flex min-h-full flex-col">
-      <section className="relative pt-4">
+      <section className="relative pt-1">
         <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
+        <div className="mb-3">{context}</div>
         <div className="relative z-0 flex items-end justify-between">
           <div className="flex flex-col gap-1.5 pb-5 pl-2" suppressHydrationWarning>
             <p className="text-[20px] font-semibold leading-tight text-primary" suppressHydrationWarning>
@@ -114,7 +115,6 @@ export function HomeWelcome({
         </nav>
 
         {composer}
-        {context}
 
         <p className="text-center text-[11px] leading-4 text-faint">内容由 AI 生成，仅供参考，不替代医生诊断</p>
       </div>
