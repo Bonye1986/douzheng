@@ -296,7 +296,25 @@ export function ChatComposer({
       {attachmentList}
       <div className="flex h-9 items-center">
         {inputMode === 'keyboard' ? (
-          textInput('ai-ask-pill', 'h-full min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-faint')
+          <>
+            {textInput('ai-ask-pill', 'h-full min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-faint')}
+            {draft.length > 0 && (
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  setDraft('')
+                  inputRef.current?.focus()
+                }}
+                aria-label="清空输入"
+                className="-mr-1.5 flex size-8 shrink-0 items-center justify-center rounded-full animate-in fade-in duration-150 active:opacity-70"
+              >
+                <span className="flex size-4.5 items-center justify-center rounded-full bg-[#c5cfdd] text-white">
+                  <X className="size-3" strokeWidth={3} />
+                </span>
+              </button>
+            )}
+          </>
         ) : (
           <button
             {...holdToTalkProps}

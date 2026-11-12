@@ -362,10 +362,10 @@ export function AiChatScreen({
       type="button"
       onClick={() => setSheetOpen(true)}
       aria-label="未关联受检人，点击选择"
-      className="flex h-8 max-w-full items-center gap-1.5 rounded-full bg-muted/60 px-3 text-[13px] text-foreground ring-1 ring-[#e3e9f3] active:opacity-70"
-    >
-      <UserRound className="size-4 shrink-0" aria-hidden="true" />
-      <span className="truncate">未关联受检人</span>
+  className="flex h-8 shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-muted/60 px-2.5 text-[13px] text-foreground ring-1 ring-[#e3e9f3] active:opacity-70"
+  >
+  <UserRound className="size-4 shrink-0" aria-hidden="true" />
+  <span>未关联受检人</span>
     </button>
   )
 
@@ -378,7 +378,7 @@ export function AiChatScreen({
       onSend={ask}
       pinned={!!testee}
       accessory={
-        <div className="flex min-w-0 items-center gap-2 [&>*:first-child]:min-w-0">
+        <div className="flex min-w-0 items-center gap-1.5">
           {testeeChip}
           {modeChip}
         </div>
