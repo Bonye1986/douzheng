@@ -66,22 +66,20 @@ export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) =>
               <span className="text-primary">精准用药助手</span>
             </p>
             <p className="mt-2 text-pretty text-caption leading-relaxed text-muted-foreground">
-              用药疑问、基因检测、
-              <br />
-              报告解读，随时问我
+              用药疑问、基因检测、报告解读，随时问我
             </p>
           </div>
           <div
             aria-hidden="true"
-            className="relative flex h-[168px] w-[132px] shrink-0 items-end justify-center"
+            className="relative flex h-[128px] w-[84px] shrink-0 items-end justify-center"
           >
-            <span className="absolute bottom-2 left-1/2 h-3 w-20 -translate-x-1/2 rounded-[50%] bg-[#1e3a8a]/15 blur-[6px]" />
-            <div className="relative h-[156px] w-[100px] animate-[robot-float_4s_ease-in-out_infinite] motion-reduce:animate-none">
+            <span className="absolute bottom-1.5 left-1/2 h-2.5 w-14 -translate-x-1/2 rounded-[50%] bg-[#1e3a8a]/15 blur-[5px]" />
+            <div className="relative h-[120px] w-[76px] animate-[robot-float_4s_ease-in-out_infinite] motion-reduce:animate-none">
               <Image
                 src="/images/drugene-robot.png"
                 alt=""
                 fill
-                sizes="100px"
+                sizes="76px"
                 priority
                 className="object-contain object-bottom drop-shadow-[0_8px_10px_rgba(30,58,138,0.18)]"
               />
