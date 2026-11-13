@@ -1,15 +1,31 @@
 'use client'
 
-import type { ReactNode } from 'react'
-import { FileText, HeartPulse, Pill, PackageSearch } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { FileText, HeartPulse, Pill, PackageSearch, RefreshCw } from 'lucide-react'
 import Image from 'next/image'
 
-const suggestions = [
-  { id: 'q1', question: '孩子生病，成人药掰开减半喂，可以吗？' },
-  { id: 'q2', question: '症状好转就能停药吗？吃药没效果，能自行加量吗？' },
-  { id: 'q3', question: '减肥针听说副作用不少，普通人适合打吗？' },
-  { id: 'q4', question: '同样的药别人吃效果好，我却副作用大，是什么原因？' },
-  { id: 'q5', question: '每天多杯咖啡，需要额外补钙吗？' },
+const suggestionBatches = [
+  [
+    '孩子生病，成人药掰开减半喂，可以吗？',
+    '症状好转就能停药吗？吃药没效果，能自行加量吗？',
+    '减肥针听说副作用不少，普通人适合打吗？',
+    '同样的药别人吃效果好，我却副作用大，是什么原因？',
+    '每天多杯咖啡，需要额外补钙吗？',
+  ],
+  [
+    '吃药期间能喝酒吗？头孢配酒真的很危险吗？',
+    '感冒药和退烧药可以一起吃吗？',
+    '降压药需要一直吃吗？血压正常了能停吗？',
+    '吃完药多久可以喝牛奶、喝茶？',
+    '基因检测能看出我适合吃哪些药吗？',
+  ],
+  [
+    '孕期或备孕期间，哪些药不能随便吃？',
+    '老人同时吃好几种药，会不会互相影响？',
+    '抗生素没吃完一个疗程就停，会怎样？',
+    '他汀类降脂药伤肝吗？要定期复查什么？',
+    '保健品和处方药一起吃有冲突吗？',
+  ],
 ]
 
 const features = [
@@ -33,6 +49,8 @@ export function HomeWelcome({
   /** 输入卡（ChatComposer pill 版，内含受检人选择） */
   composer: ReactNode
 }) {
+  const [batch, setBatch] = useState(0)
+  const [spin, setSpin] = useState(0)
   const hello = 'Hi，我是您的用药助手'
   const line = '用药有疑问，随时问我'
 
@@ -64,17 +82,35 @@ export function HomeWelcome({
         </div>
 
         <div className="relative z-10 rounded-[20px] border border-white bg-white/60 px-4 pb-2 pt-3.5 shadow-[0_10px_30px_#3a82e40f] backdrop-blur-md">
-          <h2 className="text-[13px] text-muted-foreground">大家都在问</h2>
-          <ul className="mt-1 flex flex-col">
-            {suggestions.map((item) => (
-              <li key={item.id}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-[13px] text-muted-foreground">大家都在问</h2>
+            <button
+              type="button"
+              onClick={() => {
+                setBatch((b) => (b + 1) % suggestionBatches.length)
+                setSpin((s) => s + 1)
+              }}
+              className="-mr-1.5 flex h-7 items-center gap-1 rounded-full px-1.5 text-[12px] text-muted-foreground transition-colors active:bg-secondary/70"
+            >
+              <RefreshCw
+                key={spin}
+                className={`size-3.5 ${spin > 0 ? 'animate-[spin_0.5s_ease-out_1] motion-reduce:animate-none' : ''}`}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
+              换一批
+            </button>
+          </div>
+          <ul className="mt-1 flex flex-col" aria-live="polite">
+            {suggestionBatches[batch].map((question) => (
+              <li key={question}>
                 <button
                   type="button"
                   disabled={disabled}
-                  onClick={() => onAsk(item.question)}
+                  onClick={() => onAsk(question)}
                   className="-mx-2 w-[calc(100%+1rem)] rounded-lg px-2 py-2 text-left text-[13px] leading-5 text-foreground transition-colors active:bg-secondary/70 disabled:opacity-50"
                 >
-                  {item.question}
+                  {question}
                 </button>
               </li>
             ))}
