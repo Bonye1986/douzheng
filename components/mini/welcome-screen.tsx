@@ -66,7 +66,7 @@ export function WelcomeScreen({
           </div>
 
           <h1 className="whitespace-nowrap text-display font-bold leading-[1.3]">
-            用药问题，<span className="text-primary">尽管问我</span>
+            用药有疑问，<span className="text-primary">随时问我</span>
           </h1>
           <p className="mt-3 text-pretty text-body leading-6 text-muted-foreground">
             登录即可用药咨询、预约检测、查询报告，获取您的个体化用药指导
