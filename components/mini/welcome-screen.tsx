@@ -2,14 +2,14 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { CircleAlert, FileSearch, MessageCircleHeart, ShieldCheck, Smartphone } from 'lucide-react'
+import { CircleAlert, Dna, HeartPulse, MessageCircleHeart, Smartphone } from 'lucide-react'
 import { Agreement, BrandLogo } from './auth-parts'
 import { NavBar, StatusBar } from './phone-frame'
 
 const highlights = [
-  { icon: FileSearch, label: '报告查询' },
-  { icon: ShieldCheck, label: '隐私加密' },
   { icon: MessageCircleHeart, label: '用药咨询' },
+  { icon: Dna, label: '基因检测' },
+  { icon: HeartPulse, label: '健康管理' },
 ]
 
 export function WelcomeScreen({
@@ -62,16 +62,16 @@ export function WelcomeScreen({
 
         <div className="flex flex-1 flex-col justify-end px-7 pb-8">
           <div className="mb-6">
-            <BrandLogo />
+            <BrandLogo tagline="个体化用药助手" />
           </div>
 
           <h1 className="text-balance text-display font-bold leading-[1.3]">
-            看懂基因，
+            用药问题，
             <br />
-            <span className="text-primary">更好地了解用药</span>
+            <span className="text-primary">尽管问我</span>
           </h1>
-          <p className="mt-3 text-body leading-6 text-muted-foreground">
-            登录后即可预约检测、查询报告、获取个体化用药参考
+          <p className="mt-3 text-pretty text-body leading-6 text-muted-foreground">
+            登录即可用药咨询、预约检测、查询报告，获取您的个体化用药指导
           </p>
 
           <ul className="mt-6 flex gap-2">
