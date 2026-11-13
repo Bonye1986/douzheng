@@ -35,6 +35,14 @@ import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/compon
 import { ChatCard, cardKindText, detectCardKind, type CardKind } from '@/components/mini/ai-cards'
 import { testServices } from '@/components/mini/tests-data'
 import { HeaderTitleMenu } from '@/components/mini/header-title-menu'
+
+function RobotAvatar() {
+  return (
+    <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-[0_2px_8px_#3a82e41a]">
+      <img src="/images/drugene-robot.png" alt="" className="size-7 object-contain" />
+    </span>
+  )
+}
 import {
   answerToText,
   confidenceMeta,
@@ -515,6 +523,7 @@ export function AiChatScreen({
         <ul className={cn('flex flex-col gap-4', !sharing && (embedded ? 'pt-2' : 'mt-4'))} aria-live="polite">
           {!sharing && (
             <li className="flex gap-2">
+              <RobotAvatar />
               <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                 {greeting}
               </p>
@@ -531,6 +540,7 @@ export function AiChatScreen({
                 </div>
               ) : m.role === 'card' ? (
                 <div className="flex gap-2">
+                  <RobotAvatar />
                   <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-white px-3 py-3 text-left shadow-[0_4px_14px_#3a82e40d]">
                     {m.ready ? (
                       <ChatCard
@@ -547,6 +557,7 @@ export function AiChatScreen({
                 </div>
               ) : (
                 <div className="flex gap-2">
+                  <RobotAvatar />
                   <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                     {m.answers ? (
                       <AnswerBody
