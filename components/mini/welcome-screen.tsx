@@ -65,10 +65,8 @@ export function WelcomeScreen({
             <BrandLogo tagline="个体化用药助手" />
           </div>
 
-          <h1 className="text-balance text-display font-bold leading-[1.3]">
-            用药问题，
-            <br />
-            <span className="text-primary">尽管问我</span>
+          <h1 className="whitespace-nowrap text-display font-bold leading-[1.3]">
+            用药问题，<span className="text-primary">尽管问我</span>
           </h1>
           <p className="mt-3 text-pretty text-body leading-6 text-muted-foreground">
             登录即可用药咨询、预约检测、查询报告，获取您的个体化用药指导
@@ -80,7 +78,7 @@ export function WelcomeScreen({
                 key={label}
                 className="flex items-center gap-1.5 rounded-full border border-primary/10 bg-white/80 px-3 py-1.5 text-caption text-secondary-foreground backdrop-blur"
               >
-                <Icon className="size-3.5 text-accent" aria-hidden="true" />
+                <Icon className="size-3.5 text-primary" aria-hidden="true" />
                 {label}
               </li>
             ))}
