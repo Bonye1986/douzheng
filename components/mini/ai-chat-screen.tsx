@@ -417,6 +417,14 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
+          <button
+            type="button"
+            onClick={startNewChat}
+            aria-label="新建会话"
+            className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
+          >
+            <Plus className="size-5" />
+          </button>
         </div>
         {embedded ? <HeaderTitleMenu /> : <h2 className="text-title font-medium">AI咨询</h2>}
         <div
