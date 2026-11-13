@@ -845,7 +845,7 @@ function TesteeSheet({
             onClick={() => onConfirm(null)}
             className="h-11 flex-1 rounded-full bg-white text-title font-medium text-muted-foreground shadow-[inset_0_0_0_1px_var(--color-border)]"
           >
-            暂不��择
+            暂不选择
           </button>
           <button
             type="button"
