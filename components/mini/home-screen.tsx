@@ -52,7 +52,7 @@ export function HomeWelcome({
   const [batch, setBatch] = useState(0)
   const [spin, setSpin] = useState(0)
   const hello = 'Hi，我是您的用药助手'
-  const line = '用药有疑问，随时问我'
+  const line = '用药有疑问，随时问问我'
 
   return (
     <div className="flex min-h-full flex-col">
