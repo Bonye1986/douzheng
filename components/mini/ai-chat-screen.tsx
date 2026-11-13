@@ -26,7 +26,6 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { StatusBar } from '@/components/mini/phone-frame'
-import { BrandMark } from '@/components/mini/auth-parts'
 import { ChatComposer, answerStyles, type Attachment } from '@/components/mini/chat-composer'
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
 import { HomeDock, HomeWelcome } from '@/components/mini/home-screen'
@@ -516,7 +515,6 @@ export function AiChatScreen({
         <ul className={cn('flex flex-col gap-4', !sharing && (embedded ? 'pt-2' : 'mt-4'))} aria-live="polite">
           {!sharing && (
             <li className="flex gap-2">
-              <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
               <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                 {greeting}
               </p>
@@ -533,7 +531,6 @@ export function AiChatScreen({
                 </div>
               ) : m.role === 'card' ? (
                 <div className="flex gap-2">
-                  <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
                   <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-white px-3 py-3 text-left shadow-[0_4px_14px_#3a82e40d]">
                     {m.ready ? (
                       <ChatCard
@@ -550,7 +547,6 @@ export function AiChatScreen({
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
                   <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                     {m.answers ? (
                       <AnswerBody
@@ -1084,7 +1080,7 @@ function AnswerActions({
   }
 
   const actions = [
-    { key: 'speak', label: speaking ? '停止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
+    { key: 'speak', label: speaking ? '��止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
     { key: 'copy', label: '复制', icon: notice === '已复制' ? Check : Copy, onClick: copy },
     { key: 'share', label: '分享', icon: Share2, onClick: onShare },
     { key: 'retry', label: '重新回答', icon: RefreshCw, onClick: onRegenerate, disabled: regenerateDisabled },
