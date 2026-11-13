@@ -575,18 +575,25 @@ export function AiChatScreen({
             const checked = shareIds.has(m.id)
             return (
               <li key={m.id}>
-                <button
-                  type="button"
+                <div
                   role="checkbox"
                   aria-checked={checked}
                   aria-label={m.role === 'user' ? `提问：${m.text}` : 'AI 回答'}
-                  disabled={!selectable}
-                  onClick={() => toggleShare(m.id)}
-                  className="flex w-full items-start gap-2.5 text-left"
+                  aria-disabled={!selectable}
+                  tabIndex={selectable ? 0 : -1}
+                  onClick={() => selectable && toggleShare(m.id)}
+                  onKeyDown={(e) => {
+                    if (!selectable) return
+                    if (e.key === ' ' || e.key === 'Enter') {
+                      e.preventDefault()
+                      toggleShare(m.id)
+                    }
+                  }}
+                  className={`flex w-full items-start gap-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg ${selectable ? 'cursor-pointer' : 'cursor-default opacity-60'}`}
                 >
                   <ShareCheckbox checked={checked} className={m.role === 'user' ? 'mt-2.5' : 'mt-1.5'} />
-                  <div className="pointer-events-none min-w-0 flex-1">{content}</div>
-                </button>
+                  <div inert className="pointer-events-none min-w-0 flex-1">{content}</div>
+                </div>
               </li>
             )
           })}
