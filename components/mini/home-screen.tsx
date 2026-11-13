@@ -21,7 +21,7 @@ const features = [
 
 /**
  * 首页即 AI 页（未开始对话）。
- * 版式：问候 + 助手形象 → 「猜你想问」卡 → 留白 → 底部（功能入口 → 胶囊输入）。
+ * 版式：问候 + 助手形象 → 「大家都在问」卡 → 留白 → 底部（功能入口 → 胶囊输入）。
  */
 export function HomeWelcome({
   onAsk,
@@ -64,7 +64,7 @@ export function HomeWelcome({
         </div>
 
         <div className="relative z-10 rounded-[20px] border border-white bg-white/60 px-4 pb-2 pt-3.5 shadow-[0_10px_30px_#3a82e40f] backdrop-blur-md">
-          <h2 className="text-[13px] text-muted-foreground">猜你想问</h2>
+          <h2 className="text-[13px] text-muted-foreground">大家都在问</h2>
           <ul className="mt-1 flex flex-col">
             {suggestions.map((item) => (
               <li key={item.id}>
