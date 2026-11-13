@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-/** 顶栏居中标题 drugene，点开为「语音播报」开关小菜单（参考元宝小程序）。 */
+/** 顶栏居中标题 DRUGENE，点开为「语音播报」开关小菜单（参考元宝小程序）。 */
 export function HeaderTitleMenu() {
   const [open, setOpen] = useState(false)
   const [speak, setSpeak] = useState(false)
@@ -33,7 +33,7 @@ export function HeaderTitleMenu() {
         onClick={() => setOpen((v) => !v)}
         className="flex h-8 items-center gap-0.5 rounded-full px-2 active:bg-white/70"
       >
-        <span className="text-[17px] font-semibold tracking-tight text-foreground">drugene</span>
+        <span className="text-[17px] font-semibold tracking-tight text-foreground">DRUGENE</span>
         <ChevronDown
           aria-hidden="true"
           className={cn('size-4 text-muted-foreground transition-transform', open && 'rotate-180')}
