@@ -1,15 +1,15 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { ChevronRight, FileText, HeartPulse, Pill, PackageSearch, Hash } from 'lucide-react'
+import { FileText, HeartPulse, Pill, PackageSearch } from 'lucide-react'
 import Image from 'next/image'
 
 const suggestions = [
-  { id: 'q1', question: '孩子生病，成人药能减半喂吗？' },
-  { id: 'q2', question: '症状好转了，能自己停药吗？' },
-  { id: 'q3', question: '吃药没效果，能自行加量吗？' },
-  { id: 'q4', question: '同样的药，为何我副作用更大？' },
-  { id: 'q5', question: '每天多杯咖啡，需要补钙吗？' },
+  { id: 'q1', question: '孩子生病，成人药掰开减半喂，可以吗？' },
+  { id: 'q2', question: '症状好转就能停药吗？吃药没效果，能自行加量吗？' },
+  { id: 'q3', question: '减肥针听说副作用不少，普通人适合打吗？' },
+  { id: 'q4', question: '同样的药别人吃效果好，我却副作用大，是为什么？' },
+  { id: 'q5', question: '每天多杯咖啡，需要额外补钙吗？' },
 ]
 
 const features = [
@@ -19,17 +19,9 @@ const features = [
   { id: 'health', icon: HeartPulse, title: '健康管理', question: '帮我制定健康管理与用药提醒计划' },
 ]
 
-function greetingByHour(hour: number) {
-  if (hour < 6) return { hello: '夜深了！', line: '早点休息，按时用药更安心' }
-  if (hour < 11) return { hello: '早上好！', line: '早餐后的药，别忘了按时吃' }
-  if (hour < 13) return { hello: '中午好！', line: '饭后稍作休息，再服药更合适' }
-  if (hour < 18) return { hello: '下午好！', line: '用药上有疑问，随时问我' }
-  return { hello: '晚上好！', line: '睡前用药前，可以先问问我' }
-}
-
 /**
  * 首页即 AI 页（未开始对话）。
- * 版式：受检人/回答风格（与对话页同位）→ 问候 + 助手形象 → 「你可以这样问」卡 → 留白 → 底部（功能入口 → 胶囊输入）。
+ * 版式：问候 + 助手形象 → 「猜你想问」卡 → 留白 → 底部（功能入口 → 胶囊输入）。
  */
 export function HomeWelcome({
   onAsk,
@@ -41,7 +33,8 @@ export function HomeWelcome({
   /** 输入卡（ChatComposer pill 版，内含受检人选择） */
   composer: ReactNode
 }) {
-  const { hello, line } = greetingByHour(new Date().getHours())
+  const hello = 'Hi，我是您的用药助手'
+  const line = '用药有疑问，随时问我'
 
   return (
     <div className="flex min-h-full flex-col">
@@ -70,22 +63,18 @@ export function HomeWelcome({
           </div>
         </div>
 
-        <div className="relative z-10 rounded-[24px] border border-white bg-white/55 p-4 shadow-[0_10px_30px_#3a82e40f] backdrop-blur-md">
-          <h2 className="px-1 text-[14px] text-muted-foreground">你可以这样问</h2>
-          <ul className="mt-2.5 flex flex-col gap-1.5">
+        <div className="relative z-10 rounded-[20px] border border-white bg-white/60 px-4 pb-2 pt-3.5 shadow-[0_10px_30px_#3a82e40f] backdrop-blur-md">
+          <h2 className="text-[13px] text-muted-foreground">猜你想问</h2>
+          <ul className="mt-1 flex flex-col">
             {suggestions.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onAsk(item.question)}
-                  className="group flex h-10 w-full items-center gap-2 rounded-full bg-white pl-1.5 pr-3 text-left shadow-[0_2px_8px_#3a82e40a] transition-colors active:bg-secondary/60 disabled:opacity-50"
+                  className="-mx-2 w-[calc(100%+1rem)] rounded-lg px-2 py-2 text-left text-[13px] leading-5 text-foreground transition-colors active:bg-secondary/70 disabled:opacity-50"
                 >
-                  <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_2px_6px_#3a82e44d]">
-                    <Hash className="size-3" strokeWidth={2.6} />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-[13px] text-foreground">{item.question}</span>
-                  <ChevronRight className="size-3.5 shrink-0 text-faint transition-transform group-active:translate-x-0.5" aria-hidden="true" />
+                  {item.question}
                 </button>
               </li>
             ))}

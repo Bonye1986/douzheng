@@ -35,6 +35,7 @@ import { useExaminees } from '@/components/mini/examinee-store'
 import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/components/mini/chat-share'
 import { ChatCard, cardKindText, detectCardKind, type CardKind } from '@/components/mini/ai-cards'
 import { testServices } from '@/components/mini/tests-data'
+import { HeaderTitleMenu } from '@/components/mini/header-title-menu'
 import {
   answerToText,
   confidenceMeta,
@@ -417,7 +418,7 @@ export function AiChatScreen({
             <Menu className="size-5" />
           </button>
         </div>
-        {!embedded && <h2 className="text-title font-medium">AI咨询</h2>}
+        {embedded ? <HeaderTitleMenu /> : <h2 className="text-title font-medium">AI咨询</h2>}
         <div
           aria-hidden="true"
           className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
@@ -836,7 +837,7 @@ function TesteeSheet({
             onClick={() => onConfirm(null)}
             className="h-11 flex-1 rounded-full bg-white text-title font-medium text-muted-foreground shadow-[inset_0_0_0_1px_var(--color-border)]"
           >
-            暂不选择
+            暂不��择
           </button>
           <button
             type="button"
