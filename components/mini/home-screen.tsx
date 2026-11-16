@@ -63,7 +63,7 @@ export function HomeWelcome({
             <p className="text-[20px] font-semibold leading-tight text-primary" suppressHydrationWarning>
               {hello}
             </p>
-            <p className="text-pretty text-[18px] font-semibold leading-snug text-foreground" suppressHydrationWarning>
+            <p className="text-pretty text-[15px] font-medium leading-snug text-foreground" suppressHydrationWarning>
               {line}
             </p>
           </div>
