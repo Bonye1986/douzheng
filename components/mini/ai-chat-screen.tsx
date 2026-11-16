@@ -1081,7 +1081,7 @@ function AnswerActions({
   }
 
   const actions = [
-    { key: 'speak', label: speaking ? '��止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
+    { key: 'speak', label: speaking ? '停止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
     { key: 'copy', label: '复制', icon: notice === '已复制' ? Check : Copy, onClick: copy },
     { key: 'share', label: '分享', icon: Share2, onClick: onShare },
     { key: 'retry', label: '重新回答', icon: RefreshCw, onClick: onRegenerate, disabled: regenerateDisabled },
