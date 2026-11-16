@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { HomeScreen } from '@/components/mini/home-screen'
+import { useState, type ComponentProps } from 'react'
 import { AiChatScreen, type ChatRequest } from '@/components/mini/ai-chat-screen'
 import { TabBar, type TabKey } from '@/components/mini/tab-bar'
 import { TabPlaceholderScreen } from '@/components/mini/tab-placeholder-screen'
@@ -42,7 +41,13 @@ export function HomeFlow({
   loggedIn = true,
   onRequireLogin,
   showRealNamePrompt = false,
+  ai,
 }: {
+  /** 首页内嵌 AI 对话的初始状态（用于画板展示首页版式下的各 AI 状态） */
+  ai?: Pick<
+    ComponentProps<typeof AiChatScreen>,
+    'initialMode' | 'initialTesteeId' | 'initialQuestion' | 'initialSheetOpen' | 'initialDrawerOpen' | 'initialSharing'
+  >
   /** 登录成功后进入首页时检查实名状态，未认证则弹窗引导 */
   showRealNamePrompt?: boolean
   /** Pre-filled answers so the article shows the 问卷 as already submitted. */
@@ -66,8 +71,6 @@ export function HomeFlow({
   initialLoginPrompt?: string
 }) {
   const [tab, setTab] = useState<TabKey>(initialTab)
-  const [chatOpen, setChatOpen] = useState(false)
-  const [chatMounted, setChatMounted] = useState(false)
   const [request, setRequest] = useState<ChatRequest | null>(null)
   const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
   const [loginPrompt, setLoginPrompt] = useState<string | null>(initialLoginPrompt ?? null)
@@ -101,10 +104,10 @@ export function HomeFlow({
     setTab('test')
   }
 
+  // 首页即 AI 页：其它页面的 AI 入口直接切回首页对话，不再叠加跳转页。
   const openChat = (question?: string) => {
     if (question) setRequest({ question, id: Date.now() })
-    setChatMounted(true)
-    setChatOpen(true)
+    setTab('home')
   }
 
   const handleCategory = (id: ServiceCategoryId) => {
@@ -121,10 +124,11 @@ export function HomeFlow({
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden">
-      <div className="min-h-0 flex-1" inert={chatOpen}>
-        {tab === 'home' ? (
-          <HomeScreen onOpenChat={openChat} />
-        ) : tab === 'service' ? (
+      <div className="relative min-h-0 flex-1">
+        <div className={cn('h-full', tab !== 'home' && 'hidden')}>
+          <AiChatScreen {...ai} embedded request={request} active={tab === 'home'} />
+        </div>
+        {tab === 'home' ? null : tab === 'service' ? (
           <ServicesScreen
             onOpenChat={openChat}
             onCategory={handleCategory}
@@ -157,23 +161,8 @@ export function HomeFlow({
           <TabPlaceholderScreen tab={tab} />
         )}
       </div>
-      <div inert={chatOpen}>
-        <TabBar active={tab} onSelect={setTab} />
-      </div>
-      {!chatOpen && <FloatingAiButton onClick={() => openChat()} />}
-
-      {chatMounted && (
-        <div
-          aria-hidden={!chatOpen}
-          inert={!chatOpen}
-          className={cn(
-            'absolute inset-0 z-40 transition-transform duration-300 ease-out motion-reduce:transition-none',
-            chatOpen ? 'translate-x-0' : 'pointer-events-none translate-x-full',
-          )}
-        >
-          <AiChatScreen request={request} active={chatOpen} onBack={() => setChatOpen(false)} />
-        </div>
-      )}
+      <TabBar active={tab} onSelect={setTab} />
+      {tab !== 'home' && <FloatingAiButton onClick={() => openChat()} />}
 
       {subPage === 'examinee' && <ExamineeManageScreen onBack={() => setSubPage(null)} />}
       {subPage === 'reminder' && <MedicationReminderScreen onBack={() => setSubPage(null)} />}

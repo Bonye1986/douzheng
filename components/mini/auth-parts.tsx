@@ -17,7 +17,25 @@ export function BrandMark({ size = 'md', className }: { size?: 'md' | 'lg'; clas
   )
 }
 
-export function BrandLogo({ className }: { className?: string }) {
+export function BrandLogo({ className, tagline }: { className?: string; tagline?: string }) {
+  if (tagline) {
+    return (
+      <div className={cn('flex w-[180px] flex-col gap-1.5', className)}>
+        <div className="h-[37px] overflow-hidden">
+          <Image
+            src="/images/drugene-logo.png"
+            alt="DRUGENE"
+            width={436}
+            height={147}
+            className="h-auto w-[180px]"
+          />
+        </div>
+        <p className="text-justify text-body tracking-[0.42em] text-secondary-foreground [text-align-last:justify]">
+          {tagline}
+        </p>
+      </div>
+    )
+  }
   return (
     <Image
       src="/images/drugene-logo.png"

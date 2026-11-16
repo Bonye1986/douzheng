@@ -1,130 +1,163 @@
 'use client'
 
-import { useState } from 'react'
-import {
-  ArrowRight,
-  ArrowUp,
-  Baby,
-  Circle,
-  Clock,
-  Ellipsis,
-  FileText,
-  Hash,
-  PackageCheck,
-  Pill,
-  RefreshCw,
-  Sparkles,
-  UserRound,
-} from 'lucide-react'
-import { StatusBar } from '@/components/mini/phone-frame'
+import { useState, type ReactNode } from 'react'
+import { FileText, HeartPulse, Pill, PackageSearch, RefreshCw } from 'lucide-react'
 import Image from 'next/image'
 
-const PAGE_SIZE = 3
-
-const personalizedSuggestions = [
-  { id: 'p1', icon: FileText, reason: '您有 1 份新报告', question: '帮我解读报告里的高风险药物' },
-  { id: 'p2', icon: Clock, reason: '订单检测中', question: '我的报告大概什么时候出？' },
-  { id: 'p3', icon: Pill, reason: '正在服用 华法林', question: '华法林的剂量需要调整吗？' },
-  { id: 'p4', icon: UserRound, reason: '家人 李秀兰 · 58 岁', question: '老人适合做哪项基因检测？' },
-  { id: 'p5', icon: PackageCheck, reason: '样本待寄回', question: '采样后多久内需要寄回？' },
-  { id: 'p6', icon: Baby, reason: '近期浏览 儿童用药', question: '孩子用药前需要做基因检测吗？' },
+const suggestionBatches = [
+  [
+    '孩子腹泻，成人药减半喂，可以吗？',
+    '吃降压药，血压已经正常了，可以停药吗？',
+    '减肥针听说副作用不少，普通人适合打吗？',
+    '同样的药别人吃效果好，我却副作用大，是什么原因？',
+    '阿莫西林可以搭配退烧药一起吃吗？',
+  ],
+  [
+    '吃药期间能喝酒吗？头孢配酒真的很危险吗？',
+    '感冒药和退烧药可以一起吃吗？',
+    '降压药需要一直吃吗？血压正常了能停吗？',
+    '吃完药多久可以喝牛奶、喝茶？',
+    '基因检测能看出我适合吃哪些药吗？',
+  ],
+  [
+    '孕期或备孕期间，哪些药不能随便吃？',
+    '老人同时吃好几种药，会不会互相影响？',
+    '抗生素没吃完一个疗程就停，会怎样？',
+    '他汀类降脂药伤肝吗？要定期复查什么？',
+    '保健品和处方药一起吃有冲突吗？',
+  ],
 ]
-const suggestionPageCount = Math.ceil(personalizedSuggestions.length / PAGE_SIZE)
 
-export function HomeScreen({ onOpenChat }: { onOpenChat?: (question?: string) => void }) {
-  const [page, setPage] = useState(0)
-  const visibleSuggestions = personalizedSuggestions.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
+const features = [
+  { id: 'report', icon: FileText, title: '报告查询', question: '帮我查看并解读我的检测报告' },
+  { id: 'package', icon: PackageSearch, title: '推荐套餐', question: '根据我的情况推荐合适的检测套餐' },
+  { id: 'medication', icon: Pill, title: '用药咨询', question: '我想咨询一下用药问题' },
+  { id: 'health', icon: HeartPulse, title: '健康管理', question: '帮我制定健康管理与用药提醒计划' },
+]
+
+/**
+ * 首页即 AI 页（未开始对话）。
+ * 版式：问候 + 助手形象 → 「大家都在问」卡 → 留白 → 底部（功能入口 → 胶囊输入）。
+ */
+export function HomeWelcome({
+  onAsk,
+  disabled,
+  composer,
+}: {
+  onAsk: (question: string) => void
+  disabled?: boolean
+  /** 输入卡（ChatComposer pill 版，内含受检人选择） */
+  composer: ReactNode
+}) {
+  const [batch, setBatch] = useState(0)
+  const [spin, setSpin] = useState(0)
+  const hello = 'Hi，我是您的用药助手'
+  const line = '用药有疑问，随时问问我'
 
   return (
-    <div className="flex h-full flex-col bg-brand-page">
-      <StatusBar />
-      <div className="flex h-11 shrink-0 items-center justify-end px-3">
-        <div
-          aria-hidden="true"
-          className="flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3 text-foreground"
-        >
-          <Ellipsis className="size-4" />
-          <span className="h-4 w-px bg-border" />
-          <Circle className="size-3.5" strokeWidth={3} />
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col overflow-y-auto px-5 pb-4 [scrollbar-width:none]">
-        <section className="flex flex-col items-start pt-6">
-          <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
-          <Image
-            src="/images/drugene-logo.png"
-            alt="DRUGENE 临床精准用药助手"
-            width={436}
-            height={147}
-            priority
-            className="h-auto w-[120px]"
-          />
-          <p className="mt-5 text-balance text-[26px] font-semibold leading-tight text-foreground">
-            Hi，我是您的
-            <br />
-            <span className="text-primary">精准用药助手</span>
-          </p>
-          <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
-            用药疑问、基因检测、报告解读，随时问我
-          </p>
-        </section>
-
-        <button
-          type="button"
-          onClick={() => onOpenChat?.()}
-          className="mt-14 flex h-12 w-full shrink-0 items-center gap-3 rounded-full border border-border bg-white px-4 text-left shadow-[0_8px_24px_#3a82e41a] transition-transform active:scale-[0.99]"
-        >
-          <Sparkles className="size-5 shrink-0 text-primary" aria-hidden="true" />
-          <span className="min-w-0 flex-1 truncate text-body text-faint">有问题，尽管问我</span>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <ArrowUp className="size-4" aria-hidden="true" />
-          </span>
-        </button>
-
-        <section
-          aria-labelledby="guess-q"
-          className="mt-5 rounded-[28px] border border-white bg-white/50 p-3 shadow-[0_8px_28px_#3a82e414]"
-        >
-          <div className="flex items-center justify-between pb-3 pl-1.5 pt-1">
-            <h2 id="guess-q" className="flex items-center gap-2 text-body font-semibold text-foreground">
-              <span aria-hidden="true" className="h-3.5 w-1 rounded-full bg-primary" />
-              猜你想问
-            </h2>
-            {suggestionPageCount > 1 && (
-              <button
-                type="button"
-                onClick={() => setPage((p) => (p + 1) % suggestionPageCount)}
-                className="flex h-7 items-center gap-1 rounded-full bg-white px-3 text-caption text-muted-foreground active:opacity-70"
-              >
-                换一批
-                <RefreshCw className="size-3" aria-hidden="true" />
-              </button>
-            )}
+    <div className="flex min-h-full flex-col">
+      <section className="relative pt-1">
+        <h1 className="sr-only">药问基因 DRUGENE · 临床精准用药助手</h1>
+        <div className="relative z-0 flex items-end justify-between">
+          <div className="flex min-w-0 flex-col gap-1.5 pb-5 pl-2" suppressHydrationWarning>
+            <p className="text-[20px] font-semibold leading-tight text-primary" suppressHydrationWarning>
+              {hello}
+            </p>
+            <p className="text-pretty text-[18px] font-semibold leading-snug text-foreground" suppressHydrationWarning>
+              {line}
+            </p>
           </div>
+          <div aria-hidden="true" className="relative -mb-6 mr-2 h-[112px] w-[84px] shrink-0">
+            <div className="relative size-full animate-[robot-float_4s_ease-in-out_infinite] motion-reduce:animate-none">
+              <Image
+                src="/images/drugene-robot.png"
+                alt=""
+                fill
+                sizes="84px"
+                priority
+                className="object-contain object-top drop-shadow-[0_8px_10px_rgba(30,58,138,0.18)]"
+              />
+            </div>
+          </div>
+        </div>
 
-          <ul key={page} className="flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
-            {visibleSuggestions.map((item) => (
-              <li key={item.id}>
+        <div className="relative z-10 rounded-[20px] border border-white bg-white/60 px-4 pb-2 pt-3.5 shadow-[0_10px_30px_#3a82e40f] backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[13px] text-muted-foreground">大家都在问</h2>
+            <button
+              type="button"
+              onClick={() => {
+                setBatch((b) => (b + 1) % suggestionBatches.length)
+                setSpin((s) => s + 1)
+              }}
+              className="-mr-1.5 flex h-7 items-center gap-1 rounded-full px-1.5 text-[12px] text-muted-foreground transition-colors active:bg-secondary/70"
+            >
+              <RefreshCw
+                key={spin}
+                className={`size-3.5 ${spin > 0 ? 'animate-[spin_0.5s_ease-out_1] motion-reduce:animate-none' : ''}`}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
+              换一批
+            </button>
+          </div>
+          <ul className="mt-1 flex flex-col" aria-live="polite">
+            {suggestionBatches[batch].map((question) => (
+              <li key={question}>
                 <button
                   type="button"
-                  onClick={() => onOpenChat?.(item.question)}
-                  className="flex h-11 w-full items-center gap-3 rounded-2xl bg-white px-4 text-left shadow-[0_2px_10px_#3a82e40d] transition-transform active:scale-[0.99]"
+                  disabled={disabled}
+                  onClick={() => onAsk(question)}
+                  className="-mx-2 w-[calc(100%+1rem)] rounded-lg px-2 py-2 text-left text-[13px] leading-5 text-foreground transition-colors active:bg-secondary/70 disabled:opacity-50"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[0_4px_10px_#3a82e440]"
-                  >
-                    <Hash className="size-4" strokeWidth={2.5} />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-body text-foreground">{item.question}</span>
-                  <ArrowRight className="size-4 shrink-0 text-faint" aria-hidden="true" />
+                  {question}
                 </button>
               </li>
             ))}
           </ul>
-        </section>
+        </div>
+      </section>
+
+      <div className="sticky bottom-0 mt-auto pt-6">
+        <HomeDock onAsk={onAsk} disabled={disabled} composer={composer} />
       </div>
     </div>
+  )
+}
+
+/** 首页底部区：功能入口 → 胶囊输入卡 → 免责声明。首页欢迎态与对话态共用。 */
+export function HomeDock({
+  onAsk,
+  disabled,
+  composer,
+}: {
+  onAsk: (question: string) => void
+  disabled?: boolean
+  composer: ReactNode
+}) {
+  return (
+      <div className="flex flex-col gap-3">
+        <nav aria-label="常用功能" className="-mx-4">
+          <ul className="flex gap-1.5 px-4">
+            {features.map(({ id, icon: Icon, title, question }) => (
+              <li key={id} className="min-w-0 flex-auto">
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onAsk(question)}
+                  className="flex h-9 w-full items-center justify-center gap-0.5 rounded-xl bg-white px-1 shadow-[0_2px_10px_#3a82e40a] ring-1 ring-[#eef3fc] transition-colors active:bg-secondary/60 disabled:opacity-50"
+                >
+                  <Icon className="size-3.5 shrink-0 text-primary" strokeWidth={1.8} aria-hidden="true" />
+                  <span className="whitespace-nowrap text-[13px] font-medium text-foreground">{title}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {composer}
+
+        <p className="text-center text-[11px] leading-4 text-faint">内容由 AI 生成，仅供参考，不替代医生诊断</p>
+      </div>
   )
 }

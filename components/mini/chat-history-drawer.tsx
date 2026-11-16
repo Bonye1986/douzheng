@@ -14,7 +14,9 @@ export function ChatHistoryDrawer({
   onNew,
   onRename,
   onDelete,
+  className,
 }: {
+  className?: string
   sessions: SessionSummary[]
   currentId: string | null
   onClose: () => void
@@ -38,7 +40,7 @@ export function ChatHistoryDrawer({
   }
 
   return (
-    <div className="absolute inset-0 z-30 flex">
+    <div className={cn('absolute inset-0 z-30 flex', className)}>
       <div
         role="dialog"
         aria-modal="true"

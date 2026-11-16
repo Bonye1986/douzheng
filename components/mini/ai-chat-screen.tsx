@@ -26,14 +26,16 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { StatusBar } from '@/components/mini/phone-frame'
-import { BrandMark } from '@/components/mini/auth-parts'
 import { ChatComposer, answerStyles, type Attachment } from '@/components/mini/chat-composer'
 import { ChatHistoryDrawer } from '@/components/mini/chat-history-drawer'
+import { HomeDock, HomeWelcome } from '@/components/mini/home-screen'
 import { ExamineeFormScreen } from '@/components/mini/examinee-form-screen'
 import { useExaminees } from '@/components/mini/examinee-store'
 import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/components/mini/chat-share'
 import { ChatCard, cardKindText, detectCardKind, type CardKind } from '@/components/mini/ai-cards'
 import { testServices } from '@/components/mini/tests-data'
+import { HeaderTitleMenu } from '@/components/mini/header-title-menu'
+
 import {
   answerToText,
   confidenceMeta,
@@ -121,7 +123,10 @@ export function AiChatScreen({
   request,
   active = true,
   onBack,
+  embedded = false,
 }: {
+  /** 首页内嵌模式：无返回键，空状态展示首页欢迎区，底部为 TabBar 预留空间 */
+  embedded?: boolean
   initialMode?: Mode
   initialTesteeId?: string
   initialQuestion?: string
@@ -328,8 +333,59 @@ export function AiChatScreen({
   }
 
   const greeting = testee
-    ? `你好，${testee.name}。已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
+    ? `你好，${testee.name}，已关联${testee.reports > 0 ? `${testee.reports}份历史报告` : '基本信息（暂无历史报告）'}，我会结合这些资料回答。`
     : '你好。本次未关联受检人，我会按通用知识回答；你也可以随时选择受检人或上传外部报告。'
+
+  const welcome = embedded && !sharing && messages.length === 0
+
+  const testeeChip = testee ? (
+    <span className="flex h-8 w-fit max-w-full items-center rounded-full bg-secondary text-[13px] text-primary ring-1 ring-primary/20">
+      <button
+        type="button"
+        onClick={() => setSheetOpen(true)}
+        aria-label={`当前受检人：${testeeLabel(testee)}，点击切换`}
+        className="flex h-full min-w-0 items-center gap-1.5 pl-3 pr-1 active:opacity-70"
+      >
+        <UserRoundCheck className="size-4 shrink-0" aria-hidden="true" />
+        <span className="truncate">{testeeLabel(testee)}</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setTesteeId(null)}
+        aria-label="清除受检人"
+        className="mr-1 flex size-6 shrink-0 items-center justify-center rounded-full text-primary/70 active:bg-primary/10"
+      >
+        <X className="size-3.5" aria-hidden="true" />
+      </button>
+    </span>
+  ) : (
+    <button
+      type="button"
+      onClick={() => setSheetOpen(true)}
+      aria-label="未关联受检人，点击选择"
+  className="flex h-8 shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-muted/60 px-2.5 text-[13px] text-foreground ring-1 ring-[#e3e9f3] active:opacity-70"
+  >
+  <UserRound className="size-4 shrink-0" aria-hidden="true" />
+  <span>未关联受检人</span>
+    </button>
+  )
+
+  const modeChip = <ModeSelect mode={mode} onChange={setMode} />
+
+  const homeComposer = (
+    <ChatComposer
+      variant="pill"
+      disabled={isReplying}
+      onSend={ask}
+      pinned={!!testee}
+      accessory={
+        <div className="flex min-w-0 items-center gap-1.5">
+          {testeeChip}
+          {modeChip}
+        </div>
+      }
+    />
+  )
 
   return (
     <div className="relative flex h-full flex-col bg-brand-page">
@@ -342,15 +398,17 @@ export function AiChatScreen({
         />
       ) : (
       <header className="relative flex h-11 items-center justify-center px-2 text-foreground">
-        <div className="absolute left-1 flex items-center">
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="返回"
-            className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
-          >
-            <ChevronLeft className="size-5" />
-          </button>
+        <div className={cn('absolute flex items-center', embedded ? 'left-2' : 'left-1')}>
+          {!embedded && (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="返回"
+              className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -359,8 +417,16 @@ export function AiChatScreen({
           >
             <Menu className="size-5" />
           </button>
+          <button
+            type="button"
+            onClick={startNewChat}
+            aria-label="新建会话"
+            className="flex size-8 items-center justify-center rounded-full active:bg-white/70"
+          >
+            <Plus className="size-5" />
+          </button>
         </div>
-        <h2 className="text-title font-medium">AI咨询</h2>
+        {embedded ? <HeaderTitleMenu /> : <h2 className="text-title font-medium">AI咨询</h2>}
         <div
           aria-hidden="true"
           className="absolute right-3 flex h-8 items-center gap-3 rounded-full border border-border bg-white/80 px-3"
@@ -372,7 +438,7 @@ export function AiChatScreen({
       </header>
       )}
 
-      {!sharing && (
+      {!sharing && !embedded && (
       <div className="shrink-0 px-4 pb-3 pt-2">
         <div className="flex items-center rounded-2xl bg-white py-1.5 pl-1.5 pr-2 shadow-[0_4px_14px_#3a82e40d]">
           <button
@@ -425,9 +491,17 @@ export function AiChatScreen({
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-3 [scrollbar-width:none]">
+        {welcome ? (
+          <HomeWelcome
+            onAsk={(q) => ask(q)}
+            disabled={isReplying}
+              composer={homeComposer}
+          />
+        ) : (
+        <>
         {sharing ? (
           <p className="py-2 text-center text-caption text-muted-foreground">内容由 AI 生成</p>
-        ) : (
+        ) : embedded ? null : (
         <section className="rounded-2xl border border-[#d6e6fb] bg-white/70 p-4">
           <h3 className="flex items-center gap-1.5 text-title font-bold text-foreground">
             <ShieldCheck className="size-4 text-primary" />
@@ -439,11 +513,10 @@ export function AiChatScreen({
         </section>
         )}
 
-        <ul className={cn('flex flex-col gap-4', !sharing && 'mt-4')} aria-live="polite">
+        <ul className={cn('flex flex-col gap-4', !sharing && (embedded ? 'pt-2' : 'mt-4'))} aria-live="polite">
           {!sharing && (
-            <li className="flex gap-2">
-              <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
-              <p className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
+            <li className="flex">
+              <p className="max-w-[92%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2.5 text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                 {greeting}
               </p>
             </li>
@@ -459,7 +532,6 @@ export function AiChatScreen({
                 </div>
               ) : m.role === 'card' ? (
                 <div className="flex gap-2">
-                  <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
                   <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-white px-3 py-3 text-left shadow-[0_4px_14px_#3a82e40d]">
                     {m.ready ? (
                       <ChatCard
@@ -476,8 +548,7 @@ export function AiChatScreen({
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <BrandMark className="size-8 shrink-0 rounded-lg text-body shadow-none" />
-                  <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
+                  <div className="min-w-0 max-w-full rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
                     {m.answers ? (
                       <AnswerBody
                         answer={m.answers[mode]}
@@ -501,18 +572,25 @@ export function AiChatScreen({
             const checked = shareIds.has(m.id)
             return (
               <li key={m.id}>
-                <button
-                  type="button"
+                <div
                   role="checkbox"
                   aria-checked={checked}
                   aria-label={m.role === 'user' ? `提问：${m.text}` : 'AI 回答'}
-                  disabled={!selectable}
-                  onClick={() => toggleShare(m.id)}
-                  className="flex w-full items-start gap-2.5 text-left"
+                  aria-disabled={!selectable}
+                  tabIndex={selectable ? 0 : -1}
+                  onClick={() => selectable && toggleShare(m.id)}
+                  onKeyDown={(e) => {
+                    if (!selectable) return
+                    if (e.key === ' ' || e.key === 'Enter') {
+                      e.preventDefault()
+                      toggleShare(m.id)
+                    }
+                  }}
+                  className={`flex w-full items-start gap-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg ${selectable ? 'cursor-pointer' : 'cursor-default opacity-60'}`}
                 >
                   <ShareCheckbox checked={checked} className={m.role === 'user' ? 'mt-2.5' : 'mt-1.5'} />
-                  <div className="pointer-events-none min-w-0 flex-1">{content}</div>
-                </button>
+                  <div inert className="pointer-events-none min-w-0 flex-1">{content}</div>
+                </div>
               </li>
             )
           })}
@@ -533,10 +611,18 @@ export function AiChatScreen({
             ))}
           </ul>
         )}
+        </>
+        )}
       </div>
 
       {sharing ? (
         <ShareSheet items={shareItems} onClose={() => setShareIds(null)} />
+      ) : embedded ? (
+        !welcome && (
+          <div className="shrink-0 px-4 pb-2 pt-1">
+            <HomeDock onAsk={(q) => ask(q)} disabled={isReplying} composer={homeComposer} />
+          </div>
+        )
       ) : (
         <>
           <ul
@@ -562,6 +648,7 @@ export function AiChatScreen({
 
       {drawerOpen && (
         <ChatHistoryDrawer
+          className={embedded ? '-bottom-[75px]' : undefined}
           sessions={sessions.map((s) => ({
             ...s,
             testeeName: testeeList.find((t) => t.id === s.testeeId)?.name,
@@ -994,7 +1081,7 @@ function AnswerActions({
   }
 
   const actions = [
-    { key: 'speak', label: speaking ? '停止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
+    { key: 'speak', label: speaking ? '��止朗读' : '朗读', icon: speaking ? Square : Volume2, onClick: onToggleSpeak, active: speaking },
     { key: 'copy', label: '复制', icon: notice === '已复制' ? Check : Copy, onClick: copy },
     { key: 'share', label: '分享', icon: Share2, onClick: onShare },
     { key: 'retry', label: '重新回答', icon: RefreshCw, onClick: onRegenerate, disabled: regenerateDisabled },
@@ -1040,5 +1127,94 @@ function TypingDots() {
         />
       ))}
     </span>
+  )
+}
+
+function ModeSelect({
+  mode,
+  onChange,
+}: {
+  mode: (typeof answerStyles)[number]['key']
+  onChange: (mode: (typeof answerStyles)[number]['key']) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const menuId = useId()
+  const current = answerStyles.find((s) => s.key === mode) ?? answerStyles[0]
+
+  useEffect(() => {
+    if (!open) return
+    const handlePointerDown = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false)
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open])
+
+  return (
+    <div ref={rootRef} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={menuId}
+        aria-label={`回答风格：${current.label}，点击切换`}
+        className={cn(
+          'flex h-8 items-center gap-1 rounded-full bg-muted/60 pl-3 pr-2 text-[13px] text-foreground ring-1 ring-[#e3e9f3] transition-colors active:opacity-70',
+          open && 'bg-secondary text-primary ring-primary/30',
+        )}
+      >
+        {current.short}
+        <ChevronDown
+          className={cn('size-3.5 text-muted-foreground transition-transform', open && 'rotate-180 text-primary')}
+          aria-hidden="true"
+        />
+      </button>
+      {open && (
+        <ul
+          id={menuId}
+          role="listbox"
+          aria-label="回答风格"
+          className="absolute bottom-full right-0 z-30 mb-2 w-52 rounded-2xl bg-card p-1.5 shadow-[0_10px_30px_#1b2a4a26] ring-1 ring-[#e6eefb] animate-in fade-in slide-in-from-bottom-1 duration-150"
+        >
+          {answerStyles.map((s) => {
+            const selected = s.key === mode
+            return (
+              <li key={s.key}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => {
+                    onChange(s.key)
+                    setOpen(false)
+                  }}
+                  className={cn(
+                    'flex w-full items-start gap-2 rounded-xl px-3 py-2.5 text-left active:bg-secondary',
+                    selected && 'bg-secondary/70',
+                  )}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className={cn('block text-note font-medium', selected ? 'text-primary' : 'text-foreground')}>
+                      {s.label}
+                    </span>
+                    <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground">{s.desc}</span>
+                  </span>
+                  {selected && <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
   )
 }
