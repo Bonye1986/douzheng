@@ -4,7 +4,6 @@ import { WelcomeScreen } from '@/components/mini/welcome-screen'
 import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { HomeFlow } from '@/components/mini/home-flow'
-import { AiChatScreen } from '@/components/mini/ai-chat-screen'
 import { ConsentReaderArtboard, LegalDocArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
 import { MineScreen } from '@/components/mini/mine-screen'
 import {
@@ -297,7 +296,7 @@ const screens = [
   {
     id: '30',
     title: '地址管理 · 新增地址',
-    desc: '填写收货人、手机号、所在地区（省 / 市 / 区三级选择）与详细地址，可设为默认；首个地址自动设为默认，校验通过后保存',
+    desc: '填写收货人、手机号、所在地区（省 / 市 / 区三级选择）与详细地址，可设��默认；首个地址自动设为默认，校验通过后保存',
     node: <MineScreen initialAddressView="add" />,
   },
   {
@@ -517,60 +516,6 @@ const screens = [
     node: <ResampleRefundArtboard />,
   },
   {
-    id: '05',
-    title: 'AI咨询 · 默认态',
-    desc: '通俗版 / 专业版切换，未选受检人时按通用知识回答；技能入口与工具栏可直接触发对话',
-    node: <AiChatScreen />,
-  },
-  {
-    id: '07',
-    title: 'AI咨询 · 选择受检人',
-    desc: '底部弹层选择受检人（可跳过），授权后关联基本信息与历史报告',
-    node: <AiChatScreen initialSheetOpen />,
-  },
-  {
-    id: '08',
-    title: 'AI咨询 · 专业版对话',
-    desc: '已关联受检人，专业版回答展示基因型、代谢类型与指南证据来源',
-    node: <AiChatScreen initialMode="pro" initialTesteeId="self" initialQuestion="我能正常使用氯吡格雷吗？" />,
-  },
-  {
-    id: '08-r',
-    title: 'AI咨询 · 我的报告',
-    desc: '识别「我的报告」意图，以卡片列出各受检人报告状态，已出报告可一键发起 AI 解读',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="查看我的报告" />,
-  },
-  {
-    id: '08-o',
-    title: 'AI咨询 · 我的订单',
-    desc: '识别订单查询意图，卡片展示进行中订单的状态、金额与当前进度',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="我的订单进度" />,
-  },
-  {
-    id: '08-v',
-    title: 'AI咨询 · 推荐检测服务',
-    desc: '推荐卡片附带检测项目（基因位点、覆盖药物数）、价格与推荐理由',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="推荐适合我的检测服务" />,
-  },
-  {
-    id: '08-guide',
-    title: 'AI咨询 · AI引导下单',
-    desc: 'AI 智能匹配检测套餐（匹配度 + 推荐理由，可切换），并通过「注册登录 → 实名认证 → 确认订单并支付」分步指引，每一步跳转至对应页面（登录页 / 实名认证页 / 确认订单页）完成购买；普通回答末尾也会关联推荐检测并提供「AI 引导下单」入口（可在画板内交互）',
-    node: <AiChatScreen initialQuestion="帮我选择合适的检测并引导下单" />,
-  },
-  {
-    id: '06',
-    title: 'AI咨询 · 历史对话抽屉',
-    desc: '左侧滑出抽屉，可搜索、新建、切换会话，「…」菜单内修改名称或删除会话（删除需二次确认）（可在画板内交互）',
-    node: <AiChatScreen initialQuestion="我能正常使用氯吡格雷吗？" initialDrawerOpen />,
-  },
-  {
-    id: '08-share',
-    title: 'AI咨询 · 分享对话',
-    desc: '长按或点击「分享」进入多选态，按轮次勾选问答，生成分享链接与二维码海报（可在画板内交互）',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="我能正常使用氯吡格雷吗？" initialSharing />,
-  },
-  {
     id: '01-terms',
     title: '登录 · 用户协议',
     desc: '登录页与账号设置中点击《用户协议》进入，展示版本号与生效日期、分章节条款',
@@ -654,12 +599,6 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     title: '首页',
     summary: '首页即 AI 对话页：问候与预设问题、功能入口、受检人选择、通俗 / 专业对话、报告与订单查询、推荐套餐、AI 引导下单、历史对话与分享',
     ids: ['04', '04-sheet', '04-pro', '04-report', '04-order', '04-package', '04-guide', '04-drawer', '04-share'],
-  },
-  {
-    key: 'ai',
-    title: 'AI咨询',
-    summary: '通俗 / 专业版切换、关联受检人个性化解答、我的报告 / 订单查询、推荐检测，以及 AI 引导下单（智能匹配套餐 + 分步跳转登录、实名认证、确认订单完成购买）',
-    ids: ['05', '07', '08', '08-r', '08-o', '08-v', '08-guide', '06', '08-share'],
   },
   { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
   {
