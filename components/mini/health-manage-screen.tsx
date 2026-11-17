@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { AlertCircle, ChevronDown, FileText, FileUp, FolderOpen, Headset, ShieldAlert, Upload, X } from 'lucide-react'
+import { ChevronDown, ChevronRight, FileText, FolderOpen, Headset, ShieldAlert } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import { ReportDetailScreen } from '@/components/mini/report-detail-screen'
 import { cn } from '@/lib/utils'
@@ -59,23 +59,18 @@ function withinDays(date: string, days: number) {
 export function HealthManageScreen({
   onBack,
   initialSource = 'all',
-  initialUploadOpen,
-  initialUploadError,
   initialFileId,
   empty,
 }: {
   onBack: () => void
   initialSource?: 'all' | Source
-  initialUploadOpen?: boolean
-  initialUploadError?: 'type' | 'size' | 'network'
   initialFileId?: string
   empty?: boolean
 }) {
-  const [reports, setReports] = useState<HealthReport[]>(empty ? [] : seedReports)
+  const reports = empty ? [] : seedReports
   const [source, setSource] = useState<'all' | Source>(initialSource)
   const [examinee, setExaminee] = useState('全部')
   const [time, setTime] = useState<(typeof timeOptions)[number]['key']>('all')
-  const [uploadOpen, setUploadOpen] = useState(Boolean(initialUploadOpen))
   const [platformId, setPlatformId] = useState<string>()
   const [fileId, setFileId] = useState<string | undefined>(initialFileId)
   const [toast, setToast] = useState('')
@@ -137,9 +132,9 @@ export function HealthManageScreen({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 pb-24 pt-2.5 [scrollbar-width:none]">
+      <div className="flex-1 overflow-y-auto px-3 pb-6 pt-2.5 [scrollbar-width:none]">
         {reports.length === 0 ? (
-          <EmptyState onUpload={() => setUploadOpen(true)} onTest={() => setToast('请前往底部「检测」选购检测服务')} />
+          <EmptyState onTest={() => setToast('请前往底部「检测」选购检测服务')} onAsk={onBack} />
         ) : visible.length === 0 ? (
           <p className="py-16 text-center text-caption text-muted-foreground">暂无符合筛选条件的报告</p>
         ) : (
@@ -150,37 +145,11 @@ export function HealthManageScreen({
               </li>
             ))}
             <li className="px-2 pt-1 text-center text-caption leading-relaxed text-muted-foreground">
-              手动上传报告仅作档案留存，平台不做内容核对，不参与 AI 结论生成
+              外部报告可在首页 AI 对话中上传；手动上传报告仅作档案留存，平台不做内容核对，不参与 AI 结论生成
             </li>
           </ul>
         )}
       </div>
-
-      {reports.length > 0 && (
-        <div className="absolute inset-x-0 bottom-0 border-t border-border/70 bg-white px-4 pb-6 pt-2.5">
-          <button
-            type="button"
-            onClick={() => setUploadOpen(true)}
-            className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-primary text-body font-medium text-primary-foreground"
-          >
-            <Upload className="size-4" aria-hidden="true" />
-            上传外部报告
-          </button>
-        </div>
-      )}
-
-      {uploadOpen && (
-        <UploadSheet
-          initialError={initialUploadError}
-          onClose={() => setUploadOpen(false)}
-          onUploaded={(r) => {
-            setReports((prev) => [r, ...prev])
-            setSource('upload')
-            setUploadOpen(false)
-            setToast('上传成功，已归入「手动上传」')
-          }}
-        />
-      )}
 
       {platformReport && (
         <ReportDetailScreen
@@ -241,7 +210,12 @@ function FilterSelect({
 function ReportRow({ report: r, onView }: { report: HealthReport; onView: () => void }) {
   const isPlatform = r.source === 'platform'
   return (
-    <article className="flex items-center gap-3 rounded-2xl bg-white p-3">
+    <button
+      type="button"
+      onClick={onView}
+      aria-label={`查看${r.name}`}
+      className="flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left transition-colors active:bg-background"
+    >
       <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-lg bg-background">
         {isPlatform ? (
           <Image src="/images/report-cover.png" alt="" fill sizes="48px" className="object-cover" />
@@ -269,19 +243,12 @@ function ReportRow({ report: r, onView }: { report: HealthReport; onView: () => 
           {r.examinee}（{r.relation}） · <span className="tabular-nums">{r.date}</span> {isPlatform ? '出具' : '上传'}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={onView}
-        aria-label={`查看${r.name}`}
-        className="h-7 shrink-0 rounded-full bg-primary px-4 text-caption font-medium text-primary-foreground"
-      >
-        查看
-      </button>
-    </article>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+    </button>
   )
 }
 
-function EmptyState({ onUpload, onTest }: { onUpload: () => void; onTest: () => void }) {
+function EmptyState({ onTest, onAsk }: { onTest: () => void; onAsk: () => void }) {
   return (
     <div className="flex flex-col items-center px-6 pt-16 text-center">
       <span className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -289,181 +256,14 @@ function EmptyState({ onUpload, onTest }: { onUpload: () => void; onTest: () => 
       </span>
       <p className="mt-4 text-body font-medium text-foreground">还没有报告</p>
       <p className="mt-1 text-caption leading-relaxed text-muted-foreground">
-        可上传外部检测报告统一留存，或前往检测获取个体化用药报告
+        可在首页 AI 对话中上传外部检测报告统一留存，或前往检测获取个体化用药报告
       </p>
       <div className="mt-6 flex w-full gap-2.5">
         <button type="button" onClick={onTest} className="h-10 flex-1 rounded-full border border-primary text-body font-medium text-primary">
           前往检测
         </button>
-        <button type="button" onClick={onUpload} className="h-10 flex-1 rounded-full bg-primary text-body font-medium text-primary-foreground">
-          上传报告
-        </button>
-      </div>
-    </div>
-  )
-}
-
-const errorText = {
-  type: '仅支持 PDF 格式文件，请重新选择',
-  size: `文件大小不能超过 ${MAX_SIZE_MB} MB，请压缩后重新选择`,
-  network: '上传失败，请检查网络后重试，已填信息已保留',
-}
-
-function UploadSheet({
-  initialError,
-  onClose,
-  onUploaded,
-}: {
-  initialError?: keyof typeof errorText
-  onClose: () => void
-  onUploaded: (r: HealthReport) => void
-}) {
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [examinee, setExaminee] = useState(examineeOptions[1].name)
-  const [name, setName] = useState(initialError === 'network' ? '体检中心 · 血脂检查报告' : '')
-  const [file, setFile] = useState<{ name: string; size: string } | null>(
-    initialError === 'network' ? { name: '血脂检查报告.pdf', size: '2.4 MB' } : null,
-  )
-  const [error, setError] = useState<keyof typeof errorText | undefined>(initialError)
-  const [uploading, setUploading] = useState(false)
-
-  const pick = (f: File | undefined) => {
-    if (!f) return
-    if (f.type !== 'application/pdf' && !f.name.toLowerCase().endsWith('.pdf')) return setError('type')
-    if (f.size > MAX_SIZE_MB * 1024 * 1024) return setError('size')
-    setError(undefined)
-    setFile({ name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB` })
-    if (!name) setName(f.name.replace(/\.pdf$/i, ''))
-  }
-
-  const submit = () => {
-    if (!file || !name.trim()) return
-    setUploading(true)
-    setError(undefined)
-    setTimeout(() => {
-      const relation = examineeOptions.find((o) => o.name === examinee)!.relation
-      onUploaded({
-        id: `UP${Date.now()}`,
-        name: name.trim(),
-        examinee,
-        relation,
-        source: 'upload',
-        date: '2026-11-17',
-        fileName: file.name,
-        fileSize: file.size,
-      })
-    }, 700)
-  }
-
-  return (
-    <div className="absolute inset-0 z-40 flex flex-col justify-end bg-foreground/40" onClick={onClose}>
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="upload-title"
-        onClick={(e) => e.stopPropagation()}
-        className="rounded-t-3xl bg-white px-4 pb-7 pt-4 motion-safe:animate-in motion-safe:slide-in-from-bottom"
-      >
-        <div className="flex items-center justify-between">
-          <h2 id="upload-title" className="text-heading font-semibold text-foreground">
-            上传外部报告
-          </h2>
-          <button type="button" onClick={onClose} aria-label="关闭" className="flex size-8 items-center justify-center rounded-full text-muted-foreground">
-            <X className="size-5" aria-hidden="true" />
-          </button>
-        </div>
-
-        <fieldset className="mt-3">
-          <legend className="text-caption font-medium text-foreground">受检人</legend>
-          <div className="mt-1.5 flex gap-2">
-            {examineeOptions.map((o) => {
-              const active = examinee === o.name
-              return (
-                <button
-                  key={o.name}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setExaminee(o.name)}
-                  className={cn(
-                    'h-8 rounded-full px-3 text-caption',
-                    active ? 'bg-primary/10 font-medium text-primary ring-1 ring-primary' : 'bg-background text-foreground',
-                  )}
-                >
-                  {o.name}（{o.relation}）
-                </button>
-              )
-            })}
-          </div>
-        </fieldset>
-
-        <label className="mt-3 block">
-          <span className="text-caption font-medium text-foreground">报告名称</span>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            maxLength={30}
-            placeholder="如：某医院基因检测报告"
-            className="mt-1.5 h-10 w-full rounded-lg bg-background px-3 text-body text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/40"
-          />
-        </label>
-
-        <div className="mt-3">
-          <span className="text-caption font-medium text-foreground">报告文件</span>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="application/pdf,.pdf"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden="true"
-            onChange={(e) => {
-              pick(e.target.files?.[0])
-              e.target.value = ''
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className={cn(
-              'mt-1.5 flex w-full items-center gap-3 rounded-xl border border-dashed p-3 text-left',
-              error === 'type' || error === 'size' ? 'border-destructive' : 'border-primary/40',
-            )}
-          >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <FileUp className="size-5" aria-hidden="true" />
-            </span>
-            {file ? (
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-body text-foreground">{file.name}</span>
-                <span className="text-caption text-muted-foreground">{file.size} · 点击重新选择</span>
-              </span>
-            ) : (
-              <span className="min-w-0 flex-1">
-                <span className="block text-body text-foreground">选择 PDF 文件</span>
-                <span className="text-caption text-muted-foreground">仅支持 PDF，单个文件不超过 {MAX_SIZE_MB} MB</span>
-              </span>
-            )}
-          </button>
-        </div>
-
-        {error && (
-          <p role="alert" className="mt-2 flex items-start gap-1 text-caption text-destructive">
-            <AlertCircle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-            {errorText[error]}
-          </p>
-        )}
-
-        <p className="mt-3 text-caption leading-relaxed text-muted-foreground">
-          上传后归入「手动上传」，仅作档案留存；平台不做内容核对，不参与 AI 结论生成。
-        </p>
-
-        <button
-          type="button"
-          onClick={submit}
-          disabled={!file || !name.trim() || uploading}
-          className="mt-4 h-11 w-full rounded-full bg-primary text-body font-medium text-primary-foreground disabled:opacity-50"
-        >
-          {uploading ? '上传中…' : error === 'network' ? '重新上传' : '确认上传'}
+        <button type="button" onClick={onAsk} className="h-10 flex-1 rounded-full bg-primary text-body font-medium text-primary-foreground">
+          去首页上传
         </button>
       </div>
     </div>
@@ -490,7 +290,7 @@ function UploadedFileScreen({ report, onBack }: { report: HealthReport; onBack: 
             <ShieldAlert className="size-7" aria-hidden="true" />
           </span>
           <p className="mt-4 text-body font-medium text-foreground">报告暂不可用</p>
-          <p className="mt-1 text-caption leading-relaxed text-muted-foreground">文件缺失或已损坏，可重新上传，或联系客服协助处理</p>
+          <p className="mt-1 text-caption leading-relaxed text-muted-foreground">文件缺失或已损坏，可在首页 AI 对话中重新上传，或联系客服协助处理</p>
           <button
             type="button"
             className="mt-6 flex h-10 items-center gap-1.5 rounded-full border border-primary px-5 text-body font-medium text-primary"

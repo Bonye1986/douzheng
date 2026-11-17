@@ -130,20 +130,8 @@ const screens = [
   {
     id: '09-health',
     title: '服务 · 健康管理',
-    desc: '当前账号关联的全部报告：按「全部 / 本平台生成 / 手动上传」分区浏览，可按受检人与时间筛选，列表展示封面、名称、受检人、出具或上传时间与来源标识（可在画板内交互）',
+    desc: '当前账号关联的全部报告：按「全部 / 本平台生成 / 手动上传」分区浏览，可按受检人与时间筛选，点击报告卡片查看报告内容；外部报告统一在首页 AI 对话中上传（可在画板内交互）',
     node: <HomeFlow initialTab="service" initialHealth={{}} />,
-  },
-  {
-    id: '09-health-upload',
-    title: '健康管理 · 上传外部报告',
-    desc: '底部弹层选择受检人、填写报告名称并选择 PDF 文件，上传成功后归入「手动上传」分区；格式或大小不符时提示并拦截',
-    node: <HomeFlow initialTab="service" initialHealth={{ initialUploadOpen: true }} />,
-  },
-  {
-    id: '09-health-fail',
-    title: '健康管理 · 上传失败',
-    desc: '网络异常导致上传失败时提示重试，已选受检人、报告名称与文件保留，按钮变为「重新上传」',
-    node: <HomeFlow initialTab="service" initialHealth={{ initialUploadOpen: true, initialUploadError: 'network' }} />,
   },
   {
     id: '09-health-file',
@@ -160,7 +148,7 @@ const screens = [
   {
     id: '09-health-empty',
     title: '健康管理 · 空状态',
-    desc: '账号下暂无任何报告时显示空状态，引导上传外部报告或前往检测',
+    desc: '账号下暂无任何报告时显示空状态，引导前往检测，或回到首页 AI 对话上传外部报告',
     node: <HomeFlow initialTab="service" initialHealth={{ empty: true }} />,
   },
   {
@@ -636,7 +624,7 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
     summary: '首页即 AI 对话页：问候与预设问题、功能入口、受检人选择、通俗 / 专业对话、报告与订单查询、推荐套餐、AI 引导下单、历史对话与分享',
     ids: ['04', '04-sheet', '04-pro', '04-report', '04-order', '04-package', '04-guide', '04-drawer', '04-share'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查、健康管理（报告统一管理与外部报告上传），一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey', '09-health', '09-health-upload', '09-health-fail', '09-health-file', '09-health-broken', '09-health-empty'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查、健康管理（全部报告统一查看），一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey', '09-health', '09-health-file', '09-health-broken', '09-health-empty'] },
   {
     key: 'order',
     title: '检测下单',
