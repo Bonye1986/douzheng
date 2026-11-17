@@ -12,6 +12,7 @@ import { MineScreen } from '@/components/mini/mine-screen'
 import { FloatingAiButton } from '@/components/mini/floating-ai-button'
 import { ExamineeManageScreen } from '@/components/mini/examinee-manage-screen'
 import { MedicationReminderScreen } from '@/components/mini/medication-reminder-screen'
+import { HealthManageScreen } from '@/components/mini/health-manage-screen'
 import { LoginRequiredDialog } from '@/components/mini/login-required-dialog'
 import { RealNameGuideDialog } from '@/components/mini/realname-guide-dialog'
 import { AccountSettingsScreen } from '@/components/mini/account-settings-screen'
@@ -42,7 +43,10 @@ export function HomeFlow({
   onRequireLogin,
   showRealNamePrompt = false,
   ai,
+  initialHealth,
 }: {
+  /** 直接打开健康管理页（用于画板展示其各状态） */
+  initialHealth?: Omit<ComponentProps<typeof HealthManageScreen>, 'onBack'>
   /** 首页内嵌 AI 对话的初始状态（用于画板展示首页版式下的各 AI 状态） */
   ai?: Pick<
     ComponentProps<typeof AiChatScreen>,
@@ -72,7 +76,7 @@ export function HomeFlow({
 }) {
   const [tab, setTab] = useState<TabKey>(initialTab)
   const [request, setRequest] = useState<ChatRequest | null>(null)
-  const [subPage, setSubPage] = useState<'examinee' | 'reminder' | null>(null)
+  const [subPage, setSubPage] = useState<'examinee' | 'reminder' | 'health' | null>(initialHealth ? 'health' : null)
   const [loginPrompt, setLoginPrompt] = useState<string | null>(initialLoginPrompt ?? null)
   const selfVerified = useSelfVerified()
   const [realNamePrompt, setRealNamePrompt] = useState(showRealNamePrompt && loggedIn && !selfVerified)
@@ -118,7 +122,7 @@ export function HomeFlow({
     }
     if (id === 'tests') openTests()
     else if (id === 'knowledge') setKnowledgeEntry({ key: Date.now(), kind: 'knowledge' })
-    else if (id === 'health') setSubPage('examinee')
+    else if (id === 'health') setSubPage('health')
     else if (id === 'remind') setSubPage('reminder')
   }
 
@@ -166,6 +170,7 @@ export function HomeFlow({
 
       {subPage === 'examinee' && <ExamineeManageScreen onBack={() => setSubPage(null)} />}
       {subPage === 'reminder' && <MedicationReminderScreen onBack={() => setSubPage(null)} />}
+      {subPage === 'health' && <HealthManageScreen {...initialHealth} onBack={() => setSubPage(null)} />}
       {knowledgeEntry && (
         <KnowledgeScreen
           key={knowledgeEntry.key}
