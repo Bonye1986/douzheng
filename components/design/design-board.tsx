@@ -246,7 +246,7 @@ function ScreenNote({
 }) {
   const note = screenNotes[screen.noteKey]
   // Notes reference pages by their stable note key; show the current sequential page number instead.
-  const renumber = (text: string) => text.replace(/\b\d{2}\b/g, (key) => pageNumbers[key] ?? key)
+  const renumber = (text: string) => text.replace(/\b\d{2}(?:-[a-z]+)*\b/g, (key) => pageNumbers[key] ?? key)
 
   return (
     <div className="flex flex-col">
