@@ -53,7 +53,8 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
     if (!/^[\u4e00-\u9fa5·a-zA-Z]{2,20}$/.test(name.trim())) next.name = '请填写 2–20 位真实姓名'
     if (!locked && !isMasked(idNo) && !ID_RE.test(idNo)) next.idCard = '请输入正确的 18 位身份证号'
     if (!birth || birth > today) next.birth = '请选择正确的出生日期'
-    if (phone && !isMasked(phone) && !/^1\d{10}$/.test(phone)) next.phone = '请输入 11 位手机号'
+    if (!phone) next.phone = '请填写手机号'
+    else if (!isMasked(phone) && !/^1\d{10}$/.test(phone)) next.phone = '请输入 11 位手机号'
     setErrors(next)
     if (Object.keys(next).length) return
     onSave({
@@ -63,7 +64,7 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
       gender,
       age: ageFrom(birth),
       birth,
-      phone: phone ? (isMasked(phone) ? phone : `${phone.slice(0, 3)}****${phone.slice(7)}`) : undefined,
+      phone: isMasked(phone) ? phone : `${phone.slice(0, 3)}****${phone.slice(7)}`,
       idNo: isMasked(idNo) ? idNo : maskId(idNo),
       idCard: isSelf ? initial?.idCard : undefined,
     })
@@ -210,16 +211,18 @@ export function ExamineeFormScreen({ hasSelf, targetName, initial, onBack, onSav
             </button>
             )}
           </Row>
-          <Row label="手机号" error={errors.phone} last={!isSelf}>
+          <Row label="手机号" required error={errors.phone} last={!isSelf}>
             <input
               type="tel"
               inputMode="numeric"
               value={phone}
+              onFocus={() => isMasked(phone) && setPhone('')}
               onChange={(e) => {
                 setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))
                 clear('phone')
               }}
-              placeholder="选填，用于报告通知"
+              placeholder="用于报告通知与采样联系"
+              aria-required="true"
               aria-invalid={!!errors.phone}
               className="min-w-0 flex-1 bg-transparent text-right text-body tabular-nums text-foreground outline-none placeholder:text-faint"
             />

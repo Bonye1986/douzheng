@@ -20,8 +20,8 @@ type MyCoupon = {
 const myCoupons: MyCoupon[] = [
   { id: 'm1', amount: 100, threshold: 1000, title: '满 1000 减 100', scope: '全部检测项目可用', expire: '2026.12.31 到期', status: 'usable' },
   { id: 'm2', amount: 50, threshold: 500, title: '满 500 减 50', scope: '全部检测项目可用', expire: '2026.10.20 到期', status: 'usable' },
-  { id: 'm3', amount: 30, threshold: 0, title: '新人专享 立减 30', scope: '首单可用', expire: '2026.09.30 使用', status: 'used' },
-  { id: 'm4', amount: 80, threshold: 800, title: '国庆特惠 满 800 减 80', scope: '心血管用药基因检测', expire: '2026.10.07 已过期', status: 'expired' },
+  { id: 'm3', amount: 30, threshold: 300, title: '满 300 减 30', scope: '指定项目：儿童安全用药基因检测', expire: '2026.09.30 使用', status: 'used' },
+  { id: 'm4', amount: 80, threshold: 800, title: '满 800 减 80', scope: '指定项目：心血管用药基因检测', expire: '2026.10.07 已过期', status: 'expired' },
 ]
 
 export const usableCouponCount = myCoupons.filter((c) => c.status === 'usable').length
@@ -65,7 +65,7 @@ function CouponCard({
           <span className="text-note font-medium">¥</span>
           <span className="text-display font-bold tabular-nums">{amount}</span>
         </p>
-        <p className="mt-1.5 text-caption">{threshold ? `满 ${threshold} 可用` : '无门槛'}</p>
+        <p className="mt-1.5 text-caption">满 {threshold} 可用</p>
       </div>
       <span
         className="absolute left-[96px] top-0 h-full border-l border-dashed border-primary/30"
@@ -203,9 +203,9 @@ type CenterCoupon = {
 }
 
 const centerCoupons: CenterCoupon[] = [
-  { id: 'n1', amount: 30, threshold: 0, title: '新人专享 立减 30', scope: '首单可用 · 每人限领 1 张', expire: '领取后 30 天内有效', stock: 100, claimed: false },
-  { id: 'n2', amount: 150, threshold: 1500, title: '家庭套餐 满 1500 减 150', scope: '多位受检人合并下单可用', expire: '2026.12.31 前有效', stock: 62, claimed: false },
-  { id: 'n3', amount: 60, threshold: 600, title: '儿童安全用药 专享券', scope: '儿童安全用药基因检测', expire: '2026.11.30 前有效', stock: 35, claimed: false },
+  { id: 'n1', amount: 30, threshold: 300, title: '满 300 减 30', scope: '全部检测项目可用', expire: '领取后 30 天内有效', stock: 1000, claimed: false },
+  { id: 'n2', amount: 150, threshold: 1500, title: '满 1500 减 150', scope: '全部检测项目可用', expire: '2026.12.31 前有效', stock: 186, claimed: false },
+  { id: 'n3', amount: 60, threshold: 600, title: '满 600 减 60', scope: '指定项目：儿童安全用药基因检测', expire: '2026.11.30 前有效', stock: 35, claimed: false },
   { id: 'n4', amount: 50, threshold: 500, title: '满 500 减 50', scope: '全部检测项目可用', expire: '2026.11.30 前有效', stock: 0, claimed: true },
 ]
 
@@ -213,10 +213,14 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
   const [claimed, setClaimed] = useState<Set<string>>(
     () => new Set(centerCoupons.filter((c) => c.claimed).map((c) => c.id)),
   )
+  const [stock, setStock] = useState<Record<string, number>>(() =>
+    Object.fromEntries(centerCoupons.map((c) => [c.id, c.stock])),
+  )
   const [toast, setToast] = useState<string | null>(null)
 
   const claim = (c: CenterCoupon) => {
     setClaimed((prev) => new Set(prev).add(c.id))
+    setStock((prev) => ({ ...prev, [c.id]: Math.max(0, (prev[c.id] ?? 0) - 1) }))
     setToast(`已领取「${c.title}」`)
     window.setTimeout(() => setToast(null), 1600)
   }
@@ -232,7 +236,8 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
         <ul className="-mt-2 flex flex-col gap-2.5 px-3">
           {centerCoupons.map((c) => {
             const isClaimed = claimed.has(c.id)
-            const soldOut = !isClaimed && c.stock === 0
+            const left = stock[c.id] ?? 0
+            const soldOut = !isClaimed && left === 0
             return (
               <li key={c.id}>
                 <CouponCard
@@ -242,7 +247,6 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
                   scope={c.scope}
                   expire={c.expire}
                   dim={soldOut}
-                  tag={c.threshold === 0 ? '新人' : undefined}
                   action={
                     <div className="flex shrink-0 flex-col items-center gap-1">
                       {isClaimed ? (
@@ -260,8 +264,8 @@ export function CouponCenterScreen({ onBack }: { onBack: () => void }) {
                           {soldOut ? '已抢光' : '立即领取'}
                         </button>
                       )}
-                      {!isClaimed && c.stock > 0 && (
-                        <span className="text-tag tabular-nums text-muted-foreground">剩余 {c.stock}%</span>
+                      {!isClaimed && left > 0 && (
+                        <span className="text-tag tabular-nums text-muted-foreground">剩余 {left} 张</span>
                       )}
                     </div>
                   }

@@ -8,7 +8,7 @@ export type DrugScanResult = {
   drug: string
   spec: string
   dose: string
-  unit: '片' | '粒' | '袋' | 'mg' | 'ml'
+  unit: string
   meal: '饭前' | '饭后' | '随餐' | '睡前' | '不限'
   timesPerDay: number
   manufacturer: string

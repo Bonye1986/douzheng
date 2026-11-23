@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Ellipsis, MessageSquare, PencilLine, Search, SquarePen, Trash2, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export type SessionSummary = { id: string; title: string; time: string }
+export type SessionSummary = { id: string; title: string; time: string; testeeName?: string }
 
 export function ChatHistoryDrawer({
   sessions,
@@ -14,7 +14,9 @@ export function ChatHistoryDrawer({
   onNew,
   onRename,
   onDelete,
+  className,
 }: {
+  className?: string
   sessions: SessionSummary[]
   currentId: string | null
   onClose: () => void
@@ -38,7 +40,7 @@ export function ChatHistoryDrawer({
   }
 
   return (
-    <div className="absolute inset-0 z-30 flex">
+    <div className={cn('absolute inset-0 z-30 flex', className)}>
       <div
         role="dialog"
         aria-modal="true"
@@ -146,7 +148,10 @@ export function ChatHistoryDrawer({
                         >
                           {s.title}
                         </span>
-                        <span className="block text-caption text-muted-foreground">{s.time}</span>
+                        <span className="block truncate text-caption text-muted-foreground">
+                          {s.time}
+                          {s.testeeName ? ` · ${s.testeeName}` : ''}
+                        </span>
                       </span>
                     </button>
                     <button

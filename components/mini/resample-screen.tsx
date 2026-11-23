@@ -36,7 +36,6 @@ const refundReasons = ['不想重新采样', '检测需求已变更', '等待时
 
 const unqualifiedFees: IncurredFee[] = [
   { label: '采样盒及耗材', desc: '已寄出的采样盒', amount: 80 },
-  { label: '物流费用', desc: '采样盒寄送及样本回寄', amount: 30 },
   { label: '实验检测费用', desc: '已开展的 DNA 提取、质检等环节', amount: 150 },
 ]
 

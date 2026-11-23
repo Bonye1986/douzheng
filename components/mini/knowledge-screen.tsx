@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { CheckCircle2, ClipboardList, Clock, Eye, Info, Search, Sparkles, Users, X } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Clock, Eye, Search, Sparkles, Users, X } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import {
   articleCategories,
@@ -231,13 +231,9 @@ function KnowledgeDetail({
             <ArticleMeta article={article} />
           </div>
 
-          <p className="mt-3 rounded-xl bg-background p-3 text-note leading-relaxed text-muted-foreground">
-            {article.summary}
-          </p>
-
           <div className="mt-3 space-y-3">
             {article.content.map((b, i) => {
-              if (b.type === 'survey') return null
+              if (b.type === 'survey' || b.type === 'tip') return null
               if (b.type === 'h')
                 return (
                   <h3 key={i} className="flex items-center gap-1.5 pt-1 text-title font-semibold text-foreground">
@@ -262,12 +258,7 @@ function KnowledgeDetail({
                     ))}
                   </ul>
                 )
-              return (
-                <aside key={i} className="flex gap-2 rounded-xl bg-[#fff7ee] p-3 text-note leading-relaxed text-[#9a5a1e]">
-                  <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                  <p>{b.text}</p>
-                </aside>
-              )
+              return null
             })}
           </div>
 

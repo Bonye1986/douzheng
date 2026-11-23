@@ -1,9 +1,9 @@
 import { DesignBoard, type BoardSection } from '@/components/design/design-board'
+import { DemoApp } from '@/components/design/demo-app'
 import { WelcomeScreen } from '@/components/mini/welcome-screen'
 import { WechatAuthScreen } from '@/components/mini/wechat-auth-screen'
 import { BrandMark } from '@/components/mini/auth-parts'
 import { HomeFlow } from '@/components/mini/home-flow'
-import { AiChatScreen } from '@/components/mini/ai-chat-screen'
 import { ConsentReaderArtboard, LegalDocArtboard, SiteListArtboard } from '@/components/mini/standalone-sub-pages'
 import { MineScreen } from '@/components/mini/mine-screen'
 import {
@@ -22,8 +22,8 @@ const screens = [
   {
     id: '01',
     title: '启动登录页',
-    desc: '唯一入口：微信手机号快捷登录，未勾选协议时拦截并提示',
-    node: <WelcomeScreen />,
+    desc: '唯一入口：微信手机号快捷登录，未勾选协议时拦截并提示；点击登录弹出授权，允许后进入首页，暂不登录以游客身份浏览（可在画板内交互）',
+    node: <DemoApp />,
   },
   {
     id: '02',
@@ -40,8 +40,56 @@ const screens = [
   {
     id: '04',
     title: '首页',
-    desc: '仅保留平台 Logo、对话输入框、预设高频问题；点击输入框跳转 AI 咨询页，点击预设问题直接带入提问；底部菜单为首页 / 服务 / 检测 / 我的，AI 入口全局悬浮（可在画板内交互）',
+    desc: '首页即 AI 咨询页：问候语 + 机器人形象、「大家都在问」（可换一批）、常用功能入口与胶囊输入卡，提问后原位进入对话；底部菜单为首页 / 服务 / 检测 / 我的（可在画板内交互）',
     node: <HomeFlow />,
+  },
+  {
+    id: '04-sheet',
+    title: '首页 · 选择受检人',
+    desc: '首页版式下，点击输入框内「未关联受检人」弹出底部弹层选择受检人（可跳过），关联后按受检人基因信息个性化回答',
+    node: <HomeFlow ai={{ initialSheetOpen: true }} />,
+  },
+  {
+    id: '04-pro',
+    title: '首页 · 专业版对话',
+    desc: '首页发起提问后原位进入对话态，专业版回答展示基因型、代谢类型与指南证据来源；底部仍为首页胶囊输入框与 TabBar，默认未选择受检人',
+    node: <HomeFlow ai={{ initialMode: 'pro', initialQuestion: '我能正常使用氯吡格雷吗？' }} />,
+  },
+  {
+    id: '04-report',
+    title: '首页 · 报告查询',
+    desc: '点击首页「报告查询」入口，以卡片列出各受检人报告状态，已出报告可一键发起 AI 解读',
+    node: <HomeFlow ai={{ initialQuestion: '查看我的报告' }} />,
+  },
+  {
+    id: '04-order',
+    title: '首页 · 订单查询',
+    desc: '首页对话中识别订单查询意图，卡片展示进行中订单的状态、金额与当前进度',
+    node: <HomeFlow ai={{ initialQuestion: '我的订单进度' }} />,
+  },
+  {
+    id: '04-package',
+    title: '首页 · 推荐套餐',
+    desc: '点击首页「推荐套餐」入口，推荐卡片附带检测项目（基因位点、覆盖药物数）、价格与推荐理由',
+    node: <HomeFlow ai={{ initialQuestion: '推荐适合我的检测服务' }} />,
+  },
+  {
+    id: '04-guide',
+    title: '首页 · AI引导下单',
+    desc: '首页对话中 AI 智能匹配检测套餐，并通过「注册登录 → 实名认证 → 确认订单并支付」分步指引完成购买（可在画板内交互）',
+    node: <HomeFlow ai={{ initialQuestion: '帮我选择合适的检测并引导下单' }} />,
+  },
+  {
+    id: '04-drawer',
+    title: '首页 · 历史对话抽屉',
+    desc: '点击首页左上角菜单，左侧滑出历史对话抽屉，可搜索、新建、切换、重命名或删除会话（可在画板内交互）',
+    node: <HomeFlow ai={{ initialQuestion: '我能正常使用氯吡格雷吗？', initialDrawerOpen: true }} />,
+  },
+  {
+    id: '04-share',
+    title: '首页 · 分享对话',
+    desc: '首页对话中长按或点击「分享」进入多选态，按轮次勾选问答，生成分享链接与二维码海报（可在画板内交互）',
+    node: <HomeFlow ai={{ initialTesteeId: 'self', initialQuestion: '我能正常使用氯吡格雷吗？', initialSharing: true }} />,
   },
   {
     id: '09',
@@ -78,6 +126,30 @@ const screens = [
     title: '互动问答 · 问卷调查',
     desc: '问卷说明与答题进度，支持单选、多选与选填文本题；必答题完成后可提交，提交后展示「大家的选择」统计结果',
     node: <HomeFlow initialTab="service" initialQuiz="q1" initialSurvey />,
+  },
+  {
+    id: '09-health',
+    title: '服务 · 健康管理',
+    desc: '当前账号关联的全部报告：按「全部 / 本平台生成 / 手动上传」分区浏览，可按受检人与时间筛选，点击报告卡片查看报告内容；外部报告统一在首页 AI 对话中上传（可在画板内交互）',
+    node: <HomeFlow initialTab="service" initialHealth={{}} />,
+  },
+  {
+    id: '09-health-file',
+    title: '健康管理 · 上传报告原文',
+    desc: '手动上传报告以原文件展示，顶部显示来源标签、受检人、上传时间与文件信息，底部提示平台未核对内容、不参与 AI 结论生成',
+    node: <HomeFlow initialTab="service" initialHealth={{ initialSource: 'upload', initialFileId: 'UP20261102001' }} />,
+  },
+  {
+    id: '09-health-broken',
+    title: '健康管理 · 报告不可用',
+    desc: '报告文件缺失或损坏时提示「报告暂不可用」，可联系客服处理',
+    node: <HomeFlow initialTab="service" initialHealth={{ initialSource: 'upload', initialFileId: 'UP20260815003' }} />,
+  },
+  {
+    id: '09-health-empty',
+    title: '健康管理 · 空状态',
+    desc: '账号下暂无任何报告时显示空状态，引导前往检测，或回到首页 AI 对话上传外部报告',
+    node: <HomeFlow initialTab="service" initialHealth={{ empty: true }} />,
   },
   {
     id: '10',
@@ -117,7 +189,7 @@ const screens = [
   {
     id: '13',
     title: '检测 · 确认订单',
-    desc: '选择受检人（报告归档至成员档案）、采样盒寄送地址 / 定点采样机构、检测项目清单、优惠券（自动选最优，可切换）、价格明细；须勾选知情同意书后提交；点击提交订单唤起微信支付，支付完成后跳转订单结果页（可在画板内交互）',
+    desc: '检测项目与受检人：每个项目以统一表单行选择「样本类型」与「受检人」（底部弹层，支持更多类型 / 人数扩展）；其下为采样方式，不默认选中，由所选样本类型决定居家自采样 / 定点采样是否可选；再选择收货地址或采样机构、优惠券（自动选最优）、价格明细；需勾选知情同意书后提交并唤起微信支付（可在画板内交互）',
     node: (
       <HomeFlow
         initialTab="test"
@@ -164,7 +236,7 @@ const screens = [
   {
     id: '18-guest',
     title: '我的 · 未登录',
-    desc: '未登录时展示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及受检人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
+    desc: '未登录时显示默认头像与「登录 / 注册」按钮，订单角标、报告与优惠券数量隐藏；点击订单、报告、优惠券、领券中心及受检人管理 / 地址管理 / 授权与同意书 / 用药提醒 / 账号设置弹出登录提示；使用指南、关于我们、联系客服无需登录（可在画板内交互）',
     node: <HomeFlow initialTab="me" loggedIn={false} />,
   },
   {
@@ -176,7 +248,7 @@ const screens = [
   {
     id: '21',
     title: '我的 · 报告详情',
-    desc: '报告信息（项目 / 受检人 / 出具日期 / 编号）、检测结论（需调整 / 谨慎使用 / 正常使用占比）；用药建议按等级筛选，点击药物展开具体建议；基因检测结果展示基因、位点、基因型与表型；底部可将报告以 PDF 格式转发给微信好友、保存到手机或复制下载链接（可在画板内交互）',
+    desc: '报告信息（项目 / 受检人 / 出具日期 / 编号）、检测结论（需调整 / 谨慎使用 / 正常使用占比）；用药建议按等级筛选，点击药物展开具体建议；基因检测结果展示基因、位点、基因型与表型；底部可将报告以 PDF 格式转发给微信好友或保存到手机（可在画板内交互）',
     node: <MineScreen initialReportOpen initialReportDetailId="BG20261008001" />,
   },
   {
@@ -188,13 +260,13 @@ const screens = [
   {
     id: '23',
     title: '我的 · 领券中心',
-    desc: '展示可领取的优惠券（新人券、套餐券、项目专享券），显示剩余比例；点击立即领取后变为已领取并提示，库存为 0 显示已抢光；领取的券进入我的优惠券（可在画板内交互）',
+    desc: '展示可领取的优惠券（仅满减券，可指定检测项目或全部项目可用），显示剩余比例；点击立即领取后变为已领取并提示，库存为 0 显示已抢光；领取的券进入我的优惠券（可在画板内交互）',
     node: <MineScreen initialCoupon="center" />,
   },
   {
     id: '24',
     title: '我的 · 受检人管理',
-    desc: '展示已添加的受检人（关系、性别年龄、出生日期、手机号、报告数；仅本人展示实名状态），最多 10 位；每张卡片可编辑、删除，底部添加受检人（可在画板内交互）',
+    desc: '展示已添加的受检人（关系、性别年龄、出生日期、手机号、报告数；仅本人展示实名状态），最多 10 位；每张卡片可编辑，无订单时可删除（已有订单则删除置灰），底部添加受检人（可在画板内交互）',
     node: <MineScreen initialExamineeView="list" />,
   },
   {
@@ -206,14 +278,20 @@ const screens = [
   {
     id: '26',
     title: '受检人管理 · 编辑受检人',
-    desc: '回填已有信息，可修改后保存；有进行中订单的受检人同样可编辑；已脱敏的手机号不修改时原样保留',
+    desc: '回填已有信息，可修改后保存；已有订单（不可删除）的受检人同样可编辑；已脱敏的手机号不修改时原样保留',
     node: <MineScreen initialExamineeView="edit" />,
   },
   {
     id: '26-self',
     title: '受检人管理 · 编辑本人（已认证）',
-    desc: '本人完成实名认证后，姓名、性别、出生日期、身份证号显示锁形图标且不可修改，顶部提示已锁定原因，仅手机号可修改',
+    desc: '本人完成实名认证后，姓名、性别、出生日期、身份证号锁定只读，仅可修改手机号',
     node: <MineScreen initialExamineeView="edit-self" />,
+  },
+  {
+    id: '28',
+    title: '受检人管理 · 空状态',
+    desc: '账号下尚无受检人时展示引导插图与说明，点击添加受检人进入表单（可在画板内交互）',
+    node: <MineScreen initialExamineeView="empty" />,
   },
   {
     id: '24-unverified',
@@ -230,25 +308,19 @@ const screens = [
   {
     id: '27',
     title: '受检人管理 · 删除受检人',
-    desc: '删除前二次确认，说明历史报告仍保留；「本人」或有进行中订单的受检人不可删除（卡片删除按钮置灰），弹窗提示原因并引导使用「编辑」',
+    desc: '仅无任何订单的受检人可删除，删除前二次确认；「本人」或已产生订单（含已完成 / 已取消）的受检人不可删除，卡片显示「已有 N 笔订单」且删除按钮置灰，点击弹窗提示原因并引导使用「编辑」',
     node: <MineScreen initialExamineeView="delete" />,
-  },
-  {
-    id: '28',
-    title: '受检人管理 · 空状态',
-    desc: '尚未添加任何受检人时展示引导插图与说明，点击添加受检人进入添加表单',
-    node: <MineScreen initialExamineeView="empty" />,
   },
   {
     id: '29',
     title: '我的 · 地址管理',
-    desc: '展示已保存的收货地址（收货人、手机号、标签、省市区与详细地址），默认地址置顶，最多 20 个；每张卡片可设为默认、编辑、删除，底部新增收货地址（可在画板内交互）',
+    desc: '展示已保存的收货地址（收货人、手机号、省市区与详细地址），默认地址置顶，最多 20 个；每张卡片可设为默认、编辑、删除，底部新增收货地址（可在画板内交互）',
     node: <MineScreen initialAddressView="list" />,
   },
   {
     id: '30',
     title: '地址管理 · 新增地址',
-    desc: '填写收货人、手机号、所在地区（省 / 市 / 区三级选择）与详细地址，可选标签与设为默认；首个地址自动设为默认，校验通过后保存',
+    desc: '填写收货人、手机号、所在地区（省 / 市 / 区三级选择）与详细地址，可设为默认；首个地址自动设为默认，校验通过后保存',
     node: <MineScreen initialAddressView="add" />,
   },
   {
@@ -308,13 +380,13 @@ const screens = [
   {
     id: '41',
     title: '使用指南 · 文章详情',
-    desc: '标题、分类、更新时间与阅读信息，封面图，正文段落 / 小标题 / 编号步骤 / 注意事项提示框；底部有帮助反馈、相关指南，联系客服与问问 AI 固定操作栏（可在画板内交互）',
+    desc: '标题、分类、更新时间与阅读信息，封面图，正文段落 / 小标题 / 编号步骤 / 注意事项提示框；底部联系客服与问问 AI 固定操作栏（可在画板内交互）',
     node: <MineScreen initialGuideView="detail" />,
   },
   {
     id: '42',
     title: '我的 · 关于我们',
-    desc: '品牌头部（Logo、口号、版本号），平台数据概览，公司简介、核心优势、资质认证、发展历程，联系我们（拨打 / 复制），协议与资质入口、检查更新，底部公司主体与备案信息（可在画板内交互）',
+    desc: '品牌头部（Logo、版本号），小程序介绍、公司简介，客服联系电话（拨打 / 复制），底部版权信息（可在画板内交互）',
     node: <MineScreen initialAboutOpen />,
   },
   {
@@ -332,7 +404,7 @@ const screens = [
   {
     id: '46',
     title: '账号设置 · 注销账号',
-    desc: '注销风险提示、数据清除说明、进行中订单检查、短信验证与须知勾选，二次确认后进入 7 天冷静期（可在画板内交互）',
+    desc: '注销风险提示、数据清除说明、进行中订单检查、短信验证与须知勾选，弹窗二次确认后立即完成注销（可在画板内交互）',
     node: <MineScreen initialAccountView="deactivate" />,
   },
   {
@@ -386,7 +458,7 @@ const screens = [
   {
     id: '49',
     title: '售后 · 取消订单',
-    desc: '已支付、尚未发货的订单取消后生成的售后记录：展示退款成功状态、处理进度（取消订单 → 订单关闭 → 退款到账）、全额退款明细与售后信息（可在画板内交互）',
+    desc: '已支付、尚未发货的订单取消后生成的售后记录：展示退款成功状态、全额退款明细与售后信息（可在画板内交互）',
     node: <CancelOrderArtboard />,
   },
   {
@@ -404,7 +476,7 @@ const screens = [
   {
     id: '51-detail',
     title: '售后 · 售后详情',
-    desc: '展示售后状态、处理进度时间轴、退款信息（扣除费用与退款金额）、关联订单与售后编号 / 类型 / 原因 / 申请时间，待处理或重采样订单底部可继续操作（可在画板内交互）',
+    desc: '展示售后状态、退款信息（扣除费用后退款金额）、关联订单与售后编号 / 类型 / 原因 / 申请时间，待处理或重采样订单底部可继续操作（可在画板内交互）',
     node: <AfterSalesDetailArtboard />,
   },
   {
@@ -458,7 +530,7 @@ const screens = [
   {
     id: '47-report',
     title: '订单列表 · 查看报告',
-    desc: '已完成订单点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
+    desc: '已完成订单，点击「查看报告」直接打开该订单的检测报告详情，可查看结论、用药建议与基因检测结果并分享 PDF（可在画板内交互）',
     node: <OrderActionArtboard kind="report" />,
   },
   {
@@ -466,54 +538,6 @@ const screens = [
     title: '售后 · 终止订单并退款',
     desc: '样本不合格后选择终止订单：展示已产生费用明细与预计退款金额，需联系客服确认，扣除已产生的各类费用后退款',
     node: <ResampleRefundArtboard />,
-  },
-  {
-    id: '05',
-    title: 'AI咨询 · 默认态',
-    desc: '通俗版 / 专业版切换，未选受检人时按通用知识回答；技能入口与工具栏可直接触发对话',
-    node: <AiChatScreen />,
-  },
-  {
-    id: '07',
-    title: 'AI咨询 · 选择受检人',
-    desc: '底部弹层选择受检人（可跳过），授权后关联基本信息与历史报告',
-    node: <AiChatScreen initialSheetOpen />,
-  },
-  {
-    id: '08',
-    title: 'AI咨询 · 专业版对话',
-    desc: '已关联受检人，专业版回答展示基因型、代谢类型与指南证据来源',
-    node: <AiChatScreen initialMode="pro" initialTesteeId="self" initialQuestion="我能正常使用氯吡格雷吗？" />,
-  },
-  {
-    id: '08-r',
-    title: 'AI咨询 · 我的报告',
-    desc: '识别「我的报告」意图，以卡片列出各受检人报告状态，已出报告可一键发起 AI 解读',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="查看我的报告" />,
-  },
-  {
-    id: '08-o',
-    title: 'AI咨询 · 我的订单',
-    desc: '识别订单查询意图，卡片展示进行中订单的状态、金额与当前进度',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="我的订单进度" />,
-  },
-  {
-    id: '08-v',
-    title: 'AI咨询 · 推荐检测服务',
-    desc: '推荐卡片附带检测项目（基因位点、覆盖药物数）、价格与推荐理由',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="推荐适合我的检测服务" />,
-  },
-  {
-    id: '06',
-    title: 'AI咨询 · 历史对话抽屉',
-    desc: '左侧滑出抽屉，可搜索、新建、切换会话，「…」菜单内修改名称或删除会话（删除需二次确认）（可在画板内交互）',
-    node: <AiChatScreen initialQuestion="我能正常使用氯吡格雷吗？" initialDrawerOpen />,
-  },
-  {
-    id: '08-share',
-    title: 'AI咨询 · 分享对话',
-    desc: '长按或点击「分享」进入多选态，按轮次勾选问答，生成分享链接与二维码海报（可在画板内交互）',
-    node: <AiChatScreen initialTesteeId="self" initialQuestion="我能正常使用氯吡格雷吗？" initialSharing />,
   },
   {
     id: '01-terms',
@@ -596,11 +620,11 @@ const sectionPlan: { key: string; title: string; summary: string; ids: string[] 
   { key: 'login', title: '登录注册', summary: '微信手机号授权登录，拒绝授权的拦截与提示', ids: ['01', '02', '03', '01-terms', '01-privacy'] },
   {
     key: 'home',
-    title: '首页与AI咨询',
-    summary: 'AI 对话入口与预设问题，通俗 / 专业版切换，关联受检人后的个性化用药解答',
-    ids: ['04', '05', '06', '07', '08', '08-r', '08-o', '08-v', '08-share'],
+    title: '首页',
+    summary: '首页即 AI 对话页：问候与预设问题、功能入口、受检人选择、通俗 / 专业对话、报告与订单查询、推荐套餐、AI 引导下单、历史对话与分享',
+    ids: ['04', '04-sheet', '04-pro', '04-report', '04-order', '04-package', '04-guide', '04-drawer', '04-share'],
   },
-  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查，一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey'] },
+  { key: 'service', title: '服务', summary: '轮播、服务分类、推荐检测、知识科普、互动问答与问卷调查、健康管理（全部报告统一查看），一键带入 AI 咨询', ids: ['09', '09-knowledge', '09-article', '09-quiz', '09-quiz-article', '09-survey', '09-health', '09-health-file', '09-health-broken', '09-health-empty'] },
   {
     key: 'order',
     title: '检测下单',

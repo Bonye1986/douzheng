@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ClipboardList, Clock, TriangleAlert, Users } from 'lucide-react'
+import { Check, ClipboardList, TriangleAlert } from 'lucide-react'
 import { SubPage } from '@/components/mini/sub-page'
 import type { Survey, SurveyQuestion } from '@/components/mini/services-data'
 import { cn } from '@/lib/utils'
@@ -177,13 +177,6 @@ export function SurveyScreen({
               <p className="mt-1 text-caption leading-relaxed text-white/85">{survey.intro}</p>
               <div className="mt-3 flex items-center gap-3 text-caption text-white/85">
                 <span>共 {survey.questions.length} 题</span>
-                <span className="flex items-center gap-0.5">
-                  <Clock className="size-3" aria-hidden="true" />约 {survey.minutes} 分钟
-                </span>
-                <span className="flex items-center gap-0.5">
-                  <Users className="size-3" aria-hidden="true" />
-                  {survey.participants} 人已参与
-                </span>
               </div>
               <div
                 role="progressbar"

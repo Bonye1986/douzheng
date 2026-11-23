@@ -207,7 +207,7 @@ export function MineScreen({
               onAction={guard('我的订单', () => setOrderListPhase('all'))}
             />
           </div>
-          <ul className="mt-4 grid grid-cols-6 px-0.5">
+          <ul className="mt-4 grid grid-cols-5 px-0.5">
             {orderPhases.map((p) => {
               const count = !loggedIn ? 0 : p.key === 'after' ? pendingAfterSalesCount : countOrders(p.key)
               return (
@@ -316,7 +316,7 @@ export function MineScreen({
             <MineIcon src={iconSrc('gift')} className="size-9 shrink-0" />
             <span>
               <span className="block text-body font-medium text-foreground">领券中心</span>
-              <span className="block text-caption text-muted-foreground">新人券待领取</span>
+              <span className="block text-caption text-muted-foreground">满减券待领取</span>
             </span>
           </button>
         </section>

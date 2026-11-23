@@ -208,9 +208,6 @@ export function SendSampleScreen({
                           {a.isDefault && (
                             <span className="rounded bg-primary px-1.5 py-px text-tag text-primary-foreground">默认</span>
                           )}
-                          {a.tag && (
-                            <span className="rounded bg-secondary px-1.5 py-px text-tag text-primary">{a.tag}</span>
-                          )}
                         </span>
                         <span className="mt-1 block text-caption leading-[18px] text-muted-foreground">
                           {regionText(a.region)} {a.street}
