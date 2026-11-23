@@ -34,6 +34,7 @@ import { useExaminees } from '@/components/mini/examinee-store'
 import { ShareCheckbox, ShareHeader, ShareSheet, type ShareItem } from '@/components/mini/chat-share'
 import { ChatCard, cardKindText, detectCardKind, type CardKind } from '@/components/mini/ai-cards'
 import { testServices } from '@/components/mini/tests-data'
+import { ReplyProgress, replyDuration } from './reply-progress'
 import { HeaderTitleMenu } from '@/components/mini/header-title-menu'
 
 import {
@@ -55,7 +56,7 @@ type Answers = Record<Mode, AiAnswer>
 
 type Message =
   | { id: number; role: 'user'; text: string; attachments?: Attachment[] }
-  | { id: number; role: 'assistant'; answers: Answers | null; view: Mode }
+  | { id: number; role: 'assistant'; question: string; answers: Answers | null; view: Mode }
   | { id: number; role: 'card'; kind: CardKind; ready: boolean; question: string }
 
 type Session = { id: string; title: string; time: string; testeeId: string | null; messages: Message[] }
@@ -75,7 +76,7 @@ function buildAnswers(question: string, hasTestee: boolean): Answers {
 function buildReply(question: string, hasTestee: boolean, mode: Mode, ready: boolean): Message {
   const kind = detectCardKind(question)
   if (kind) return { id: nextMessageId(), role: 'card', kind, ready, question }
-  return { id: nextMessageId(), role: 'assistant', answers: ready ? buildAnswers(question, hasTestee) : null, view: mode }
+  return { id: nextMessageId(), role: 'assistant', question, answers: ready ? buildAnswers(question, hasTestee) : null, view: mode }
 }
 
 function seedSession(id: string, question: string, time: string): Session {
@@ -261,7 +262,7 @@ export function AiChatScreen({
           return m
         }),
       )
-    }, 1200)
+    }, replyDuration)
   }
 
   function stopSpeaking() {
@@ -301,7 +302,7 @@ export function AiChatScreen({
     const answers = buildAnswers(question, Boolean(testee))
     window.setTimeout(() => {
       updateMessages(sessionId, (prev) => prev.map((m) => (m.id === messageId && m.role === 'assistant' ? { ...m, answers } : m)))
-    }, 1200)
+    }, replyDuration)
   }
 
   useEffect(() => () => {
@@ -533,6 +534,7 @@ export function AiChatScreen({
               ) : m.role === 'card' ? (
                 <div className="flex gap-2">
                   <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-white px-3 py-3 text-left shadow-[0_4px_14px_#3a82e40d]">
+                    {m.ready && mode === 'pro' && !sharing && <ReplyProgress question={m.question} kind={m.kind} />}
                     {m.ready ? (
                       <ChatCard
                         kind={m.kind}
@@ -542,13 +544,14 @@ export function AiChatScreen({
                         onAsk={(q) => ask(q)}
                       />
                     ) : (
-                      <TypingDots />
+                      <ReplyProgress pending question={m.question} kind={m.role === 'card' ? m.kind : undefined} />
                     )}
                   </div>
                 </div>
               ) : (
                 <div className="flex gap-2">
                   <div className="min-w-0 max-w-full rounded-2xl rounded-tl-md bg-white px-3.5 py-3 text-left text-body leading-6 text-foreground shadow-[0_4px_14px_#3a82e40d]">
+                    {m.answers && mode === 'pro' && !sharing && <ReplyProgress question={m.question} answer={m.answers.pro} />}
                     {m.answers ? (
                       <AnswerBody
                         answer={m.answers[mode]}
@@ -561,7 +564,7 @@ export function AiChatScreen({
                         onGuideOrder={(name) => ask(`帮我下单${name}`)}
                       />
                     ) : (
-                      <TypingDots />
+                      <ReplyProgress pending question={m.question} />
                     )}
                   </div>
                 </div>
@@ -1112,21 +1115,6 @@ function AnswerActions({
         ))}
       </div>
     </div>
-  )
-}
-
-function TypingDots() {
-  return (
-    <span className="flex h-6 items-center gap-1" role="status">
-      <span className="sr-only">正在回复</span>
-      {[0, 150, 300].map((delay) => (
-        <span
-          key={delay}
-          className="size-1.5 animate-bounce rounded-full bg-primary/60"
-          style={{ animationDelay: `${delay}ms` }}
-        />
-      ))}
-    </span>
   )
 }
 
